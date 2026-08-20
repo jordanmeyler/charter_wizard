@@ -25,6 +25,8 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 
 Even rows read left to right. Odd rows read right to left. The Charter grid is that same weave, scrolled sideways. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
 
+**Air is ambient.** Anything that still has a floor or a wall is a place that can be breathed. The weave carries Air in almost every view. A screen that is only void — a tear, no room left — has no breath.
+
 ---
 
 ## In the sanctum now

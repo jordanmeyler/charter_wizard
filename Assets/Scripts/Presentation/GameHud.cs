@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. The grid is the view, woven side to side. Charter wants the whole recipe. Free fills a blank.",
+                "The wall is the eleven — only what is on screen can be drawn. Air is already in the room. Gold ring = a join (Plant is Water · Earth · Salt). Hover the weave to hold it still.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
@@ -148,7 +148,8 @@ namespace RuneMagic
             var tapestry = _director.Tapestry;
             var dockTop = Screen.height - 214f - BarHeight;
             var height = Mathf.Max(72f, dockTop - top - 8f);
-            DrawPanel(16, top, Screen.width - 32, height);
+            var panel = new Rect(16, top, Screen.width - 32, height);
+            DrawPanel(panel.x, panel.y, panel.width, panel.height);
 
             var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.76f, 0.84f));
@@ -164,14 +165,30 @@ namespace RuneMagic
             var gridTop = top + 32f;
             var cell = Mathf.Min(56f, (height - 40f) / rows - gap);
             cell = Mathf.Max(34f, cell);
-            var width = cols * (cell + gap);
+            var stride = cell + gap;
+            var width = cols * stride;
             var left = Mathf.Max(28f, (Screen.width - width) * 0.5f);
+            var band = new Rect(left - 2f, gridTop - 2f, width + 4f, rows * stride + 4f);
+            var mouse = Event.current != null ? Event.current.mousePosition : Vector2.zero;
+            if (tapestry != null)
+            {
+                tapestry.HoverPaused = band.Contains(mouse);
+            }
+
+            var slide = tapestry != null ? tapestry.Scroll - Mathf.Floor(tapestry.Scroll) : 0f;
+            var shift = slide * stride;
 
             for (var row = 0; row < rows; row++)
             {
-                for (var col = 0; col < cols; col++)
+                for (var col = 0; col <= cols; col++)
                 {
-                    var rect = new Rect(left + col * (cell + gap), gridTop + row * (cell + gap), cell, cell);
+                    var x = left + col * stride - shift;
+                    var rect = new Rect(x, gridTop + row * stride, cell, cell);
+                    if (rect.xMax < band.xMin || rect.x > band.xMax)
+                    {
+                        continue;
+                    }
+
                     var glyph = tapestry != null
                         ? tapestry.Cell(row, col)
                         : new WeaveGlyph(RuneId.None, MaterialId.None, WeaveKind.Tear);
@@ -501,6 +518,7 @@ namespace RuneMagic
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available)
         {
+            var wrought = ChainBook.IsWrought(rune);
             var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
             fill.a = available ? 0.92f : 0.35f;
             var previous = GUI.color;
@@ -510,21 +528,43 @@ namespace RuneMagic
             GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
 
+            if (wrought && available)
+            {
+                DrawWroughtMark(rect);
+            }
+
             var glyphColor = available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
-            var glyph = Label(rect.height > 70f ? 22 : 16, FontStyle.Bold, glyphColor);
+            var birth = wrought ? ChainBook.BirthText(rune) : string.Empty;
+            var main = !string.IsNullOrEmpty(birth) ? birth : RuneCatalog.GlyphOf(rune);
+            var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, glyphColor);
             glyph.alignment = TextAnchor.MiddleCenter;
+            glyph.wordWrap = true;
             var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal,
                 available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f));
             name.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(new Rect(rect.x, rect.y + 8, rect.width, rect.height * 0.45f),
-                RuneCatalog.GlyphOf(rune), glyph);
-            GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.5f, rect.width, rect.height * 0.42f),
-                available ? RuneCatalog.NameOf(rune) : "not in view", name);
+            GUI.Label(new Rect(rect.x + 3, rect.y + 6, rect.width - 6, rect.height * 0.5f),
+                main, glyph);
+            var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
+            GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.52f, rect.width, rect.height * 0.4f),
+                caption, name);
 
             if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
             {
                 onClick?.Invoke();
             }
+        }
+
+        static void DrawWroughtMark(Rect rect)
+        {
+            var previous = GUI.color;
+            var gold = new Color(0.98f, 0.82f, 0.32f, 0.95f);
+            GUI.color = gold;
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 3f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.x, rect.yMax - 3f, rect.width, 3f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, 3f, rect.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.xMax - 3f, rect.y, 3f, rect.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.x + 6f, rect.yMax - 8f, rect.width - 12f, 2f), Texture2D.whiteTexture);
+            GUI.color = previous;
         }
 
         static void DrawEmptySlot(Rect rect, string caption)

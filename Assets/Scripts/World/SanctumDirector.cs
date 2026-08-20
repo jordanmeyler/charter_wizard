@@ -734,7 +734,7 @@ namespace RuneMagic
 
             try
             {
-                target = LockAtAim(shape, origin, requested);
+                target = ResolveCastLock(shape, origin, requested);
                 CurrentTarget = target;
                 var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
                 outcome = _resolver.Resolve(composition, stance, shape, accepted, Grimoire, Attunement, lockedFree);
@@ -743,7 +743,7 @@ namespace RuneMagic
                 {
                     shape = outcome.Shape;
                     aim = SpellFormations.ClampPoint(shape, origin, requested, potency);
-                    target = LockAtAim(shape, origin, requested, potency);
+                    target = ResolveCastLock(shape, origin, requested, potency) ?? target;
                 }
 
                 var caption = outcome.Spell != SpellId.None && SpellCodex.TryGet(outcome.Spell, out var named)
@@ -831,7 +831,24 @@ namespace RuneMagic
             }
 
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
-            return LockAtAim(shape, CasterPosition(), mouse);
+            return ResolveCastLock(shape, CasterPosition(), mouse);
+        }
+
+        ISpellLock ResolveCastLock(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        {
+            var clicked = FindLockNear(requested, 1.85f);
+            if (clicked != null)
+            {
+                return clicked;
+            }
+
+            var aimed = LockAtAim(shape, origin, requested, potency);
+            if (aimed != null)
+            {
+                return aimed;
+            }
+
+            return LockAlive(_focus) ? _focus : null;
         }
 
         ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
@@ -841,7 +858,7 @@ namespace RuneMagic
             var radius = SpellFormations.Get(shape).LockRadius * scale;
             if (shape == SpellShape.Shot)
             {
-                return FindLockAlong(origin, point, radius);
+                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f));
             }
 
             if (shape == SpellShape.Spread || shape == SpellShape.Self)
