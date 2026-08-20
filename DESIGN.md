@@ -66,7 +66,7 @@ Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark ·
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 
-Full wrought list and fifty story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
+Full wrought list and the written story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. 51 Time-stop (Life · Death · mind · Dark · Water · Earth, no Light, no Mercury). Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ---
 
@@ -92,7 +92,7 @@ A combo that *looks* as if it should work can still fizzle if it is not written.
 
 **Charter:** an unwritten or unfinished combo **fizzles**. No blanks are filled. **Free:** fills missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence is never “upgraded” by filling toward a longer one. Free is still never the required key.
 
-The fifty catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
+The catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
 ---
 
@@ -192,7 +192,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — fifty story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. Composer still folds the short slice.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop (Water · Earth · Dark · Life · Death · Sulphur · Salt). Composer still folds the short slice.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.

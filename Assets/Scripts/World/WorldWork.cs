@@ -13,12 +13,16 @@ namespace RuneMagic
         public const int MaxWallLength = 10;
         public const int HopTiles = 4;
         public const float FlightSeconds = 10f;
+        public const float TimeStopSeconds = 8f;
 
         public static bool IsHop(SpellId spell) =>
             spell == SpellId.Hop;
 
         public static bool IsFlight(SpellId spell) =>
             spell == SpellId.Flight;
+
+        public static bool IsTimeStop(SpellId spell) =>
+            spell == SpellId.TimeStop;
 
         public static bool NeedsSpan(SpellId spell) =>
             spell == SpellId.Wall;
@@ -133,6 +137,11 @@ namespace RuneMagic
             if (IsHop(spell) || IsFlight(spell))
             {
                 return string.Empty;
+            }
+
+            if (IsTimeStop(spell))
+            {
+                return "The instant stands. Motion leaves the living; the mind cannot hurry.";
             }
 
             if (!FillsGaps(spell) && !RaisesBarrier(spell))

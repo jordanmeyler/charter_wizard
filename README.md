@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.13). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.13). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -23,7 +23,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
-| Chains, not pairs | The fifty catalog spells resolve in play. Fireball is Fire · Air · Mercury — a moving spark, no Salt. The Grimoire lists them all; click a name to string it. |
+| Chains, not pairs | The catalog spells resolve in play. Fireball is Fire · Air · Mercury — a moving spark, no Salt. The Grimoire lists them all; click a name to string it. |
 | Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, leans on attunement, and cannot be stored. |
 
@@ -69,7 +69,7 @@ Tiles are still painted in code (`SpriteFactory`): each material has its own cob
 
 ## Catalog — recipes, sprites, items
 
-**Yes: one master file controls the recipes.** The game loads [`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json) at boot. That file is the fifty story-chains plus the joins (Fire · Air → Spark). [`SPELLS.md`](SPELLS.md) is the prose companion; if they disagree, the JSON wins in play. `SpellCodex.cs` is only a fallback if the JSON is missing.
+**Yes: one master file controls the recipes.** The game loads [`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json) at boot. That file is the written story-chains plus the joins (Fire · Air → Spark). [`SPELLS.md`](SPELLS.md) is the prose companion; if they disagree, the JSON wins in play. `SpellCodex.cs` is only a fallback if the JSON is missing.
 
 [`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop.
 

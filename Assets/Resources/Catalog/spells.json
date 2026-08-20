@@ -882,6 +882,19 @@
       "outcome": "Kill",
       "gate": "Free",
       "work": "LastBreath"
+    },
+    {
+      "number": 51,
+      "id": "TimeStop",
+      "book": "Hold",
+      "name": "Time-stop",
+      "want": "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.",
+      "recipe": "Water · Earth · Dark · Life · Death · Sulphur · Salt",
+      "via": "Mud · Dark · Life · Death · Sulphur · Salt",
+      "form": "Spread",
+      "outcome": "Restrain",
+      "gate": "Free",
+      "work": "TimeStop"
     }
   ]
 }

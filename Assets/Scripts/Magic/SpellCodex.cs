@@ -72,8 +72,9 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Fifty story-chains. 1–40 are the ordinary book (no Death).
-    /// 41–50 are Death / Free. Life only marks a living recipe.
+    /// Written story-chains. 1–40 are the ordinary book (no Death).
+    /// 41–50 are Death / Free. 51 is Time-stop, a longer Free working.
+    /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
     {
@@ -130,7 +131,8 @@ namespace RuneMagic
             E(47, SpellBook.Grave, SpellId.Snuff, "Hunger marked by the grave and sent into a flame.", "Snuff", "Fire · Death · Mercury", "Ember · Mercury", "Remote", SpellOutcome.Neither, "Either"),
             E(48, SpellBook.Grave, SpellId.Blackout, "The seed marked by the grave and sent. A live rod dies.", "Blackout", "Fire · Air · Death · Mercury", "Spark · Death · Mercury", "Shot", SpellOutcome.Neither, "Either"),
             E(49, SpellBook.Grave, SpellId.GraveIce, "Yield given a body, then the grave. Ice that will not thaw.", "Grave-ice", "Water · Salt · Death", "", "Remote", SpellOutcome.Restrain, "Either"),
-            E(50, SpellBook.Grave, SpellId.LastBreath, "Living breath, then the grave, sent. The breath leaves them.", "Last breath", "Air · Life · Death · Mercury", "", "Remote", SpellOutcome.Kill, "Free")
+            E(50, SpellBook.Grave, SpellId.LastBreath, "Living breath, then the grave, sent. The breath leaves them.", "Last breath", "Air · Life · Death · Mercury", "", "Remote", SpellOutcome.Kill, "Free"),
+            E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Water · Earth · Dark · Life · Death · Sulphur · Salt", "Mud · Dark · Life · Death · Sulphur · Salt", "Spread", SpellOutcome.Restrain, "Free")
         };
 
         public static IReadOnlyList<CodexEntry> All

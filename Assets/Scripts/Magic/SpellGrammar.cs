@@ -69,7 +69,8 @@ namespace RuneMagic
         GraveSleep,
         CorpseCall,
         GraveIce,
-        LastBreath
+        LastBreath,
+        TimeStop
     }
 
     public readonly struct SpellRecipe
