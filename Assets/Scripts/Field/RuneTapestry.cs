@@ -58,13 +58,8 @@ namespace RuneMagic
             var seen = new List<RuneId>();
             for (var i = 0; i < sequence.Count; i++)
             {
-                var rune = sequence[i].Rune;
-                if (rune == RuneId.None || seen.Contains(rune))
-                {
-                    continue;
-                }
-
-                seen.Add(rune);
+                Remember(seen, sequence[i].Shown);
+                Remember(seen, sequence[i].Rune);
             }
 
             return seen;
@@ -76,14 +71,16 @@ namespace RuneMagic
             return false;
         }
 
+        public static bool GoesRight(int row) => (row & 1) == 0;
+
         public WeaveGlyph Cell(int row, int col)
         {
-            if (_sequence.Count == 0 || row < 0 || row >= Rows || col < 0 || col > Cols)
+            if (_sequence.Count == 0 || row < 0 || row >= Rows || col < -1 || col > Cols)
             {
                 return new WeaveGlyph(RuneId.None, MaterialId.None, WeaveKind.Tear);
             }
 
-            var along = row % 2 == 0 ? col : Cols - col;
+            var along = GoesRight(row) ? col : Cols - 1 - col;
             var visual = row * Cols + along;
             var index = Mod(Mathf.FloorToInt(Scroll) + visual, _sequence.Count);
             return _sequence[index];
@@ -136,11 +133,8 @@ namespace RuneMagic
             for (var i = 0; i < read.Count; i++)
             {
                 _sequence.Add(read[i]);
-                var rune = read[i].Rune;
-                if (rune != RuneId.None && _vicinity.Add(rune))
-                {
-                    _vicinityList.Add(rune);
-                }
+                RememberVicinity(read[i].Shown);
+                RememberVicinity(read[i].Rune);
             }
         }
 
@@ -158,10 +152,28 @@ namespace RuneMagic
             for (var i = 0; i < take; i++)
             {
                 var glyph = _sequence[Mod(start + i, _sequence.Count)];
-                parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Rune));
+                parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Shown));
             }
 
             _readingText = "on screen  ·  " + string.Join(" · ", parts);
+        }
+
+        void RememberVicinity(RuneId rune)
+        {
+            if (rune != RuneId.None && _vicinity.Add(rune))
+            {
+                _vicinityList.Add(rune);
+            }
+        }
+
+        static void Remember(List<RuneId> seen, RuneId rune)
+        {
+            if (rune == RuneId.None || seen.Contains(rune))
+            {
+                return;
+            }
+
+            seen.Add(rune);
         }
 
         static int Mod(int value, int modulus)

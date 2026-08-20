@@ -23,9 +23,11 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 4. **Void** / pits tear the weave. They contribute a gap, not a rune.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
-Even rows read left to right. Odd rows read right to left. The Charter grid is that same weave, scrolled sideways. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
+Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join stretches one column per ingredient and stays inside one gold ring — Plant is three columns, Water · Earth · Salt. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
 
 **Air is ambient.** Anything that still has a floor or a wall is a place that can be breathed. The weave carries Air in almost every view. A screen that is only void — a tear, no room left — has no breath.
+
+**Mercury is ambient.** The adept is ensouled. A soul is the key that lets a living being work magic; that going does not leave the field, even over a tear. Soulless things do not carry it.
 
 ---
 
