@@ -31,7 +31,10 @@ namespace RuneMagic
         public IReadOnlyList<SpellShape> AvailableShapes { get; private set; } = System.Array.Empty<SpellShape>();
         public SpellShape ChosenShape { get; private set; }
         public string PendingPreview { get; private set; } = string.Empty;
+        public string AimHint { get; private set; } = string.Empty;
         public CastingStance PendingStance { get; private set; }
+        public SpellId PendingSpell { get; private set; }
+        public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
         public bool CanMove => (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming) && !Busy;
 
@@ -50,6 +53,7 @@ namespace RuneMagic
         CastingStance _pendingStance;
         CodexEntry _pendingFree;
         bool _pendingFromHeld;
+        Vector3? _spanStart;
 
         public void Begin(SanctumBuild build)
         {
@@ -131,7 +135,7 @@ namespace RuneMagic
                 }
             }
 
-            if (Underfoot != null && Underfoot.Kind == TileKind.Floor)
+            if (Underfoot != null && (Underfoot.Kind == TileKind.Floor || Underfoot.Kind == TileKind.Bridge))
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
             }
@@ -488,7 +492,10 @@ namespace RuneMagic
             Mode = PlayMode.Exploring;
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
+            PendingSpell = SpellId.None;
+            AimHint = string.Empty;
             _pendingFree = default;
+            _spanStart = null;
             Log(_pendingFromHeld
                 ? $"The cast is withheld. You still hold {Held.Name}."
                 : "The cast is withheld. The string is still on the Charter.");
@@ -507,8 +514,18 @@ namespace RuneMagic
                 shape = _pendingFree.Shape;
             }
 
+            if (WorldWork.NeedsSpan(PendingSpell) && !_spanStart.HasValue)
+            {
+                var origin = CasterPosition();
+                _spanStart = SpellFormations.ClampPoint(SpellShape.Remote, origin, worldPoint);
+                AimHint = "Start is set. Click the far end. Across a pit it is a span; on the floor it is a barrier.";
+                Log("The near end is marked. Click the far end, or Esc to withhold.");
+                return;
+            }
+
             var composition = _pendingComposition;
             var stance = _pendingStance;
+            var spanFrom = _spanStart;
             if (_pendingFromHeld)
             {
                 Held = StoredSpell.Empty;
@@ -522,8 +539,12 @@ namespace RuneMagic
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
             var lockedFree = _pendingFree;
+            var spell = PendingSpell;
             _pendingFree = default;
-            Release(composition, stance, shape, worldPoint, lockedFree);
+            PendingSpell = SpellId.None;
+            AimHint = string.Empty;
+            _spanStart = null;
+            Release(composition, stance, shape, worldPoint, lockedFree, spanFrom, spell);
         }
 
         void BeginAim(Composition composition, CastingStance stance, bool fromHeld)
@@ -543,9 +564,12 @@ namespace RuneMagic
             _pendingStance = stance;
             _pendingFromHeld = fromHeld;
             _pendingFree = default;
+            _spanStart = null;
             PendingStance = stance;
+            PendingSpell = SpellId.None;
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
+            AimHint = string.Empty;
 
             if (stance == CastingStance.Free)
             {
@@ -555,35 +579,63 @@ namespace RuneMagic
                     return;
                 }
 
-                LockAim(pick.Shape, $"{pick.Name} · {SpellFormations.NameOf(pick.Shape)}", pick);
+                LockAim(pick.Shape, $"{pick.Name} · {SpellFormations.NameOf(pick.Shape)}", pick.Spell, pick);
                 var clash = ChainBook.CollectForFree(composition, SpellShape.None, Attunement.FillBudget).Count > 1
                     ? " Attunement chose this sentence, including how it lands."
                     : string.Empty;
-                Log($"{pick.Name} is {SpellFormations.NameOf(pick.Shape)} — the chain writes the form.{clash} {SpellFormations.Get(pick.Shape).Hint} Esc cancels.");
+                Log($"{pick.Name} is {SpellFormations.NameOf(pick.Shape)} — the chain writes the form.{clash} {AimHint} Esc cancels.");
                 return;
             }
 
             if (ChainBook.TryMatch(composition, SpellShape.None, out var written))
             {
-                LockAim(written.Shape, $"{written.Name} · {SpellFormations.NameOf(written.Shape)}");
-                Log($"{written.Name} is {SpellFormations.NameOf(written.Shape)} — the chain writes the form. {SpellFormations.Get(written.Shape).Hint} Esc cancels.");
+                LockAim(written.Shape, $"{written.Name} · {SpellFormations.NameOf(written.Shape)}", written.Spell);
+                Log($"{written.Name} is {SpellFormations.NameOf(written.Shape)} — the chain writes the form. {AimHint} Esc cancels.");
                 return;
             }
 
             PendingPreview = _resolver.PreviewName(composition);
+            AimHint = "The chain did not write a form. Click the world to fizzle, or Esc to keep the string.";
             Mode = PlayMode.Aiming;
             Log("Those runes are not a written sentence. The form is in the chain, not a later choice. Click to fizzle, or Esc to keep the string.");
         }
 
-        void LockAim(SpellShape shape, string preview, CodexEntry freePick = default)
+        void LockAim(SpellShape shape, string preview, SpellId spell, CodexEntry freePick = default)
         {
             _pendingFree = freePick;
             ChosenShape = shape;
             PendingPreview = preview;
+            PendingSpell = spell;
+            AimHint = HintFor(spell, shape);
             AvailableShapes = shape == SpellShape.None
                 ? System.Array.Empty<SpellShape>()
                 : new[] { shape };
             Mode = PlayMode.Aiming;
+        }
+
+        static string HintFor(SpellId spell, SpellShape shape)
+        {
+            if (WorldWork.IsHop(spell))
+            {
+                return "Click where you want to land. Breath given a body carries you over a hollow.";
+            }
+
+            if (WorldWork.IsFlight(spell))
+            {
+                return "Click to keep the breath on you. Pits will not take you while it lasts.";
+            }
+
+            if (WorldWork.NeedsSpan(spell))
+            {
+                return "Click the near end, then the far end. Across a pit it is a span; on the floor it is a barrier.";
+            }
+
+            if (WorldWork.IsPillar(spell))
+            {
+                return "Click the ground. A column rises there. A hollow takes it and holds.";
+            }
+
+            return SpellFormations.Get(shape).Hint;
         }
 
         public void LoadCodex(int number)
@@ -701,14 +753,16 @@ namespace RuneMagic
             CastingStance stance,
             SpellShape shape,
             Vector3 requested,
-            CodexEntry lockedFree = default)
+            CodexEntry lockedFree = default,
+            Vector3? spanFrom = null,
+            SpellId pendingSpell = SpellId.None)
         {
             if (Busy)
             {
                 return;
             }
 
-            StartCoroutine(ReleaseRoutine(composition, stance, shape, requested, lockedFree));
+            StartCoroutine(ReleaseRoutine(composition, stance, shape, requested, lockedFree, spanFrom, pendingSpell));
         }
 
         System.Collections.IEnumerator ReleaseRoutine(
@@ -716,7 +770,9 @@ namespace RuneMagic
             CastingStance stance,
             SpellShape shape,
             Vector3 requested,
-            CodexEntry lockedFree)
+            CodexEntry lockedFree,
+            Vector3? spanFrom,
+            SpellId pendingSpell)
         {
             if (Mode == PlayMode.Charter)
             {
@@ -730,7 +786,8 @@ namespace RuneMagic
             var finished = false;
             var setupFailed = false;
             var origin = CasterPosition();
-            var aim = SpellFormations.ClampPoint(shape, origin, requested);
+            var spell = pendingSpell;
+            var aim = AimPoint(spell, shape, origin, requested);
 
             try
             {
@@ -742,8 +799,18 @@ namespace RuneMagic
                 if (outcome.Shape != SpellShape.None)
                 {
                     shape = outcome.Shape;
-                    aim = SpellFormations.ClampPoint(shape, origin, requested, potency);
-                    target = ResolveCastLock(shape, origin, requested, potency) ?? target;
+                }
+
+                if (outcome.Spell != SpellId.None)
+                {
+                    spell = outcome.Spell;
+                }
+
+                aim = AimPoint(spell, shape, origin, requested, potency);
+                target = ResolveCastLock(shape, origin, requested, potency) ?? target;
+                if (WorldWork.IsHop(spell))
+                {
+                    target = FindLockNear(aim, 1.8f) ?? FindLockNear(origin, 2.4f) ?? target;
                 }
 
                 var caption = outcome.Spell != SpellId.None && SpellCodex.TryGet(outcome.Spell, out var named)
@@ -760,11 +827,12 @@ namespace RuneMagic
 
                 if (outcome.Fizzled || outcome.Spell == SpellId.None)
                 {
-                    SpellFx.PlayFizzle(shape == SpellShape.Spread ? origin : aim, () => finished = true);
+                    SpellFx.PlayFizzle(shape == SpellShape.Spread || shape == SpellShape.Self ? origin : aim, () => finished = true);
                 }
                 else
                 {
-                    SpellFx.Play(origin, aim, material, shape, caption, () => finished = true, potency);
+                    var fxFrom = spanFrom ?? origin;
+                    SpellFx.Play(fxFrom, aim, material, shape, caption, () => finished = true, potency);
                 }
             }
             catch (System.Exception exception)
@@ -783,10 +851,26 @@ namespace RuneMagic
                     yield return null;
                 }
 
+                Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
+
+                var workNote = string.Empty;
+                if (!outcome.Fizzled && outcome.Spell != SpellId.None)
+                {
+                    var workFrom = spanFrom ?? aim;
+                    try
+                    {
+                        workNote = WorldWork.Apply(Grid, outcome.Spell, outcome.Material, origin, workFrom, aim);
+                    }
+                    catch (System.Exception exception)
+                    {
+                        Debug.LogWarning("Terrain work failed: " + exception.Message);
+                    }
+
+                    yield return CarryCaster(outcome.Spell, origin, requested);
+                }
+
                 try
                 {
-                    Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
-
                     if (outcome.Resolved && LockAlive(target))
                     {
                         Grimoire.LearnInterpretation(target.FormulaId);
@@ -798,11 +882,11 @@ namespace RuneMagic
                         }
 
                         CurrentTarget = null;
-                        Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
+                        Log(FirstNote(flavor, workNote, outcome.Log));
                     }
                     else
                     {
-                        Log(outcome.Log);
+                        Log(FirstNote(workNote, outcome.Log));
                     }
 
                     CheckFinished();
@@ -821,6 +905,91 @@ namespace RuneMagic
         {
             var player = PlayerTransform();
             return player != null ? player.position : _safePoint;
+        }
+
+        Vector3 AimPoint(SpellId spell, SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        {
+            if (WorldWork.IsHop(spell))
+            {
+                var facing = Vector2.right;
+                var motor = PlayerTransform() != null ? PlayerTransform().GetComponent<PlayerMotor2D>() : null;
+                if (motor != null)
+                {
+                    facing = motor.Facing;
+                }
+
+                return WorldWork.HopLanding(Grid, origin, requested, facing);
+            }
+
+            if (WorldWork.NeedsSpan(spell))
+            {
+                return SpellFormations.ClampPoint(SpellShape.Remote, origin, requested, potency);
+            }
+
+            return SpellFormations.ClampPoint(shape, origin, requested, potency);
+        }
+
+        System.Collections.IEnumerator CarryCaster(SpellId spell, Vector3 origin, Vector3 requested)
+        {
+            var player = PlayerTransform();
+            var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
+            if (WorldWork.IsFlight(spell) && adept != null)
+            {
+                adept.KeepAirborne(WorldWork.FlightSeconds);
+                yield break;
+            }
+
+            if (!WorldWork.IsHop(spell) || player == null)
+            {
+                yield break;
+            }
+
+            var land = AimPoint(spell, SpellShape.Self, origin, requested);
+            if (adept != null)
+            {
+                adept.KeepAirborne(0.45f);
+            }
+
+            var body = player.GetComponent<Rigidbody2D>();
+            var elapsed = 0f;
+            const float duration = 0.28f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var next = Vector3.Lerp(origin, land, Mathf.Clamp01(elapsed / duration));
+                if (body != null)
+                {
+                    body.position = next;
+                }
+
+                player.position = next;
+                yield return null;
+            }
+
+            if (body != null)
+            {
+                body.position = land;
+            }
+
+            player.position = land;
+        }
+
+        static string FirstNote(params string[] notes)
+        {
+            if (notes == null)
+            {
+                return string.Empty;
+            }
+
+            for (var i = 0; i < notes.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(notes[i]))
+                {
+                    return notes[i];
+                }
+            }
+
+            return string.Empty;
         }
 
         ISpellLock ResolveAimFocus()
@@ -926,7 +1095,8 @@ namespace RuneMagic
             var show = Mode == PlayMode.Aiming && !Busy;
             EnsureAimGhost();
             _aimMark.gameObject.SetActive(show);
-            _aimLine.enabled = show && ChosenShape == SpellShape.Shot;
+            var drawLine = show && (ChosenShape == SpellShape.Shot || WorldWork.NeedsSpan(PendingSpell) || WorldWork.IsHop(PendingSpell));
+            _aimLine.enabled = drawLine;
             if (!show)
             {
                 return;
@@ -939,8 +1109,11 @@ namespace RuneMagic
 
             var origin = CasterPosition();
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
-            var point = SpellFormations.ClampPoint(shape, origin, mouse);
-            _aimMark.transform.position = shape == SpellShape.Spread ? origin : point;
+            var point = AimPoint(PendingSpell, shape, origin, mouse);
+            var mark = shape == SpellShape.Spread && !WorldWork.IsHop(PendingSpell)
+                ? origin
+                : point;
+            _aimMark.transform.position = mark;
             var pulse = 0.9f + Mathf.Sin(Time.time * 8f) * 0.1f;
             _aimMark.transform.localScale = Vector3.one * pulse;
             _aimMark.color = ChosenShape == SpellShape.None
@@ -949,7 +1122,8 @@ namespace RuneMagic
 
             if (_aimLine.enabled)
             {
-                _aimLine.SetPosition(0, origin + new Vector3(0f, 0.1f, 0f));
+                var lineFrom = _spanStart ?? origin;
+                _aimLine.SetPosition(0, lineFrom + new Vector3(0f, 0.1f, 0f));
                 _aimLine.SetPosition(1, point + new Vector3(0f, 0.1f, 0f));
             }
         }
@@ -1097,7 +1271,7 @@ namespace RuneMagic
             }
 
             player.position = _safePoint;
-            Log("The pit takes you. Earth is missing here — throw some across.");
+            Log("The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
         }
 
         void CheckFinished()

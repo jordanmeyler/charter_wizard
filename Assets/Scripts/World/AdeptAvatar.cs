@@ -7,6 +7,12 @@ namespace RuneMagic
     /// </summary>
     public sealed class AdeptAvatar : MonoBehaviour
     {
+        float _airborneUntil;
+        SpriteRenderer _sprite;
+        Color _baseColor = Color.white;
+
+        public bool IsAirborne => Time.time < _airborneUntil;
+
         public static AdeptAvatar Find()
         {
             return FindFirstObjectByType<AdeptAvatar>();
@@ -15,6 +21,37 @@ namespace RuneMagic
         public static bool IsAdept(Component other)
         {
             return other != null && other.GetComponent<AdeptAvatar>() != null;
+        }
+
+        public void KeepAirborne(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _airborneUntil = Mathf.Max(_airborneUntil, Time.time + seconds);
+        }
+
+        void Awake()
+        {
+            _sprite = GetComponent<SpriteRenderer>();
+            if (_sprite != null)
+            {
+                _baseColor = _sprite.color;
+            }
+        }
+
+        void Update()
+        {
+            if (_sprite == null)
+            {
+                return;
+            }
+
+            _sprite.color = IsAirborne
+                ? Color.Lerp(_baseColor, new Color(0.75f, 0.92f, 1f, 0.92f), 0.55f)
+                : _baseColor;
         }
     }
 }

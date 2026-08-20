@@ -20,8 +20,7 @@ namespace RuneMagic
 
         public WorldTile TileAtWorld(Vector3 world)
         {
-            var coord = new Vector2Int(Mathf.FloorToInt(world.x), Mathf.FloorToInt(world.y));
-            return Get(coord);
+            return Get(WorldWork.CoordOf(world));
         }
 
         public WorldTile Set(int x, int y, TileKind kind, MaterialId material)

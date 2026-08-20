@@ -42,7 +42,9 @@ namespace RuneMagic
         static readonly SpellId[] PitKeys =
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
-            SpellId.Pit, SpellId.Bridge, SpellId.Wall
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall,
+            SpellId.FlamePillar, SpellId.IcePillar, SpellId.VineRise,
+            SpellId.Hop, SpellId.Flight
         };
 
         static readonly SpellId[] RodKeys =
@@ -185,7 +187,7 @@ namespace RuneMagic
                 WorldGrid.Center(o.x + 2, o.y + 5));
             room.ExitDoors = PlaceExit(grid, o, MaterialId.Stone);
 
-            HintPlaque.Spawn(WorldGrid.Center(o.x + 2, o.y + 8), "The weave tears. Rest is missing.");
+            HintPlaque.Spawn(WorldGrid.Center(o.x + 2, o.y + 8), "Rest that stands fills the drop. Breath given a body leaps it.");
             RuneStringSource.Spawn(
                 WorldGrid.Center(o.x + 2, o.y + 6),
                 new[] { RuneId.Earth, RuneId.Salt },

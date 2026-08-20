@@ -344,8 +344,9 @@ namespace RuneMagic
             else
             {
                 var def = SpellFormations.Get(shape);
+                var hint = string.IsNullOrEmpty(_director.AimHint) ? def.Hint : _director.AimHint;
                 GUI.Label(new Rect(16, y + 36, 720, 40),
-                    $"{def.Name} is in the sentence. {def.Hint}",
+                    $"{def.Name} is in the sentence. {hint}",
                     body);
             }
 
