@@ -348,6 +348,11 @@ namespace RuneMagic
 
             var held = Held;
             Held = StoredSpell.Empty;
+            if (Mode == PlayMode.Charter)
+            {
+                CloseCharter();
+            }
+
             Release(held.Composition, held.Stance);
         }
 
@@ -378,7 +383,7 @@ namespace RuneMagic
 
             var world = camera.ScreenToWorldPoint(Input.mousePosition);
             world.z = 0f;
-            var clicked = FindLockNear(world, 0.95f);
+            var clicked = FindLockNear(world, 1.2f);
             if (clicked == null)
             {
                 return;
@@ -416,6 +421,11 @@ namespace RuneMagic
 
         System.Collections.IEnumerator ReleaseRoutine(Composition composition, CastingStance stance)
         {
+            if (Mode == PlayMode.Charter)
+            {
+                CloseCharter();
+            }
+
             Busy = true;
             var target = CurrentTarget != null && !CurrentTarget.Resolved ? CurrentTarget : null;
             var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();

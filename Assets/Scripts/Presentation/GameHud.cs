@@ -206,7 +206,7 @@ namespace RuneMagic
                     body);
             }
 
-            GUI.Label(new Rect(760, y + 16, Screen.width - 980, 64),
+            GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 980f), 64),
                 "WASD move · Space Charter · click a lock to cast · Esc / Grimoire",
                 hint);
 
