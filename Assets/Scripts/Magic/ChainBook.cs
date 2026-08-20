@@ -143,27 +143,212 @@ namespace RuneMagic
 
         public static List<SpellShape> ShapesFor(Composition composition)
         {
+            return ShapesFor(CollectExact(composition, SpellShape.None));
+        }
+
+        public static List<SpellShape> ShapesFor(IReadOnlyList<CodexEntry> entries)
+        {
             var shapes = new List<SpellShape>();
-            var sequence = composition.Sequence;
-            if (sequence == null || sequence.Length == 0)
+            if (entries == null)
             {
                 return shapes;
             }
 
-            foreach (var candidate in SpellCodex.All)
+            for (var i = 0; i < entries.Count; i++)
             {
-                if (!Matches(candidate, sequence) || candidate.Shape == SpellShape.None)
+                var shape = entries[i].Shape;
+                if (shape != SpellShape.None && !shapes.Contains(shape))
                 {
-                    continue;
-                }
-
-                if (!shapes.Contains(candidate.Shape))
-                {
-                    shapes.Add(candidate.Shape);
+                    shapes.Add(shape);
                 }
             }
 
             return shapes;
+        }
+
+        public static List<CodexEntry> CollectExact(Composition composition, SpellShape shape)
+        {
+            var matches = new List<CodexEntry>();
+            var sequence = composition.Sequence;
+            if (sequence == null || sequence.Length == 0)
+            {
+                return matches;
+            }
+
+            foreach (var candidate in SpellCodex.All)
+            {
+                if (shape != SpellShape.None && candidate.Shape != shape)
+                {
+                    continue;
+                }
+
+                if (Matches(candidate, sequence))
+                {
+                    AddUnique(matches, candidate);
+                }
+            }
+
+            return matches;
+        }
+
+        public static List<CodexEntry> CollectFillable(
+            Composition composition,
+            SpellShape shape,
+            int fillBudget)
+        {
+            var matches = new List<CodexEntry>();
+            var sequence = composition.Sequence;
+            if (sequence == null || sequence.Length == 0 || fillBudget < 0)
+            {
+                return matches;
+            }
+
+            var player = Normalize(sequence);
+            foreach (var candidate in SpellCodex.All)
+            {
+                if (shape != SpellShape.None && candidate.Shape != shape)
+                {
+                    continue;
+                }
+
+                if (FitsWithFills(player, candidate, fillBudget))
+                {
+                    AddUnique(matches, candidate);
+                }
+            }
+
+            return matches;
+        }
+
+        public static List<CodexEntry> CollectForFree(
+            Composition composition,
+            SpellShape shape,
+            int fillBudget)
+        {
+            var exact = CollectExact(composition, shape);
+            return exact.Count > 0 ? exact : CollectFillable(composition, shape, fillBudget);
+        }
+
+        public static bool FitsWithFills(IReadOnlyList<RuneId> player, CodexEntry entry, int fillBudget)
+        {
+            var fills = FillsNeeded(player, entry);
+            return fills >= 0 && fills <= fillBudget;
+        }
+
+        /// <summary>
+        /// How many recipe tokens Free must supply. 0 is an exact sentence.
+        /// -1 means the player string is not a subsequence of the recipe or via.
+        /// Raise FillBudget later and this same count still decides the fit.
+        /// </summary>
+        public static int FillsNeeded(IReadOnlyList<RuneId> player, CodexEntry entry)
+        {
+            var normalized = Normalize(player);
+            var recipe = CountFills(normalized, Normalize(entry.RecipeRunes));
+            if (entry.ViaRunes.Count == 0)
+            {
+                return recipe;
+            }
+
+            var via = CountFills(normalized, Normalize(entry.ViaRunes));
+            if (recipe < 0)
+            {
+                return via;
+            }
+
+            if (via < 0)
+            {
+                return recipe;
+            }
+
+            return recipe < via ? recipe : via;
+        }
+
+        public static int FillsNeeded(Composition composition, CodexEntry entry)
+        {
+            if (composition.Sequence == null || composition.Sequence.Length == 0)
+            {
+                return -1;
+            }
+
+            return FillsNeeded(composition.Sequence, entry);
+        }
+
+        public static string PreviewFree(Composition composition, int fillBudget, SpellShape shape = SpellShape.None)
+        {
+            var exact = CollectExact(composition, shape);
+            var pool = exact.Count > 0 ? exact : CollectFillable(composition, shape, fillBudget);
+            if (pool.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var names = JoinNames(pool);
+            if (exact.Count > 0)
+            {
+                return pool.Count == 1
+                    ? $"Free takes the finished sentence: {names}"
+                    : $"Free takes a finished sentence among {names}";
+            }
+
+            var blank = fillBudget == 1 ? "a blank" : fillBudget + " blanks";
+            return pool.Count == 1
+                ? $"Free fills {blank} and the chain becomes {names}"
+                : $"Free fills {blank} and picks among {names}";
+        }
+
+        static string JoinNames(IReadOnlyList<CodexEntry> pool)
+        {
+            const int cap = 4;
+            var take = pool.Count < cap ? pool.Count : cap;
+            var parts = new string[take];
+            for (var i = 0; i < take; i++)
+            {
+                parts[i] = pool[i].Name;
+            }
+
+            var text = string.Join(", ", parts);
+            return pool.Count > cap ? text + $" and {pool.Count - cap} more" : text;
+        }
+
+        static int CountFills(IReadOnlyList<RuneId> player, IReadOnlyList<RuneId> recipe)
+        {
+            if (player == null || recipe == null || player.Count == 0 || recipe.Count == 0)
+            {
+                return -1;
+            }
+
+            if (player.Count > recipe.Count)
+            {
+                return -1;
+            }
+
+            var i = 0;
+            var skipped = 0;
+            for (var j = 0; j < recipe.Count; j++)
+            {
+                if (i < player.Count && player[i] == recipe[j])
+                {
+                    i++;
+                    continue;
+                }
+
+                skipped++;
+            }
+
+            return i == player.Count ? skipped : -1;
+        }
+
+        static void AddUnique(List<CodexEntry> matches, CodexEntry entry)
+        {
+            for (var i = 0; i < matches.Count; i++)
+            {
+                if (matches[i].Spell == entry.Spell)
+                {
+                    return;
+                }
+            }
+
+            matches.Add(entry);
         }
 
         public static string Preview(Composition composition, SpellShape shape = SpellShape.None)

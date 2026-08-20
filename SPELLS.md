@@ -227,3 +227,5 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 ## 7. The sanctum slice
 
 The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
+
+**Charter Cast** wants the whole sentence. **Free Cast** may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence is not filled toward a longer one. Free cannot be stored.

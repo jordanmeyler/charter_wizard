@@ -157,9 +157,44 @@ namespace RuneMagic
                 }
             }
 
+            ValidateFills(broken);
+
             return broken.Count == 0
                 ? string.Empty
                 : string.Join("; ", broken);
+        }
+
+        static void ValidateFills(List<string> broken)
+        {
+            var salt = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt });
+            if (ChainBook.CollectExact(salt, SpellShape.None).Count != 0)
+            {
+                broken.Add("Fire · Salt should not be an exact catalog sentence");
+            }
+
+            var filled = ChainBook.CollectFillable(salt, SpellShape.None, FreeAttunement.DefaultFillBudget);
+            if (filled.Count < 2)
+            {
+                broken.Add("Fire · Salt should clash between at least two fillable chains");
+            }
+
+            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Salt, RuneId.Mercury });
+            var exact = ChainBook.CollectExact(fireball, SpellShape.None);
+            if (exact.Count == 0)
+            {
+                broken.Add("Fireball exact match failed");
+            }
+
+            var free = ChainBook.CollectForFree(fireball, SpellShape.None, 2);
+            if (free.Count != exact.Count)
+            {
+                broken.Add("A finished sentence must not fill toward a longer chain");
+            }
+
+            if (ChainBook.CollectFillable(salt, SpellShape.None, 0).Count != 0)
+            {
+                broken.Add("A zero fill budget must not complete a missing rune");
+            }
         }
 
         public static bool TryGet(int number, out CodexEntry entry)
