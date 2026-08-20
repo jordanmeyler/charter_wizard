@@ -98,10 +98,10 @@ namespace RuneMagic
         public string Describe()
         {
             var composition = Snapshot();
-            var written = ChainBook.Preview(composition);
-            if (!string.IsNullOrEmpty(written))
+            var preview = ChainBook.Preview(composition);
+            if (!string.IsNullOrEmpty(preview))
             {
-                return $"{SlotSummary()} — {written}";
+                return $"{SlotSummary()} — {preview}";
             }
 
             if (!composition.TryFoldMaterials(out var material, out var blend) && composition.MaterialCount >= 2)
