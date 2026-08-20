@@ -44,7 +44,7 @@ namespace RuneMagic
             Add(RuneId.Spark, RuneId.Air, RuneId.Lightning, BlendKind.Stable, "Spark driven into Air → Lightning.");
             Add(RuneId.Spark, RuneId.Cloud, RuneId.Storm, BlendKind.Stable, "Spark driven into Cloud → Storm.");
             Add(RuneId.Cloud, RuneId.Water, RuneId.Rain, BlendKind.Stable, "Cloud given Water → Rain.");
-            Add(RuneId.Water, RuneId.Cold, RuneId.Ice, BlendKind.Stable, "Water drawn toward Cold → Ice.");
+            Add(RuneId.Water, RuneId.Mors, RuneId.Ice, BlendKind.Stable, "Water stilled by Death → Ice. Salt makes it a body.");
             Add(RuneId.Cloud, RuneId.Ice, RuneId.Snow, BlendKind.Stable, "Cloud joined to Ice → Snow.");
             Add(RuneId.Lava, RuneId.Cold, RuneId.Stone, BlendKind.Stable, "Lava cooled → Stone.");
             Add(RuneId.Lava, RuneId.Water, RuneId.Obsidian, BlendKind.Violent, "Lava quenched. Lava + Water → Obsidian.");

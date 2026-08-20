@@ -65,7 +65,7 @@ Every written spell has **three** parts. The first two are runes; the third is c
 - **Elements = substance.** Blend for richer matter: Fire+Air=**Spark**, Air+Water=**Cloud**, Water+Earth=**Mud**, Fire+Earth=**Lava** (shared quality → stable); Fire+Water=**Steam**, Air+Earth=**Dust** (opposed → violent, area-filling).
 - **Aspects = nature** (required, non-elemental). They colour what the substance is *doing*. They do **not** pick Shot vs Pillar vs Spread vs Remote.
 - **Formation = placement** (section 4). Chosen at cast, and only if that material × aspect can naturally take that form.
-- Complex substances still take a blend **and** an aspect: **Ice = Water + Earth + Salt** (cold water, earth's hard chill, fixed solid). *States come from modifiers, not element-doubling.*
+- Complex substances take a blend **and** an aspect: **Ice = Water · Salt · Death** (water given a body, then stilled). Cold is a quality of the square, not a rune you string for frost. Anima is draw and receive, not ice.
 Masters may also **quality-shift** (add a mundane primordial) to nudge a substance. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ### The quality square
@@ -79,7 +79,7 @@ Shared edge → stable; diagonal (Fire/Water, Air/Earth) → violent.
 ### The tree
 Full branch-by-branch tree and the long spell list live in **[`SPELLS.md`](SPELLS.md)**. Families mix runes in different ways — there is no single Material × Aspect law.
 
-**Plant = Water · Earth · Salt** (wet earth given a body). Add Life to grow. Add Aether when you generate soulless life that was not implied. **Ice = Water · Salt · Cold** (body of water, quality-shifted). Codex “Mud · Life · Aether” is true soulless plant-life, a creature-grade substance.
+**Plant = Water · Earth · Salt** (wet earth given a body). Add Life to grow. **Ice = Water · Salt · Death** (water given a body, then stilled). Water · Death with no Salt is Still — the pool stops and stays water. Codex “Mud · Life · Aether” is creature-grade soulless plant-life. The starting sixty live in [`SPELLS.md`](SPELLS.md).
 
 ---
 
@@ -117,7 +117,7 @@ Written slice (not exhaustive; the Grimoire lists the live set):
 | Fire | Light | Shot | Sun-lance |
 | Fire | Animus | Shot | Drive |
 | Water | Mercury | Shot | Water-jet |
-| Water | Salt | Pillar | Ice-pillar |
+| Water | Death | Pillar | Ice-pillar (string Salt too — the body) |
 | Water | Sulphur | Remote | Lull |
 | Water | Life | Spread | Spring |
 | Spark | Mercury | Shot | Lightning bolt |
@@ -193,7 +193,7 @@ Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, le
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — strikes everything in the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
-- **Cold + Water → Ice** — bridge, root-trap, or shatterable surface.
+- **Water · Salt · Death → Ice** — bridge, root-trap, or shatterable surface.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement).
 
@@ -218,7 +218,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Material tree & spell catalog** — v1 in `SPELLS.md` (from Liber Materia + taste). Ratify Plant/Ice split, flight, dark matter, manifestation gates.
+- [~] **Spell catalog** — starting sixty in `SPELLS.md`. Ice uses Death, not Cold. Grow from here.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).

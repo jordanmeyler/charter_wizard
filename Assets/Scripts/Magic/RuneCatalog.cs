@@ -110,7 +110,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Steam, RuneFamily.Material, "Steam", "St", "Fire forced through Water. A violent blend."),
                 new RuneDef(RuneId.Dust, RuneFamily.Material, "Dust", "Ds", "Air forced through Earth. A violent blend."),
                 new RuneDef(RuneId.Storm, RuneFamily.Material, "Storm", "Sr", "Spark joined to Cloud. A charged thundercloud."),
-                new RuneDef(RuneId.Ice, RuneFamily.Material, "Ice", "Ic", "Water given body and Cold. Fixed solid."),
+                new RuneDef(RuneId.Ice, RuneFamily.Material, "Ice", "Ic", "Water given body, then Death. Stilled solid."),
                 new RuneDef(RuneId.Stone, RuneFamily.Material, "Stone", "Sn", "Earth given body. Lasting mass."),
                 new RuneDef(RuneId.Glass, RuneFamily.Material, "Glass", "Gl", "Sand melted by Fire. Brittle and clear."),
                 new RuneDef(RuneId.Sand, RuneFamily.Material, "Sand", "Sd", "Mud dried by Air."),

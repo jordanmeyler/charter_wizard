@@ -216,7 +216,7 @@ namespace RuneMagic
                 case SpellShape.Spread:
                     return material == RuneId.Earth;
                 case SpellShape.Pillar:
-                    return material == RuneId.Earth;
+                    return material == RuneId.Earth || material == RuneId.Water;
                 default:
                     return false;
             }

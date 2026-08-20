@@ -387,7 +387,7 @@ namespace RuneMagic
             y += 18f;
             GUI.Label(new Rect(0, y, 980, 18), "Tria prima: Salt (body) · Mercury (motion) · Sulphur (mind)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Existential: Life · Death     Light/Dark: Light · Dark · Animus · Anima     Catalyst: Aether     Qualities: Hot · Cold · Wet · Dry", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Existential: Life · Death     Light/Dark: Light · Dark · Animus · Anima     Catalyst: Aether     Ice = Water · Salt · Death (stilling, not Cold)", row);
             y += 28f;
 
             SpellBook? current = null;
@@ -405,12 +405,12 @@ namespace RuneMagic
                     y += 24f;
                 }
 
-                GUI.Label(new Rect(0, y, 150, 18), entry.Name, row);
-                GUI.Label(new Rect(155, y, 280, 18), entry.Recipe, row);
-                GUI.Label(new Rect(440, y, 70, 18), entry.Form, muted);
-                GUI.Label(new Rect(515, y, 80, 18), entry.Outcome.ToString(), muted);
-                GUI.Label(new Rect(600, y, 70, 18), entry.Stance, muted);
-                GUI.Label(new Rect(675, y, 420, 18), entry.Effect, muted);
+                GUI.Label(new Rect(0, y, 28, 18), entry.Number.ToString(), muted);
+                GUI.Label(new Rect(28, y, 140, 18), entry.Name, row);
+                GUI.Label(new Rect(172, y, 280, 18), entry.Recipe, row);
+                GUI.Label(new Rect(456, y, 70, 18), entry.Form, muted);
+                GUI.Label(new Rect(530, y, 80, 18), entry.Outcome.ToString(), muted);
+                GUI.Label(new Rect(615, y, 480, 18), entry.Effect, muted);
                 y += 20f;
             }
 

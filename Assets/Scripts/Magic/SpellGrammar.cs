@@ -82,7 +82,7 @@ namespace RuneMagic
             Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
-            Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Body of water, standing and cold.");
+            Register(RuneId.Water, RuneId.Mors, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Water given body, then stilled. Standing ice.");
             Register(RuneId.Water, RuneId.Sulphur, SpellShape.Remote, SpellId.Lull, "Lull", "Mind of water. Sleep, placed elsewhere.");
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
             Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Fog, "Fog", "Dark water as cover around you.");
