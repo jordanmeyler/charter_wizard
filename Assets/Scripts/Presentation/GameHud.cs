@@ -98,7 +98,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 900, 22),
-                "An element is not a spell. String a material and a non-elemental aspect, then Cast to aim.",
+                "A chain is a sentence. Two runes birth a join or wait. Cast when the story is finished.",
                 body);
             GUI.Label(new Rect(28, 74, 900, 20),
                 $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc / Grimoire",
@@ -322,7 +322,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "From the effect first. Life only on living things. Ice is Water · Salt · Death. Esc closes.",
+                "The eleven, then joins. Fire · Air is Spark — its own rune. Life only on the living. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -381,13 +381,15 @@ namespace RuneMagic
 
         float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted)
         {
-            GUI.Label(new Rect(0, y, 900, 22), "Primary runes", heading);
+            GUI.Label(new Rect(0, y, 900, 22), "The eleven basic runes", heading);
             y += 24f;
-            GUI.Label(new Rect(0, y, 980, 18), "Substance: Fire · Air · Earth · Water", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Roots: Fire (hunger) · Air (breath) · Earth (rest) · Water (yield)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Tria prima: Salt (body) · Mercury (motion) · Sulphur (mind)", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (a body) · Mercury (going) · Sulphur (passion / mind)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Life = living things only. Ice = Water · Salt · Death. Shade has Death, not Life.", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Poles: Life (waking) · Death (still)     Veils: Light (shown) · Dark (withheld)", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Spark·Air→Lightning. Water·Salt·Death→Ice. Plant·Life→Grove.", row);
             y += 28f;
 
             SpellBook? current = null;
@@ -407,8 +409,11 @@ namespace RuneMagic
 
                 GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
                 GUI.Label(new Rect(26, y, 120, 18), entry.Name, row);
-                GUI.Label(new Rect(150, y, 420, 18), entry.Want, row);
-                GUI.Label(new Rect(576, y, 260, 18), entry.Recipe, muted);
+                GUI.Label(new Rect(150, y, 360, 18), entry.Want, row);
+                var chain = string.IsNullOrEmpty(entry.Via)
+                    ? entry.Recipe
+                    : $"{entry.Recipe}   =   {entry.Via}";
+                GUI.Label(new Rect(516, y, 320, 18), chain, muted);
                 GUI.Label(new Rect(840, y, 60, 18), entry.Form, muted);
                 GUI.Label(new Rect(904, y, 80, 18), entry.Outcome.ToString(), muted);
                 y += 20f;

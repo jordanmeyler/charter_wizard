@@ -477,7 +477,7 @@ namespace RuneMagic
 
             if (stance == CastingStance.Charter && composition.HasBlank)
             {
-                Log("An element is not a spell. String a non-elemental aspect — Salt, Mercury, Sulphur, Life, Death, Light, Dark, Animus, or Anima — or shift to Free.");
+                Log("A two-rune string is a clause. Add what happens next — a body, a path, a stilling, a waking — or shift to Free.");
                 return;
             }
 

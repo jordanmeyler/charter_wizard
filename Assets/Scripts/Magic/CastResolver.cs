@@ -279,7 +279,7 @@ namespace RuneMagic
 
             if (!RuneCatalog.IsFormAspect(composition.Aspect))
             {
-                return $"{RuneCatalog.NameOf(material)} waits on a non-elemental aspect";
+                return $"{RuneCatalog.NameOf(material)} is a clause, waiting";
             }
 
             if (shape != SpellShape.None &&
@@ -301,7 +301,7 @@ namespace RuneMagic
             if (stance == CastingStance.Charter && composition.HasBlank)
             {
                 return Fail(false, false, 0f, SpellId.None, shape, RuneId.None, composition.Aspect,
-                    "Charter refuses a blank. An element is not a spell. String a non-elemental aspect, or shift to Free.");
+                    "Charter refuses a blank. A two-rune string is a clause. Finish the sentence, or shift to Free.");
             }
 
             if (!TryPrepare(composition, shape, out var prepared))

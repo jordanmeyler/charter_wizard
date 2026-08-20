@@ -100,7 +100,7 @@ namespace RuneMagic
             if (!RuneCatalog.IsFormAspect(aspect))
             {
                 var blendNote = blend.HasValue ? $" {blend.Value.Note}" : string.Empty;
-                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} is not a spell. It needs a non-elemental aspect.{blendNote}";
+                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} is a clause, waiting. Add what happens next.{blendNote}";
             }
 
             var forms = SpellFormations.Available(material, aspect);

@@ -4,23 +4,16 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// The constant matrix: the same primaries and aspects stream for novice
-    /// and master. Nearby tiles and creature formulas add local colour.
-    /// Casting reads the field from the Charter wall, not from these orbs.
-    /// </summary>
-    public sealed class RuneField : MonoBehaviour
-    {
-        public const float PerceptionRadius = 7.5f;
-
-        public static readonly RuneId[] StartingStream =
+        /// The constant matrix: the eleven basic runes stream for novice
+        /// and master. Nearby tiles and creature formulas add local colour.
+        /// Casting reads the field from the Charter wall, not from these orbs.
+        /// Primordial runes are not in this pass.
+        /// </summary>
+        public sealed class RuneField : MonoBehaviour
         {
-            RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
-            RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
-            RuneId.Vita, RuneId.Mors,
-            RuneId.Lumen, RuneId.Umbra,
-            RuneId.Animus, RuneId.Anima,
-            RuneId.Aether
-        };
+            public const float PerceptionRadius = 7.5f;
+
+            public static readonly RuneId[] StartingStream = RuneCatalog.BasicRunes;
 
         SanctumDirector _director;
         Transform _orbRoot;

@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.8). The starting sixty — effect first, then recipe — are in [`SPELLS.md`](SPELLS.md). Life is only for living things. Ice is Water · Salt · Death. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.8). The eleven basic runes and the story-chains are in [`SPELLS.md`](SPELLS.md). Joins become their own runes (Fire · Air → Spark; Spark · Air → Lightning). Primordial runes are later. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -13,7 +13,7 @@ Four rooms, east to west of the spawn. Tiles carry an element. Enemies and terra
 | **Ash Court** | Ash Mite `{Fire · Salt}` | Almost any formed offensive spell | The most basic lock. Many keys. |
 | **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Fire × Mercury · Shot, Fire × Salt · Pillar, Fire × Sulphur · Spread — or Snuff / Smother | Terrain is a lock. Fire wants a form, then a place. |
 | **The Drop** | Pit / missing Earth | Earth × Mercury · Shot, Earth × Salt · Pillar or Remote, Earth × Life · Pillar | Traversal. You aim the earth; it does not auto-bridge. |
-| **Storm Cell** | Storm rod `{Spark · waiting}` | Spark × Mercury · Shot (Fire + Air first), or Live-floor / Jolt / Brilliant-arc | Blend first, then a non-elemental aspect, then aim. |
+| **Storm Cell** | Storm rod `{Spark · waiting}` | Spark × Mercury · Shot (Fire + Air first — Spark is its own rune), or Live-floor / Jolt / Brilliant-arc | A join becomes a rune, then the chain continues. |
 
 Walk the orange Free charm in Ash Court if you want Fireball written for you. You can ignore it and compose from first principles.
 
@@ -23,8 +23,8 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 | The world is the same materials | Floor, wall, wood, fire-stone, spark-stone, and pit tiles each carry an element. The HUD names the tile underfoot. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
-| Material × Aspect × Formation | Fire × Mercury · Shot is Fireball. Fire × Salt · Shot is not offered. Fire × Life fizzles. |
-| Stable blends | Fire + Air → Spark before a lightning bolt will form. |
+| Chains, not pairs | Fireball is Fire · Air · Salt · Mercury (Spark given a body and sent). Fire · Salt · Mercury is melt — no breath, so it goes *into*. |
+| Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. The sanctum slice still compresses this for the four rooms. |
 | Free is never required | Every lock has a Charter key. Free is a risky shortcut and a teacher. |
 
 ## Open and play
@@ -39,7 +39,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 
 - **WASD** / arrows move
 - **Space** open the Charter — a wall of runes over the world. Space again closes it.
-- In the Charter: **click runes** to string them (up to 8). An element alone is not a spell — add Life, Death, Light, Dark, Animus, Anima, Salt, Mercury, or Sulphur. **Cast** to aim, or **Store** one string to hold.
+- In the Charter: **click runes** to string them (up to 8). The wall is the eleven basic runes. Two runes birth a join or wait; a finished spell is a sentence. **Cast** to aim, or **Store** one string to hold.
 - After Cast: pick **Shot / Pillar / Spread / Remote** (only the forms that string can take), then **click the world**. Esc cancels and keeps the string.
 - The **bottom bar** shows the stored spell. Click the slot or press **F** / **Enter** to aim it.
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell for now.
