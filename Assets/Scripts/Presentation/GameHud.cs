@@ -162,13 +162,13 @@ namespace RuneMagic
             var rows = RuneTapestry.Rows;
             var cols = RuneTapestry.Cols;
             var gap = 5f;
-            var gridTop = top + 32f;
-            var cell = Mathf.Min(56f, (height - 40f) / rows - gap);
+            var gridTop = top + 46f;
+            var cell = Mathf.Min(56f, (height - 54f) / rows - gap);
             cell = Mathf.Max(34f, cell);
             var stride = cell + gap;
             var width = cols * stride;
             var left = Mathf.Max(28f, (Screen.width - width) * 0.5f);
-            var band = new Rect(left - 2f, gridTop - 2f, width + 4f, rows * stride + 4f);
+            var band = new Rect(left - 2f, gridTop - 18f, width + 4f, rows * stride + 22f);
             var mouse = Event.current != null ? Event.current.mousePosition : Vector2.zero;
             if (tapestry != null)
             {
@@ -198,7 +198,7 @@ namespace RuneMagic
                     placed.Add((rect, glyph));
                 }
 
-                DrawJoinFrames(placed);
+                DrawJoinChunks(placed);
                 for (var i = 0; i < placed.Count; i++)
                 {
                     var glyph = placed[i].Glyph;
@@ -210,12 +210,13 @@ namespace RuneMagic
                     }
 
                     var shown = glyph.Shown;
-                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true, true);
+                    var chunk = glyph.IsGroup ? glyph.Rune : RuneId.None;
+                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true, true, chunk);
                 }
             }
         }
 
-        void DrawJoinFrames(List<(Rect Rect, WeaveGlyph Glyph)> placed)
+        void DrawJoinChunks(List<(Rect Rect, WeaveGlyph Glyph)> placed)
         {
             var i = 0;
             while (i < placed.Count)
@@ -242,12 +243,46 @@ namespace RuneMagic
                     continue;
                 }
 
-                DrawWroughtMark(bounds);
-                var name = Label(11, FontStyle.Bold, new Color(0.98f, 0.86f, 0.4f));
-                name.alignment = TextAnchor.UpperCenter;
-                GUI.Label(new Rect(bounds.x, bounds.y - 14f, bounds.width, 14f),
-                    RuneCatalog.NameOf(glyph.Rune), name);
+                DrawJoinSlab(bounds, glyph.Rune);
+                var previous = GUI.color;
+                GUI.color = new Color(1f, 1f, 1f, 0.22f);
+                for (var n = start + 1; n < i; n++)
+                {
+                    var seam = placed[n].Rect;
+                    GUI.DrawTexture(new Rect(seam.x - 2.5f, seam.y + 6f, 1f, seam.height - 12f),
+                        Texture2D.whiteTexture);
+                }
+
+                GUI.color = previous;
             }
+        }
+
+        void DrawJoinSlab(Rect bounds, RuneId join)
+        {
+            const float pad = 4f;
+            const float banner = 16f;
+            var slab = new Rect(
+                bounds.x - pad,
+                bounds.y - banner,
+                bounds.width + pad * 2f,
+                bounds.height + banner + pad);
+
+            var wash = Color.Lerp(RunePalette.Of(join), new Color(0.06f, 0.05f, 0.04f), 0.18f);
+            wash.a = 0.92f;
+            var previous = GUI.color;
+            GUI.color = wash;
+            GUI.DrawTexture(slab, Texture2D.whiteTexture);
+
+            var gold = new Color(0.98f, 0.82f, 0.32f, 0.96f);
+            GUI.color = gold;
+            DrawFrame(slab, 3f);
+            GUI.DrawTexture(new Rect(slab.x + 4f, bounds.y - 2f, slab.width - 8f, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(slab.x + 8f, slab.yMax - 6f, slab.width - 16f, 2f), Texture2D.whiteTexture);
+            GUI.color = previous;
+
+            var title = Label(12, FontStyle.Bold, gold);
+            title.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(slab.x, slab.y, slab.width, banner), RuneCatalog.NameOf(join), title);
         }
 
         static Rect Union(Rect a, Rect b)
@@ -572,16 +607,23 @@ namespace RuneMagic
                 + MaterialCatalog.All.Count * 20f + MaterialTree.All.Count * 22f;
         }
 
-        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false)
+        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false, RuneId chunk = RuneId.None)
         {
             var wrought = !oneSpace && ChainBook.IsWrought(rune);
-            var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
-            fill.a = available ? 0.92f : 0.35f;
+            var inChunk = chunk != RuneId.None;
+            var fill = inChunk
+                ? PaneOn(RunePalette.Of(chunk))
+                : Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
+            fill.a = inChunk ? 0.28f : available ? 0.92f : 0.35f;
             var previous = GUI.color;
             GUI.color = fill;
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = new Color(1f, 1f, 1f, available ? 0.35f : 0.08f);
-            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
+            if (!inChunk)
+            {
+                GUI.color = new Color(1f, 1f, 1f, available ? 0.35f : 0.08f);
+                GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
+            }
+
             GUI.color = previous;
 
             if (wrought && available)
@@ -589,14 +631,16 @@ namespace RuneMagic
                 DrawWroughtMark(rect);
             }
 
-            var glyphColor = available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
+            var ink = inChunk ? InkOn(RunePalette.Of(chunk)) : available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
             var birth = wrought ? ChainBook.BirthText(rune) : string.Empty;
             var main = !string.IsNullOrEmpty(birth) ? birth : RuneCatalog.GlyphOf(rune);
-            var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, glyphColor);
+            var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, ink);
             glyph.alignment = TextAnchor.MiddleCenter;
             glyph.wordWrap = true;
-            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal,
-                available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f));
+            var captionInk = inChunk
+                ? new Color(ink.r, ink.g, ink.b, 0.82f)
+                : available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f);
+            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, captionInk);
             name.alignment = TextAnchor.MiddleCenter;
             GUI.Label(new Rect(rect.x + 3, rect.y + 6, rect.width - 6, rect.height * 0.5f),
                 main, glyph);
@@ -615,12 +659,33 @@ namespace RuneMagic
             var previous = GUI.color;
             var gold = new Color(0.98f, 0.82f, 0.32f, 0.95f);
             GUI.color = gold;
-            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 3f), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(rect.x, rect.yMax - 3f, rect.width, 3f), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(rect.x, rect.y, 3f, rect.height), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(rect.xMax - 3f, rect.y, 3f, rect.height), Texture2D.whiteTexture);
+            DrawFrame(rect, 3f);
             GUI.DrawTexture(new Rect(rect.x + 6f, rect.yMax - 8f, rect.width - 12f, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
+        }
+
+        static void DrawFrame(Rect rect, float thickness)
+        {
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, thickness), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.x, rect.yMax - thickness, rect.width, thickness), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, thickness, rect.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rect.xMax - thickness, rect.y, thickness, rect.height), Texture2D.whiteTexture);
+        }
+
+        static Color InkOn(Color fill)
+        {
+            var luma = fill.r * 0.3f + fill.g * 0.59f + fill.b * 0.11f;
+            return luma < 0.55f
+                ? new Color(0.98f, 0.96f, 0.88f)
+                : new Color(0.1f, 0.08f, 0.06f);
+        }
+
+        static Color PaneOn(Color fill)
+        {
+            var luma = fill.r * 0.3f + fill.g * 0.59f + fill.b * 0.11f;
+            return luma < 0.45f
+                ? Color.Lerp(fill, Color.white, 0.22f)
+                : Color.Lerp(fill, Color.black, 0.18f);
         }
 
         static void DrawEmptySlot(Rect rect, string caption)
