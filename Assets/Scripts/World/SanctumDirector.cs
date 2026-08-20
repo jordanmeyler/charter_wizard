@@ -454,11 +454,17 @@ namespace RuneMagic
             }
 
             Busy = true;
+
+            ISpellLock target = null;
+            CastOutcome outcome = default;
+            var finished = false;
+            var setupFailed = false;
+
             try
             {
-                var target = LockAlive(CurrentTarget) ? CurrentTarget : null;
+                target = LockAlive(CurrentTarget) ? CurrentTarget : null;
                 var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
-                var outcome = _resolver.Resolve(composition, stance, accepted, Grimoire);
+                outcome = _resolver.Resolve(composition, stance, accepted, Grimoire);
                 var aim = AimPoint(target);
                 var origin = CasterPosition();
                 var caption = outcome.Spell != SpellId.None
@@ -474,8 +480,17 @@ namespace RuneMagic
                     aspect = recipe.Aspect;
                 }
 
-                var finished = false;
                 SpellFx.Play(origin, aim, material, aspect, caption, () => finished = true);
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogWarning("Cast failed: " + exception.Message);
+                Log("The spell fizzled. Try again — the lock still holds.");
+                setupFailed = true;
+            }
+
+            if (!setupFailed)
+            {
                 var timeout = 1.25f;
                 while (!finished && timeout > 0f)
                 {
@@ -483,37 +498,38 @@ namespace RuneMagic
                     yield return null;
                 }
 
-                Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
-
-                if (outcome.Resolved && LockAlive(target))
+                try
                 {
-                    Grimoire.LearnInterpretation(target.FormulaId);
-                    var flavor = target.Resolve(outcome.Spell);
-                    OpenDoorFor(target);
-                    if (_focus == target)
+                    Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
+
+                    if (outcome.Resolved && LockAlive(target))
                     {
-                        _focus = null;
+                        Grimoire.LearnInterpretation(target.FormulaId);
+                        var flavor = target.Resolve(outcome.Spell);
+                        OpenDoorFor(target);
+                        if (_focus == target)
+                        {
+                            _focus = null;
+                        }
+
+                        CurrentTarget = null;
+                        Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
+                    }
+                    else
+                    {
+                        Log(outcome.Log);
                     }
 
-                    CurrentTarget = null;
-                    Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
+                    CheckFinished();
                 }
-                else
+                catch (System.Exception exception)
                 {
-                    Log(outcome.Log);
+                    Debug.LogWarning("Cast failed: " + exception.Message);
+                    Log("The spell fizzled. Try again — the lock still holds.");
                 }
+            }
 
-                CheckFinished();
-            }
-            catch (System.Exception exception)
-            {
-                Debug.LogWarning("Cast failed: " + exception.Message);
-                Log("The spell fizzled. Try again — the lock still holds.");
-            }
-            finally
-            {
-                Busy = false;
-            }
+            Busy = false;
         }
 
         Vector3 CasterPosition()
