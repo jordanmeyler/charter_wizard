@@ -520,7 +520,7 @@ namespace RuneMagic
             y += 24f;
             GUI.Label(new Rect(0, y, 980, 18), "Roots: Fire (hunger) · Air (breath) · Earth (rest) · Water (yield)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (a body) · Mercury (going) · Sulphur (passion / mind)", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (stands — walls, pillars) · Mercury (going) · Sulphur (wildcard)", row);
             y += 18f;
             GUI.Label(new Rect(0, y, 980, 18), "Veils: Light (shown) · Dark (withheld)     Modifiers: Life (marks a living recipe) · Death (grave / Free only)", row);
             y += 18f;

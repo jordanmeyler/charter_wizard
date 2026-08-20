@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.12. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.13. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -35,9 +35,9 @@ Each rune is a **concept**, not a mechanic. Players will eventually see effects,
 | **Air** | Breath. The between. That which has no weight and will not stay. |
 | **Earth** | Rest. Patience. That which remains. |
 | **Water** | Yield. Mercy. That which becomes what holds it. |
-| **Salt** | A body. “This, here, is a thing.” |
+| **Salt** | A standing body. Manifestation that stays — walls, pillars, a floor that holds. Not how a spark flies. |
 | **Mercury** | Going. A path opening. Through space if breath is already in the chain; *into* a thing if not. |
-| **Sulphur** | Passion. A mind that can be reached. |
+| **Sulphur** | The wildcard. Add it and the work becomes something else, the way Life makes a plant living. |
 | **Light** | Shown. The veil is lifted. |
 | **Dark** | Withheld. The veil is drawn. |
 | **Life** | Modifier. Marks a living recipe (plant, heal, hop, a called beast). Not a school. |
@@ -74,15 +74,15 @@ Full wrought list and fifty story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 o
 
 There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
 
-A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt). Chain is longer because more happened.
+A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing (Melt). Fireball is a moving spark: **Fire · Air · Mercury** (or **Spark · Mercury** if Spark is already in the field). Salt is for work that *stands* — Flame-pillar is **Fire · Salt · Earth**. Sulphur is the wildcard: add it and the sentence is a different spell (Fireball · Sulphur is Jolt; Melt · Sulphur is Rage), the way Life makes a plant living. Death is not in the ordinary book. Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt). Chain is longer because more happened.
 
 **Formation is part of the spell.** The chain writes how it lands. There is no Remote / Pillar fork at cast time.
 
 | The sentence does this | Form | Example |
 |---|---|---|
-| Asked to rest (Earth at the end of a body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
-| Sent *into* a thing, or placed away (Mercury, no breath) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
-| Breath already in the chain, then sent | **Shot** | Fireball: Fire · Air · Salt · Mercury. Lightning. Ice-spear. |
+| Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
+| Sent *into* a thing, or placed away (Mercury, no breath) | **Remote** | Melt: Fire · **Mercury**. Pit. Rain. |
+| Breath already in the chain, then sent | **Shot** | Fireball: Fire · Air · Mercury. Lightning. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight |
 

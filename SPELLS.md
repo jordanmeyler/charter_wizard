@@ -33,9 +33,9 @@ Each one is a **concept**. It is not a stat, a damage type, or a UI verb.
 
 | Rune | Concept | What you see if you do not know the name |
 | --- | --- | --- |
-| **Salt** | A body. “This, here, is a thing.” Coherence. | Something you can point at. Without Salt the work is weather or a quality |
+| **Salt** | A standing body. Manifestation that stays. | Walls, pillars, a floor that holds. Salt is how a work *stands*. It is not how a spark flies |
 | **Mercury** | Going. A path opening. | Something that travels. Through space if breath is already in the chain; *into* a thing if not |
-| **Sulphur** | Passion. A mind that can be reached. | Something that decides, erupts, or feels |
+| **Sulphur** | The wildcard. A turn that makes the work into something else. | Like Life makes a plant living: add Sulphur and the same sentence is no longer the same spell |
 
 ### Veils — shown and withheld
 
@@ -62,10 +62,10 @@ That is the whole alphabet: **Fire, Air, Earth, Water, Salt, Mercury, Sulphur, L
 Left to right, like a sentence. A later rune happens to what came before.
 
 1. **Two roots meeting become a third.** You do not see “fire and air.” You see a seed of charge. That seed is **Spark**, and it is its own rune.
-2. **Salt** makes a body — something you can point at.
+2. **Salt** makes a work *stand* — a wall, a pillar, a floor-body. Salt is manifestation, not shooting.
 3. **Mercury** makes it go. If breath is already in the chain (Air, Spark, Lightning), it travels *through space*. If not, it goes *into* the thing you aim at.
 4. **Light** shows. **Dark** withholds.
-5. **Sulphur** is a mind being moved.
+5. **Sulphur** is the wildcard. Add it and the recipe becomes a different work — the way Life makes a plant living.
 6. **Life** is only there if the subject or the product is living. It is a mark on a living recipe, not a way to “add life magic.”
 7. **Death** is not in the ordinary book. If you see it, the work is grave-work.
 8. **Repeating a concept intensifies it.** Air · Air is more breath.
@@ -73,11 +73,15 @@ Left to right, like a sentence. A later rune happens to what came before.
 
 Example, watched only as an effect:
 
-> A seed of heat jumps. It is a thing you can point at. It flies. Water thrown on it ends it.
+> A seed of heat jumps and flies. Water thrown on it ends it.
 
-Hunger learned breath (**Spark**), was given a body (**Salt**), and was sent (**Mercury**). **Fire · Air · Salt · Mercury**. If Spark is already in the field: **Spark · Salt · Mercury**.
+Hunger learned breath (**Spark**) and was sent (**Mercury**). **Fire · Air · Mercury**. If Spark is already in the field: **Spark · Mercury**. No Salt — a hunting spark is weather in motion, not a wall.
 
-**Fire · Salt · Mercury** is a different story. There is no breath, so the fire-body does not fly — it goes *into* the thing you touch. That is melt, not a hunting spark.
+**Fire · Mercury** is a different story. There is no breath, so the hunger goes *into* the thing you touch. That is melt, not a hunting spark.
+
+**Fire · Salt · Earth** is Salt doing its job: hunger given a standing body and asked to rest. A pillar.
+
+**Fire · Air · Mercury · Sulphur** (or **Fire · Air · Sulphur · Mercury**) is the wildcard. The same moving spark now reaches a mind. That is Jolt, not Fireball.
 
 **Ice** is yield given a body and asked to rest: **Water · Salt · Earth**. It melts. The grim twin (**Water · Salt · Death**) is grave-ice, and it is not in the ordinary book.
 
@@ -144,33 +148,33 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 
 | # | What you see (no names needed) | Spell | Chain from the eleven | From a join | Form | Does |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | A seed of heat that is a thing, and flies. Water thrown on it ends it. | Fireball | Fire · Air · Salt · Mercury | Spark · Salt · Mercury | Shot | Kill |
-| 2 | Hunger given a body and asked to rest. It stands. | Flame-pillar | Fire · Salt · Earth | Flame · Earth | Pillar | Kill / Neither |
-| 3 | A fire-body sent *into* a thing — no breath, so it does not fly. | Melt | Fire · Salt · Mercury | Flame · Mercury | Remote | Neither |
+| 1 | A seed of heat that flies. Water thrown on it ends it. | Fireball | Fire · Air · Mercury | Spark · Mercury | Shot | Kill |
+| 2 | Hunger given a standing body and asked to rest. It stands. | Flame-pillar | Fire · Salt · Earth | Flame · Earth | Pillar | Kill / Neither |
+| 3 | Hunger sent *into* a thing — no breath, so it does not fly. | Melt | Fire · Mercury | — | Remote | Neither |
 | 4 | Hunger needs breath; that breath is withheld. The flame cannot live. | Smother | Fire · Air · Dark | Spark · Dark | Remote | Neither |
 | 5 | Hunger is shown, given breath, and sent as a clean line. | Sun-lance | Fire · Light · Air · Mercury | Spark · Light · Mercury | Shot | Kill |
-| 6 | Hunger’s passion placed on a distant wick or oil. | Ignite | Fire · Sulphur · Mercury | — | Remote | Neither |
+| 6 | Hunger’s wildcard given a standing body — a wick that stays. | Ignite | Fire · Sulphur · Salt | — | Remote | Neither |
 | 7 | The seed stretched through more breath and sent. A path, not a body. | Lightning | Fire · Air · Air · Mercury | Spark · Air · Mercury | Shot | Kill |
-| 8 | That path finds yield given a body. The pool, not the bolt, is what dies. | Chain | Fire · Air · Air · Mercury · Water · Salt | Lightning · Mercury · Water · Salt | Remote | Kill |
-| 9 | The seed given a body around your feet. They cannot step. | Live-floor | Fire · Air · Salt | Spark · Salt | Spread | Kill / Restrain |
-| 10 | The seed reaches a mind at a point. They lock. | Jolt | Fire · Air · Sulphur · Mercury | Spark · Sulphur · Mercury | Remote | Restrain |
+| 8 | That path finds yield given a standing body. The pool, not the bolt, is what dies. | Chain | Fire · Air · Air · Mercury · Water · Salt | Lightning · Mercury · Water · Salt | Remote | Kill |
+| 9 | The seed given a standing body around your feet. They cannot step. | Live-floor | Fire · Air · Salt | Spark · Salt | Spread | Kill / Restrain |
+| 10 | The moving spark, turned by Sulphur, reaches a mind. They lock. | Jolt | Fire · Air · Sulphur · Mercury | Spark · Sulphur · Mercury | Remote | Restrain |
 | 11 | The arc meets rest, then every mind around you. They drop. | Thunderclap | Fire · Air · Air · Earth · Sulphur | Lightning · Earth · Sulphur | Spread | Restrain |
 | 12 | Breath holds yield; a seed is inside. Weather arrives. | Storm | Air · Water · Fire · Air | Cloud · Spark | Remote | Kill / Neither |
 | 13 | The hanging veil is drawn down. Fire drowns. Ground wets for Chain. | Rain | Air · Water · Earth | Cloud · Earth | Remote | Neither |
 | 14 | The hanging veil is withheld and given a body. The room is lost. | Fog | Air · Water · Dark · Salt | Cloud · Dark · Salt | Spread | Neither |
-| 15 | Hunger forced through yield, given a body, sent. Soft life ends. | Scald | Fire · Water · Salt · Mercury | Steam · Salt · Mercury | Shot | Kill |
-| 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Salt · Mercury | — | Shot | Restrain / Neither |
+| 15 | Hunger forced through yield and sent. Soft life ends. | Scald | Fire · Water · Mercury | Steam · Mercury | Shot | Kill |
+| 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Mercury | — | Shot | Restrain / Neither |
 | 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Spread | Restrain |
 | 18 | Yield given a body and asked to rest. Hard water, standing. It will thaw. | Ice-pillar | Water · Salt · Earth | Ice | Pillar | Restrain / Neither |
-| 19 | That hard water-body is sent. | Ice-spear | Water · Salt · Earth · Mercury | Ice · Mercury | Shot | Restrain |
+| 19 | Hard water going — not stood as a pillar, so no Salt. | Ice-spear | Water · Earth · Mercury | — | Shot | Restrain |
 | 20 | The veil is given ice’s story and sent softly. They slow. | Snowfall | Air · Water · Salt · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
 | 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Salt · Earth · Fire | Ice · Fire | Remote | Neither |
-| 22 | Rest given a body and sent. Earth flies. | Hurled stone | Earth · Salt · Mercury | Stone · Mercury | Shot | Kill / Neither |
+| 22 | Rest asked to go. Earth flies. | Hurled stone | Earth · Mercury | — | Shot | Kill / Neither |
 | 23 | A body of rest asked to rest as more rest. Click start and stop. Across a pit it is a span; on the floor it is a barrier. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
 | 24 | Rest asked to go, given breath so it leaves a hollow. | Pit | Earth · Mercury · Air | Wind meeting rest, inverted | Remote | Neither / Restrain |
 | 25 | A body of rest given breath and sent across. A span. | Bridge | Earth · Salt · Air · Mercury | Stone · Air · Mercury | Remote | Neither |
 | 26 | Rest meeting yield, given a body. It holds them. | Quagmire | Earth · Water · Salt | Mud · Salt | Spread | Restrain |
-| 27 | Hungry earth given a body and sent. | Lava-flood | Fire · Earth · Salt · Mercury | Lava · Salt · Mercury | Remote | Kill |
+| 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Water · Salt | Lava · Water · Salt | Remote | Neither |
 | 29 | Wet rest given a vegetable body, then marked living, at your feet. | Sprout | Water · Earth · Salt · Life | Plant · Life | Spread | Neither |
 | 30 | That living plant is sent. It holds them, or it climbs. | Vine | Water · Earth · Salt · Life · Mercury | Grove · Mercury | Remote | Restrain / Neither |
@@ -178,10 +182,10 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | Air · Salt · Mercury | Self | Neither |
 | 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
-| 35 | Hunger’s passion is sent into a mind. | Rage | Fire · Sulphur · Mercury | — | Remote | Neither |
+| 35 | Melt, turned by Sulphur: hunger’s wildcard is sent into a mind. | Rage | Fire · Sulphur · Mercury | — | Remote | Neither |
 | 36 | The withheld reaches a mind. They flee or freeze. | Terror | Dark · Sulphur · Mercury | — | Remote | Restrain |
 | 37 | Yield reaches a mind. They sleep. They can be woken. | Lull | Water · Sulphur · Mercury | — | Remote | Restrain |
-| 38 | Breath going, more breath, given a body so it can push. | Gale | Air · Mercury · Air · Salt | Wind · Air · Salt | Shot | Restrain / Neither |
+| 38 | Breath going, more breath, so it can push. | Gale | Air · Mercury · Air | Wind · Air | Shot | Restrain / Neither |
 | 39 | The withheld, a living body, as breath. Hard to see. | Veil | Dark · Life · Salt · Air | — | Spread | Neither |
 | 40 | Flesh (rest, yield, a body), marked living, given a mind, sent here. You must know its formula. | Call beast | Earth · Water · Salt · Life · Sulphur · Mercury | — | Remote | Neither |
 
@@ -222,12 +226,16 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 **Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Hop and the short Flight are breath given a body (Air · Salt · Air, Air · Mercury · Salt) and do not need Life. Call without Life is a statue.
 
+**Salt** is not a school either. It is how a work *stands*: walls, pillars, a live floor, a wick, ice that holds. A hunting spark does not need it.
+
+**Sulphur** is the wildcard, the way Life is the living mark. Fireball plus Sulphur is Jolt. Melt plus Sulphur is Rage. Ignite is hunger wildcarded and then stood (Salt) as a wick.
+
 **Death** is not how you freeze water or open a pit. Rest already does that. Death is how Free reaches the grave — blight, shade, unmaking, the sleep that is not sleep, ice that will not thaw. The ordinary book should read as if Death had never been found.
 
 ---
 
 ## 7. The sanctum slice
 
-The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self). A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
+The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Fireball is Fire · Air · Mercury (or Spark · Mercury). Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self). A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
 
 **Charter Cast** wants the whole sentence. **Free Cast** may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence is not filled toward a longer one. Free cannot be stored.

@@ -76,33 +76,33 @@ namespace RuneMagic
     {
         static readonly CodexEntry[] Entries =
         {
-            E(1, SpellBook.End, SpellId.Fireball, "A seed of heat that is a thing, and flies.", "Fireball", "Fire · Air · Salt · Mercury", "Spark · Salt · Mercury", "Shot", SpellOutcome.Kill),
-            E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "Flame · Earth", "Pillar", SpellOutcome.Kill),
-            E(3, SpellBook.Cross, SpellId.Melt, "A fire-body sent into a thing. No breath, so it does not fly.", "Melt", "Fire · Salt · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Neither),
+            E(1, SpellBook.End, SpellId.Fireball, "A seed of heat that flies.", "Fireball", "Fire · Air · Mercury", "Spark · Mercury", "Shot", SpellOutcome.Kill),
+            E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "Flame · Earth", "Pillar", SpellOutcome.Kill),
+            E(3, SpellBook.Cross, SpellId.Melt, "Hunger sent into a thing. No breath, so it does not fly.", "Melt", "Fire · Mercury", "", "Remote", SpellOutcome.Neither),
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
-            E(6, SpellBook.End, SpellId.Ignite, "Hunger’s passion placed on a distant wick or oil.", "Ignite", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),
             E(7, SpellBook.End, SpellId.LightningBolt, "The seed stretched through more breath and sent. A path, not a body.", "Lightning", "Fire · Air · Air · Mercury", "Spark · Air · Mercury", "Shot", SpellOutcome.Kill),
             E(8, SpellBook.End, SpellId.ChainLightning, "That path finds yield given a body. The pool is what dies.", "Chain", "Fire · Air · Air · Mercury · Water · Salt", "Lightning · Mercury · Water · Salt", "Remote", SpellOutcome.Kill),
             E(9, SpellBook.Hold, SpellId.LiveFloor, "The seed given a body around your feet. They cannot step.", "Live-floor", "Fire · Air · Salt", "Spark · Salt", "Spread", SpellOutcome.Kill),
-            E(10, SpellBook.Hold, SpellId.Jolt, "The seed reaches a mind at a point. They lock.", "Jolt", "Fire · Air · Sulphur · Mercury", "Spark · Sulphur · Mercury", "Remote", SpellOutcome.Restrain),
+            E(10, SpellBook.Hold, SpellId.Jolt, "The moving spark, turned by Sulphur, reaches a mind.", "Jolt", "Fire · Air · Sulphur · Mercury", "Spark · Sulphur · Mercury", "Remote", SpellOutcome.Restrain),
             E(11, SpellBook.Hold, SpellId.Thunderclap, "The arc meets rest, then every mind around you.", "Thunderclap", "Fire · Air · Air · Earth · Sulphur", "Lightning · Earth · Sulphur", "Spread", SpellOutcome.Restrain),
             E(12, SpellBook.Weather, SpellId.StormCall, "Breath holds yield; a seed is inside. Weather arrives.", "Storm", "Air · Water · Fire · Air", "Cloud · Spark", "Remote", SpellOutcome.Kill),
             E(13, SpellBook.Weather, SpellId.Rain, "The hanging veil is drawn down. Fire drowns.", "Rain", "Air · Water · Earth", "Cloud · Earth", "Remote", SpellOutcome.Neither),
             E(14, SpellBook.SeeHide, SpellId.Fog, "The hanging veil is withheld and given a body.", "Fog", "Air · Water · Dark · Salt", "Cloud · Dark · Salt", "Spread", SpellOutcome.Neither),
-            E(15, SpellBook.End, SpellId.Scald, "Hunger forced through yield, given a body, sent.", "Scald", "Fire · Water · Salt · Mercury", "Steam · Salt · Mercury", "Shot", SpellOutcome.Kill),
-            E(16, SpellBook.Weather, SpellId.WaterJet, "Yield learns breath so it can leave the vessel, then is sent.", "Water-jet", "Water · Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
+            E(15, SpellBook.End, SpellId.Scald, "Hunger forced through yield and sent.", "Scald", "Fire · Water · Mercury", "Steam · Mercury", "Shot", SpellOutcome.Kill),
+            E(16, SpellBook.Weather, SpellId.WaterJet, "Yield learns breath so it can leave the vessel, then is sent.", "Water-jet", "Water · Air · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(17, SpellBook.Hold, SpellId.Flood, "Yield going, more yield, given a body. They bog.", "Flood", "Water · Mercury · Water · Salt", "Current · Water · Salt", "Spread", SpellOutcome.Restrain),
             E(18, SpellBook.Cross, SpellId.IcePillar, "Yield given a body and asked to rest. Hard water. It will thaw.", "Ice-pillar", "Water · Salt · Earth", "Ice", "Pillar", SpellOutcome.Restrain),
-            E(19, SpellBook.Hold, SpellId.IceSpear, "That hard water-body is sent.", "Ice-spear", "Water · Salt · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
+            E(19, SpellBook.Hold, SpellId.IceSpear, "Hard water going — not stood as a pillar.", "Ice-spear", "Water · Earth · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Salt · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
             E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Salt · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
-            E(22, SpellBook.End, SpellId.HurledStone, "Rest given a body and sent. Earth flies.", "Hurled stone", "Earth · Salt · Mercury", "Stone · Mercury", "Shot", SpellOutcome.Kill),
+            E(22, SpellBook.End, SpellId.HurledStone, "Rest asked to go. Earth flies.", "Hurled stone", "Earth · Mercury", "", "Shot", SpellOutcome.Kill),
             E(23, SpellBook.Cross, SpellId.Wall, "A body of rest asked to rest as more rest. A wall.", "Wall", "Earth · Salt · Earth", "Stone · Earth", "Pillar", SpellOutcome.Neither),
             E(24, SpellBook.Cross, SpellId.Pit, "Rest asked to go, given breath so it leaves a hollow.", "Pit", "Earth · Mercury · Air", "", "Remote", SpellOutcome.Neither),
             E(25, SpellBook.Cross, SpellId.Bridge, "A body of rest given breath and sent across.", "Bridge", "Earth · Salt · Air · Mercury", "Stone · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(26, SpellBook.Hold, SpellId.Quagmire, "Rest meeting yield, given a body. It holds them.", "Quagmire", "Earth · Water · Salt", "Mud · Salt", "Spread", SpellOutcome.Restrain),
-            E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth given a body and sent.", "Lava-flood", "Fire · Earth · Salt · Mercury", "Lava · Salt · Mercury", "Remote", SpellOutcome.Kill),
+            E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth asked to go.", "Lava-flood", "Fire · Earth · Mercury", "Lava · Mercury", "Remote", SpellOutcome.Kill),
             E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Water · Salt", "Lava · Water · Salt", "Remote", SpellOutcome.Neither),
             E(29, SpellBook.GrowHeal, SpellId.Sprout, "Wet rest given a vegetable body, then marked living.", "Sprout", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
             E(30, SpellBook.Hold, SpellId.Vine, "That living plant is sent. It holds them, or it climbs.", "Vine", "Water · Earth · Salt · Life · Mercury", "Grove · Mercury", "Remote", SpellOutcome.Restrain),
@@ -110,10 +110,10 @@ namespace RuneMagic
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "Air · Salt · Mercury", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
-            E(35, SpellBook.Mind, SpellId.Rage, "Hunger’s passion is sent into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(35, SpellBook.Mind, SpellId.Rage, "Melt turned by Sulphur: hunger’s wildcard sent into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, given a body so it can push.", "Gale", "Air · Mercury · Air · Salt", "Wind · Air · Salt", "Shot", SpellOutcome.Restrain),
+            E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "Wind · Air", "Shot", SpellOutcome.Restrain),
             E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see.", "Veil", "Dark · Life · Salt · Air", "", "Spread", SpellOutcome.Neither),
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(41, SpellBook.Grave, SpellId.Blight, "A living plant, then the grave. Verdure rots. No soul.", "Blight", "Water · Earth · Salt · Life · Death", "Grove · Death", "Spread", SpellOutcome.Kill, "Either"),
@@ -178,7 +178,7 @@ namespace RuneMagic
                 broken.Add("Fire · Salt should clash between at least two fillable chains");
             }
 
-            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Salt, RuneId.Mercury });
+            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury });
             var exact = ChainBook.CollectExact(fireball, SpellShape.None);
             if (exact.Count == 0)
             {

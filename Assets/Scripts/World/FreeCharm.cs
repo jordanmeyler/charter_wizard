@@ -37,9 +37,9 @@ namespace RuneMagic
             }
 
             Collected = true;
-            _grimoire.LearnRecipe(RuneId.Fire, RuneId.Mercury, SpellShape.Shot);
+            _grimoire.LearnRecipe(RuneId.Spark, RuneId.Mercury, SpellShape.Shot);
             _grimoire.LearnInterpretation("ash-mite");
-            _log?.Invoke("The charm unspools. Fire × Mercury · Shot → Fireball. The mite is burning matter. You borrowed a key; later you will compose others.");
+            _log?.Invoke("The charm unspools. Fire · Air · Mercury — a moving spark. The mite is burning matter. You borrowed a key; later you will compose others.");
             Destroy(gameObject);
         }
     }
