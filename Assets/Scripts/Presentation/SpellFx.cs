@@ -15,6 +15,7 @@ namespace RuneMagic
         SpellShape _shape;
         float _age;
         float _duration = 0.35f;
+        float _potency = 1f;
         System.Action _done;
         SpriteRenderer _body;
         bool _finished;
@@ -25,13 +26,14 @@ namespace RuneMagic
             RuneId material,
             SpellShape shape,
             string caption,
-            System.Action done)
+            System.Action done,
+            float potency = 1f)
         {
             try
             {
                 var host = new GameObject("SpellFx");
                 var fx = host.AddComponent<SpellFx>();
-                if (!fx.Begin(from, to, material, shape, done))
+                if (!fx.Begin(from, to, material, shape, done, potency))
                 {
                     Object.Destroy(host);
                     done?.Invoke();
@@ -63,9 +65,10 @@ namespace RuneMagic
             done?.Invoke();
         }
 
-        bool Begin(Vector3 from, Vector3 to, RuneId material, SpellShape shape, System.Action done)
+        bool Begin(Vector3 from, Vector3 to, RuneId material, SpellShape shape, System.Action done, float potency)
         {
             _done = done;
+            _potency = potency <= 0f ? 1f : potency;
             _from = from;
             _to = to;
             _mid = Vector3.Lerp(_from, _to, 0.45f) + new Vector3(0f, 0.35f, 0f);
@@ -80,7 +83,7 @@ namespace RuneMagic
             transform.position = _shape == SpellShape.Spread ? _from : _from;
 
             var color = RunePalette.Of(material == RuneId.None ? RuneId.Aether : material);
-            CreateSprite("Glow", SpriteFactory.Glow(color), 18, new Vector3(1.4f, 1.4f, 1f));
+            CreateSprite("Glow", SpriteFactory.Glow(color), 18, new Vector3(1.4f, 1.4f, 1f) * _potency);
             _body = CreateSprite("Body", BodySprite(), 19, Vector3.one);
             _body.color = color;
             return true;
@@ -128,24 +131,24 @@ namespace RuneMagic
             {
                 case SpellShape.Pillar:
                     transform.position = _to;
-                    transform.localScale = new Vector3(1f, Mathf.Lerp(0.2f, 1.35f, ease), 1f);
+                    transform.localScale = new Vector3(_potency, Mathf.Lerp(0.2f, 1.35f, ease) * _potency, 1f);
                     break;
                 case SpellShape.Spread:
                     transform.position = _from;
-                    transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.6f, ease);
+                    transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.6f, ease) * _potency;
                     FadeBody(1f - ease * 0.65f);
                     break;
                 case SpellShape.Remote:
                     if (ease < 0.28f)
                     {
                         transform.position = _from;
-                        transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 0.9f, ease / 0.28f);
+                        transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 0.9f, ease / 0.28f) * _potency;
                     }
                     else
                     {
                         var remote = (ease - 0.28f) / 0.72f;
                         transform.position = _to;
-                        transform.localScale = Vector3.one * Mathf.Lerp(0.2f, 1.45f, remote);
+                        transform.localScale = Vector3.one * Mathf.Lerp(0.2f, 1.45f, remote) * _potency;
                     }
 
                     break;
@@ -165,7 +168,7 @@ namespace RuneMagic
                         transform.rotation = Quaternion.Euler(0f, 0f, angle);
                     }
 
-                    transform.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.15f, Mathf.Sin(ease * Mathf.PI));
+                    transform.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.15f, Mathf.Sin(ease * Mathf.PI)) * _potency;
                     break;
             }
 
@@ -212,7 +215,7 @@ namespace RuneMagic
                 renderer.sprite = SpriteFactory.Burst(RunePalette.Of(
                     _material == RuneId.None ? RuneId.Aether : _material));
                 renderer.sortingOrder = 21;
-                flash.transform.localScale = Vector3.one * 1.4f;
+                flash.transform.localScale = Vector3.one * 1.4f * _potency;
                 Destroy(flash, 0.2f);
             }
             catch (System.Exception)

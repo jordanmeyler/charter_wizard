@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.9). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). Joins become their own runes (Fire · Air → Spark). Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.10). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). Joins become their own runes (Fire · Air → Spark). Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -25,7 +25,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
 | Chains, not pairs | The fifty catalog spells resolve in play. Fireball is Fire · Air · Salt · Mercury. The Grimoire lists them all; click a name to string it. |
 | Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
-| Free is never required | Every lock has a Charter key. Free is a risky shortcut and a teacher. |
+| Free is never required | Every lock has a Charter key. Free fills a blank, leans on attunement, and cannot be stored. |
 
 ## Open and play
 
@@ -39,15 +39,16 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 
 - **WASD** / arrows move
 - **Space** open the Charter — a wall of runes over the world. Space again closes it.
-- In the Charter: **click runes** to string them (up to 8). The wall is the eleven basic runes. Two runes birth a join or wait; a finished spell is a sentence. **Cast** to aim, or **Store** one string to hold.
-- After Cast: pick **Shot / Pillar / Spread / Remote** (only the forms that string can take), then **click the world**. Esc cancels and keeps the string.
-- The **bottom bar** shows the stored spell. Click the slot or press **F** / **Enter** to aim it.
-- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell for now.
-- **R** Store while the Charter is open
+- In the Charter: **click runes** to string them (up to 8). The wall is the eleven basic runes. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
+- **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
+- **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
+- After a cast: pick **Shot / Pillar / Spread / Remote** (only the forms that string can take), then **click the world**. Esc cancels and keeps the string.
+- The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
+- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
-- **Tab** / **Q** Bound (Charter) / Unbound (Free) — only while the Charter is open
 
-Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten Charter string fizzles. Free borrows a random written spell of that type. The right key unmakes the lock and opens the door east.
+Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten Charter string fizzles. Free fills a blank; used types grow. The right key unmakes the lock and opens the door east.
 
 Walk into a pit and you return to the last safe floor.
 
@@ -68,7 +69,7 @@ Walk into a pit and you return to the last safe floor.
 
 - Full material tree, ternary nodes, and `material-codex.html`
 - Cascading environmental reactions (conduction, spreading burn, ice bridges over water)
-- Free attunement, Primordial access, soul-work, ensouled casters
+- Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work, ensouled casters
 - Wards, mediums, and the Primordial-gate item
 - Overworld, dialogue, and Magnum Opus world-tint
 

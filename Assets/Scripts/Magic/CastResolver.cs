@@ -166,6 +166,10 @@ namespace RuneMagic
         }
     }
 
+    /// <summary>
+    /// One held Charter sentence. Free cannot be stored — it is wild.
+    /// An item may later write a Free-held form; CastHeld honours Stance.
+    /// </summary>
     public readonly struct StoredSpell
     {
         public StoredSpell(Composition composition, CastingStance stance, string name)
@@ -221,7 +225,9 @@ namespace RuneMagic
             SpellShape shape,
             RuneId material,
             RuneId aspect,
-            string log)
+            string log,
+            float potency = 1f,
+            int fillsUsed = 0)
         {
             Resolved = resolved;
             RevealedRecipe = revealedRecipe;
@@ -233,6 +239,8 @@ namespace RuneMagic
             Material = material;
             Aspect = aspect;
             Log = log;
+            Potency = potency <= 0f ? 1f : potency;
+            FillsUsed = fillsUsed;
         }
 
         public bool Resolved { get; }
@@ -245,11 +253,14 @@ namespace RuneMagic
         public RuneId Material { get; }
         public RuneId Aspect { get; }
         public string Log { get; }
+        public float Potency { get; }
+        public int FillsUsed { get; }
     }
 
     /// <summary>
-    /// Charter is coherent and reliable. An unwritten combo fizzles.
-    /// Free never invents a new form — it borrows a random written spell of that type.
+    /// Charter is coherent: an unwritten chain fizzles.
+    /// Free fills up to FillBudget missing runes (1 now), and attunement
+    /// weighs clashes and grows the work.
     /// </summary>
     public sealed class CastResolver
     {
@@ -352,26 +363,29 @@ namespace RuneMagic
             CastingStance stance,
             SpellShape shape,
             SpellId[] acceptedKeys,
-            Grimoire grimoire)
+            Grimoire grimoire,
+            FreeAttunement attunement = null)
         {
-            if (stance == CastingStance.Charter && composition.Sequence.Length == 0)
+            if (composition.Sequence == null || composition.Sequence.Length == 0)
             {
                 return Fail(false, false, 0f, SpellId.None, shape, RuneId.None, composition.Aspect,
-                    "Charter refuses a blank. String a chain, or shift to Free.");
+                    stance == CastingStance.Free
+                        ? "Free has nothing to complete. String at least one rune."
+                        : "Charter refuses a blank. String a chain, or cast Free.");
+            }
+
+            if (stance == CastingStance.Free)
+            {
+                return ResolveFree(composition, shape, acceptedKeys, grimoire, attunement);
             }
 
             if (!TryPrepare(composition, shape, out var prepared))
             {
                 return Fail(false, false, 0f, SpellId.None, shape, RuneId.None, composition.Aspect,
-                    DescribeUnjoined(composition));
+                    "Charter does not know that sentence. The string fizzles.");
             }
 
-            if (stance == CastingStance.Charter)
-            {
-                return ResolveCharter(prepared, shape, acceptedKeys, grimoire);
-            }
-
-            return ResolveFree(composition, prepared, shape, acceptedKeys, grimoire);
+            return ResolveCharter(prepared, shape, acceptedKeys, grimoire);
         }
 
         CastOutcome ResolveCharter(PreparedSpell prepared, SpellShape shape, SpellId[] acceptedKeys, Grimoire grimoire)
@@ -387,7 +401,7 @@ namespace RuneMagic
             if (prepared.FreeOnly)
             {
                 return Fail(false, true, 0f, SpellId.None, shape, prepared.Material, prepared.Aspect,
-                    $"{prepared.Name} is Death-work the Charter will not write. Shift to Free.");
+                    $"{prepared.Name} is Death-work the Charter will not write. Cast it Free.");
             }
 
             grimoire.LearnRecipe(prepared.Material, prepared.Aspect, prepared.Shape);
@@ -409,136 +423,103 @@ namespace RuneMagic
                 $"{name} holds together — Charter overpowers, it does not dispel — but this lock does not accept that key.");
         }
 
-        CastOutcome ResolveFree(Composition composition, PreparedSpell prepared, SpellShape shape, SpellId[] acceptedKeys, Grimoire grimoire)
+        CastOutcome ResolveFree(
+            Composition composition,
+            SpellShape shape,
+            SpellId[] acceptedKeys,
+            Grimoire grimoire,
+            FreeAttunement attunement)
         {
-            var filled = prepared;
-            var fillNote = string.Empty;
-
-            if (!filled.IsFormed)
-            {
-                if (!TryBorrow(composition, prepared, shape, out filled))
-                {
-                    return Fail(false, false, 0.12f, SpellId.None, shape, prepared.Material, prepared.Aspect,
-                        "Free reaches for a spell of that type and finds none written. The surge folds inward.");
-                }
-
-                fillNote = composition.HasBlank
-                    ? "Blanks flood from the field. Free borrows a written form of that type. "
-                    : "No Charter form is written. Free borrows a random spell of that type. ";
-            }
-
-            grimoire.LearnRecipe(filled.Material, filled.Aspect, filled.Shape);
-
-            var reliability = 0.7f;
-            if (composition.HasBlank || !prepared.IsFormed)
-            {
-                reliability -= 0.3f;
-            }
-
-            if (filled.Blend == BlendKind.Violent)
-            {
-                reliability -= 0.15f;
-            }
-
-            var roll = _random.NextDouble();
-            var isKey = filled.IsFormed && IsKey(filled.Spell, acceptedKeys);
-            var name = !string.IsNullOrEmpty(filled.Name)
-                ? filled.Name
-                : filled.IsFormed && SpellGrammar.TryGet(filled.Material, filled.Aspect, filled.Shape, out var recipe)
-                    ? recipe.Name
-                    : "an unshaped surge";
-
-            if (isKey && roll <= reliability)
-            {
-                return new CastOutcome(true, true, false, false, 0.08f, filled.Spell, filled.Shape,
-                    filled.Material, filled.Aspect,
-                    fillNote + $"{name} tears the lock open. Free is a shortcut, not the required key. Hubris gathers.");
-            }
-
-            if (roll < 0.28)
-            {
-                return new CastOutcome(false, true, true, false, 0.18f, filled.Spell, filled.Shape,
-                    filled.Material, filled.Aspect,
-                    fillNote + $"{name} backfires. Target inverts, or the surge folds inward. Taint remains.");
-            }
-
-            return new CastOutcome(false, true, false, false, 0.1f, filled.Spell, filled.Shape,
-                filled.Material, filled.Aspect,
-                fillNote + $"{name} sputters. Magnitude without coherence. The lock holds.");
-        }
-
-        bool TryBorrow(Composition composition, PreparedSpell prepared, SpellShape shape, out PreparedSpell borrowed)
-        {
-            var material = prepared.Material;
-            var aspect = RuneCatalog.IsFormAspect(prepared.Aspect) ? prepared.Aspect : RuneId.None;
-
-            if (material == RuneId.None && composition.MaterialA != RuneId.None)
-            {
-                material = composition.MaterialA;
-            }
-
-            var pool = new List<SpellRecipe>();
-            Collect(pool, material, aspect, shape);
-            if (pool.Count == 0 && shape != SpellShape.None)
-            {
-                Collect(pool, material, aspect, SpellShape.None);
-            }
-
-            if (pool.Count == 0 && aspect != RuneId.None)
-            {
-                Collect(pool, material, RuneId.None, SpellShape.None);
-            }
-
-            if (pool.Count == 0 && material != RuneId.None)
-            {
-                Collect(pool, material, RuneId.None, SpellShape.None);
-            }
-
+            attunement = attunement ?? new FreeAttunement();
+            var pool = ChainBook.CollectForFree(composition, shape, attunement.FillBudget);
             if (pool.Count == 0)
             {
-                foreach (var recipe in SpellGrammar.All)
-                {
-                    pool.Add(recipe);
-                }
+                return Fail(false, true, 0.06f, SpellId.None, shape, composition.MaterialA, composition.Aspect,
+                    $"Free reaches and finds no written chain {FillWords(attunement.FillBudget)} would complete. The surge folds inward.");
             }
 
-            if (pool.Count > 0)
+            var pick = PickWeighted(pool, attunement);
+            attunement.Record(pick);
+            grimoire.LearnRecipe(FirstMaterial(pick), LastAspect(pick), pick.Shape);
+
+            var fills = ChainBook.FillsNeeded(composition, pick);
+            if (fills < 0)
             {
-                var pick = pool[_random.Next(pool.Count)];
-                borrowed = new PreparedSpell(pick.Material, pick.Aspect, pick.Shape, pick.Spell, prepared.Blend, "Free-borrow", pick.Name);
-                return true;
+                fills = 0;
             }
 
-            var written = new List<CodexEntry>();
-            foreach (var entry in SpellCodex.All)
+            var clash = pool.Count > 1
+                ? $" {pool.Count} chains fit; attunement drew {pick.Name}."
+                : string.Empty;
+            var fillNote = fills == 0
+                ? $"Free takes the finished sentence.{clash} "
+                : fills == 1
+                    ? $"Free fills a rune and the chain becomes {pick.Name}.{clash} "
+                    : $"Free fills {fills} runes and the chain becomes {pick.Name}.{clash} ";
+
+            var material = FirstMaterial(pick);
+            var potency = attunement.Potency(pick);
+            var isKey = IsKey(pick.Spell, acceptedKeys);
+
+            if (isKey)
             {
-                if (shape == SpellShape.None || entry.Shape == shape)
-                {
-                    written.Add(entry);
-                }
+                return new CastOutcome(true, true, false, false, 0.08f, pick.Spell, pick.Shape,
+                    material, LastAspect(pick),
+                    fillNote + $"{pick.Name} tears the lock open. Free is a shortcut, not the required key.",
+                    potency, fills);
             }
 
-            if (written.Count == 0)
-            {
-                borrowed = default;
-                return false;
-            }
-
-            var borrowedEntry = written[_random.Next(written.Count)];
-            borrowed = new PreparedSpell(FirstMaterial(borrowedEntry), prepared.Aspect, borrowedEntry.Shape,
-                borrowedEntry.Spell, prepared.Blend, "Free-borrow", borrowedEntry.Name, borrowedEntry.FreeOnly);
-            return true;
+            return new CastOutcome(false, true, false, false, 0.06f, pick.Spell, pick.Shape,
+                material, LastAspect(pick),
+                fillNote + $"{pick.Name} lands, wild and larger, but this lock does not accept that key.",
+                potency, fills);
         }
 
-        static void Collect(List<SpellRecipe> pool, RuneId material, RuneId aspect, SpellShape shape)
+        CodexEntry PickWeighted(List<CodexEntry> pool, FreeAttunement attunement)
         {
-            foreach (var recipe in SpellGrammar.OfType(material, aspect))
+            var total = 0f;
+            var weights = new float[pool.Count];
+            for (var i = 0; i < pool.Count; i++)
             {
-                if (shape == SpellShape.None || recipe.Shape == shape)
+                weights[i] = attunement.Weight(pool[i]);
+                total += weights[i];
+            }
+
+            if (total <= 0f)
+            {
+                return pool[_random.Next(pool.Count)];
+            }
+
+            var roll = (float)_random.NextDouble() * total;
+            var walk = 0f;
+            for (var i = 0; i < pool.Count; i++)
+            {
+                walk += weights[i];
+                if (roll <= walk)
                 {
-                    pool.Add(recipe);
+                    return pool[i];
                 }
             }
+
+            return pool[pool.Count - 1];
+        }
+
+        public static string FillWords(int fillBudget)
+        {
+            return fillBudget == 1 ? "one rune" : fillBudget + " runes";
+        }
+
+        static RuneId LastAspect(CodexEntry entry)
+        {
+            for (var i = entry.RecipeRunes.Count - 1; i >= 0; i--)
+            {
+                if (RuneCatalog.IsFormAspect(entry.RecipeRunes[i]))
+                {
+                    return entry.RecipeRunes[i];
+                }
+            }
+
+            return RuneId.None;
         }
 
         static CastOutcome Fail(

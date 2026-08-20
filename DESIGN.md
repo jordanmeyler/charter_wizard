@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.9. Spell catalog: [`SPELLS.md`](SPELLS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.10. Spell catalog: [`SPELLS.md`](SPELLS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -15,7 +15,7 @@
 
 ### Two progression models (one per path)
 - **Charter = knowledge.** Formulas acquired by instruction (demonstration, reading, being told combos). Binary; new knowledge never costs old. Charter mages are **broad generalists** — no grind, no decay.
-- **Free = attunement.** Intuitive, emotional casting. Spells get more effective the more they're cast — but as **specialization, not a power bar**: attunement deepens one focus at the **direct expense of the others**, and "more effective" = reaching further up that rune's branch (enough Fire → chain lightning, call lava, while water-rooted casting withers).
+- **Free = attunement.** Intuitive, emotional casting. Using a spell or a type (Fire, Water, Spark, grave-work…) grows that focus: later **recipe clashes lean toward it**, and those spells become **larger / more effective**. Specialization, not a level bar. Withering unused types is still an open tuning question — this pass only grows what you use.
 - Consequences: Free casters **specialize hard**, **patch weak elements with items and unique free spells**, and must **understand a branch to exploit it** — so even the intuitive path forces learning the tree.
 
 ### Free as the default onboarding path
@@ -92,7 +92,7 @@ A combo that *looks* as if it should work can still fizzle if it is not written.
 | **Remote** | Click a distant point. The spell forms there. | Melt, rain, pit, call-growth |
 | **Self** | Confirm on the caster. | Flight |
 
-**Charter:** an unwritten combo **fizzles**, even when the formation made sense. **Free:** an unwritten or blank string **borrows a random written spell of that type**. Free is still never the required key.
+**Charter:** an unwritten or unfinished combo **fizzles**. No blanks are filled. **Free:** fills missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence is never “upgraded” by filling toward a longer one. Free is still never the required key.
 
 The fifty catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
@@ -125,21 +125,28 @@ Free magic is **item-intertwined** (lacking understanding, it leans on mediums/f
 
 ---
 
-## 8. Casting stances — Charter vs Free
+## 8. Charter Cast, Store, and Free Cast
 
-A **stance chosen per cast**, not two spell lists.
+Not a stance toggle. Three actions on the same string:
 
-| | **Bound (Charter)** | **Unbound (Free)** |
+| Action | What it does |
+|---|---|
+| **Charter Cast** | The sentence must already be written. Wrong or unfinished recipes **fizzle**. Reliable. Overpowers; does not dispel. |
+| **Store** | Holds one **Charter** sentence to aim later. **Free cannot be stored** — it is wild and untamable. An item may later hold a single Free working; that is a Charter-path benefit you do not get for free. |
+| **Free Cast** | Completes the string. Fill budget starts at **1** (2/3 of a recipe is enough). Several matches → **attunement-weighted random pick**. Using a spell or type grows that focus (clash weight + larger effect). Death-work the Charter will not write still needs Free. |
+
+| | **Charter** | **Free** |
 |---|---|---|
 | Access | open to all; rejects no one | open to all |
-| Reliability | reliable | unreliable, variance-loaded |
-| Power in a vacuum | tamer | higher magnitude |
-| Clashes | **wins** (coherence beats magnitude) | loses; even with an edge may sputter |
-| Forbidden | can't touch souls / living runes / re-animation | all available |
+| Reliability | the written sentence, or nothing | fills blanks; clashes are a roll |
+| Power in a vacuum | tamer | wilder, and it grows with use |
+| Clashes | there are none — exact or fizzle | attunement leans the roll |
+| Forbidden | can't touch souls / the worst grave-work | all available |
 | Cost | feeds the pantheon | feeds nothing; blasphemous |
+| Store | yes — that is the point of coherence | no (unless a later item binds one) |
 | Ceiling | high (climbs to primordial) | low (easy mode) |
 
-Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, let them fill at random, overcharged; the specified:auto-filled ratio is a **risk dial**. Backfire has teeth (inverted targets, divine attention, hubris/taint). **Rule: free magic is never the required key — only the tempting shortcut.**
+**Rule: free magic is never the required key — only the tempting shortcut.** Backfire still has teeth later (inverted targets, divine attention, hubris/taint). Fill budget may rise with items; the matcher already takes a budget, not a hard-coded “one”.
 
 ---
 
@@ -172,11 +179,11 @@ Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** react
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). The constant stream is the **eleven basic runes**, plus nearby tiles and creature formulas. You string runes — up to eight — then **Cast** (aim a formation) or **Store** one string to carry. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
+The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). The constant stream is the **eleven basic runes**, plus nearby tiles and creature formulas. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
 2. **Craft** — assemble a chain from the Charter wall. Two runes birth a join or wait. A finished spell is a sentence.
-3. **Aim** — Cast from the wall, or later from the held slot. Choose Shot, Pillar, Spread, or Remote if that string can take it, then click where it goes. Unwritten Charter strings fizzle. Free borrows a random written spell of that type.
+3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. Choose Shot, Pillar, Spread, or Remote if that string can take it, then click where it goes. Unwritten Charter strings fizzle. Free fills up to the fill budget and, on a clash, attunement picks.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
@@ -189,8 +196,9 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
-- [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free borrows.
+- [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free fills.
 - [~] **Field economy** — Space stills the field into a Charter wall (the eleven, plus nearby tiles and creature formulas). Depletion still open. Primordial runes later.
+- [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
 - [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.

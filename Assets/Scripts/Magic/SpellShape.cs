@@ -124,7 +124,7 @@ namespace RuneMagic
             return list;
         }
 
-        public static Vector3 ClampPoint(SpellShape shape, Vector3 origin, Vector3 requested)
+        public static Vector3 ClampPoint(SpellShape shape, Vector3 origin, Vector3 requested, float rangeScale = 1f)
         {
             var def = Get(shape);
             if (shape == SpellShape.Spread || shape == SpellShape.Self)
@@ -139,9 +139,10 @@ namespace RuneMagic
                 delta = Vector3.right * 0.8f;
             }
 
-            if (delta.magnitude > def.Range)
+            var range = def.Range * (rangeScale <= 0f ? 1f : rangeScale);
+            if (delta.magnitude > range)
             {
-                delta = delta.normalized * def.Range;
+                delta = delta.normalized * range;
             }
 
             return origin + delta;

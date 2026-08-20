@@ -5,6 +5,7 @@ namespace RuneMagic
     /// <summary>
     /// A linear rune string. Materials fold left to right; the last aspect
     /// sets form. Eight slots is the present ceiling.
+    /// Charter Cast and Free Cast are separate actions, not a stance toggle.
     /// </summary>
     public sealed class SpellComposer
     {
@@ -16,14 +17,8 @@ namespace RuneMagic
         public int Count => _slots.Count;
         public bool IsEmpty => _slots.Count == 0;
         public bool IsFull => _slots.Count >= MaxSlots;
-        public CastingStance Stance { get; private set; } = CastingStance.Charter;
 
         public Composition Snapshot() => Composition.FromSequence(_slots);
-
-        public void ToggleStance()
-        {
-            Stance = Stance == CastingStance.Charter ? CastingStance.Free : CastingStance.Charter;
-        }
 
         public bool TryAdd(RuneId rune, out string note)
         {
@@ -101,12 +96,12 @@ namespace RuneMagic
             var preview = ChainBook.Preview(composition);
             if (!string.IsNullOrEmpty(preview))
             {
-                return $"{SlotSummary()} — {preview}";
+                return $"Charter: {SlotSummary()} — {preview}";
             }
 
             if (!composition.TryFoldMaterials(out var material, out var blend) && composition.MaterialCount >= 2)
             {
-                return $"{SlotSummary()} — those materials have no recorded join yet.";
+                return $"Charter: {SlotSummary()} — those materials have no recorded join. The string will fizzle.";
             }
 
             var aspect = composition.Aspect;
@@ -117,21 +112,19 @@ namespace RuneMagic
 
             if (material == RuneId.None)
             {
-                return $"{SlotSummary()} — {RuneCatalog.NameOf(aspect)} waits on a material.";
+                return $"Charter: {SlotSummary()} — {RuneCatalog.NameOf(aspect)} waits on a material. Charter will fizzle.";
             }
 
             if (!RuneCatalog.IsFormAspect(aspect))
             {
                 var blendNote = blend.HasValue ? $" {blend.Value.Note}" : string.Empty;
-                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} is a clause, waiting. Add what happens next.{blendNote}";
+                return $"Charter: {SlotSummary()} — {RuneCatalog.NameOf(material)} is a clause, waiting. An unfinished sentence fizzles.{blendNote}";
             }
 
             var forms = SpellFormations.Available(material, aspect);
             if (forms.Count == 0)
             {
-                return Stance == CastingStance.Free
-                    ? $"{SlotSummary()} — no natural form. Free will borrow a random spell of that type."
-                    : $"{SlotSummary()} — those runes have no natural form. Charter will fizzle.";
+                return $"Charter: {SlotSummary()} — those runes have no natural form. Charter will fizzle.";
             }
 
             var written = 0;
@@ -151,10 +144,27 @@ namespace RuneMagic
 
             if (written == 0)
             {
-                return $"{SlotSummary()} — may take {string.Join(", ", formNames)}. No Charter form is written. Charter fizzles; Free borrows.";
+                return $"Charter: {SlotSummary()} — may take {string.Join(", ", formNames)}. No Charter form is written. Charter fizzles.";
             }
 
-            return $"{SlotSummary()} — may take {string.Join(", ", formNames)}. Cast to choose how it aims.";
+            return $"Charter: {SlotSummary()} — may take {string.Join(", ", formNames)}. Charter Cast to aim.";
+        }
+
+        public string DescribeFree(FreeAttunement attunement)
+        {
+            if (IsEmpty)
+            {
+                return "Free: string at least one rune. Wild work cannot be stored.";
+            }
+
+            attunement = attunement ?? new FreeAttunement();
+            var preview = ChainBook.PreviewFree(Snapshot(), attunement.FillBudget);
+            if (string.IsNullOrEmpty(preview))
+            {
+                return $"Free: no written chain {CastResolver.FillWords(attunement.FillBudget)} would complete.";
+            }
+
+            return $"Free: {preview}. Attunement weighs clashes. Cannot be stored.";
         }
     }
 }
