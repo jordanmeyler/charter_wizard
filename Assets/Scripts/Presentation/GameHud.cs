@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. Air is already in the room. Gold ring = a join (Plant is Water · Earth · Salt). Hover the weave to hold it still.",
+                "The wall is the eleven — only what is on screen can be drawn. Air is already in the room. A gold ring is a join stretched across its recipe. Odd rows travel right, even rows left. Hover to hold still.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
@@ -180,9 +180,12 @@ namespace RuneMagic
 
             for (var row = 0; row < rows; row++)
             {
-                for (var col = 0; col <= cols; col++)
+                var right = RuneTapestry.GoesRight(row);
+                var rowShift = right ? shift : -shift;
+                var placed = new List<(Rect Rect, WeaveGlyph Glyph)>(cols + 2);
+                for (var col = -1; col <= cols; col++)
                 {
-                    var x = left + col * stride - shift;
+                    var x = left + col * stride + rowShift;
                     var rect = new Rect(x, gridTop + row * stride, cell, cell);
                     if (rect.xMax < band.xMin || rect.x > band.xMax)
                     {
@@ -192,16 +195,68 @@ namespace RuneMagic
                     var glyph = tapestry != null
                         ? tapestry.Cell(row, col)
                         : new WeaveGlyph(RuneId.None, MaterialId.None, WeaveKind.Tear);
+                    placed.Add((rect, glyph));
+                }
+
+                DrawJoinFrames(placed);
+                for (var i = 0; i < placed.Count; i++)
+                {
+                    var glyph = placed[i].Glyph;
+                    var rect = placed[i].Rect;
                     if (glyph.IsTear)
                     {
                         DrawEmptySlot(rect, "tear");
                         continue;
                     }
 
-                    var rune = glyph.Rune;
-                    DrawRuneCard(rect, rune, () => _director.WeaveFromField(rune), true);
+                    var shown = glyph.Shown;
+                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true);
                 }
             }
+        }
+
+        void DrawJoinFrames(List<(Rect Rect, WeaveGlyph Glyph)> placed)
+        {
+            var i = 0;
+            while (i < placed.Count)
+            {
+                var glyph = placed[i].Glyph;
+                if (!glyph.IsGroup)
+                {
+                    i++;
+                    continue;
+                }
+
+                var id = glyph.GroupId;
+                var start = i;
+                var bounds = placed[i].Rect;
+                i++;
+                while (i < placed.Count && placed[i].Glyph.GroupId == id)
+                {
+                    bounds = Union(bounds, placed[i].Rect);
+                    i++;
+                }
+
+                if (i - start < 2 && glyph.GroupSize < 2)
+                {
+                    continue;
+                }
+
+                DrawWroughtMark(bounds);
+                var name = Label(11, FontStyle.Bold, new Color(0.98f, 0.86f, 0.4f));
+                name.alignment = TextAnchor.UpperCenter;
+                GUI.Label(new Rect(bounds.x, bounds.y - 14f, bounds.width, 14f),
+                    RuneCatalog.NameOf(glyph.Rune), name);
+            }
+        }
+
+        static Rect Union(Rect a, Rect b)
+        {
+            var x = Mathf.Min(a.x, b.x);
+            var y = Mathf.Min(a.y, b.y);
+            var xMax = Mathf.Max(a.xMax, b.xMax);
+            var yMax = Mathf.Max(a.yMax, b.yMax);
+            return new Rect(x, y, xMax - x, yMax - y);
         }
 
         void DrawComposeDock()

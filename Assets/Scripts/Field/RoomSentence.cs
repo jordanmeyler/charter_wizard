@@ -15,27 +15,47 @@ namespace RuneMagic
     public readonly struct WeaveGlyph
     {
         public WeaveGlyph(RuneId rune, MaterialId material, WeaveKind kind)
+            : this(rune, rune, material, kind, 0, 0, 1)
         {
-            Rune = rune;
-            Material = material;
-            Kind = kind;
         }
 
+        public WeaveGlyph(
+            RuneId shown,
+            RuneId join,
+            MaterialId material,
+            WeaveKind kind,
+            int groupId,
+            int groupIndex,
+            int groupSize)
+        {
+            Shown = shown;
+            Rune = join;
+            Material = material;
+            Kind = kind;
+            GroupId = groupId;
+            GroupIndex = groupIndex;
+            GroupSize = groupSize < 1 ? 1 : groupSize;
+        }
+
+        public RuneId Shown { get; }
         public RuneId Rune { get; }
         public MaterialId Material { get; }
         public WeaveKind Kind { get; }
-        public bool IsTear => Kind == WeaveKind.Tear || Rune == RuneId.None;
+        public int GroupId { get; }
+        public int GroupIndex { get; }
+        public int GroupSize { get; }
+        public bool IsGroup => GroupId != 0 && GroupSize > 1;
+        public bool IsTear => Kind == WeaveKind.Tear || (Shown == RuneId.None && Rune == RuneId.None);
     }
 
     /// <summary>
-    /// Walks what is on screen as a weave: even rows left to right, odd
-    /// rows right to left. Off-screen tiles do not speak. Contiguous
-    /// same-material runs collapse to one full signature. Breath (Air)
-    /// is ambient wherever a floor or wall still holds a room. Locks and
-    /// world-strings enter when the scan first reaches their tile.
+    /// Walks what is on screen as a weave. Joins stretch one column per
+    /// ingredient and stay grouped. Odd rows travel right, even rows left.
     /// </summary>
     public static class RoomSentence
     {
+        static int NextGroup = 1;
+
         public static List<WeaveGlyph> Read(
             WorldGrid grid,
             ISpellLock[] locks,
@@ -94,7 +114,7 @@ namespace RuneMagic
         {
             for (var i = 0; i < sequence.Count; i++)
             {
-                if (sequence[i].Rune == RuneId.Air)
+                if (sequence[i].Shown == RuneId.Air || sequence[i].Rune == RuneId.Air)
                 {
                     return;
                 }
@@ -134,12 +154,19 @@ namespace RuneMagic
             }
 
             lastMaterial = material;
-            var signature = tile.Emission;
+            var def = MaterialCatalog.Of(material);
+            if (def.Manifestation != RuneId.None && ChainBook.IsWrought(def.Manifestation))
+            {
+                AppendRune(sequence, def.Manifestation, material, WeaveKind.Material);
+                return;
+            }
+
+            var signature = def.Signature;
             for (var i = 0; i < signature.Count; i++)
             {
                 if (signature[i] != RuneId.None)
                 {
-                    sequence.Add(new WeaveGlyph(signature[i], material, WeaveKind.Material));
+                    AppendRune(sequence, signature[i], material, WeaveKind.Material);
                 }
             }
         }
@@ -203,7 +230,7 @@ namespace RuneMagic
                 {
                     if (runes[r] != RuneId.None)
                     {
-                        sequence.Add(new WeaveGlyph(runes[r], MaterialId.None, WeaveKind.String));
+                        AppendRune(sequence, runes[r], MaterialId.None, WeaveKind.String);
                     }
                 }
             }
@@ -221,9 +248,25 @@ namespace RuneMagic
             {
                 if (buffer[i] != RuneId.None)
                 {
-                    sequence.Add(new WeaveGlyph(buffer[i], material, kind));
+                    AppendRune(sequence, buffer[i], material, kind);
                 }
             }
+        }
+
+        static void AppendRune(List<WeaveGlyph> sequence, RuneId rune, MaterialId material, WeaveKind kind)
+        {
+            if (ChainBook.TryBirth(rune, out var sources) && sources.Count > 0)
+            {
+                var id = NextGroup++;
+                for (var i = 0; i < sources.Count; i++)
+                {
+                    sequence.Add(new WeaveGlyph(sources[i], rune, material, kind, id, i, sources.Count));
+                }
+
+                return;
+            }
+
+            sequence.Add(new WeaveGlyph(rune, material, kind));
         }
 
         static bool AtCell(Vector3 world, int x, int y)
