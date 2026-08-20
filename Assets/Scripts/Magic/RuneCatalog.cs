@@ -66,7 +66,15 @@ namespace RuneMagic
         Animus,
         Anima,
         Lumen,
-        Umbra
+        Umbra,
+
+        Flame,
+        Grove,
+        Wind,
+        Current,
+        Ember,
+        Shade,
+        Thunder
     }
 
     public readonly struct RuneDef
@@ -151,7 +159,15 @@ namespace RuneMagic
                 new RuneDef(RuneId.Animus, RuneFamily.PrimordialDivine, "Animus", "As", "Projective soul. Drive, force, the going-out."),
                 new RuneDef(RuneId.Anima, RuneFamily.PrimordialDivine, "Anima", "Aa", "Receptive soul. Draw, welcome, the taking-in."),
                 new RuneDef(RuneId.Lumen, RuneFamily.PrimordialDivine, "Light", "Lu", "Shown. The veil is lifted."),
-                new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn.")
+                new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn."),
+
+                new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Hunger given a body. Fire · Salt."),
+                new RuneDef(RuneId.Grove, RuneFamily.Material, "Grove", "Gv", "The vegetable body marked living. Plant · Life."),
+                new RuneDef(RuneId.Wind, RuneFamily.Material, "Wind", "Wn", "Breath going. Air · Mercury."),
+                new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),
+                new RuneDef(RuneId.Ember, RuneFamily.Material, "Ember", "Em", "Hunger after the grave takes its motion. Fire · Death."),
+                new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt."),
+                new RuneDef(RuneId.Thunder, RuneFamily.Material, "Thunder", "Th", "The arc meeting rest. Lightning · Earth.")
             };
 
             ById = new System.Collections.Generic.Dictionary<RuneId, RuneDef>(defs.Length);
@@ -198,6 +214,51 @@ namespace RuneMagic
         public static string NameOf(RuneId id) => id == RuneId.None ? "—" : Get(id).Name;
 
         public static string GlyphOf(RuneId id) => id == RuneId.None ? "?" : Get(id).Glyph;
+
+        public static bool TryParseName(string name, out RuneId id)
+        {
+            id = RuneId.None;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+
+            name = name.Trim();
+            switch (name.ToLowerInvariant())
+            {
+                case "life":
+                case "vita":
+                    id = RuneId.Vita;
+                    return true;
+                case "death":
+                case "mors":
+                    id = RuneId.Mors;
+                    return true;
+                case "light":
+                case "lumen":
+                    id = RuneId.Lumen;
+                    return true;
+                case "dark":
+                case "umbra":
+                    id = RuneId.Umbra;
+                    return true;
+                case "grove":
+                case "forest":
+                    id = RuneId.Grove;
+                    return true;
+            }
+
+            foreach (var def in ById.Values)
+            {
+                if (string.Equals(def.Name, name, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    id = def.Id;
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// The eleven writeable concepts. Primordial runes are not in this list.

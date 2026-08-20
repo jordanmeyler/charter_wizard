@@ -9,7 +9,8 @@ namespace RuneMagic
         Shot,
         Pillar,
         Spread,
-        Remote
+        Remote,
+        Self
     }
 
     public readonly struct FormationDef
@@ -54,7 +55,11 @@ namespace RuneMagic
             SpellShape.Remote, "Remote", "place at a distance",
             "Click a distant point. The spell forms there, not here.", 9.2f, 1.2f);
 
-        static readonly FormationDef[] AllDefs = { Shot, Pillar, Spread, Remote };
+        public static readonly FormationDef Self = new(
+            SpellShape.Self, "Self", "keep it on you",
+            "Click to confirm. The spell stays on the caster.", 0.8f, 2.4f);
+
+        static readonly FormationDef[] AllDefs = { Shot, Pillar, Spread, Remote, Self };
 
         public static IReadOnlyList<FormationDef> All => AllDefs;
 
@@ -65,6 +70,7 @@ namespace RuneMagic
                 case SpellShape.Pillar: return Pillar;
                 case SpellShape.Spread: return Spread;
                 case SpellShape.Remote: return Remote;
+                case SpellShape.Self: return Self;
                 default: return Shot;
             }
         }
@@ -121,7 +127,7 @@ namespace RuneMagic
         public static Vector3 ClampPoint(SpellShape shape, Vector3 origin, Vector3 requested)
         {
             var def = Get(shape);
-            if (shape == SpellShape.Spread)
+            if (shape == SpellShape.Spread || shape == SpellShape.Self)
             {
                 return origin;
             }

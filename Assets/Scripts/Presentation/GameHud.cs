@@ -322,13 +322,13 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "Ordinary book has no Death. Life marks a living recipe. 41–50 are Free / grave-work. Esc closes.",
+                "All fifty are written. Click a name to string it for testing. 41–50: Death / Free. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
             var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-            var y = DrawCodex(0f, heading, row, muted);
+            var y = DrawCodex(0f, heading, row, muted, loadable: true);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -362,7 +362,7 @@ namespace RuneMagic
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
             var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-            var y = DrawCodex(0f, heading, row, muted);
+            var y = DrawCodex(0f, heading, row, muted, loadable: false);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -379,7 +379,7 @@ namespace RuneMagic
             GUI.EndScrollView();
         }
 
-        float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted)
+        float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted, bool loadable)
         {
             GUI.Label(new Rect(0, y, 900, 22), "The eleven basic runes", heading);
             y += 24f;
@@ -409,7 +409,15 @@ namespace RuneMagic
 
                 GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
                 var title = string.IsNullOrEmpty(entry.Gate) ? entry.Name : $"{entry.Name}  ({entry.Gate})";
-                GUI.Label(new Rect(26, y, 130, 18), title, row);
+                var nameRect = new Rect(26, y, 130, 18);
+                if (loadable && GUI.Button(nameRect, title, row))
+                {
+                    _director.LoadCodex(entry.Number);
+                }
+                else if (!loadable)
+                {
+                    GUI.Label(nameRect, title, row);
+                }
                 GUI.Label(new Rect(160, y, 340, 18), entry.Want, row);
                 var chain = string.IsNullOrEmpty(entry.Via)
                     ? entry.Recipe

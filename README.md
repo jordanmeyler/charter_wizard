@@ -23,8 +23,8 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 | The world is the same materials | Floor, wall, wood, fire-stone, spark-stone, and pit tiles each carry an element. The HUD names the tile underfoot. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
-| Chains, not pairs | Fireball is Fire · Air · Salt · Mercury (Spark given a body and sent). Fire · Salt · Mercury is melt — no breath, so it goes *into*. |
-| Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. The sanctum slice still compresses this for the four rooms. |
+| Chains, not pairs | The fifty catalog spells resolve in play. Fireball is Fire · Air · Salt · Mercury. The Grimoire lists them all; click a name to string it. |
+| Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free is a risky shortcut and a teacher. |
 
 ## Open and play

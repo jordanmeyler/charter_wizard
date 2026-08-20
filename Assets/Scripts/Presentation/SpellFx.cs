@@ -70,6 +70,11 @@ namespace RuneMagic
             _to = to;
             _mid = Vector3.Lerp(_from, _to, 0.45f) + new Vector3(0f, 0.35f, 0f);
             _material = material;
+            if (shape == SpellShape.Self)
+            {
+                shape = SpellShape.Spread;
+            }
+
             _shape = shape == SpellShape.None ? SpellShape.Shot : shape;
             _duration = DurationFor(_shape, _from, _to);
             transform.position = _shape == SpellShape.Spread ? _from : _from;

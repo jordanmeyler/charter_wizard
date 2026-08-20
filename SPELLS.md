@@ -226,4 +226,4 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 ## 7. The sanctum slice
 
-The playable rooms still resolve a **compressed** grammar so the four locks can be taught with short strings. Ice-pillar in that slice is Water × Salt · Pillar (hard water, no Death). Snuff, Blackout, and Grave-dust remain the Death keys in the rooms — they are the Free-leaning lessons. The book above is the real language.
+The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.

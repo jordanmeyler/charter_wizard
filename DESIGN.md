@@ -94,7 +94,7 @@ A combo that *looks* as if it should work can still fizzle if it is not written.
 
 **Charter:** an unwritten combo **fizzles**, even when the formation made sense. **Free:** an unwritten or blank string **borrows a random written spell of that type**. Free is still never the required key.
 
-The sanctum slice still resolves a **compressed** Material × Aspect × Formation so the four rooms can be taught with short strings. The book in `SPELLS.md` is the real language; the composer should learn to fold joins next.
+The fifty catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
 ---
 

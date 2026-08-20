@@ -54,6 +54,11 @@ namespace RuneMagic
             _rooms = build.Rooms;
             _safePoint = build.Spawn;
             CurrentRoom = _rooms != null && _rooms.Length > 0 ? _rooms[0] : null;
+            var broken = SpellCodex.Validate();
+            if (!string.IsNullOrEmpty(broken))
+            {
+                Debug.LogWarning("Spell catalog failed to bind: " + broken);
+            }
         }
 
         public void BindPlayer(GameObject player)
@@ -312,7 +317,7 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Grimoire;
-            Log("The Grimoire. Every written Charter recipe is listed here.");
+            Log("The Grimoire. All fifty written chains. Click a name to string it.");
         }
 
         public void CloseGrimoire()
@@ -441,7 +446,7 @@ namespace RuneMagic
             var shapes = AvailableShapes;
             if (shapes.Count > 0 && ChosenShape == SpellShape.None)
             {
-                Log("Pick a formation first — Shot, Pillar, Spread, or Remote.");
+                Log("Pick a formation first — Shot, Pillar, Spread, Remote, or Self.");
                 return;
             }
 
@@ -475,17 +480,13 @@ namespace RuneMagic
                 CloseCharter();
             }
 
-            if (stance == CastingStance.Charter && composition.HasBlank)
+            if (composition.Sequence == null || composition.Sequence.Length == 0)
             {
-                Log("A two-rune string is a clause. Add what happens next — a body, a path, a stilling, a waking — or shift to Free.");
+                Log("Nothing is strung. Choose runes, or release a held form with F.");
                 return;
             }
 
-            if (!composition.TryFoldMaterials(out var material, out _) && stance == CastingStance.Charter)
-            {
-                Log("Those materials have no recorded join. The string stays.");
-                return;
-            }
+            composition.TryFoldMaterials(out var material, out _);
 
             _pendingComposition = composition;
             _pendingStance = stance;
@@ -494,11 +495,19 @@ namespace RuneMagic
             PendingPreview = _resolver.PreviewName(composition);
             ChosenShape = SpellShape.None;
 
-            var aspect = composition.Aspect;
-            var shapes = SpellFormations.Available(material, aspect);
+            var shapes = ChainBook.ShapesFor(composition);
+            if (shapes.Count == 0)
+            {
+                var aspect = composition.Aspect;
+                if (material != RuneId.None && RuneCatalog.IsFormAspect(aspect))
+                {
+                    shapes = SpellFormations.Available(material, aspect);
+                }
+            }
+
             if (shapes.Count == 0 && stance == CastingStance.Free)
             {
-                AvailableShapes = new[] { SpellShape.Shot, SpellShape.Pillar, SpellShape.Spread, SpellShape.Remote };
+                AvailableShapes = new[] { SpellShape.Shot, SpellShape.Pillar, SpellShape.Spread, SpellShape.Remote, SpellShape.Self };
                 Mode = PlayMode.Aiming;
                 Log("No natural form. Pick any formation — Free will borrow a written spell of that type. Esc cancels.");
                 return;
@@ -509,7 +518,7 @@ namespace RuneMagic
 
             if (shapes.Count == 0)
             {
-                Log("Those runes have no natural form. Click the world to fizzle, or Esc to keep the string.");
+                Log("Those runes have no written form. Click the world to fizzle, or Esc to keep the string.");
                 return;
             }
 
@@ -520,6 +529,29 @@ namespace RuneMagic
             }
 
             Log($"{PendingPreview}. Choose how it aims, then click the world. Esc cancels.");
+        }
+
+        public void LoadCodex(int number)
+        {
+            if (!SpellCodex.TryGet(number, out var entry))
+            {
+                Log("That page is blank.");
+                return;
+            }
+
+            Composer.Load(entry.RecipeRunes);
+            if (Mode == PlayMode.Grimoire)
+            {
+                CloseGrimoire();
+            }
+
+            if (Mode != PlayMode.Charter)
+            {
+                OpenCharter();
+            }
+
+            var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
+            Log($"Testing {entry.Name}: {entry.Recipe}.{gate} Cast to aim.");
         }
 
         void HandleAimingInput()
@@ -737,7 +769,7 @@ namespace RuneMagic
                 return FindLockAlong(origin, point, radius);
             }
 
-            if (shape == SpellShape.Spread)
+            if (shape == SpellShape.Spread || shape == SpellShape.Self)
             {
                 return FindLockNear(origin, radius);
             }

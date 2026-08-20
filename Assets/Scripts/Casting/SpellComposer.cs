@@ -62,6 +62,23 @@ namespace RuneMagic
             _slots.Clear();
         }
 
+        public void Load(IReadOnlyList<RuneId> runes)
+        {
+            _slots.Clear();
+            if (runes == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < runes.Count && _slots.Count < MaxSlots; i++)
+            {
+                if (runes[i] != RuneId.None)
+                {
+                    _slots.Add(runes[i]);
+                }
+            }
+        }
+
         public string SlotSummary()
         {
             if (IsEmpty)
@@ -81,6 +98,12 @@ namespace RuneMagic
         public string Describe()
         {
             var composition = Snapshot();
+            var written = ChainBook.Preview(composition);
+            if (!string.IsNullOrEmpty(written))
+            {
+                return $"{SlotSummary()} — {written}";
+            }
+
             if (!composition.TryFoldMaterials(out var material, out var blend) && composition.MaterialCount >= 2)
             {
                 return $"{SlotSummary()} — those materials have no recorded join yet.";

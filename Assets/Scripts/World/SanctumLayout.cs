@@ -28,22 +28,27 @@ namespace RuneMagic
             SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt,
             SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
-            SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc
+            SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
+            SpellId.ChainLightning, SpellId.Thunderclap, SpellId.StormCall, SpellId.LavaFlood,
+            SpellId.IceSpear, SpellId.Rage, SpellId.Blight, SpellId.Unmake, SpellId.LastBreath
         };
 
         static readonly SpellId[] TorchKeys =
         {
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother,
+            SpellId.Ignite, SpellId.Melt
         };
 
         static readonly SpellId[] PitKeys =
         {
-            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall
         };
 
         static readonly SpellId[] RodKeys =
         {
-            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout
+            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout,
+            SpellId.ChainLightning, SpellId.StormCall, SpellId.Thunderclap
         };
 
         public static SanctumBuild Construct()

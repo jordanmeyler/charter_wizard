@@ -42,6 +42,7 @@ namespace RuneMagic
             Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Breath forced through rest. Air · Earth → Dust.");
 
             Add(RuneId.Spark, RuneId.Air, RuneId.Lightning, BlendKind.Stable, "The seed stretched through more breath. Spark · Air → Lightning.");
+            Add(RuneId.Lightning, RuneId.Earth, RuneId.Thunder, BlendKind.Stable, "The arc meeting rest. Lightning · Earth → Thunder.");
             Add(RuneId.Spark, RuneId.Cloud, RuneId.Storm, BlendKind.Stable, "The seed inside the hanging veil. Spark · Cloud → Storm.");
             Add(RuneId.Cloud, RuneId.Earth, RuneId.Rain, BlendKind.Stable, "The hanging veil drawn down. Cloud · Earth → Rain.");
             Add(RuneId.Cloud, RuneId.Water, RuneId.Rain, BlendKind.Stable, "The hanging veil yields more. Cloud · Water → Rain.");
