@@ -1,0 +1,39 @@
+{
+  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque. Paint new ones in Tools/catalog-editor.html.",
+  "sprites": [],
+  "items": [
+    {
+      "id": "free-charm",
+      "name": "Free charm",
+      "kind": "charm",
+      "sprite": "charm",
+      "teachesSpell": "Fireball",
+      "teachesFormula": "ash-mite",
+      "note": "The charm unspools. Fire × Mercury · Shot → Fireball. The mite is burning matter. You borrowed a key; later you will compose others."
+    },
+    {
+      "id": "ash-mite",
+      "name": "Ash Mite",
+      "kind": "mite",
+      "sprite": "ash-mite",
+      "formula": ["Fire", "Salt"],
+      "keys": []
+    },
+    {
+      "id": "cold-torch",
+      "name": "Cold Torch",
+      "kind": "torch",
+      "sprite": "torch",
+      "spriteLit": "torch-lit",
+      "keys": []
+    },
+    {
+      "id": "storm-rod",
+      "name": "Storm Rod",
+      "kind": "rod",
+      "sprite": "rod",
+      "spriteLit": "rod-live",
+      "keys": []
+    }
+  ]
+}

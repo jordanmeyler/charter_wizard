@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Rune Magic — Catalog</title>
+  <style>
+    :root { --bg:#100e12; --ink:#f0e6d4; --muted:#9a8c7a; --line:#3a2f34; --accent:#d4a04a; --panel:#1a161c; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 13px/1.4 Palatino, Georgia, serif; }
+    button, select, input, textarea { font: inherit; color: var(--ink); background: #241e24; border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+    button { cursor: pointer; } button:hover, .tab.on, .row.on { border-color: var(--accent); color: var(--accent); }
+    header { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    header h1 { margin: 0 12px 0 0; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .tabs { display: flex; gap: 6px; }
+    main { display: grid; grid-template-columns: 280px 1fr; height: calc(100% - 52px); }
+    .list { overflow: auto; border-right: 1px solid var(--line); padding: 10px; }
+    .row { padding: 6px 8px; margin-bottom: 3px; cursor: pointer; border: 1px solid transparent; }
+    .edit { overflow: auto; padding: 16px; }
+    label { display: block; margin: 0 0 10px; color: var(--muted); }
+    label input, label select, label textarea { width: 100%; margin-top: 3px; }
+    textarea { min-height: 56px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #pix { display: grid; gap: 1px; background: #050406; width: max-content; border: 2px solid #2c2218; }
+    #pix i { width: 14px; height: 14px; display: block; }
+    .hint { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Catalog</h1>
+    <div class="tabs">
+      <button class="tab on" data-tab="spells">Recipes</button>
+      <button class="tab" data-tab="joins">Joins</button>
+      <button class="tab" data-tab="sprites">Sprites</button>
+      <button class="tab" data-tab="items">Items</button>
+    </div>
+    <div style="flex:1"></div>
+    <button id="importBtn">Import JSON</button>
+    <button id="exportSpells">Export spells.json</button>
+    <button id="exportArt">Export art.json</button>
+    <input id="file" type="file" accept="application/json" hidden />
+  </header>
+  <main>
+    <aside class="list" id="list"></aside>
+    <section class="edit" id="edit"></section>
+  </main>
+  <script src="catalog-book.js"></script>
+  <script>
+    let spells = structuredClone(window.DEFAULT_SPELLS || { joins: [], spells: [] });
+    let art = structuredClone(window.DEFAULT_ART || { sprites: [], items: [] });
+    let tab = "spells";
+    let index = 0;
+    let paint = 1;
+    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Grove","Ember"];
+
+    const $ = id => document.getElementById(id);
+    document.querySelectorAll(".tab").forEach(btn => btn.onclick = () => { tab = btn.dataset.tab; index = 0; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b===btn)); draw(); });
+
+    function currentList() {
+      if (tab === "spells") return spells.spells;
+      if (tab === "joins") return spells.joins;
+      if (tab === "sprites") return art.sprites;
+      return art.items;
+    }
+
+    function labelOf(item) {
+      if (tab === "spells") return (item.number || "?") + ". " + item.name + "  —  " + item.recipe;
+      if (tab === "joins") return item.rune + " ← " + (item.sources || []).join(" · ");
+      return item.id || item.name || "(untitled)";
+    }
+
+    function draw() {
+      const list = currentList();
+      $("list").innerHTML = list.map((item, i) =>
+        `<div class="row${i===index?" on":""}" data-i="${i}">${labelOf(item)}</div>`
+      ).join("") + `<button id="addOne">Add</button>`;
+      $("list").querySelectorAll(".row").forEach(el => el.onclick = () => { index = +el.dataset.i; draw(); });
+      $("addOne").onclick = addOne;
+      $("edit").innerHTML = list[index] ? formFor(list[index]) : "<p class='hint'>Nothing selected.</p>";
+      bindForm(list[index]);
+    }
+
+    function addOne() {
+      if (tab === "spells") spells.spells.push({ number: spells.spells.length+1, id: "NewSpell", book: "End", name: "New spell", want: "", recipe: "Fire · Salt · Mercury", via: "", form: "Remote", outcome: "Neither", gate: "", work: "Melt" });
+      if (tab === "joins") spells.joins.push({ rune: "Spark", sources: ["Fire","Air"] });
+      if (tab === "sprites") art.sprites.push({ id: "new-sprite", width: 32, height: 32, pixelsPerUnit: 32, colors: ["#00000000","#e86a2a","#ffe7a0","#1a1014"], cells: "0".repeat(32*32) });
+      if (tab === "items") art.items.push({ id: "new-item", name: "New item", kind: "item", sprite: "charm", teachesSpell: "Fireball", note: "" });
+      index = currentList().length - 1;
+      draw();
+    }
+
+    function formFor(item) {
+      if (tab === "spells") return `
+        <div class="grid2">
+          <label>Number <input name="number" type="number" value="${item.number||0}"></label>
+          <label>Id <input name="id" value="${esc(item.id)}"></label>
+          <label>Name <input name="name" value="${esc(item.name)}"></label>
+          <label>Book <select name="book">${opts(["End","Hold","Cross","Weather","GrowHeal","Mind","SeeHide","Call","Grave"], item.book)}</select></label>
+          <label>Form <select name="form">${opts(["Shot","Pillar","Spread","Remote","Self"], item.form)}</select></label>
+          <label>Outcome <select name="outcome">${opts(["Kill","Restrain","Neither"], item.outcome)}</select></label>
+          <label>Gate <select name="gate">${opts(["","Free","Either"], item.gate)}</select></label>
+          <label>Work (existing effect) <input name="work" value="${esc(item.work||item.id)}"></label>
+        </div>
+        <label>Recipe <input name="recipe" value="${esc(item.recipe)}"></label>
+        <label>Via (folded form) <input name="via" value="${esc(item.via||"")}"></label>
+        <label>What it should look like if you do not know the name
+          <textarea name="want">${esc(item.want||"")}</textarea></label>
+        <p class="hint">Recipe is the master sentence. Work is which coded effect it reuses (Fireball, Hop, Wall…). A new id still needs a work effect to move terrain.</p>`;
+      if (tab === "joins") return `
+        <label>Wrought rune <input name="rune" value="${esc(item.rune)}"></label>
+        <label>Born from (comma) <input name="sources" value="${esc((item.sources||[]).join(", "))}"></label>
+        <p class="hint">Fire, Air → Spark. The Charter unfolds these when it reads a tile.</p>`;
+      if (tab === "sprites") return spriteForm(item);
+      return `
+        <div class="grid2">
+          <label>Id <input name="id" value="${esc(item.id)}"></label>
+          <label>Name <input name="name" value="${esc(item.name)}"></label>
+          <label>Kind <select name="kind">${opts(["item","mite","torch","rod","chasm","charm"], item.kind)}</select></label>
+          <label>Sprite id <input name="sprite" value="${esc(item.sprite||"")}"></label>
+          <label>Lit sprite <input name="spriteLit" value="${esc(item.spriteLit||"")}"></label>
+          <label>Teaches spell <input name="teachesSpell" value="${esc(item.teachesSpell||"")}"></label>
+        </div>
+        <label>Formula runes (comma) <input name="formula" value="${esc((item.formula||[]).join(", "))}"></label>
+        <label>Accepted keys (comma, empty = tutorial preset) <input name="keys" value="${esc((item.keys||[]).join(", "))}"></label>
+        <label>Pickup note <textarea name="note">${esc(item.note||"")}</textarea></label>
+        <p class="hint">Place it on a map with type <code>item</code> and <code>item: "${item.id||"..."}"</code>, or kind mite/torch/rod.</p>`;
+    }
+
+    function spriteForm(item) {
+      const w = item.width || 32, h = item.height || 32;
+      const colors = item.colors || ["#00000000","#ffffff"];
+      return `
+        <div class="grid2">
+          <label>Id <input name="id" value="${esc(item.id)}"></label>
+          <label>Size <input name="width" type="number" value="${w}"></label>
+        </div>
+        <label>Palette (one hex per line)<textarea name="colors">${colors.join("\n")}</textarea></label>
+        <p>Paint index:
+          ${colors.map((c,i)=>`<button type="button" class="sw" data-i="${i}" style="background:${c==="#00000000"?"#222":c}">${i}</button>`).join(" ")}
+        </p>
+        <div id="pix" style="grid-template-columns:repeat(${w},14px)"></div>
+        <p class="hint">Index 0 is clear. Export art.json and keep the id. Assign it on an item or a map prop <code>sprite</code>. Built-ins you can replace: adept, ash-mite, charm, torch, rod.</p>`;
+    }
+
+    function bindForm(item) {
+      if (!item) return;
+      $("edit").querySelectorAll("[name]").forEach(el => {
+        el.oninput = () => {
+          if (el.name === "sources" || el.name === "formula" || el.name === "keys")
+            item[el.name] = el.value.split(",").map(s => s.trim()).filter(Boolean);
+          else if (el.name === "colors") item.colors = el.value.split(/\s+/).filter(Boolean);
+          else if (el.name === "number" || el.name === "width") item[el.name] = +el.value;
+          else item[el.name] = el.value;
+          if (el.name === "width") { item.height = item.width; item.cells = padCells(item); draw(); }
+        };
+      });
+      if (tab === "sprites") {
+        $("edit").querySelectorAll(".sw").forEach(btn => btn.onclick = () => paint = +btn.dataset.i);
+        paintGrid(item);
+      }
+    }
+
+    function paintGrid(item) {
+      const w = item.width || 32, h = item.height || 32;
+      item.cells = padCells(item);
+      const host = $("pix");
+      if (!host) return;
+      host.innerHTML = "";
+      let down = false;
+      for (let y = h-1; y >= 0; y--) {
+        for (let x = 0; x < w; x++) {
+          const i = y*w + x;
+          const el = document.createElement("i");
+          el.style.background = colorAt(item, i);
+          const put = () => { const cells = item.cells.split(""); cells[i] = encode(paint); item.cells = cells.join(""); el.style.background = colorAt(item, i); };
+          el.onmousedown = ev => { ev.preventDefault(); down = true; put(); };
+          el.onmouseenter = () => { if (down) put(); };
+          host.appendChild(el);
+        }
+      }
+      window.onmouseup = () => down = false;
+    }
+
+    function padCells(item) {
+      const n = (item.width||32)*(item.height||32);
+      let cells = item.cells || "";
+      if (cells.length < n) cells += "0".repeat(n - cells.length);
+      return cells.slice(0, n);
+    }
+    function encode(i){ return i<10 ? String(i) : i<36 ? String.fromCharCode(97+i-10) : String.fromCharCode(65+i-36); }
+    function decode(c){ if(c>='0'&&c<='9')return +c; if(c>='a'&&c<='z')return 10+c.charCodeAt(0)-97; if(c>='A'&&c<='Z')return 36+c.charCodeAt(0)-65; return 0; }
+    function colorAt(item, i){ const pal = item.colors||[]; return pal[decode((item.cells||"")[i]||"0")] || "#000"; }
+    function opts(list, cur){ return list.map(v => `<option${v===cur?" selected":""}>${v}</option>`).join(""); }
+    function esc(s){ return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+    function download(name, obj) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+    }
+    $("exportSpells").onclick = () => download("spells.json", spells);
+    $("exportArt").onclick = () => download("art.json", art);
+    $("importBtn").onclick = () => $("file").click();
+    $("file").onchange = () => {
+      const f = $("file").files[0];
+      if (!f) return;
+      f.text().then(text => {
+        const data = JSON.parse(text);
+        if (data.spells || data.joins) spells = Object.assign({joins:[],spells:[]}, data);
+        if (data.sprites || data.items) art = Object.assign({sprites:[],items:[]}, data);
+        index = 0; draw();
+      });
+    };
+    draw();
+  </script>
+</body>
+</html>

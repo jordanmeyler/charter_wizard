@@ -514,7 +514,7 @@ namespace RuneMagic
                 shape = _pendingFree.Shape;
             }
 
-            if (WorldWork.NeedsSpan(PendingSpell) && !_spanStart.HasValue)
+            if (WorldWork.NeedsSpan(SpellCodex.WorkOf(PendingSpell)) && !_spanStart.HasValue)
             {
                 var origin = CasterPosition();
                 _spanStart = SpellFormations.ClampPoint(SpellShape.Remote, origin, worldPoint);
@@ -615,6 +615,7 @@ namespace RuneMagic
 
         static string HintFor(SpellId spell, SpellShape shape)
         {
+            spell = SpellCodex.WorkOf(spell);
             if (WorldWork.IsHop(spell))
             {
                 return "Click where you want to land. Breath given a body carries you over a hollow.";
@@ -808,7 +809,7 @@ namespace RuneMagic
 
                 aim = AimPoint(spell, shape, origin, requested, potency);
                 target = ResolveCastLock(shape, origin, requested, potency) ?? target;
-                if (WorldWork.IsHop(spell))
+                if (WorldWork.IsHop(SpellCodex.WorkOf(spell)))
                 {
                     target = FindLockNear(aim, 1.8f) ?? FindLockNear(origin, 2.4f) ?? target;
                 }
@@ -859,14 +860,14 @@ namespace RuneMagic
                     var workFrom = spanFrom ?? aim;
                     try
                     {
-                        workNote = WorldWork.Apply(Grid, outcome.Spell, outcome.Material, origin, workFrom, aim);
+                        workNote = WorldWork.Apply(Grid, SpellCodex.WorkOf(outcome.Spell), outcome.Material, origin, workFrom, aim);
                     }
                     catch (System.Exception exception)
                     {
                         Debug.LogWarning("Terrain work failed: " + exception.Message);
                     }
 
-                    yield return CarryCaster(outcome.Spell, origin, requested);
+                    yield return CarryCaster(SpellCodex.WorkOf(outcome.Spell), origin, requested);
                 }
 
                 try
@@ -909,6 +910,7 @@ namespace RuneMagic
 
         Vector3 AimPoint(SpellId spell, SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
         {
+            spell = SpellCodex.WorkOf(spell);
             if (WorldWork.IsHop(spell))
             {
                 var facing = Vector2.right;
@@ -1095,7 +1097,8 @@ namespace RuneMagic
             var show = Mode == PlayMode.Aiming && !Busy;
             EnsureAimGhost();
             _aimMark.gameObject.SetActive(show);
-            var drawLine = show && (ChosenShape == SpellShape.Shot || WorldWork.NeedsSpan(PendingSpell) || WorldWork.IsHop(PendingSpell));
+            var work = SpellCodex.WorkOf(PendingSpell);
+            var drawLine = show && (ChosenShape == SpellShape.Shot || WorldWork.NeedsSpan(work) || WorldWork.IsHop(work));
             _aimLine.enabled = drawLine;
             if (!show)
             {
@@ -1110,7 +1113,7 @@ namespace RuneMagic
             var origin = CasterPosition();
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
             var point = AimPoint(PendingSpell, shape, origin, mouse);
-            var mark = shape == SpellShape.Spread && !WorldWork.IsHop(PendingSpell)
+            var mark = shape == SpellShape.Spread && !WorldWork.IsHop(SpellCodex.WorkOf(PendingSpell))
                 ? origin
                 : point;
             _aimMark.transform.position = mark;

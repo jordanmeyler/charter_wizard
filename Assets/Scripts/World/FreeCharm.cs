@@ -18,8 +18,15 @@ namespace RuneMagic
             _log = log;
 
             var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Charm();
+            var spriteId = "charm";
+            if (CatalogBook.TryItem("free-charm", out var item) && !string.IsNullOrEmpty(item.sprite))
+            {
+                spriteId = item.sprite;
+            }
+
+            renderer.sprite = SpriteFactory.Named(spriteId);
             renderer.sortingOrder = 5;
+            FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
 
             var hit = gameObject.AddComponent<CircleCollider2D>();
             hit.isTrigger = true;

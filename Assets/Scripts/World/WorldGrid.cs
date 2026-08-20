@@ -86,6 +86,14 @@ namespace RuneMagic
             RoomShell(x0, y0, x1, y1, MaterialCatalog.FromElement(wall), MaterialCatalog.FromElement(floor));
         }
 
+        public void DressLooks()
+        {
+            foreach (var tile in _tiles.Values)
+            {
+                tile?.DressNeighborhood(this);
+            }
+        }
+
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);
     }
 }

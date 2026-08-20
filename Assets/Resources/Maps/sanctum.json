@@ -1,0 +1,91 @@
+{
+  "id": "sanctum",
+  "name": "The Sanctum",
+  "spawn": { "x": 2, "y": 5 },
+  "rooms": [
+    {
+      "id": "ash-court",
+      "name": "Ash Court",
+      "origin": { "x": 0, "y": 0 },
+      "width": 13,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Ash",
+      "hint": "Read the weave. A lock with many keys.",
+      "exit": "east",
+      "stamps": [
+        { "kind": "Floor", "material": "Ember", "cells": [6, 6, 7, 5, 8, 6, 7, 7, 6, 5, 8, 5] },
+        { "kind": "Floor", "material": "SaltCrust", "cells": [6, 7, 8, 7, 5, 6, 9, 6] }
+      ],
+      "props": [
+        { "type": "plaque", "x": 3, "y": 8, "text": "Read the weave. A lock with many keys." },
+        { "type": "runes", "x": 7, "y": 8, "runes": ["Fire", "Salt"], "dir": "right" },
+        { "type": "charm", "x": 3, "y": 3 },
+        { "type": "mite", "x": 7, "y": 6, "displayName": "Ash Mite", "formulaId": "ash-mite", "formula": ["Fire", "Salt"] }
+      ]
+    },
+    {
+      "id": "wick-chapel",
+      "name": "Wick Chapel",
+      "origin": { "x": 17, "y": 0 },
+      "width": 13,
+      "height": 11,
+      "wall": "Timber",
+      "floor": "Timber",
+      "exit": "east",
+      "stamps": [
+        { "kind": "Floor", "material": "Hearth", "cells": [6, 6, 5, 5, 7, 5, 6, 4, 6, 5, 5, 6, 7, 6] },
+        { "kind": "Floor", "material": "Moss", "cells": [2, 2, 10, 2, 2, 8, 10, 8] }
+      ],
+      "props": [
+        { "type": "plaque", "x": 3, "y": 8, "text": "Hunger sleeps in the wood. Give it a body." },
+        { "type": "runes", "x": 6, "y": 8, "runes": ["Fire", "Plant"], "dir": "right" },
+        { "type": "torch", "x": 6, "y": 5, "displayName": "Cold Torch", "formulaId": "cold-torch" }
+      ]
+    },
+    {
+      "id": "the-drop",
+      "name": "The Drop",
+      "origin": { "x": 34, "y": 0 },
+      "width": 13,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Stone",
+      "exit": "east",
+      "stamps": [
+        { "kind": "Pit", "material": "Void", "cells": [5, 1, 6, 1, 7, 1, 5, 2, 6, 2, 7, 2, 5, 3, 6, 3, 7, 3, 5, 4, 6, 4, 7, 4, 5, 5, 6, 5, 7, 5, 5, 6, 6, 6, 7, 6, 5, 7, 6, 7, 7, 7, 5, 8, 6, 8, 7, 8, 5, 9, 6, 9, 7, 9] },
+        { "kind": "Floor", "material": "SaltCrust", "cells": [4, 4, 4, 5, 4, 6, 3, 5] }
+      ],
+      "props": [
+        { "type": "plaque", "x": 2, "y": 8, "text": "Rest that stands fills the drop. Breath given a body leaps it." },
+        { "type": "runes", "x": 2, "y": 6, "runes": ["Earth", "Salt"], "dir": "up" },
+        { "type": "chasm", "x": 4, "y": 5, "displayName": "Chasm", "formulaId": "chasm" }
+      ]
+    },
+    {
+      "id": "storm-cell",
+      "name": "Storm Cell",
+      "origin": { "x": 51, "y": 0 },
+      "width": 13,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Vein",
+      "exit": "none",
+      "stamps": [
+        { "kind": "Floor", "material": "Hearth", "cells": [4, 5, 5, 4, 5, 5, 5, 6, 4, 4, 4, 6] },
+        { "kind": "Floor", "material": "Scoured", "cells": [8, 5, 7, 4, 7, 5, 7, 6, 8, 4, 8, 6] },
+        { "kind": "Floor", "material": "Metal", "cells": [6, 5] }
+      ],
+      "props": [
+        { "type": "plaque", "x": 3, "y": 8, "text": "Hunger meets breath. A seed is born." },
+        { "type": "runes", "x": 6, "y": 8, "runes": ["Fire", "Air", "Spark"], "dir": "right" },
+        { "type": "rod", "x": 6, "y": 5, "displayName": "Storm Rod", "formulaId": "storm-rod" }
+      ]
+    }
+  ],
+  "halls": [
+    { "from": "ash-court", "to": "wick-chapel", "material": "Stone" },
+    { "from": "wick-chapel", "to": "the-drop", "material": "Timber" },
+    { "from": "the-drop", "to": "storm-cell", "material": "Vein" }
+  ]
+}

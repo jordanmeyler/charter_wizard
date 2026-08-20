@@ -34,7 +34,8 @@ namespace RuneMagic
             string via,
             string form,
             SpellOutcome outcome,
-            string gate)
+            string gate,
+            SpellId work = SpellId.None)
         {
             Number = number;
             Book = book;
@@ -46,6 +47,7 @@ namespace RuneMagic
             Form = form;
             Outcome = outcome;
             Gate = gate;
+            Work = work == SpellId.None ? spell : work;
             Shape = ChainBook.TryParseShape(form, out var shape) ? shape : SpellShape.None;
             RecipeRunes = ChainBook.Parse(recipe);
             ViaRunes = ChainBook.Parse(via);
@@ -61,6 +63,7 @@ namespace RuneMagic
         public string Form { get; }
         public SpellOutcome Outcome { get; }
         public string Gate { get; }
+        public SpellId Work { get; }
         public SpellShape Shape { get; }
         public IReadOnlyList<RuneId> RecipeRunes { get; }
         public IReadOnlyList<RuneId> ViaRunes { get; }
@@ -74,7 +77,9 @@ namespace RuneMagic
     /// </summary>
     public static class SpellCodex
     {
-        static readonly CodexEntry[] Entries =
+        static CodexEntry[] Entries = BuiltIn();
+
+        static CodexEntry[] BuiltIn() => new[]
         {
             E(1, SpellBook.End, SpellId.Fireball, "A seed of heat that flies.", "Fireball", "Fire · Air · Mercury", "Spark · Mercury", "Shot", SpellOutcome.Kill),
             E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "Flame · Earth", "Pillar", SpellOutcome.Kill),
@@ -128,10 +133,33 @@ namespace RuneMagic
             E(50, SpellBook.Grave, SpellId.LastBreath, "Living breath, then the grave, sent. The breath leaves them.", "Last breath", "Air · Life · Death · Mercury", "", "Remote", SpellOutcome.Kill, "Free")
         };
 
-        public static IReadOnlyList<CodexEntry> All => Entries;
+        public static IReadOnlyList<CodexEntry> All
+        {
+            get
+            {
+                CatalogBook.EnsureLoaded();
+                return Entries;
+            }
+        }
+
+        public static void Replace(CodexEntry[] entries)
+        {
+            if (entries != null && entries.Length > 0)
+            {
+                Entries = entries;
+            }
+        }
+
+        public static SpellId WorkOf(SpellId spell)
+        {
+            return TryGet(spell, out var entry) && entry.Work != SpellId.None
+                ? entry.Work
+                : spell;
+        }
 
         public static string Validate()
         {
+            CatalogBook.EnsureLoaded();
             var broken = new List<string>();
             foreach (var entry in Entries)
             {
@@ -166,6 +194,12 @@ namespace RuneMagic
 
         static void ValidateFills(List<string> broken)
         {
+            if (!TryGet(SpellId.Fireball, out var fireballEntry) ||
+                !ChainBook.SameStory(fireballEntry.RecipeRunes, ChainBook.Parse("Fire · Air · Salt · Mercury")))
+            {
+                return;
+            }
+
             var salt = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt });
             if (ChainBook.CollectExact(salt, SpellShape.None).Count != 0)
             {
@@ -199,10 +233,14 @@ namespace RuneMagic
 
         public static bool TryGet(int number, out CodexEntry entry)
         {
-            if (number >= 1 && number <= Entries.Length)
+            CatalogBook.EnsureLoaded();
+            foreach (var candidate in Entries)
             {
-                entry = Entries[number - 1];
-                return entry.Number == number;
+                if (candidate.Number == number)
+                {
+                    entry = candidate;
+                    return true;
+                }
             }
 
             entry = default;
@@ -211,6 +249,7 @@ namespace RuneMagic
 
         public static bool TryGet(SpellId spell, out CodexEntry entry)
         {
+            CatalogBook.EnsureLoaded();
             foreach (var candidate in Entries)
             {
                 if (candidate.Spell == spell)

@@ -18,16 +18,28 @@ namespace RuneMagic
 
         SpriteRenderer _renderer;
         TextMesh _label;
+        string _spriteId = "torch";
+        string _spriteLit = "torch-lit";
 
-        public void Bind(string displayName, string formulaId, SpellId[] keys)
+        public void Bind(string displayName, string formulaId, SpellId[] keys, string spriteId = null, string spriteLit = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys;
+            if (!string.IsNullOrEmpty(spriteId))
+            {
+                _spriteId = spriteId;
+            }
+
+            if (!string.IsNullOrEmpty(spriteLit))
+            {
+                _spriteLit = spriteLit;
+            }
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sprite = SpriteFactory.Torch(false);
+            _renderer.sprite = SpriteFactory.Named(_spriteId);
             _renderer.sortingOrder = 5;
+            FixtureGlow.Attach(transform, new Color(0.95f, 0.45f, 0.12f, 0.35f), 1.3f, 0.08f);
             _label = WorldLabel.Attach(transform, "Unlit torch", new Vector3(0f, 1.05f, 0f),
                 new Color(0.95f, 0.72f, 0.4f));
         }
@@ -46,7 +58,7 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
-            _renderer.sprite = SpriteFactory.Torch(true);
+            _renderer.sprite = SpriteFactory.Named(_spriteLit);
             if (_label != null)
             {
                 _label.text = "Lit torch";

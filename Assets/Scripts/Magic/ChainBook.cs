@@ -53,6 +53,16 @@ namespace RuneMagic
             Shapes["self"] = SpellShape.Self;
         }
 
+        public static void DefineBirth(RuneId rune, RuneId[] sources)
+        {
+            if (rune == RuneId.None || sources == null || sources.Length == 0)
+            {
+                return;
+            }
+
+            Births[rune] = sources;
+        }
+
         public static bool IsWrought(RuneId rune)
         {
             return rune != RuneId.None && Births.ContainsKey(rune);

@@ -55,6 +55,24 @@ namespace RuneMagic
 
         public static SanctumBuild Construct()
         {
+            var map = MapFile.LoadStartup();
+            if (map != null)
+            {
+                try
+                {
+                    return MapBuilder.Build(map);
+                }
+                catch (System.Exception exception)
+                {
+                    Debug.LogWarning("Map JSON failed, using coded sanctum: " + exception.Message);
+                }
+            }
+
+            return ConstructCoded();
+        }
+
+        public static SanctumBuild ConstructCoded()
+        {
             var root = new GameObject("SanctumGrid");
             var grid = root.AddComponent<WorldGrid>();
             var rooms = new RoomInfo[4];
@@ -72,6 +90,7 @@ namespace RuneMagic
             Connect(grid, r2, r3, MaterialId.Timber);
             rooms[3] = BuildStormCell(grid, r4, locks, 3);
             Connect(grid, r3, r4, MaterialId.Vein);
+            grid.DressLooks();
 
             return new SanctumBuild
             {
@@ -88,6 +107,7 @@ namespace RuneMagic
             var root = new GameObject("SanctumGrid");
             var grid = root.AddComponent<WorldGrid>();
             grid.RoomShell(0, 0, 8, 8, MaterialId.Stone, MaterialId.Stone);
+            grid.DressLooks();
             var room = new RoomInfo("fallback", "Broken sanctum",
                 new RectInt(0, 0, 9, 9),
                 WorldGrid.Center(2, 4));
