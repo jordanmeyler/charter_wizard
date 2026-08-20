@@ -19,10 +19,11 @@ namespace RuneMagic
         public ISpellLock CurrentTarget { get; private set; }
         public RoomInfo CurrentRoom { get; private set; }
         public WorldTile Underfoot { get; private set; }
-        public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Cast chooses a form, then you aim.";
+        public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
         public PlayMode Mode { get; private set; } = PlayMode.Exploring;
+        public FreeAttunement Attunement { get; } = new();
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
         public RuneTapestry Tapestry { get; private set; }
         public string FieldReading { get; private set; } = string.Empty;
@@ -234,14 +235,6 @@ namespace RuneMagic
 
         void HandleCharterInput()
         {
-            if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Q))
-            {
-                Composer.ToggleStance();
-                Log(Composer.Stance == CastingStance.Charter
-                    ? "Bound stance. Reliable. The Charter siphons a little light."
-                    : "Unbound stance. Higher magnitude, variance-loaded. Never the required key.");
-            }
-
             if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.Backspace))
             {
                 if (Composer.IsEmpty)
@@ -258,7 +251,7 @@ namespace RuneMagic
             {
                 if (!Composer.IsEmpty)
                 {
-                    CastDraft();
+                    CastCharter();
                 }
                 else if (Held.Occupied)
                 {
@@ -266,8 +259,13 @@ namespace RuneMagic
                 }
                 else
                 {
-                    Log("Nothing is strung. Choose runes, or store a form first.");
+                    Log("Nothing is strung. Choose runes, then Charter Cast, Store, or Free Cast.");
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                CastFree();
             }
 
             if (Input.GetKeyDown(KeyCode.R))
@@ -285,7 +283,7 @@ namespace RuneMagic
         {
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
-            Log("The weave stills. Draw from the wall, or click a glyph in the world.");
+            Log("The weave stills. Draw from the wall or a glyph, then Charter Cast, Store, or Free Cast.");
         }
 
         public void CloseCharter()
@@ -296,7 +294,9 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
-            if (string.IsNullOrEmpty(LastLog) || LastLog.StartsWith("The field stands still"))
+            if (string.IsNullOrEmpty(LastLog) ||
+                LastLog.StartsWith("The field stands still") ||
+                LastLog.StartsWith("The weave stills"))
             {
                 Log(Held.Occupied
                     ? $"The wall folds. You still hold {Held.Name}."
@@ -393,7 +393,7 @@ namespace RuneMagic
             Log("The composition is released back into the field.");
         }
 
-        public void CastDraft()
+        public void CastCharter()
         {
             if (Busy)
             {
@@ -406,7 +406,23 @@ namespace RuneMagic
                 return;
             }
 
-            BeginAim(Composer.Snapshot(), Composer.Stance, fromHeld: false);
+            BeginAim(Composer.Snapshot(), CastingStance.Charter, fromHeld: false);
+        }
+
+        public void CastFree()
+        {
+            if (Busy)
+            {
+                return;
+            }
+
+            if (Composer.IsEmpty)
+            {
+                Log("Free has nothing to complete. String at least one rune.");
+                return;
+            }
+
+            BeginAim(Composer.Snapshot(), CastingStance.Free, fromHeld: false);
         }
 
         public void StoreDraft()
@@ -420,11 +436,11 @@ namespace RuneMagic
             var composition = Composer.Snapshot();
             var name = _resolver.PreviewName(composition);
             var overwritten = Held.Occupied;
-            Held = new StoredSpell(composition, Composer.Stance, name);
+            Held = new StoredSpell(composition, CastingStance.Charter, name);
             Composer.Clear();
             Log(overwritten
-                ? $"The held form is rewritten. You now carry {name}."
-                : $"{name} is held. One form only — Store again to replace it.");
+                ? $"The held Charter form is rewritten. You now carry {name}. Free cannot be stored."
+                : $"{name} is held as Charter. Free is wild — it cannot be stored.");
         }
 
         public void CastHeld()
@@ -452,7 +468,14 @@ namespace RuneMagic
 
             ChosenShape = shape;
             var def = SpellFormations.Get(shape);
-            PendingPreview = _resolver.PreviewName(_pendingComposition, shape);
+            PendingPreview = _pendingStance == CastingStance.Free
+                ? ChainBook.PreviewFree(_pendingComposition, Attunement.FillBudget, shape)
+                : _resolver.PreviewName(_pendingComposition, shape);
+            if (string.IsNullOrEmpty(PendingPreview))
+            {
+                PendingPreview = _resolver.PreviewName(_pendingComposition, shape);
+            }
+
             Log($"{def.Name}. {def.Hint}");
         }
 
@@ -527,39 +550,54 @@ namespace RuneMagic
             _pendingStance = stance;
             _pendingFromHeld = fromHeld;
             PendingStance = stance;
-            PendingPreview = _resolver.PreviewName(composition);
             ChosenShape = SpellShape.None;
 
-            var shapes = ChainBook.ShapesFor(composition);
-            if (shapes.Count == 0)
+            if (stance == CastingStance.Free)
+            {
+                var pool = ChainBook.CollectForFree(composition, SpellShape.None, Attunement.FillBudget);
+                if (pool.Count == 0)
+                {
+                    Log($"Free finds no spell that {CastResolver.FillWords(Attunement.FillBudget)} would complete.");
+                    return;
+                }
+
+                PendingPreview = ChainBook.PreviewFree(composition, Attunement.FillBudget);
+                var shapes = ChainBook.ShapesFor(pool);
+                AvailableShapes = shapes;
+                Mode = PlayMode.Aiming;
+                if (shapes.Count == 1)
+                {
+                    ChooseShape(shapes[0]);
+                    return;
+                }
+
+                Log($"{PendingPreview}. Choose how it aims, then click the world. Esc cancels.");
+                return;
+            }
+
+            PendingPreview = _resolver.PreviewName(composition);
+            var charterShapes = ChainBook.ShapesFor(composition);
+            if (charterShapes.Count == 0)
             {
                 var aspect = composition.Aspect;
                 if (material != RuneId.None && RuneCatalog.IsFormAspect(aspect))
                 {
-                    shapes = SpellFormations.Available(material, aspect);
+                    charterShapes = SpellFormations.Available(material, aspect);
                 }
             }
 
-            if (shapes.Count == 0 && stance == CastingStance.Free)
-            {
-                AvailableShapes = new[] { SpellShape.Shot, SpellShape.Pillar, SpellShape.Spread, SpellShape.Remote, SpellShape.Self };
-                Mode = PlayMode.Aiming;
-                Log("No natural form. Pick any formation — Free will borrow a written spell of that type. Esc cancels.");
-                return;
-            }
-
-            AvailableShapes = shapes;
+            AvailableShapes = charterShapes;
             Mode = PlayMode.Aiming;
 
-            if (shapes.Count == 0)
+            if (charterShapes.Count == 0)
             {
                 Log("Those runes have no written form. Click the world to fizzle, or Esc to keep the string.");
                 return;
             }
 
-            if (shapes.Count == 1)
+            if (charterShapes.Count == 1)
             {
-                ChooseShape(shapes[0]);
+                ChooseShape(charterShapes[0]);
                 return;
             }
 
@@ -586,7 +624,7 @@ namespace RuneMagic
             }
 
             var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
-            Log($"Testing {entry.Name}: {entry.Recipe}.{gate} Cast to aim.");
+            Log($"Testing {entry.Name}: {entry.Recipe}.{gate} Charter Cast or Free Cast to aim.");
         }
 
         void HandleAimingInput()
@@ -671,7 +709,7 @@ namespace RuneMagic
             }
 
             OpenCharter();
-            Log($"{clicked.DisplayName} is a lock. String a key, then Cast or Store.");
+            Log($"{clicked.DisplayName} is a lock. String a key, then Charter Cast, Store, or Free Cast.");
         }
 
         void Release(Composition composition, CastingStance stance, SpellShape shape, Vector3 requested)
@@ -709,17 +747,20 @@ namespace RuneMagic
                 target = LockAtAim(shape, origin, requested);
                 CurrentTarget = target;
                 var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
-                outcome = _resolver.Resolve(composition, stance, shape, accepted, Grimoire);
+                outcome = _resolver.Resolve(composition, stance, shape, accepted, Grimoire, Attunement);
+                var potency = outcome.Potency;
                 if (outcome.Shape != SpellShape.None)
                 {
                     shape = outcome.Shape;
-                    aim = SpellFormations.ClampPoint(shape, origin, requested);
-                    target = LockAtAim(shape, origin, requested);
+                    aim = SpellFormations.ClampPoint(shape, origin, requested, potency);
+                    target = LockAtAim(shape, origin, requested, potency);
                 }
 
-                var caption = outcome.Spell != SpellId.None
-                    ? _resolver.PreviewName(composition, shape)
-                    : "unformed surge";
+                var caption = outcome.Spell != SpellId.None && SpellCodex.TryGet(outcome.Spell, out var named)
+                    ? named.Name
+                    : outcome.Spell != SpellId.None
+                        ? _resolver.PreviewName(composition, shape)
+                        : "unformed surge";
 
                 var material = outcome.Material;
                 if (material == RuneId.None)
@@ -733,7 +774,7 @@ namespace RuneMagic
                 }
                 else
                 {
-                    SpellFx.Play(origin, aim, material, shape, caption, () => finished = true);
+                    SpellFx.Play(origin, aim, material, shape, caption, () => finished = true, potency);
                 }
             }
             catch (System.Exception exception)
@@ -803,10 +844,11 @@ namespace RuneMagic
             return LockAtAim(shape, CasterPosition(), mouse);
         }
 
-        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested)
+        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
         {
-            var point = SpellFormations.ClampPoint(shape, origin, requested);
-            var radius = SpellFormations.Get(shape).LockRadius;
+            var scale = potency <= 0f ? 1f : potency;
+            var point = SpellFormations.ClampPoint(shape, origin, requested, scale);
+            var radius = SpellFormations.Get(shape).LockRadius * scale;
             if (shape == SpellShape.Shot)
             {
                 return FindLockAlong(origin, point, radius);

@@ -30,7 +30,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (mode == PlayMode.Aiming && mouse.y <= BarHeight + 108f)
+            if (mode == PlayMode.Aiming && mouse.y <= BarHeight + 120f)
             {
                 return true;
             }
@@ -118,10 +118,10 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 900, 22),
-                "The wall is the eleven. Click a drifting glyph in the world to draw what the room is made of.",
+                "The wall is the eleven. Click a drifting glyph to draw what the room is made of. Charter wants the whole recipe. Free fills a blank.",
                 body);
             GUI.Label(new Rect(28, 74, 900, 20),
-                $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc / Grimoire",
+                "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
                 hint);
 
             DrawRuneWall();
@@ -148,18 +148,20 @@ namespace RuneMagic
 
         void DrawComposeDock()
         {
-            var dockHeight = 188f;
+            var dockHeight = 214f;
             var dockTop = Screen.height - dockHeight - BarHeight;
             DrawPanel(0, dockTop, Screen.width, dockHeight);
 
             var body = Label(14, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
             var accent = Label(16, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             GUI.Label(new Rect(24, dockTop + 10, 640, 22), "String", accent);
-            GUI.Label(new Rect(24, dockTop + 86, Screen.width - 48, 22),
+            GUI.Label(new Rect(24, dockTop + 86, Screen.width - 48, 20),
                 _director.Composer.Describe(), body);
+            GUI.Label(new Rect(24, dockTop + 106, Screen.width - 48, 20),
+                _director.Composer.DescribeFree(_director.Attunement), body);
 
             DrawDraftSlots(dockTop + 36);
-            DrawCharterActions(dockTop + 112);
+            DrawCharterActions(dockTop + 132);
         }
 
         void DrawDraftSlots(float y)
@@ -185,25 +187,30 @@ namespace RuneMagic
         void DrawCharterActions(float y)
         {
             var canAct = !_director.Composer.IsEmpty;
-            if (DrawAction(new Rect(24, y, 160, 42), "Cast", canAct, new Color(0.72f, 0.28f, 0.22f)))
+            if (DrawAction(new Rect(24, y, 148, 42), "Charter Cast", canAct, new Color(0.72f, 0.28f, 0.22f)))
             {
-                _director.CastDraft();
+                _director.CastCharter();
             }
 
-            if (DrawAction(new Rect(196, y, 160, 42), "Store", canAct, new Color(0.28f, 0.38f, 0.62f)))
+            if (DrawAction(new Rect(180, y, 132, 42), "Store", canAct, new Color(0.28f, 0.38f, 0.62f)))
             {
                 _director.StoreDraft();
             }
 
-            if (DrawAction(new Rect(368, y, 120, 42), "Clear", canAct, new Color(0.22f, 0.22f, 0.26f)))
+            if (DrawAction(new Rect(320, y, 148, 42), "Free Cast", canAct, new Color(0.52f, 0.22f, 0.48f)))
+            {
+                _director.CastFree();
+            }
+
+            if (DrawAction(new Rect(476, y, 100, 42), "Clear", canAct, new Color(0.22f, 0.22f, 0.26f)))
             {
                 _director.ClearDraft();
             }
 
             var held = _director.Held.Occupied ? _director.Held.Name : "empty";
-            var body = Label(14, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
-            GUI.Label(new Rect(508, y + 2, 360, 38),
-                $"Held: {held}\nOne slot. Store rewrites it.", body);
+            var body = Label(13, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
+            GUI.Label(new Rect(588, y + 2, 280, 38),
+                $"Held: {held}\nCharter only. Free cannot be stored.", body);
 
             if (_director.Held.Occupied &&
                 DrawAction(new Rect(Screen.width - 184, y, 160, 42), "Aim held", true, new Color(0.42f, 0.3f, 0.18f)))
@@ -228,18 +235,18 @@ namespace RuneMagic
             if (_director.Held.Occupied)
             {
                 GUI.Label(new Rect(312, y + 40, 440, 40),
-                    $"{_director.Held.Name}  ·  {_director.Held.Stance}\nClick the slot or press F, then choose a form and aim.",
+                    $"{_director.Held.Name}  ·  Charter\nClick the slot or press F, then choose a form and aim.",
                     body);
             }
             else
             {
                 GUI.Label(new Rect(312, y + 40, 440, 40),
-                    "Empty. Space opens the Charter. String runes, then Store.",
+                    "Empty. Store is a Charter benefit. Free is wild and cannot be held.",
                     body);
             }
 
             GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 980f), 64),
-                "WASD move · Space Charter · Cast then aim · Esc / Grimoire",
+                "WASD move · Space Charter · F Charter Cast · X Free · R Store · Esc / Grimoire",
                 hint);
 
             var grim = new Rect(Screen.width - 188, y + 22, 168, 52);
@@ -274,8 +281,8 @@ namespace RuneMagic
             {
                 GUI.Label(new Rect(16, y + 36, 640, 40),
                     _director.PendingStance == CastingStance.Free
-                        ? "No natural form. Pick any formation — Free borrows a written spell of that type."
-                        : "No natural form. Click the world to fizzle, or Esc to keep the string.",
+                        ? "Free finds no written chain that fill would complete. Esc to keep the string."
+                        : "No written form. Click the world to fizzle, or Esc to keep the string.",
                     body);
             }
             else
@@ -342,7 +349,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "All fifty are written. Click a name to string it for testing. 41–50: Death / Free. Esc closes.",
+                $"{_director.Attunement.Notes()}   ·   Click a name to string it. 41–50: Death / Free. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
