@@ -10,7 +10,7 @@ Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are out of this pa
 
 There is no damage. A spell **kills**, **restrains**, or does **neither**.
 
-Formation (Shot, Pillar, Spread, Remote, Self) is **written in the chain**, not chosen later. Earth at the end of a body stands (Pillar). Mercury without breath goes *into* a thing or lands away (Remote). Breath already in the chain, then Mercury, flies (Shot). A body around the feet is Spread. Flight stays on the caster (Self).
+Formation (Shot, Pillar, Spread, Remote, Self) is **written in the chain**, not chosen later. Earth at the end of a body stands (Pillar). Mercury without breath goes *into* a thing or lands away (Remote). Breath already in the chain, then Mercury, flies (Shot). A body around the feet is Spread. Hop and Flight stay on the caster (Self). A pillar is one tile: a hollow takes it and holds; a floor grows a column. A wall asks for a start and a stop — across a pit it is a span, on the floor it is a barrier.
 
 ---
 
@@ -166,7 +166,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | 20 | The veil is given ice’s story and sent softly. They slow. | Snowfall | Air · Water · Salt · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
 | 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Salt · Earth · Fire | Ice · Fire | Remote | Neither |
 | 22 | Rest given a body and sent. Earth flies. | Hurled stone | Earth · Salt · Mercury | Stone · Mercury | Shot | Kill / Neither |
-| 23 | A body of rest asked to rest as more rest. A wall. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
+| 23 | A body of rest asked to rest as more rest. Click start and stop. Across a pit it is a span; on the floor it is a barrier. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
 | 24 | Rest asked to go, given breath so it leaves a hollow. | Pit | Earth · Mercury · Air | Wind meeting rest, inverted | Remote | Neither / Restrain |
 | 25 | A body of rest given breath and sent across. A span. | Bridge | Earth · Salt · Air · Mercury | Stone · Air · Mercury | Remote | Neither |
 | 26 | Rest meeting yield, given a body. It holds them. | Quagmire | Earth · Water · Salt | Mud · Salt | Spread | Restrain |
@@ -176,8 +176,8 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | 30 | That living plant is sent. It holds them, or it climbs. | Vine | Water · Earth · Salt · Life · Mercury | Grove · Mercury | Remote | Restrain / Neither |
 | 31 | That living plant is asked to stand. | Vine-rise | Water · Earth · Salt · Life · Earth | Grove · Earth | Pillar | Neither / Restrain |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
-| 33 | Breath given a body, marked living, sent. A leap. | Hop | Air · Salt · Life · Mercury | — | Spread | Neither |
-| 34 | Breath going; a body of it; marked living; going again. You fly. | Flight | Air · Mercury · Salt · Life · Mercury | Wind · Salt · Life · Mercury | Self | Neither |
+| 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | Air · Salt · Mercury | Self | Neither |
+| 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
 | 35 | Hunger’s passion is sent into a mind. | Rage | Fire · Sulphur · Mercury | — | Remote | Neither |
 | 36 | The withheld reaches a mind. They flee or freeze. | Terror | Dark · Sulphur · Mercury | — | Remote | Restrain |
 | 37 | Yield reaches a mind. They sleep. They can be woken. | Lull | Water · Sulphur · Mercury | — | Remote | Restrain |
@@ -220,7 +220,7 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 ## 6. Why this split
 
-**Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Flight without Life is a wind. Call without Life is a statue.
+**Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Hop and the short Flight are breath given a body (Air · Salt · Air, Air · Mercury · Salt) and do not need Life. Call without Life is a statue.
 
 **Death** is not how you freeze water or open a pit. Rest already does that. Death is how Free reaches the grave — blight, shade, unmaking, the sleep that is not sleep, ice that will not thaw. The ordinary book should read as if Death had never been found.
 
@@ -228,6 +228,6 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 ## 7. The sanctum slice
 
-The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
+The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Ice-pillar is Water · Salt · Earth (or Water × Salt · Pillar). Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self). A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
 
 **Charter Cast** wants the whole sentence. **Free Cast** may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence is not filled toward a longer one. Free cannot be stored.

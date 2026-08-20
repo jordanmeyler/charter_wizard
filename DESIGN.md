@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.11. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.12. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -74,7 +74,7 @@ Full wrought list and fifty story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 o
 
 There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
 
-A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Flight and Chain are longer because more happened.
+A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt). Chain is longer because more happened.
 
 **Formation is part of the spell.** The chain writes how it lands. There is no Remote / Pillar fork at cast time.
 
@@ -84,9 +84,9 @@ A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — t
 | Sent *into* a thing, or placed away (Mercury, no breath) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
 | Breath already in the chain, then sent | **Shot** | Fireball: Fire · Air · Salt · Mercury. Lightning. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
-| Kept on the caster | **Self** | Flight |
+| Kept on the caster | **Self** | Hop. Flight |
 
-Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form.
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 

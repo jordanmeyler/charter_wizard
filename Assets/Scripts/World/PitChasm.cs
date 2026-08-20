@@ -44,7 +44,7 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
-            if (_grid != null && _pits != null)
+            if (!WorldWork.LeavesGapsWhenCrossing(spell) && _grid != null && _pits != null)
             {
                 foreach (var coord in _pits)
                 {
@@ -52,13 +52,19 @@ namespace RuneMagic
                 }
             }
 
-            return spell == SpellId.Wall || spell == SpellId.StonePillar
-                ? "A standing column of earth settles into the gap and holds."
-                : spell == SpellId.Pit || spell == SpellId.RaisedEarth
-                    ? "Earth answers away from you and leaves a hollow filled."
-                    : spell == SpellId.Bridge
-                        ? "A body of rest given breath spans the drop."
-                        : "Earth takes spirit and flies. Hurled stone piles into a bridge.";
+            return spell == SpellId.Hop
+                ? "Breath given a body carries you. The drop is crossed."
+                : spell == SpellId.Flight
+                    ? "A body of breath stays on you. The drop cannot take you."
+                    : spell == SpellId.Wall || spell == SpellId.StonePillar
+                        ? "A standing body of rest fills the gap, or bars the floor."
+                        : WorldWork.IsPillar(spell)
+                            ? "A column settles into the hollow and holds."
+                            : spell == SpellId.Pit || spell == SpellId.RaisedEarth
+                                ? "Earth answers away from you and leaves a hollow filled."
+                                : spell == SpellId.Bridge
+                                    ? "A body of rest given breath spans the drop."
+                                    : "Earth takes spirit and flies. Hurled stone piles into a bridge.";
         }
     }
 }

@@ -57,7 +57,7 @@ namespace RuneMagic
 
         public static readonly FormationDef Self = new(
             SpellShape.Self, "Self", "keep it on you",
-            "Click to confirm. The spell stays on the caster.", 0.8f, 2.4f);
+            "Click to confirm. The spell stays on the caster. Hop still asks for a landing.", 4.8f, 2.4f);
 
         static readonly FormationDef[] AllDefs = { Shot, Pillar, Spread, Remote, Self };
 
@@ -161,6 +161,8 @@ namespace RuneMagic
                     return IsAny(material, RuneId.Earth, RuneId.Water, RuneId.Ice, RuneId.Stone);
                 case SpellShape.Shot:
                     return IsAny(material, RuneId.Earth, RuneId.Ice, RuneId.Stone);
+                case SpellShape.Self:
+                    return material == RuneId.Air;
                 default:
                     return false;
             }
@@ -177,6 +179,8 @@ namespace RuneMagic
                     return IsAny(material, RuneId.Water, RuneId.Air, RuneId.Dust, RuneId.Steam);
                 case SpellShape.Remote:
                     return IsAny(material, RuneId.Air, RuneId.Spark, RuneId.Steam);
+                case SpellShape.Self:
+                    return material == RuneId.Air;
                 default:
                     return false;
             }
@@ -207,6 +211,8 @@ namespace RuneMagic
                     return IsAny(material, RuneId.Earth, RuneId.Plant, RuneId.Mud);
                 case SpellShape.Remote:
                     return IsAny(material, RuneId.Water, RuneId.Plant);
+                case SpellShape.Self:
+                    return material == RuneId.Air;
                 default:
                     return false;
             }

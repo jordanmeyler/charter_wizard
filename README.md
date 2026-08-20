@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.11). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.12). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -12,7 +12,7 @@ Four rooms, east to west of the spawn. Tiles are **materials** (ash, timber, hea
 | --- | --- | --- | --- |
 | **Ash Court** | Ash Mite `{Fire · Salt}` | Almost any formed offensive spell | The most basic lock. Many keys. |
 | **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Flame-pillar (Fire · Salt · Earth), Melt (Fire · Salt · Mercury), Ignite, Snuff / Smother | Terrain is a lock. The chain writes whether fire stands or goes *into* the wick. |
-| **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth, Pillar), Pit (Earth · Mercury · Air, Remote), Bridge | Traversal. Rest that stands is a pillar; rest that leaves is remote. |
+| **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth: click start and stop), any pillar, Hop (Air · Salt · Air, Self), Flight, Bridge | Traversal. Rest that stands fills a hollow or bars the floor. Breath given a body leaps or flies. |
 | **Storm Cell** | Storm rod `{Spark · waiting}` | Lightning (Fire · Air · Air · Mercury, Shot), Live-floor (Fire · Air · Salt, Spread), Jolt | A join becomes a rune, then the chain continues. The form is in that sentence. |
 
 Walk the orange Free charm in Ash Court if you want Fireball written for you. You can ignore it and compose from first principles.
@@ -44,14 +44,14 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
-- After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; Mercury without breath is remote). Esc cancels and keeps the string.
+- After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Mercury without breath is remote; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
 
 Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten Charter string fizzles. Free fills a blank; used types grow. The right key unmakes the lock and opens the door east.
 
-Walk into a pit and you return to the last safe floor.
+Walk into a pit and you return to the last safe floor. A pillar or wall fills that hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles. Flight lets you walk over pits for a short while.
 
 ## Where to grow the trees
 

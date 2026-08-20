@@ -33,15 +33,34 @@ namespace RuneMagic
             ApplyCollider();
         }
 
+        public bool CanRaiseBarrier =>
+            Kind == TileKind.Floor || Kind == TileKind.Bridge;
+
         public void BecomeBridge()
         {
-            Def = new TileDef(TileKind.Bridge, MaterialId.Stone);
-            ApplyVisual();
-            if (_collider != null)
+            BecomeWalkable(MaterialId.Stone);
+        }
+
+        public void BecomeWalkable(MaterialId material)
+        {
+            Reshape(new TileDef(TileKind.Bridge, material == MaterialId.None ? MaterialId.Stone : material));
+        }
+
+        public void BecomeBarrier(MaterialId material)
+        {
+            if (!CanRaiseBarrier)
             {
-                Destroy(_collider);
-                _collider = null;
+                return;
             }
+
+            Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
+        }
+
+        void Reshape(TileDef def)
+        {
+            Def = def;
+            ApplyVisual();
+            RefreshCollider();
         }
 
         public void OpenDoor()
@@ -115,25 +134,44 @@ namespace RuneMagic
 
         void ApplyCollider()
         {
-            if (_collider != null)
+            RefreshCollider();
+        }
+
+        void RefreshCollider()
+        {
+            var solid = Kind == TileKind.Wall || Kind == TileKind.Door;
+            var pit = Kind == TileKind.Pit;
+            if (!solid && !pit)
             {
+                if (_collider != null)
+                {
+                    Destroy(_collider);
+                    _collider = null;
+                }
+
                 return;
             }
 
-            if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+            if (_collider == null)
             {
-                return;
+                var box = gameObject.AddComponent<BoxCollider2D>();
+                box.size = Vector2.one;
+                _collider = box;
             }
 
-            var box = gameObject.AddComponent<BoxCollider2D>();
-            box.size = Vector2.one;
-            box.isTrigger = Kind == TileKind.Pit;
-            _collider = box;
+            _collider.isTrigger = pit;
+            _collider.enabled = true;
         }
 
         void OnTriggerEnter2D(Collider2D other)
         {
             if (Kind != TileKind.Pit || !AdeptAvatar.IsAdept(other))
+            {
+                return;
+            }
+
+            var adept = other.GetComponent<AdeptAvatar>();
+            if (adept != null && adept.IsAirborne)
             {
                 return;
             }
