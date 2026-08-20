@@ -13,40 +13,23 @@ namespace RuneMagic
             }
 
             PrepareCamera();
-            BuildRoom();
 
             var directorObject = new GameObject("Sanctum");
             var director = directorObject.AddComponent<SanctumDirector>();
             var hud = directorObject.AddComponent<GameHud>();
             hud.Bind(director);
 
-            var player = SpawnPlayer();
+            var build = SanctumLayout.Construct();
+            director.Begin(build);
+
+            if (build.Charm != null)
+            {
+                build.Charm.AddComponent<FreeCharm>().Bind(director.Grimoire, director.Log);
+            }
+
+            var player = SpawnPlayer(build.Spawn);
             var field = player.AddComponent<RuneField>();
             field.Bind(director.Composer, director.Log);
-
-            var charm = new GameObject("FreeCharm");
-            charm.transform.position = new Vector3(-3.2f, -1.4f, 0f);
-            charm.AddComponent<FreeCharm>().Bind(director.Grimoire, director.Log);
-
-            var moth = SpawnLock(
-                "Cinder Moth",
-                "cinder-moth",
-                new Vector3(3.4f, 1.6f, 0f),
-                new[] { RuneId.Fire, RuneId.Mercury },
-                new[] { SpellId.WaterJet, SpellId.IceWall },
-                new Color(0.9f, 0.35f, 0.12f),
-                ensouled: false);
-
-            var sentinel = SpawnLock(
-                "Clay Sentinel",
-                "clay-sentinel",
-                new Vector3(-1.2f, 3.3f, 0f),
-                new[] { RuneId.Earth, RuneId.Salt },
-                new[] { SpellId.Gale, SpellId.ScatterDust },
-                new Color(0.52f, 0.38f, 0.24f),
-                ensouled: false);
-
-            director.Begin(new[] { moth, sentinel });
         }
 
         static void PrepareCamera()
@@ -61,49 +44,24 @@ namespace RuneMagic
             }
 
             cam.orthographic = true;
-            cam.orthographicSize = 6.2f;
+            cam.orthographicSize = 5.6f;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.06f, 0.07f, 0.1f);
-            cam.transform.position = new Vector3(0f, 0f, -10f);
+            cam.backgroundColor = new Color(0.04f, 0.045f, 0.07f);
+            cam.transform.position = new Vector3(2f, 5f, -10f);
 
             var follow = cam.GetComponent<FollowCamera2D>() ?? cam.gameObject.AddComponent<FollowCamera2D>();
-            follow.damp = 7f;
+            follow.damp = 8f;
         }
 
-        static void BuildRoom()
-        {
-            var floor = new GameObject("Floor");
-            var floorSprite = floor.AddComponent<SpriteRenderer>();
-            floorSprite.sprite = SpriteFactory.Square(new Color(0.12f, 0.13f, 0.18f), 16);
-            floorSprite.sortingOrder = 0;
-            floor.transform.localScale = new Vector3(18f, 14f, 1f);
-
-            SpawnWall("WallN", new Vector3(0f, 6.6f, 0f), new Vector3(18f, 0.6f, 1f));
-            SpawnWall("WallS", new Vector3(0f, -6.6f, 0f), new Vector3(18f, 0.6f, 1f));
-            SpawnWall("WallW", new Vector3(-8.8f, 0f, 0f), new Vector3(0.6f, 14f, 1f));
-            SpawnWall("WallE", new Vector3(8.8f, 0f, 0f), new Vector3(0.6f, 14f, 1f));
-        }
-
-        static void SpawnWall(string name, Vector3 position, Vector3 scale)
-        {
-            var wall = new GameObject(name);
-            wall.transform.position = position;
-            wall.transform.localScale = scale;
-            var sprite = wall.AddComponent<SpriteRenderer>();
-            sprite.sprite = SpriteFactory.Square(new Color(0.18f, 0.16f, 0.24f), 8);
-            sprite.sortingOrder = 1;
-            wall.AddComponent<BoxCollider2D>();
-        }
-
-        static GameObject SpawnPlayer()
+        static GameObject SpawnPlayer(Vector3 spawn)
         {
             var player = new GameObject("Adept");
             player.tag = "Player";
-            player.transform.position = Vector3.zero;
+            player.transform.position = spawn;
 
             var sprite = player.AddComponent<SpriteRenderer>();
-            sprite.sprite = SpriteFactory.Circle(new Color(0.55f, 0.42f, 0.82f), 56);
-            sprite.sortingOrder = 6;
+            sprite.sprite = SpriteFactory.Adept();
+            sprite.sortingOrder = 8;
 
             var body = player.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;
@@ -113,6 +71,8 @@ namespace RuneMagic
             var hit = player.AddComponent<CircleCollider2D>();
             hit.radius = 0.32f;
             player.AddComponent<PlayerMotor2D>();
+            WorldLabel.Attach(player.transform, "You", new Vector3(0f, 0.7f, 0f),
+                new Color(0.82f, 0.72f, 1f));
 
             var camera = Camera.main;
             if (camera != null)
@@ -125,22 +85,6 @@ namespace RuneMagic
             }
 
             return player;
-        }
-
-        static EncounterLock SpawnLock(
-            string displayName,
-            string formulaId,
-            Vector3 position,
-            RuneId[] formula,
-            SpellId[] keys,
-            Color color,
-            bool ensouled)
-        {
-            var actor = new GameObject(displayName);
-            actor.transform.position = position;
-            var encounter = actor.AddComponent<EncounterLock>();
-            encounter.Bind(displayName, formulaId, formula, keys, color, ensouled);
-            return encounter;
         }
     }
 }

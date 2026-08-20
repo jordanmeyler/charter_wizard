@@ -1,17 +1,25 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — so combat is a lock-and-key puzzle, not a damage race. This document is the living source of truth for the magic system. Version 0.3.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.6. Companion artifact: `material-codex.html`.*
 
 ---
 
 ## 1. Core premise, casting & progression
 
-- Casting is **perception, not position.** Runes stream and orbit around the player through the fabric of reality (the "matrix"). You cast by *reading the field and composing from what flows through it* — not by standing on a particular tile.
-- **The field is constant.** A novice and a master perceive exactly the same runes. There is no sight-leveling and no "seeing deeper." What changes is *understanding*, never perception.
-- **Power is gated by knowledge and items — never by experience.** No XP, no levels, no stat growth. You get stronger by *understanding more* and occasionally by *acquiring something*. The vast majority of the game opens through knowledge alone.
-- Every enemy is a **lock**; every spell you can assemble is a **key**. The right key resolves the encounter instantly.
-- **The three gates:** *knowledge* (the main one — recipes and rune-meanings you've learned), *items* (shortcuts, wards, and the hard gate to Primordial — section 7), and *narrative grant* (the divine top tier). Most locks accept more than one solution, so sequence-breaking is a supported playstyle.
-- **Learning loop:** you learn by *observation* — seeing runes in the world, in creature formulas, and especially in **free magic and free-magic items, which reveal their rune composition.** Borrowing an effect you don't understand teaches you the recipe; mastery is graduating from *borrowing* to *composing*. Free magic is, among other things, the game's tutorial substrate.
+- Casting is **perception, not position.** Runes stream around the player through the fabric of reality (the "matrix"); you cast by reading the field and composing from what flows through it.
+- **The field is constant.** Novice and master perceive the same runes. No sight-leveling. What changes is *understanding*.
+- **Power is gated by knowledge and items — never generic experience.** No character levels, no stat growth, no XP bar. The one practice-driven exception is Free attunement (a lopsided specialization, not a level — see below).
+- Every enemy (and much terrain) is a **lock**; every spell you can assemble is a **key**. The right key resolves instantly.
+- **Three gates:** *knowledge* (main — learned recipes/rune-meanings), *items* (shortcuts, wards, and the hard gate to Primordial), *narrative grant* (divine tier). Most locks accept more than one solution → sequence-breaking is supported.
+- **Learning loop:** you learn by observation — runes seen in the world, in creature formulas, and especially in **free magic and free-magic items, which reveal their composition.** Borrowing an effect you don't understand teaches the recipe; mastery is graduating from *borrowing* to *composing*.
+
+### Two progression models (one per path)
+- **Charter = knowledge.** Formulas acquired by instruction (demonstration, reading, being told combos). Binary; new knowledge never costs old. Charter mages are **broad generalists** — no grind, no decay.
+- **Free = attunement.** Intuitive, emotional casting. Spells get more effective the more they're cast — but as **specialization, not a power bar**: attunement deepens one focus at the **direct expense of the others**, and "more effective" = reaching further up that rune's branch (enough Fire → chain lightning, call lava, while water-rooted casting withers).
+- Consequences: Free casters **specialize hard**, **patch weak elements with items and unique free spells**, and must **understand a branch to exploit it** — so even the intuitive path forces learning the tree.
+
+### Free as the default onboarding path
+Players distrust orthodoxy by default, so most reach for Free first — the design leans in. The intuitive, item-friendly, rune-revealing path is the on-ramp; later the story **uses the player's anti-authority expectations against them** (the orthodoxy is more tangled than it looked; Free's costs and low ceiling are real; the "villains" are sincere believers; the union truth). An expectation-subversion engine that **encourages replays**.
 
 *The three systems (Charter, Free, Primordial) are kept mechanically separate for now; their "union" is a narrative endgame idea, not a gameplay blend.*
 
@@ -19,36 +27,42 @@
 
 ## 2. The rune families
 
-Four families, plus a primordial layer beneath them.
-
 ### Materials — *what the spell is made of*
-The elements and everything they blend into (section 3).
+The elements and everything they blend into (section 3 + `material-codex.html`).
 
-### Aspects — *what the spell does* (the tria prima)
-Reshape a material into a spell. Soft tendencies, not laws: **Body = me, Spirit = them, Mind = the world.**
+### Aspects — *what the spell does* (tria prima)
+Soft tendencies: **Body = me, Spirit = them, Mind = the world.**
 
 | Rune | Principle | Reshapes into… | Default target |
 |---|---|---|---|
-| **Salt** | Body / Matter | solid, lasting terrain; self-directed effects | oneself |
+| **Salt** | Body / Matter | solid, lasting terrain; self-effects | oneself |
 | **Mercury** | Motion / Spirit | projectiles, jets, flow; weakening | the enemy |
-| **Sulphur** | Mind / Soul | mental effects: fear, sleep, command | something else |
+| **Sulphur** | Mind / Soul | fear, sleep, command | something else |
 
-### Catalyst — *the divine spark* (see section 6)
-- **Aether** — inert alone. Reframed as the **prima materia / philosopher's stone**: the union of a Light and a Dark aspect. Permits animation and (with soul-primordials) soul-work.
+### Catalyst — Aether (section 6)
+Inert alone. The prima materia / philosopher's stone.
 
-### Existential — *the state and nature of a being*
-- **Life ⟷ Death** — the animating axis.
-- **Male ⟷ Female** — the polarity axis (projective ⟷ receptive; united, generative).
+### Existential — *state & nature of a being*
+- **Life ⟷ Death** (Vita ⟷ Mors) — animating axis.
+- **Male ⟷ Female** (Animus ⟷ Anima) — polarity axis (projective ⟷ receptive; united, generative).
 
 ### Primordials — *the deep layer masters can work with*
-- **Mundane:** the quality axes **Hot/Cold** and **Wet/Dry**. Synthesizable; **knowledge-gated only.** (Cold + Wet = Water from first principles.)
-- **Divine:** the components of the two Aether aspects (section 6). **Not craftable from the field.** Access to Primordial magic is **hard-gated by an item or deed** (an artifact, a divine grant, an act) — knowledge alone never opens it.
-
-> **Power gates:** physical mastery ← knowledge; item shortcuts ← acquisition; divine mastery ← narrative grant.
+- **Mundane:** **Hot/Cold**, **Wet/Dry**. Synthesizable; **knowledge-gated only.**
+- **Divine:** components of the Aether aspects (section 6). **Not craftable.** Primordial access is **hard-gated by an item or deed** — knowledge alone never opens it.
 
 ---
 
 ## 3. The material tree
+
+### The grammar of a spell
+Every spell has two parts, and each **aspect does double duty** — it sets *what is cast* (the substance's state) **and** *how it's cast* (the manifestation).
+- **Elements = substance.** Blend for richer matter: Fire+Air=**Spark**, Air+Water=**Cloud**, Water+Earth=**Mud**, Fire+Earth=**Lava** (shared quality → stable); Fire+Water=**Steam**, Air+Earth=**Dust** (opposed → violent, area-filling).
+- **Aspects = form & state** (the tria prima as operators):
+  - **Salt (body)** → matter **solid & still**: walls, ice, pillars, terrain, self-cloak.
+  - **Mercury (motion)** → matter **flowing & flying**: bolts, jets, waves.
+  - **Sulphur (mind)** → matter **erupts or reaches a mind**: bursts, ignition, fear, command.
+- Complex substances take a blend **and** an aspect: **Ice = Water + Earth + Salt** (cold water, earth's hard chill, fixed solid). *States come from modifiers, not element-doubling.*
+Masters may also **quality-shift** (add a mundane primordial) to nudge a substance. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ### The quality square
 | | **Dry** | **Wet** |
@@ -56,132 +70,125 @@ Reshape a material into a spell. Soft tendencies, not laws: **Body = me, Spirit 
 | **Hot** | Fire | Air |
 | **Cold** | Earth | Water |
 
-**Rule:** elements sharing an edge (a quality) blend **stably**; elements on a diagonal share nothing and blend **violently**.
+Shared edge → stable; diagonal (Fire/Water, Air/Earth) → violent.
 
-### Blends (secondary materials)
-- **Stable:** Fire+Air → **Spark** · Air+Water → **Cloud** · Water+Earth → **Mud** · Fire+Earth → **Lava**
-- **Violent (opposed):** Fire+Water → **Steam** · Air+Earth → **Dust**
-
-Violent blends are the unstable reactions free magic tends to produce messily.
-
-### Deeper nodes
-- Spark + Air/Water → **Storm** · Water toward Cold → **Ice** · Lava cooled → **Stone / Glass** · Mud + Air → **Sand**
-- **Mud + Vita + Aether → Plant** (soulless life — the handoff from Materials into the Existential/Catalyst layer)
-
-*(Full second/third-tier list is an open thread — section 8.)*
+### The tree
+Full branch-by-branch tree (Energy · Weather · Stone & Metal · Water & Ice · Life) with recipes and notes lives in **`material-codex.html`**. Life is the handoff point: **Mud + Vita + Aether → Plant** (soulless life) — inert matter doesn't grow until something breathes into it.
 
 ---
 
 ## 4. The spell grammar
 
-**Material (noun) × Aspect (verb) = spell.** Orthogonal axes: one material cast three ways gives three unrelated spells.
+**Material (noun) × Aspect (verb) = spell.** Orthogonal.
 
-| Material | + Mercury (motion) | + Salt (body) | + Sulphur (mind) |
+| Material | + Mercury | + Salt | + Sulphur |
 |---|---|---|---|
 | **Fire** | Fireball | Flame-wall | Frenzy |
 | **Water** | Water-jet / wave | Ice-wall | Lull (sleep) |
 | **Spark** | Lightning bolt | Live-floor | Jolt (stun) |
 | **Earth** | Hurled stone | Stone wall | Dread |
 
-Grow either axis to multiply the matrix.
+**Form matters.** The aspect sets the manifestation — a **bolt** (Mercury) shoots to a point, a **wall/pillar** (Salt) stands and shapes space, a **burst** (Sulphur) erupts. The *same* material solves an obstacle differently by form: a fire bolt is doused behind a waterfall; a fire *pillar* rises behind it. Richer spells → more precise shapes → more (and more elegant) solutions.
 
 ---
 
-## 5. Life, souls, and creatures
+## 5. Life, souls & creatures
 
-### Two kinds of life
-- **Soulless life** — beasts, plants, bugs. Animate matter, **no soul, cannot use magic.** Creating this is sanctioned (Vita + matter).
-- **Ensouled life** — carries a soul. **A soul grants access to magic, across all races.** The player is ensouled.
+- **Soulless life** — beasts, plants, bugs. Animate matter, **no soul, no magic.** Creating this is sanctioned.
+- **Ensouled life** — carries a soul; **a soul grants magic across all races.** The player is ensouled.
+- **The soul rule: Charter magic cannot touch souls.** Soulless creation/terrain-golems are legal; inserting, binding, commanding, or extracting a soul is **Free or divine-tier only.** This re-derives the forbidden acts (true mind-control, necromancy, the Anima/Animus soul-primordials).
 
-### The soul rule
-**Charter magic cannot touch souls.** Making soulless life or terrain-golems is Charter-legal; *anything involving a soul* — inserting, binding, truly commanding, or extracting one — is beyond the Charter and therefore **Free or divine-tier only.** This re-derives the forbidden acts: true mind-control (reaching the soul, not the mood), necromancy (binding a soul into dead matter), and use of the **Anima/Animus** soul-primordials are all off-limits to Charter.
-
-### Creatures as rune-formulas
-Every creature is a formula doing three jobs:
-1. **States the weakness** — overload with an opposed element, or **strip a load-bearing rune** (pull Aether → life goes out; dissolve Salt → body loses cohesion). Rewards reading over brute force.
-2. **Tells the history** — `{Earth · Salt · Aether · Vita}` was *born*; the same with a graveyard/corruption rune was *raised* → a necromancer is near. Place-runes are fingerprints.
-3. **Sets difficulty** — by composition complexity (2-rune tutorial beast vs 5-rune chimera holding an opposed pair in tension).
-
-Reads straight off the formula: **living** carries Vita; **undead** reads `{… Mors · Aether}` (unmade by severing the Mors-binding); **ensouled** carries a soul-rune → *can cast back at you*; **soulless** cannot.
+**Creatures are rune-formulas** that (1) state the weakness (strip a load-bearing rune or hit an opposed element), (2) tell the history (born vs raised; place-fingerprints), (3) set difficulty by complexity. Reads: living carries **Vita**; undead reads `{… Mors · Aether}`; ensouled carries a soul-rune → **can cast back**; soulless cannot.
 
 ---
 
 ## 6. Aether as prima materia
 
-Aether is the **philosopher's stone / prima materia** — the reconciliation of opposites (the *rebis*). It is the union of two aspects:
-
-- **Light aspect (sol · projective)** — the bright poles: **Vita** (life), **Animus** (male soul), **Lumen** (light).
-- **Dark aspect (luna · receptive)** — the dark poles: **Mors** (death), **Anima** (female soul), **Umbra** (dark).
-
-The opposed primordial pairs: **Vita ⟷ Mors**, **Animus ⟷ Anima**, **Lumen ⟷ Umbra**. (Expandable — a fourth pair can be added.)
-
-*Note: the male=light / female=dark split is the traditional alchemical Sol/Luna coding, not a value claim, and is invertible.*
+Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projective: **Vita, Animus, Lumen**) and a **Dark aspect** (luna · receptive: **Mors, Anima, Umbra**). Opposed pairs: Vita⟷Mors, Animus⟷Anima, Lumen⟷Umbra (expandable). *Male=light/female=dark is the traditional Sol/Luna coding, invertible.*
 
 ---
 
 ## 7. Items & progression
 
-Mythic items are a **parallel progression axis to knowledge**, letting the non-studious progress and letting masters skip grinding. Three roles:
+- **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice.
+- **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free) a medium that makes one specific spell reliable.
+- **Keys** — open a specific gate; most gates have another solution, so keys usually *ease* rather than hard-lock.
+- **The Primordial gate** — access to Primordial is *only* opened by acquiring an item or performing a deed.
 
-- **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice to survive heat.
-- **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free side) a *medium* that makes one specific spell reliable.
-- **Keys** — open a specific gate. Most gates have another solution, so keys usually *ease* rather than hard-lock; a few are true walls.
-
-- **The Primordial gate** — access to Primordial magic is *only* opened by acquiring a specific item or performing a deed. This is the one place items gate power that knowledge cannot reach.
-
-**Free magic is item-intertwined.** Because Free casters lack fundamental understanding, they rely on mediums and foci far more than Charter mages — and those items are the likely source of a Free spell's reliability (the answer to the free-mage coherence problem: reliability comes from the *item*, not from comprehension).
-
-**Free magic and free-magic items reveal their runes** — this is a core *learning* mechanic, not a side effect. Borrowing an effect you don't understand exposes its recipe, so items are a teaching tool that carries the player from *borrowing* effects to *composing* them.
-
-**Acquisition is non-linear:** items sit at varied difficulty; some are main-quest (but skippable via sequence-breaking); some are *needed regardless* of route. Multiple solution paths per lock make sequence-breaking supported.
+Free magic is **item-intertwined** (lacking understanding, it leans on mediums/foci — the source of off-focus reliability). Free magic and its items **reveal their runes** — a core learning mechanic. Acquisition is **non-linear**: varied difficulty, some main-quest (skippable), some needed regardless of route.
 
 ---
 
 ## 8. Casting stances — Charter vs Free
 
-A **stance chosen per cast**, not two spell lists. Runes and knowledge are universal.
+A **stance chosen per cast**, not two spell lists.
 
 | | **Bound (Charter)** | **Unbound (Free)** |
 |---|---|---|
-| Access | open to anyone; the Charter rejects no one | open to anyone |
-| Reliability | reliable, coherent | unreliable, variance-loaded |
-| Power in a vacuum | tamer | higher magnitude (fireball → fire-vortex) |
-| Direct clashes | **wins** (coherence beats magnitude) | loses; even with an edge it may sputter |
-| Forbidden | can't touch souls; can't pull runes from the living or re-animate the dead | all available — the appeal |
-| Cost | feeds the pantheon (light siphon) | feeds nothing; blasphemous |
-| Ceiling | high — keeps climbing to primordial | low — self-imposed easy mode |
+| Access | open to all; rejects no one | open to all |
+| Reliability | reliable | unreliable, variance-loaded |
+| Power in a vacuum | tamer | higher magnitude |
+| Clashes | **wins** (coherence beats magnitude) | loses; even with an edge may sputter |
+| Forbidden | can't touch souls / living runes / re-animation | all available |
+| Cost | feeds the pantheon | feeds nothing; blasphemous |
+| Ceiling | high (climbs to primordial) | low (easy mode) |
 
-**Clash resolution:** no elemental edge → Charter wins by default. Charter *with* an edge → over-performs (water engulfs the fireball *and* counterattacks). Free *with* an edge → still unreliable. Charter **overpowers**, it does not dispel.
-
-**Free-fill mechanic:** leave runes unspecified and let the blanks fill at random, overcharging the result. "How much you sculpt it" is a **risk dial** (specified : auto-filled ratio) trading control for power. Backfire has teeth: inverted targets, drawn divine attention, persistent **hubris/taint.** **Rule: free magic is never the required key to a lock — only the tempting shortcut.**
+Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, let them fill at random, overcharged; the specified:auto-filled ratio is a **risk dial**. Backfire has teeth (inverted targets, divine attention, hubris/taint). **Rule: free magic is never the required key — only the tempting shortcut.**
 
 ---
 
-## 9. Cosmology (at the depth the game needs)
+## 9. Cosmology
 
-- **Primordial magic** is the god tier — it reconstructs runes, and therefore reality. Charter and Free are two **applications** of it, seen by nearly everyone as opposed.
-- **Primordial is outside the Charter** — reaching for it *is*, by definition, free magic. Ascension = transgression.
-- **The union is metaphorical:** order + freedom. Primordial needs both **reach** (Free) and **coherence** (Charter). The Free sorcerer must acquire discipline (a submission); the Charter mage must transgress (a fall). Both become partly what they were taught to despise; the player is rare in holding both.
-- **The pantheon:** beings who use primordial magic and govern the realm. They authored the Charter and, *according to them*, the world. It empowers them (siphon) and **indirectly** prevents rivals by fencing mortals below the ceiling. Motive is **self-preservation, not malice**; a newly-ascended mortal is a rival *in potential*, never their equal (they hold millennia of power beyond mere access).
-- **Enforcement is outsourced to belief.** No divine hunters. Charter mages, indoctrinated that Free magic is evil, persecute Free sorcerers *themselves*. The gods act on the world only through the Charter and the faith of believers — until the very top.
-- **Deliberately mysterious:** whether the gods truly made the world; where they came from. *(Author's private north star, never canon: they created the world but came from elsewhere — not the same order of place. Felt, never confirmed.)*
+- **Primordial magic** is the god tier — reconstructs runes and thus reality. Charter and Free are two **applications**, seen as opposed.
+- **Primordial is outside the Charter** → reaching for it *is* free magic. Ascension = transgression. It needs both **reach** (Free) and **coherence** (Charter); each archetype starts with one and must become partly what it despises.
+- **The pantheon:** beings who use primordial magic and govern the realm; authored the Charter and (per them) the world. It empowers them (siphon) and **indirectly** fences mortals below the ceiling. Motive is **self-preservation** — an ascendant is a rival *in potential*, never their equal.
+- **Enforcement is outsourced to belief.** No divine hunters; indoctrinated Charter mages persecute Free sorcerers themselves. The gods act only through the Charter and the faithful — until the top.
+- **Deliberately mysterious** origin. *(Private north star, never canon: they made the world but came from elsewhere.)*
 
 ---
 
-## 10. Open threads
+## 10. Environmental interaction
 
-- [ ] **Full material tree** — every second/third-tier material and what it needs.
-- [x] **Free-mage coherence** — reliability comes from **items/mediums** (section 7), not comprehension. *(Resolved.)*
-- [ ] **Male/Female role** — projective/receptive utility axis, sacred generative pair, or both.
-- [ ] **Death rune** — sanctioned uses (mercy, banishing undead) vs off-Charter? (Lean: policed by *primordial reach* / soul-involvement, not morality.)
-- [ ] **Field economy** — how runes manifest and get consumed in the constant field; how scarce Aether is. (No sight tiers — the field is the same for everyone.)
-- [ ] **Fourth primordial pair?** — whether to expand beyond Vita/Mors, Animus/Anima, Lumen/Umbra.
+**The world is made of the same materials as spells** (water, wood, oil, gas, stone, lava, ice, grass), so the four combination laws govern **spell-on-world**, not just spell-crafting.
+
+Marquee reactions (each a puzzle key):
+- **Lightning + Water(floor) → conduction** — strikes everything in the pool.
+- **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
+- **Cold + Water → Ice** — bridge, root-trap, or shatterable surface.
+- **Water + Lava → Obsidian** — instant bridge over a hazard.
+- **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement).
+
+Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
+
+---
+
+## 11. Gameplay loop
+
+The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
+
+1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
+2. **Craft** — assemble a spell: element(s) for substance, an aspect for form & state, a stance (Charter/Free). Knowledge and items widen your options.
+3. **Cast** — the spell acts on the enemy or the world (a bolt, wall, pillar, or burst; freeze a fall, ignite grass, bridge lava, grow a climb).
+4. **Overcome** — the right spell resolves it at once. No HP bar.
+
+Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
+
+---
+
+## 12. Open threads
+
+- [~] **Material tree** — v1 built in `material-codex.html`; keep growing branches (poison/blood/light? deeper Life sub-tree for beasts).
+- [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
+- [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
+- [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).
+- [ ] **Field economy** — how runes manifest and deplete in the constant field; Aether scarcity.
+- [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
-- [ ] **"Reading" creatures** — is a creature's formula visible by default, or does interpreting it require learned knowledge?
-- [ ] **Item catalogue** — concrete mythic items: wards, rune-mediums, keys, and the Primordial-gate item(s).
-- [ ] **The learning UI** — how known vs unknown recipes are tracked/shown (a grimoire?), and how rune-reveals from free magic get recorded.
+- [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.
+- [ ] **"Reading" creatures** — formula visible by default, or interpreting it requires learned knowledge?
+- [ ] **Item catalogue** — concrete mythic items and the gates they touch.
 - [ ] **Magnum Opus color meta** — Nigredo → Albedo → Citrinitas → Rubedo as chapter/tier/world-tint.
 
 ---
 
-*Provisional names (Spark, Lava, Vita, Mors, Animus, Anima, Lumen, Umbra) are placeholders pending ratification.*
+*Provisional names throughout (Spark, Lava, Vita, Mors, Animus, Anima, Lumen, Umbra, branch materials) pending ratification.*
