@@ -85,6 +85,11 @@ namespace RuneMagic
             {
                 foreach (var encounter in locks)
                 {
+                    if (encounter is not MonoBehaviour body || body == null)
+                    {
+                        continue;
+                    }
+
                     if (encounter is not IRuneSource source || !source.IsEmitting)
                     {
                         continue;
@@ -219,7 +224,7 @@ namespace RuneMagic
             {
                 foreach (var encounter in _locks)
                 {
-                    if (encounter is IRuneSource source)
+                    if (encounter is MonoBehaviour body && body != null && encounter is IRuneSource source)
                     {
                         _sources.Add(source);
                     }
@@ -313,9 +318,10 @@ namespace RuneMagic
 
                 var center = cluster.Sum / Mathf.Max(0.001f, cluster.Weight);
                 var count = Mathf.Clamp(Mathf.RoundToInt(Mathf.Sqrt(cluster.Weight) * 1.6f), 1, MaxPerRune);
+                var radius = 0.85f + Mathf.Min(1.4f, cluster.Weight * 0.08f);
                 for (var n = 0; n < count && _wells.Count < MaxStrands - 8; n++)
                 {
-                    var scatter = (Vector3)(Random.insideUnitCircle * (0.85f + Mathf.Min(1.4f, cluster.Weight * 0.08f)));
+                    var scatter = Scatter(pair.Key.Item1, pair.Key.Item2, pair.Key.Item3, n, radius);
                     _wells.Add(new Well
                     {
                         Rune = pair.Key.Item3,
@@ -630,6 +636,16 @@ namespace RuneMagic
             line.startColor = new Color(0.86f, 0.8f, 0.62f, 0.45f);
             line.endColor = new Color(0.86f, 0.8f, 0.62f, 0.45f);
             return line;
+        }
+
+        static Vector3 Scatter(int cellX, int cellY, RuneId rune, int index, float radius)
+        {
+            var hash = cellX * 73856093 ^ cellY * 19349663 ^ (int)rune * 83492791 ^ index * 39916801;
+            var u = (hash & 0xffff) / 65535f;
+            var v = ((hash >> 16) & 0xffff) / 65535f;
+            var angle = u * Mathf.PI * 2f;
+            var range = Mathf.Sqrt(Mathf.Abs(v)) * radius;
+            return new Vector3(Mathf.Cos(angle) * range, Mathf.Sin(angle) * range, 0f);
         }
 
         static void AddUnique(List<RuneId> seen, RuneId rune)
