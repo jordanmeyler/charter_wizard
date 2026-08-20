@@ -104,23 +104,27 @@ namespace RuneMagic
 
             if (breathable)
             {
-                AddAmbientAir(sequence);
+                AddAmbient(sequence, RuneId.Air);
             }
+
+            // The adept is ensouled. A soul is what lets a living being work
+            // magic; that going is always in the field, even over a tear.
+            AddAmbient(sequence, RuneId.Mercury);
 
             return sequence;
         }
 
-        static void AddAmbientAir(List<WeaveGlyph> sequence)
+        static void AddAmbient(List<WeaveGlyph> sequence, RuneId rune)
         {
             for (var i = 0; i < sequence.Count; i++)
             {
-                if (sequence[i].Shown == RuneId.Air || sequence[i].Rune == RuneId.Air)
+                if (sequence[i].Shown == rune || sequence[i].Rune == rune)
                 {
                     return;
                 }
             }
 
-            sequence.Insert(0, new WeaveGlyph(RuneId.Air, MaterialId.None, WeaveKind.Ambient));
+            sequence.Insert(0, new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
         }
 
         static void AppendTile(

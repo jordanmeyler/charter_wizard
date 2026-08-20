@@ -40,7 +40,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of the eleven, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
-- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. Walk to bring Mercury or other missing runes into view. The grid is the camera’s sentence, manifestations included. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. **Mercury is ambient** because the adept is ensouled — a soul is what lets a living being work magic. Walk to bring other missing runes into view. The grid is the camera’s sentence, manifestations included. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.

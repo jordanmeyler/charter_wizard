@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. Air is already in the room. A gold ring is a join stretched across its recipe. Odd rows travel right, even rows left. Hover to hold still.",
+                "The wall is the eleven — only what is on screen can be drawn. Air is the room’s breath. Mercury is your soul — it is always here. A gold ring is a join stretched across its recipe. Hover to hold still.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",

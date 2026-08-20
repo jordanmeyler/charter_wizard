@@ -27,6 +27,8 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join s
 
 **Air is ambient.** Anything that still has a floor or a wall is a place that can be breathed. The weave carries Air in almost every view. A screen that is only void — a tear, no room left — has no breath.
 
+**Mercury is ambient.** The adept is ensouled. A soul is the key that lets a living being work magic; that going does not leave the field, even over a tear. Soulless things do not carry it.
+
 ---
 
 ## In the sanctum now
