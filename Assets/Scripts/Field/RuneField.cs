@@ -18,11 +18,9 @@ namespace RuneMagic
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur
         };
 
-        SanctumDirector _director;
-
-        public void Bind(SanctumDirector director)
+        public void Bind()
         {
-            _director = director;
+            transform.localScale = Vector3.one;
             for (var i = 0; i < StartingStream.Length; i++)
             {
                 SpawnOrb(StartingStream[i], i);
@@ -76,17 +74,6 @@ namespace RuneMagic
 
             seen.Sort(CompareFieldOrder);
             return seen;
-        }
-
-        void LateUpdate()
-        {
-            var show = _director == null || _director.Mode == PlayMode.Exploring;
-            if (transform.localScale.x > 0f == show)
-            {
-                return;
-            }
-
-            transform.localScale = show ? Vector3.one : Vector3.zero;
         }
 
         void SpawnOrb(RuneId rune, int index)

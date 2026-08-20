@@ -25,11 +25,17 @@ namespace RuneMagic
         public IReadOnlyList<RuneId> VisibleRunes { get; private set; } = System.Array.Empty<RuneId>();
 
         readonly CastResolver _resolver = new();
+        CharterWall _wall;
         ISpellLock[] _locks;
         RoomInfo[] _rooms;
         Vector3 _safePoint;
         bool _finished;
         PlayMode _modeBeforePause = PlayMode.Exploring;
+
+        public void BindWall(CharterWall wall)
+        {
+            _wall = wall;
+        }
 
         public void Begin(SanctumBuild build)
         {
@@ -109,6 +115,11 @@ namespace RuneMagic
             if (Mode == PlayMode.Charter)
             {
                 HandleCharterInput();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    TryClickCharterRune();
+                }
+
                 return;
             }
 
@@ -167,6 +178,7 @@ namespace RuneMagic
         {
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
+            _wall?.Show(VisibleRunes, Camera.main);
             Log("The field stands still. String runes, then Cast or Store.");
         }
 
@@ -178,6 +190,7 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
+            _wall?.Hide();
             if (string.IsNullOrEmpty(LastLog) || LastLog.StartsWith("The field stands still"))
             {
                 Log(Held.Occupied
@@ -192,12 +205,39 @@ namespace RuneMagic
             {
                 Time.timeScale = 1f;
                 Mode = _modeBeforePause;
+                if (Mode == PlayMode.Charter)
+                {
+                    _wall?.Show(VisibleRunes, Camera.main);
+                }
+
                 return;
             }
 
             _modeBeforePause = Mode;
             Mode = PlayMode.Paused;
+            _wall?.Hide();
             Time.timeScale = 0f;
+        }
+
+        void TryClickCharterRune()
+        {
+            var camera = Camera.main;
+            if (camera == null)
+            {
+                return;
+            }
+
+            var world = camera.ScreenToWorldPoint(Input.mousePosition);
+            var hits = Physics2D.OverlapPointAll(world);
+            foreach (var hit in hits)
+            {
+                var card = hit.GetComponent<CharterRune>();
+                if (card != null)
+                {
+                    AddRune(card.Rune);
+                    return;
+                }
+            }
         }
 
         public void AddRune(RuneId rune)

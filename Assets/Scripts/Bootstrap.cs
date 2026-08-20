@@ -18,6 +18,8 @@ namespace RuneMagic
             var director = directorObject.AddComponent<SanctumDirector>();
             var hud = directorObject.AddComponent<GameHud>();
             hud.Bind(director);
+            var wall = directorObject.AddComponent<CharterWall>();
+            director.BindWall(wall);
 
             var build = SanctumLayout.Construct();
             director.Begin(build);
@@ -29,7 +31,7 @@ namespace RuneMagic
 
             var player = SpawnPlayer(build.Spawn);
             var field = player.AddComponent<RuneField>();
-            field.Bind(director);
+            field.Bind();
         }
 
         static void PrepareCamera()

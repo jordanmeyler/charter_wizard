@@ -51,40 +51,15 @@ namespace RuneMagic
 
         void DrawCharter()
         {
-            DrawVeil(new Color(0.03f, 0.04f, 0.07f, 0.72f));
-
-            var title = Label(26, FontStyle.Bold, Color.white);
-            var body = Label(15, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
-            var hint = Label(13, FontStyle.Normal, new Color(0.7f, 0.74f, 0.82f));
-
-            GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
-            GUI.Label(new Rect(28, 50, 900, 22),
-                "Runes from the field and the room. String them. Cast now, or store one form.",
-                body);
-            GUI.Label(new Rect(28, 74, 900, 20),
+            DrawPanel(12, 12, 620, 78);
+            var title = Label(22, FontStyle.Bold, Color.white);
+            var hint = Label(14, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            GUI.Label(new Rect(28, 18, 590, 28), "The Charter — click a rune to string it", title);
+            GUI.Label(new Rect(28, 48, 590, 32),
                 $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc recipes",
                 hint);
 
-            DrawRuneWall();
             DrawComposeDock();
-        }
-
-        void DrawRuneWall()
-        {
-            var runes = _director.VisibleRunes;
-            const float left = 28f;
-            const float top = 108f;
-            const float size = 92f;
-            const float gap = 12f;
-            var columns = Mathf.Max(1, Mathf.FloorToInt((Screen.width - 56f) / (size + gap)));
-
-            for (var i = 0; i < runes.Count; i++)
-            {
-                var col = i % columns;
-                var row = i / columns;
-                var rect = new Rect(left + col * (size + gap), top + row * (size + gap), size, size);
-                DrawRuneCard(rect, runes[i], () => _director.AddRune(runes[i]));
-            }
         }
 
         void DrawComposeDock()
@@ -179,44 +154,48 @@ namespace RuneMagic
 
         void DrawPause()
         {
-            DrawVeil(new Color(0.02f, 0.02f, 0.04f, 0.86f));
-            var title = Label(28, FontStyle.Bold, Color.white);
-            var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
-            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
-            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
-            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+            DrawVeil(new Color(0.04f, 0.05f, 0.08f, 0.55f));
+            var panel = new Rect(24, 20, Mathf.Min(920, Screen.width - 48), Screen.height - 40);
+            DrawPanel(panel.x, panel.y, panel.width, panel.height);
 
-            GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
-            GUI.Label(new Rect(40, 62, 900, 22),
-                "Developer ledger. Every Charter recipe in the game, plus material joins. Esc resumes.",
-                subtitle);
+            var title = Label(26, FontStyle.Bold, Color.white);
+            var subtitle = Label(15, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
+            var heading = Label(18, FontStyle.Bold, new Color(0.95f, 0.84f, 0.45f));
+            var name = Label(16, FontStyle.Bold, new Color(1f, 0.92f, 0.7f));
+            var row = Label(15, FontStyle.Normal, Color.white);
+            var muted = Label(14, FontStyle.Normal, new Color(0.75f, 0.78f, 0.85f));
 
-            var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
-            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            GUI.Label(new Rect(panel.x + 20, panel.y + 14, panel.width - 40, 32),
+                "Paused — every written spell", title);
+            GUI.Label(new Rect(panel.x + 20, panel.y + 48, panel.width - 40, 22),
+                "Developer ledger. Esc resumes.", subtitle);
+
+            var view = new Rect(panel.x + 16, panel.y + 80, panel.width - 32, panel.height - 100);
+            var innerHeight = 56f + SpellGrammarCount() * 44f + 48f + MaterialTree.All.Count * 26f;
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
 
-            GUI.Label(new Rect(0, 0, 700, 24), "Spells  ·  Material × Aspect", heading);
-            var y = 28f;
+            GUI.Label(new Rect(0, 0, 700, 26), "Spells", heading);
+            var y = 30f;
             var recipes = new List<SpellRecipe>(SpellGrammar.All);
             recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
             foreach (var recipe in recipes)
             {
-                GUI.Label(new Rect(0, y, 220, 20), recipe.Name, row);
-                GUI.Label(new Rect(230, y, 360, 20), SpellGrammar.RecipeLine(recipe), row);
-                GUI.Label(new Rect(600, y, 420, 20), recipe.Effect, muted);
-                y += 24f;
+                GUI.Label(new Rect(0, y, 240, 22), recipe.Name, name);
+                GUI.Label(new Rect(250, y, 420, 22), SpellGrammar.RecipeLine(recipe), row);
+                GUI.Label(new Rect(0, y + 20, view.width - 30, 20), recipe.Effect, muted);
+                y += 44f;
             }
 
-            y += 16f;
-            GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
-            y += 28f;
+            y += 12f;
+            GUI.Label(new Rect(0, y, 700, 26), "Material joins", heading);
+            y += 30f;
             foreach (var blend in MaterialTree.All)
             {
                 var tone = blend.Result.Kind == BlendKind.Violent ? "violent" : "stable";
-                GUI.Label(new Rect(0, y, 820, 20),
+                GUI.Label(new Rect(0, y, view.width - 30, 22),
                     $"{RuneCatalog.NameOf(blend.Left)} + {RuneCatalog.NameOf(blend.Right)} → {RuneCatalog.NameOf(blend.Result.Result)}   ({tone})",
                     row);
-                y += 22f;
+                y += 26f;
             }
 
             GUI.EndScrollView();
