@@ -29,6 +29,7 @@ namespace RuneMagic
     public static class MaterialTree
     {
         static readonly Dictionary<(RuneId, RuneId), BlendResult> Blends = new();
+        static readonly List<(RuneId Left, RuneId Right, BlendResult Result)> Canonical = new();
 
         static MaterialTree()
         {
@@ -47,9 +48,12 @@ namespace RuneMagic
             Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud dried by Air → Sand.");
         }
 
+        public static IReadOnlyList<(RuneId Left, RuneId Right, BlendResult Result)> All => Canonical;
+
         static void Add(RuneId left, RuneId right, RuneId result, BlendKind kind, string note)
         {
             var blend = new BlendResult(result, kind, note);
+            Canonical.Add((left, right, blend));
             Blends[(left, right)] = blend;
             if (left != right)
             {
@@ -66,6 +70,49 @@ namespace RuneMagic
             }
 
             return Blends.TryGetValue((left, right), out result);
+        }
+
+        public static bool TryFold(IReadOnlyList<RuneId> materials, out RuneId result, out BlendResult? lastBlend)
+        {
+            lastBlend = null;
+            result = RuneId.None;
+            if (materials == null || materials.Count == 0)
+            {
+                return false;
+            }
+
+            result = materials[0];
+            for (var i = 1; i < materials.Count; i++)
+            {
+                if (!TryBlend(result, materials[i], out var blend))
+                {
+                    result = RuneId.None;
+                    lastBlend = null;
+                    return false;
+                }
+
+                result = blend.Result;
+                lastBlend = blend;
+            }
+
+            return true;
+        }
+
+        public static bool TryFindSources(RuneId material, out RuneId left, out RuneId right)
+        {
+            foreach (var entry in Canonical)
+            {
+                if (entry.Result.Result == material)
+                {
+                    left = entry.Left;
+                    right = entry.Right;
+                    return true;
+                }
+            }
+
+            left = RuneId.None;
+            right = RuneId.None;
+            return false;
         }
 
         public static string DescribePair(RuneId left, RuneId right)

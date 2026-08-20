@@ -29,7 +29,7 @@ namespace RuneMagic
 
             var player = SpawnPlayer(build.Spawn);
             var field = player.AddComponent<RuneField>();
-            field.Bind(director.Composer, director.Log);
+            field.Bind(director);
         }
 
         static void PrepareCamera()

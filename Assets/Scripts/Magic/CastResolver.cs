@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RuneMagic
 {
@@ -10,19 +11,158 @@ namespace RuneMagic
 
     public readonly struct Composition
     {
+        static readonly RuneId[] EmptySequence = Array.Empty<RuneId>();
+
         public Composition(RuneId materialA, RuneId materialB, RuneId aspect)
+            : this(EmptySequence, materialA, materialB, aspect)
         {
+        }
+
+        Composition(RuneId[] sequence, RuneId materialA, RuneId materialB, RuneId aspect)
+        {
+            Sequence = sequence ?? EmptySequence;
             MaterialA = materialA;
             MaterialB = materialB;
             Aspect = aspect;
         }
 
+        public RuneId[] Sequence { get; }
         public RuneId MaterialA { get; }
         public RuneId MaterialB { get; }
         public RuneId Aspect { get; }
 
         public bool HasBlank => MaterialA == RuneId.None || Aspect == RuneId.None;
-        public bool HasSecondMaterial => MaterialB != RuneId.None;
+        public bool HasSecondMaterial => MaterialCount >= 2;
+        public int MaterialCount
+        {
+            get
+            {
+                var count = 0;
+                foreach (var rune in Materials())
+                {
+                    count++;
+                }
+
+                return count;
+            }
+        }
+
+        public static Composition FromSequence(IReadOnlyList<RuneId> slots)
+        {
+            if (slots == null || slots.Count == 0)
+            {
+                return new Composition(RuneId.None, RuneId.None, RuneId.None);
+            }
+
+            var copy = new RuneId[slots.Count];
+            var materialA = RuneId.None;
+            var materialB = RuneId.None;
+            var aspect = RuneId.None;
+            var materials = 0;
+            for (var i = 0; i < slots.Count; i++)
+            {
+                var rune = slots[i];
+                copy[i] = rune;
+                if (RuneCatalog.IsAspect(rune))
+                {
+                    aspect = rune;
+                    continue;
+                }
+
+                if (!RuneCatalog.IsMaterial(rune))
+                {
+                    continue;
+                }
+
+                if (materials == 0)
+                {
+                    materialA = rune;
+                }
+                else if (materials == 1)
+                {
+                    materialB = rune;
+                }
+
+                materials++;
+            }
+
+            return new Composition(copy, materialA, materialB, aspect);
+        }
+
+        public IEnumerable<RuneId> Materials()
+        {
+            if (Sequence.Length > 0)
+            {
+                for (var i = 0; i < Sequence.Length; i++)
+                {
+                    if (RuneCatalog.IsMaterial(Sequence[i]))
+                    {
+                        yield return Sequence[i];
+                    }
+                }
+
+                yield break;
+            }
+
+            if (MaterialA != RuneId.None)
+            {
+                yield return MaterialA;
+            }
+
+            if (MaterialB != RuneId.None)
+            {
+                yield return MaterialB;
+            }
+        }
+
+        public bool TryFoldMaterials(out RuneId material, out BlendResult? blend)
+        {
+            var gathered = new List<RuneId>();
+            foreach (var rune in Materials())
+            {
+                gathered.Add(rune);
+            }
+
+            if (gathered.Count == 0)
+            {
+                material = RuneId.None;
+                blend = null;
+                return true;
+            }
+
+            if (gathered.Count == 1)
+            {
+                material = gathered[0];
+                blend = null;
+                return true;
+            }
+
+            if (!MaterialTree.TryFold(gathered, out material, out blend))
+            {
+                material = RuneId.None;
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public readonly struct StoredSpell
+    {
+        public StoredSpell(Composition composition, CastingStance stance, string name)
+        {
+            Occupied = true;
+            Composition = composition;
+            Stance = stance;
+            Name = name;
+        }
+
+        public bool Occupied { get; }
+        public Composition Composition { get; }
+        public CastingStance Stance { get; }
+        public string Name { get; }
+
+        public static StoredSpell Empty => default;
     }
 
     public readonly struct PreparedSpell
@@ -85,22 +225,14 @@ namespace RuneMagic
 
         public bool TryPrepare(Composition composition, out PreparedSpell prepared)
         {
-            var material = composition.MaterialA;
-            var note = string.Empty;
-            BlendKind? blendKind = null;
-
-            if (composition.HasSecondMaterial)
+            if (!composition.TryFoldMaterials(out var material, out var blend))
             {
-                if (!MaterialTree.TryBlend(composition.MaterialA, composition.MaterialB, out var blend))
-                {
-                    prepared = default;
-                    return false;
-                }
-
-                material = blend.Result;
-                blendKind = blend.Kind;
-                note = blend.Note;
+                prepared = default;
+                return false;
             }
+
+            var blendKind = blend?.Kind;
+            var note = blend?.Note ?? string.Empty;
 
             if (material == RuneId.None || composition.Aspect == RuneId.None)
             {
@@ -111,6 +243,26 @@ namespace RuneMagic
             SpellGrammar.TryGet(material, composition.Aspect, out var recipe);
             prepared = new PreparedSpell(material, composition.Aspect, recipe.Spell, blendKind, note);
             return true;
+        }
+
+        public string PreviewName(Composition composition)
+        {
+            if (!TryPrepare(composition, out var prepared))
+            {
+                return "unjoined string";
+            }
+
+            if (prepared.IsFormed && SpellGrammar.TryGet(prepared.Material, prepared.Aspect, out var recipe))
+            {
+                return recipe.Name;
+            }
+
+            if (prepared.Material == RuneId.None && prepared.Aspect == RuneId.None)
+            {
+                return "empty string";
+            }
+
+            return SpellGrammar.FormulaText(prepared.Material, prepared.Aspect);
         }
 
         public CastOutcome Resolve(
@@ -128,7 +280,7 @@ namespace RuneMagic
             if (!TryPrepare(composition, out var prepared))
             {
                 return new CastOutcome(false, false, false, 0f, SpellId.None,
-                    MaterialTree.DescribePair(composition.MaterialA, composition.MaterialB));
+                    DescribeUnjoined(composition));
             }
 
             if (stance == CastingStance.Charter)
@@ -237,6 +389,22 @@ namespace RuneMagic
 
             SpellGrammar.TryGet(material, aspect, out var recipe);
             return new PreparedSpell(material, aspect, recipe.Spell, blend, "Free-fill");
+        }
+
+        static string DescribeUnjoined(Composition composition)
+        {
+            var names = new List<string>();
+            foreach (var rune in composition.Materials())
+            {
+                names.Add(RuneCatalog.NameOf(rune));
+            }
+
+            if (names.Count < 2)
+            {
+                return "Those runes do not form a material.";
+            }
+
+            return string.Join(" + ", names) + " have no recorded join yet.";
         }
 
         static bool IsKey(SpellId spell, SpellId[] acceptedKeys)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuneMagic
@@ -5,19 +6,11 @@ namespace RuneMagic
     public sealed class GameHud : MonoBehaviour
     {
         SanctumDirector _director;
-        bool _grimoireOpen;
+        Vector2 _pauseScroll;
 
         public void Bind(SanctumDirector director)
         {
             _director = director;
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                _grimoireOpen = !_grimoireOpen;
-            }
         }
 
         void OnGUI()
@@ -27,27 +20,273 @@ namespace RuneMagic
                 return;
             }
 
-            DrawPanel(12, 12, 540, 196);
+            if (_director.Mode == PlayMode.Paused)
+            {
+                DrawPause();
+                return;
+            }
+
+            if (_director.Mode == PlayMode.Charter)
+            {
+                DrawCharter();
+                return;
+            }
+
+            DrawWorldChrome();
+        }
+
+        void DrawWorldChrome()
+        {
+            DrawPanel(12, 12, 540, 148);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
-            var accent = Label(15, FontStyle.Bold, StanceColor());
 
             GUI.Label(new Rect(28, 20, 520, 28), "Rune Magic", title);
             GUI.Label(new Rect(28, 48, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 70, 520, 22), $"Stance: {_director.Composer.Stance}   Taint: {_director.Taint:0.00}", accent);
-            GUI.Label(new Rect(28, 92, 520, 22), $"Compose: {_director.Composer.SlotSummary()}", body);
-            GUI.Label(new Rect(28, 114, 520, 22), TargetLine(), body);
-            GUI.Label(new Rect(28, 136, 510, 58), _director.LastLog, body);
+            GUI.Label(new Rect(28, 70, 520, 22), TargetLine(), body);
+            GUI.Label(new Rect(28, 94, 510, 54), _director.LastLog, body);
 
-            DrawPanel(12, Screen.height - 78, 640, 66);
-            GUI.Label(new Rect(28, Screen.height - 70, 620, 50),
-                "WASD move  ·  Click or 1–7 take a rune  ·  Tab/Q Charter/Free  ·  F cast  ·  C clear  ·  G grimoire",
+            DrawHeldBar(Screen.height - 86);
+        }
+
+        void DrawCharter()
+        {
+            DrawVeil(new Color(0.03f, 0.04f, 0.07f, 0.72f));
+
+            var title = Label(26, FontStyle.Bold, Color.white);
+            var body = Label(15, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
+            var hint = Label(13, FontStyle.Normal, new Color(0.7f, 0.74f, 0.82f));
+
+            GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
+            GUI.Label(new Rect(28, 50, 900, 22),
+                "Runes from the field and the room. String them. Cast now, or store one form.",
                 body);
+            GUI.Label(new Rect(28, 74, 900, 20),
+                $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc recipes",
+                hint);
 
-            if (_grimoireOpen)
+            DrawRuneWall();
+            DrawComposeDock();
+        }
+
+        void DrawRuneWall()
+        {
+            var runes = _director.VisibleRunes;
+            const float left = 28f;
+            const float top = 108f;
+            const float size = 92f;
+            const float gap = 12f;
+            var columns = Mathf.Max(1, Mathf.FloorToInt((Screen.width - 56f) / (size + gap)));
+
+            for (var i = 0; i < runes.Count; i++)
             {
-                DrawGrimoire();
+                var col = i % columns;
+                var row = i / columns;
+                var rect = new Rect(left + col * (size + gap), top + row * (size + gap), size, size);
+                DrawRuneCard(rect, runes[i], () => _director.AddRune(runes[i]));
             }
+        }
+
+        void DrawComposeDock()
+        {
+            var dockHeight = 188f;
+            var dockTop = Screen.height - dockHeight;
+            DrawPanel(0, dockTop, Screen.width, dockHeight);
+
+            var body = Label(14, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
+            var accent = Label(16, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
+            GUI.Label(new Rect(24, dockTop + 10, 640, 22), "String", accent);
+            GUI.Label(new Rect(24, dockTop + 86, Screen.width - 48, 22),
+                _director.Composer.Describe(), body);
+
+            DrawDraftSlots(dockTop + 36);
+            DrawCharterActions(dockTop + 112);
+        }
+
+        void DrawDraftSlots(float y)
+        {
+            const float slot = 56f;
+            const float gap = 8f;
+            var startX = 24f;
+            for (var i = 0; i < SpellComposer.MaxSlots; i++)
+            {
+                var rect = new Rect(startX + i * (slot + gap), y, slot, slot);
+                if (i < _director.Composer.Count)
+                {
+                    var index = i;
+                    DrawRuneCard(rect, _director.Composer.Slots[i], () => _director.RemoveDraftFrom(index));
+                }
+                else
+                {
+                    DrawEmptySlot(rect, (i + 1).ToString());
+                }
+            }
+        }
+
+        void DrawCharterActions(float y)
+        {
+            var canAct = !_director.Composer.IsEmpty;
+            if (DrawAction(new Rect(24, y, 160, 42), "Cast", canAct, new Color(0.72f, 0.28f, 0.22f)))
+            {
+                _director.CastDraft();
+            }
+
+            if (DrawAction(new Rect(196, y, 160, 42), "Store", canAct, new Color(0.28f, 0.38f, 0.62f)))
+            {
+                _director.StoreDraft();
+            }
+
+            if (DrawAction(new Rect(368, y, 120, 42), "Clear", canAct, new Color(0.22f, 0.22f, 0.26f)))
+            {
+                _director.ClearDraft();
+            }
+
+            var held = _director.Held.Occupied ? _director.Held.Name : "empty";
+            var body = Label(14, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
+            GUI.Label(new Rect(508, y + 2, 360, 38),
+                $"Held: {held}\nOne slot. Store rewrites it.", body);
+
+            if (_director.Held.Occupied &&
+                DrawAction(new Rect(Screen.width - 184, y, 160, 42), "Release held", true, new Color(0.42f, 0.3f, 0.18f)))
+            {
+                _director.CastHeld();
+                _director.CloseCharter();
+            }
+        }
+
+        void DrawHeldBar(float y)
+        {
+            DrawPanel(12, y, 760, 74);
+            var body = Label(16, FontStyle.Bold, new Color(0.92f, 0.86f, 0.62f));
+            var detail = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
+            var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
+            if (_director.Held.Occupied)
+            {
+                GUI.Label(new Rect(28, y + 10, 360, 24), $"Held: {_director.Held.Name}", body);
+                GUI.Label(new Rect(280, y + 10, 470, 24),
+                    $"{_director.Held.Stance}  ·  F to release", detail);
+            }
+            else
+            {
+                GUI.Label(new Rect(28, y + 10, 720, 24),
+                    "Held: empty    Space opens the Charter to compose.", detail);
+            }
+
+            GUI.Label(new Rect(28, y + 40, 720, 22),
+                "WASD move  ·  Space read the field  ·  F release held spell  ·  Esc recipes",
+                hint);
+        }
+
+        void DrawPause()
+        {
+            DrawVeil(new Color(0.02f, 0.02f, 0.04f, 0.86f));
+            var title = Label(28, FontStyle.Bold, Color.white);
+            var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
+            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+
+            GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
+            GUI.Label(new Rect(40, 62, 900, 22),
+                "Developer ledger. Every Charter recipe in the game, plus material joins. Esc resumes.",
+                subtitle);
+
+            var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
+            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
+
+            GUI.Label(new Rect(0, 0, 700, 24), "Spells  ·  Material × Aspect", heading);
+            var y = 28f;
+            var recipes = new List<SpellRecipe>(SpellGrammar.All);
+            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
+            foreach (var recipe in recipes)
+            {
+                GUI.Label(new Rect(0, y, 220, 20), recipe.Name, row);
+                GUI.Label(new Rect(230, y, 360, 20), SpellGrammar.RecipeLine(recipe), row);
+                GUI.Label(new Rect(600, y, 420, 20), recipe.Effect, muted);
+                y += 24f;
+            }
+
+            y += 16f;
+            GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
+            y += 28f;
+            foreach (var blend in MaterialTree.All)
+            {
+                var tone = blend.Result.Kind == BlendKind.Violent ? "violent" : "stable";
+                GUI.Label(new Rect(0, y, 820, 20),
+                    $"{RuneCatalog.NameOf(blend.Left)} + {RuneCatalog.NameOf(blend.Right)} → {RuneCatalog.NameOf(blend.Result.Result)}   ({tone})",
+                    row);
+                y += 22f;
+            }
+
+            GUI.EndScrollView();
+        }
+
+        static int SpellGrammarCount()
+        {
+            var count = 0;
+            foreach (var _ in SpellGrammar.All)
+            {
+                count++;
+            }
+
+            return count;
+        }
+
+        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick)
+        {
+            var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), 0.25f);
+            fill.a = 0.92f;
+            var previous = GUI.color;
+            GUI.color = fill;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = new Color(1f, 1f, 1f, 0.35f);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
+            GUI.color = previous;
+
+            var glyph = Label(rect.height > 70f ? 22 : 16, FontStyle.Bold, Color.white);
+            glyph.alignment = TextAnchor.MiddleCenter;
+            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, new Color(0.1f, 0.08f, 0.08f));
+            name.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(rect.x, rect.y + 8, rect.width, rect.height * 0.45f),
+                RuneCatalog.GlyphOf(rune), glyph);
+            GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.5f, rect.width, rect.height * 0.42f),
+                RuneCatalog.NameOf(rune), name);
+
+            if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
+            {
+                onClick?.Invoke();
+            }
+        }
+
+        static void DrawEmptySlot(Rect rect, string caption)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.12f, 0.13f, 0.18f, 0.7f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = new Color(1f, 1f, 1f, 0.12f);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 1f), Texture2D.whiteTexture);
+            GUI.color = previous;
+            var label = Label(12, FontStyle.Normal, new Color(0.45f, 0.48f, 0.55f));
+            label.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(rect, caption, label);
+        }
+
+        static bool DrawAction(Rect rect, string text, bool enabled, Color color)
+        {
+            var previous = GUI.enabled;
+            GUI.enabled = enabled;
+            var bg = GUI.backgroundColor;
+            GUI.backgroundColor = color;
+            var style = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Bold
+            };
+            var clicked = GUI.Button(rect, text, style);
+            GUI.backgroundColor = bg;
+            GUI.enabled = previous;
+            return clicked && enabled;
         }
 
         string RoomLine()
@@ -71,42 +310,6 @@ namespace RuneMagic
             return $"{target.DisplayName}  {{{target.FormulaText()}}}  — {reading}";
         }
 
-        void DrawGrimoire()
-        {
-            DrawPanel(Screen.width - 460, 12, 448, 360);
-            var title = Label(18, FontStyle.Bold, Color.white);
-            var body = Label(14, FontStyle.Normal, new Color(0.86f, 0.88f, 0.92f));
-            GUI.Label(new Rect(Screen.width - 444, 24, 420, 24), "Grimoire — known recipes", title);
-
-            var y = 56f;
-            var any = false;
-            foreach (var recipe in SpellGrammar.All)
-            {
-                if (!_director.Grimoire.KnowsRecipe(recipe.Material, recipe.Aspect))
-                {
-                    continue;
-                }
-
-                any = true;
-                GUI.Label(new Rect(Screen.width - 444, y, 420, 20),
-                    $"{recipe.Name}   {SpellGrammar.FormulaText(recipe.Material, recipe.Aspect)}", body);
-                y += 22f;
-            }
-
-            if (!any)
-            {
-                GUI.Label(new Rect(Screen.width - 444, y, 420, 60),
-                    "Empty. Walk the Free charm, or compose until a form writes itself.", body);
-            }
-        }
-
-        Color StanceColor()
-        {
-            return _director.Composer.Stance == CastingStance.Charter
-                ? new Color(0.75f, 0.86f, 1f)
-                : new Color(1f, 0.72f, 0.45f);
-        }
-
         static GUIStyle Label(int size, FontStyle style, Color color)
         {
             var label = new GUIStyle(GUI.skin.label)
@@ -122,9 +325,17 @@ namespace RuneMagic
         static void DrawPanel(float x, float y, float width, float height)
         {
             var color = GUI.color;
-            GUI.color = new Color(0.05f, 0.06f, 0.1f, 0.78f);
+            GUI.color = new Color(0.05f, 0.06f, 0.1f, 0.82f);
             GUI.DrawTexture(new Rect(x, y, width, height), Texture2D.whiteTexture);
             GUI.color = color;
+        }
+
+        static void DrawVeil(Color color)
+        {
+            var previous = GUI.color;
+            GUI.color = color;
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
+            GUI.color = previous;
         }
     }
 }
