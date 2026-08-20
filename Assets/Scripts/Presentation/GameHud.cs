@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven. The grid is the room — every material’s full sentence, woven side to side. Charter wants the whole recipe. Free fills a blank.",
+                "The wall is the eleven — only what is on screen can be drawn. The grid is the view, woven side to side. Charter wants the whole recipe. Free fills a blank.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
@@ -136,7 +136,8 @@ namespace RuneMagic
                 var row = i / columns;
                 rows = row + 1;
                 var rect = new Rect(left + col * (size + gap), top + row * (size + gap), size, size);
-                DrawRuneCard(rect, runes[i], () => _director.AddRune(runes[i]));
+                var rune = runes[i];
+                DrawRuneCard(rect, rune, () => _director.AddRune(rune), _director.InVicinity(rune));
             }
 
             return top + rows * (size + gap);
@@ -181,7 +182,7 @@ namespace RuneMagic
                     }
 
                     var rune = glyph.Rune;
-                    DrawRuneCard(rect, rune, () => _director.WeaveFromField(rune));
+                    DrawRuneCard(rect, rune, () => _director.WeaveFromField(rune), true);
                 }
             }
         }
@@ -215,7 +216,7 @@ namespace RuneMagic
                 if (i < _director.Composer.Count)
                 {
                     var index = i;
-                    DrawRuneCard(rect, _director.Composer.Slots[i], () => _director.RemoveDraftFrom(index));
+                    DrawRuneCard(rect, _director.Composer.Slots[i], () => _director.RemoveDraftFrom(index), true);
                 }
                 else
                 {
@@ -498,25 +499,27 @@ namespace RuneMagic
                 + MaterialCatalog.All.Count * 20f + MaterialTree.All.Count * 22f;
         }
 
-        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick)
+        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available)
         {
-            var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), 0.25f);
-            fill.a = 0.92f;
+            var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
+            fill.a = available ? 0.92f : 0.35f;
             var previous = GUI.color;
             GUI.color = fill;
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = new Color(1f, 1f, 1f, 0.35f);
+            GUI.color = new Color(1f, 1f, 1f, available ? 0.35f : 0.08f);
             GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
 
-            var glyph = Label(rect.height > 70f ? 22 : 16, FontStyle.Bold, Color.white);
+            var glyphColor = available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
+            var glyph = Label(rect.height > 70f ? 22 : 16, FontStyle.Bold, glyphColor);
             glyph.alignment = TextAnchor.MiddleCenter;
-            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, new Color(0.1f, 0.08f, 0.08f));
+            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal,
+                available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f));
             name.alignment = TextAnchor.MiddleCenter;
             GUI.Label(new Rect(rect.x, rect.y + 8, rect.width, rect.height * 0.45f),
                 RuneCatalog.GlyphOf(rune), glyph);
             GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.5f, rect.width, rect.height * 0.42f),
-                RuneCatalog.NameOf(rune), name);
+                available ? RuneCatalog.NameOf(rune) : "not in view", name);
 
             if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
             {
@@ -563,14 +566,14 @@ namespace RuneMagic
 
         string FieldLine()
         {
-            return "The weave waits in the Charter. Space unrolls the room.";
+            return "The weave waits in the Charter. Only what is on screen can be drawn.";
         }
 
         string TargetAndLog()
         {
             var target = _director.CurrentTarget;
             var lockLine = target == null
-                ? "Space opens the Charter. The room’s weave is only visible there."
+                ? "Space opens the Charter. You can only draw runes that are on the screen."
                 : $"{target.DisplayName}  {{{target.FormulaText()}}}";
             return $"{lockLine}\n{_director.LastLog}";
         }

@@ -19,7 +19,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 | Design rule | In this slice |
 | --- | --- |
-| Casting is perception, not position | Runes live on their own layer, visible only in the Charter. The room is one continuous weave, alternating rows, scrolled sideways. They are not stamped on a tile. Click a cell to draw it. |
+| Casting is perception, not position | Runes live on their own layer, visible only in the Charter. The weave is what is on screen, alternating rows, scrolled sideways. You cannot draw a rune that is off-camera. Click a cell to draw it. |
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
@@ -40,7 +40,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of the eleven, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
-- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes. The grid is everything the room is made of, manifestations included. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. Walk to bring Air or Mercury into view. The grid is the camera’s sentence, manifestations included. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.

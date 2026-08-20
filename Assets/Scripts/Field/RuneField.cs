@@ -4,8 +4,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Perception helper for the Charter wall. The wall is always the
-    /// eleven writeable runes. The room's sentence lives in the weave grid.
+    /// What the camera can see. The Charter wall lists the eleven, but only
+    /// runes in this vicinity can be strung.
     /// </summary>
     public static class RuneField
     {

@@ -27,38 +27,47 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Walks a room as a weave: even rows left to right, odd rows right to
-    /// left. Contiguous same-material runs collapse to one full signature
-    /// so the sentence is the room, not eighty copies of ash. Locks and
+    /// Walks what is on screen as a weave: even rows left to right, odd
+    /// rows right to left. Off-screen tiles do not speak. Contiguous
+    /// same-material runs collapse to one full signature. Locks and
     /// world-strings enter when the scan first reaches their tile.
     /// </summary>
     public static class RoomSentence
     {
         public static List<WeaveGlyph> Read(
-            RoomInfo room,
             WorldGrid grid,
             ISpellLock[] locks,
-            RuneStringSource[] strings)
+            RuneStringSource[] strings,
+            Rect view)
         {
             var sequence = new List<WeaveGlyph>(64);
-            if (room == null || grid == null)
+            if (grid == null || view.width <= 0f || view.height <= 0f)
             {
                 return sequence;
             }
 
-            var bounds = room.Bounds;
+            var x0 = Mathf.FloorToInt(view.xMin);
+            var x1 = Mathf.FloorToInt(view.xMax);
+            var y0 = Mathf.FloorToInt(view.yMin);
+            var y1 = Mathf.FloorToInt(view.yMax);
             var lastMaterial = MaterialId.None;
             var lastWasTear = false;
             var spokenLocks = new HashSet<int>();
             var spokenStrings = new HashSet<int>();
 
-            for (var row = 0; row < bounds.height; row++)
+            for (var row = 0; row <= y1 - y0; row++)
             {
-                var y = bounds.yMin + row;
+                var y = y0 + row;
                 var even = (row & 1) == 0;
-                for (var step = 0; step < bounds.width; step++)
+                var width = x1 - x0 + 1;
+                for (var step = 0; step < width; step++)
                 {
-                    var x = even ? bounds.xMin + step : bounds.xMax - 1 - step;
+                    var x = even ? x0 + step : x1 - step;
+                    if (!FieldView.ContainsTile(view, x, y))
+                    {
+                        continue;
+                    }
+
                     var tile = grid.Get(x, y);
                     AppendTile(sequence, tile, ref lastMaterial, ref lastWasTear);
                     AppendHere(sequence, locks, strings, x, y, spokenLocks, spokenStrings);

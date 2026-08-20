@@ -284,7 +284,7 @@ namespace RuneMagic
         {
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
-            Log("The room unrolls. Draw from the wall or the weave, then Charter Cast, Store, or Free Cast.");
+            Log("The screen unrolls. Only runes in view can be drawn. Charter Cast, Store, or Free Cast.");
         }
 
         public void CloseCharter()
@@ -346,10 +346,21 @@ namespace RuneMagic
             Mode = PlayMode.Exploring;
         }
 
+        public bool InVicinity(RuneId rune)
+        {
+            return Tapestry != null && Tapestry.InVicinity(rune);
+        }
+
         public void AddRune(RuneId rune)
         {
             if (Mode != PlayMode.Charter)
             {
+                return;
+            }
+
+            if (!InVicinity(rune))
+            {
+                Log($"{RuneCatalog.NameOf(rune)} is not on the screen. Walk until it is in view.");
                 return;
             }
 
@@ -372,6 +383,12 @@ namespace RuneMagic
             if (Mode != PlayMode.Charter)
             {
                 OpenCharter();
+            }
+
+            if (!InVicinity(rune))
+            {
+                Log($"{RuneCatalog.NameOf(rune)} is not on the screen. Walk until it is in view.");
+                return;
             }
 
             Composer.TryAdd(rune, out var note);
@@ -623,9 +640,11 @@ namespace RuneMagic
 
         void RefreshVisibleRunes()
         {
-            var player = PlayerTransform();
-            var origin = player != null ? player.position : _safePoint;
-            VisibleRunes = RuneField.Perceive(origin, Grid, _locks);
+            VisibleRunes = RuneCatalog.BasicRunes;
+            if (Tapestry != null)
+            {
+                Tapestry.Resample();
+            }
         }
 
         void HandleWorldClick()

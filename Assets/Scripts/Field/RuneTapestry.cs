@@ -4,9 +4,9 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// The room's weave, read only in the Charter. Exploring shows tiles,
-    /// not glyphs. The sentence is everything in the current room, laid
-    /// boustrophedon and scrolled sideways.
+    /// The on-screen weave, read only in the Charter. Exploring shows tiles,
+    /// not glyphs. The sentence is everything in the camera view, laid
+    /// boustrophedon and scrolled sideways. Off-screen runes cannot be used.
     /// </summary>
     public sealed class RuneTapestry : MonoBehaviour
     {
@@ -19,11 +19,14 @@ namespace RuneMagic
         WorldGrid _grid;
         ISpellLock[] _locks;
         readonly List<WeaveGlyph> _sequence = new();
-        string _roomId = string.Empty;
+        readonly HashSet<RuneId> _vicinity = new();
+        readonly List<RuneId> _vicinityList = new();
+        int _viewKey = int.MinValue;
         string _readingText = string.Empty;
 
         public string Reading => _readingText;
         public IReadOnlyList<WeaveGlyph> Sequence => _sequence;
+        public IReadOnlyList<RuneId> Vicinity => _vicinityList;
         public float Scroll { get; private set; }
         public bool Showing => _director != null && _director.Mode == PlayMode.Charter && _sequence.Count > 0;
 
@@ -35,9 +38,35 @@ namespace RuneMagic
             Scroll = 0f;
         }
 
+        public bool InVicinity(RuneId rune)
+        {
+            return rune != RuneId.None && _vicinity.Contains(rune);
+        }
+
+        public void Resample()
+        {
+            var view = FieldView.OnScreen();
+            Rebuild(view, FieldView.Key(view));
+        }
+
         public static List<RuneId> Perceive(Vector3 origin, WorldGrid grid, ISpellLock[] locks)
         {
-            return new List<RuneId>(RuneCatalog.BasicRunes);
+            var view = FieldView.OnScreen();
+            var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
+            var sequence = RoomSentence.Read(grid, locks, strings, view);
+            var seen = new List<RuneId>();
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                var rune = sequence[i].Rune;
+                if (rune == RuneId.None || seen.Contains(rune))
+                {
+                    continue;
+                }
+
+                seen.Add(rune);
+            }
+
+            return seen;
         }
 
         public bool TryPick(Vector3 world, out RuneId rune)
@@ -67,16 +96,16 @@ namespace RuneMagic
                 return;
             }
 
-            var room = _director.CurrentRoom;
-            var roomId = room != null ? room.Id : string.Empty;
-            if (roomId != _roomId || _sequence.Count == 0)
+            var view = FieldView.OnScreen();
+            var key = FieldView.Key(view);
+            if (key != _viewKey || _sequence.Count == 0)
             {
-                Rebuild(room);
+                Rebuild(view, key);
             }
 
             if (_sequence.Count == 0)
             {
-                _readingText = "the field is quiet";
+                _readingText = "nothing on the screen speaks";
                 return;
             }
 
@@ -89,17 +118,24 @@ namespace RuneMagic
             RefreshReading();
         }
 
-        void Rebuild(RoomInfo room)
+        void Rebuild(Rect view, int key)
         {
-            _roomId = room != null ? room.Id : string.Empty;
+            _viewKey = key;
             _sequence.Clear();
+            _vicinity.Clear();
+            _vicinityList.Clear();
             Scroll = 0f;
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var read = RoomSentence.Read(room, _grid, _locks, strings);
+            var read = RoomSentence.Read(_grid, _locks, strings, view);
             for (var i = 0; i < read.Count; i++)
             {
                 _sequence.Add(read[i]);
+                var rune = read[i].Rune;
+                if (rune != RuneId.None && _vicinity.Add(rune))
+                {
+                    _vicinityList.Add(rune);
+                }
             }
         }
 
@@ -107,7 +143,7 @@ namespace RuneMagic
         {
             if (_sequence.Count == 0)
             {
-                _readingText = "the field is quiet";
+                _readingText = "nothing on the screen speaks";
                 return;
             }
 
@@ -120,10 +156,7 @@ namespace RuneMagic
                 parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Rune));
             }
 
-            var room = _director != null && _director.CurrentRoom != null
-                ? _director.CurrentRoom.Name
-                : "the room";
-            _readingText = room + "  ·  " + string.Join(" · ", parts);
+            _readingText = "on screen  ·  " + string.Join(" · ", parts);
         }
 
         static int Mod(int value, int modulus)

@@ -23,7 +23,7 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 4. **Void** / pits tear the weave. They contribute a gap, not a rune.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
-Even rows read left to right. Odd rows read right to left. The Charter grid is that same weave, scrolled sideways.
+Even rows read left to right. Odd rows read right to left. The Charter grid is that same weave, scrolled sideways. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
 
 ---
 
