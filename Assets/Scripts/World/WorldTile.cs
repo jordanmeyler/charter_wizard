@@ -95,7 +95,7 @@ namespace RuneMagic
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (Kind != TileKind.Pit || !other.CompareTag("Player"))
+            if (Kind != TileKind.Pit || !AdeptAvatar.IsAdept(other))
             {
                 return;
             }
