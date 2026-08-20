@@ -41,7 +41,12 @@ namespace RuneMagic
             Alpha = 0f;
 
             var color = RunePalette.Of(rune);
-            _body = gameObject.GetComponent<SpriteRenderer>() ?? gameObject.AddComponent<SpriteRenderer>();
+            _body = gameObject.GetComponent<SpriteRenderer>();
+            if (_body == null)
+            {
+                _body = gameObject.AddComponent<SpriteRenderer>();
+            }
+
             _body.sprite = SpriteFactory.Circle(new Color(color.r, color.g, color.b, 0.9f), 28);
             _body.sortingOrder = 8;
 
