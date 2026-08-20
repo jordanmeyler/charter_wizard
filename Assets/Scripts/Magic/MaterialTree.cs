@@ -41,11 +41,21 @@ namespace RuneMagic
             Add(RuneId.Fire, RuneId.Water, RuneId.Steam, BlendKind.Violent, "Opposed diagonal. Fire + Water → Steam.");
             Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Opposed diagonal. Air + Earth → Dust.");
 
-            Add(RuneId.Spark, RuneId.Air, RuneId.Storm, BlendKind.Stable, "Spark driven into Air → Storm.");
-            Add(RuneId.Spark, RuneId.Water, RuneId.Storm, BlendKind.Stable, "Spark driven into Water → Storm.");
+            Add(RuneId.Spark, RuneId.Air, RuneId.Lightning, BlendKind.Stable, "Spark driven into Air → Lightning.");
+            Add(RuneId.Spark, RuneId.Cloud, RuneId.Storm, BlendKind.Stable, "Spark driven into Cloud → Storm.");
+            Add(RuneId.Cloud, RuneId.Water, RuneId.Rain, BlendKind.Stable, "Cloud given Water → Rain.");
             Add(RuneId.Water, RuneId.Cold, RuneId.Ice, BlendKind.Stable, "Water drawn toward Cold → Ice.");
+            Add(RuneId.Cloud, RuneId.Ice, RuneId.Snow, BlendKind.Stable, "Cloud joined to Ice → Snow.");
             Add(RuneId.Lava, RuneId.Cold, RuneId.Stone, BlendKind.Stable, "Lava cooled → Stone.");
+            Add(RuneId.Lava, RuneId.Water, RuneId.Obsidian, BlendKind.Violent, "Lava quenched. Lava + Water → Obsidian.");
+            Add(RuneId.Lava, RuneId.Earth, RuneId.Metal, BlendKind.Stable, "Lava smelted with Earth → Metal.");
             Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud dried by Air → Sand.");
+            Add(RuneId.Sand, RuneId.Fire, RuneId.Glass, BlendKind.Stable, "Sand melted by Fire → Glass.");
+            Add(RuneId.Stone, RuneId.Water, RuneId.Crystal, BlendKind.Stable, "Stone grown with Water → Crystal.");
+            Add(RuneId.Ice, RuneId.Stone, RuneId.Glacier, BlendKind.Stable, "Ice given Stone → Glacier.");
+            Add(RuneId.Steam, RuneId.Metal, RuneId.Acid, BlendKind.Violent, "Steam forced through Metal → Acid.");
+            Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Fire leaves Plant as Ash.");
+            Add(RuneId.Plant, RuneId.Mors, RuneId.Blight, BlendKind.Stable, "Plant given Death → Blight.");
         }
 
         public static IReadOnlyList<(RuneId Left, RuneId Right, BlendResult Result)> All => Canonical;

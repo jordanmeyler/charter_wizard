@@ -322,24 +322,13 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "Written spells only. Material × Aspect · Formation. Sensible-looking combos still fizzle if they are not listed. Esc closes.",
+                "Codex draft. Kill, restrain, or neither — no damage. Families mix differently. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
-            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-
-            GUI.Label(new Rect(0, 0, 900, 24), "Spells  ·  Material × Aspect · Formation", heading);
-            var y = 28f;
-            var recipes = new List<SpellRecipe>(SpellGrammar.All);
-            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-            foreach (var recipe in recipes)
-            {
-                GUI.Label(new Rect(0, y, 180, 20), recipe.Name, row);
-                GUI.Label(new Rect(190, y, 420, 20), SpellGrammar.RecipeLine(recipe), row);
-                GUI.Label(new Rect(620, y, 420, 20), recipe.Effect, muted);
-                y += 24f;
-            }
+            var y = DrawCodex(0f, heading, row, muted);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -367,24 +356,13 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
             GUI.Label(new Rect(40, 62, 980, 22),
-                "Developer ledger. Written Charter recipes (sparse) plus material joins. Esc resumes.",
+                "Developer ledger. Full codex draft plus material joins. Esc resumes.",
                 subtitle);
 
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
-            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-
-            GUI.Label(new Rect(0, 0, 900, 24), "Spells  ·  Material × Aspect · Formation", heading);
-            var y = 28f;
-            var recipes = new List<SpellRecipe>(SpellGrammar.All);
-            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-            foreach (var recipe in recipes)
-            {
-                GUI.Label(new Rect(0, y, 180, 20), recipe.Name, row);
-                GUI.Label(new Rect(190, y, 420, 20), SpellGrammar.RecipeLine(recipe), row);
-                GUI.Label(new Rect(620, y, 420, 20), recipe.Effect, muted);
-                y += 24f;
-            }
+            var y = DrawCodex(0f, heading, row, muted);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -401,15 +379,47 @@ namespace RuneMagic
             GUI.EndScrollView();
         }
 
-        static int SpellGrammarCount()
+        float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted)
         {
-            var count = 0;
-            foreach (var _ in SpellGrammar.All)
+            GUI.Label(new Rect(0, y, 900, 22), "Primary runes", heading);
+            y += 24f;
+            GUI.Label(new Rect(0, y, 980, 18), "Substance: Fire · Air · Earth · Water", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "Tria prima: Salt (body) · Mercury (motion) · Sulphur (mind)", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "Existential: Life · Death     Light/Dark: Light · Dark · Animus · Anima     Catalyst: Aether     Qualities: Hot · Cold · Wet · Dry", row);
+            y += 28f;
+
+            SpellBook? current = null;
+            foreach (var entry in SpellCodex.All)
             {
-                count++;
+                if (current != entry.Book)
+                {
+                    if (current != null)
+                    {
+                        y += 10f;
+                    }
+
+                    current = entry.Book;
+                    GUI.Label(new Rect(0, y, 900, 22), SpellCodex.BookName(entry.Book), heading);
+                    y += 24f;
+                }
+
+                GUI.Label(new Rect(0, y, 150, 18), entry.Name, row);
+                GUI.Label(new Rect(155, y, 280, 18), entry.Recipe, row);
+                GUI.Label(new Rect(440, y, 70, 18), entry.Form, muted);
+                GUI.Label(new Rect(515, y, 80, 18), entry.Outcome.ToString(), muted);
+                GUI.Label(new Rect(600, y, 70, 18), entry.Stance, muted);
+                GUI.Label(new Rect(675, y, 420, 18), entry.Effect, muted);
+                y += 20f;
             }
 
-            return count;
+            return y;
+        }
+
+        static float CodexHeight()
+        {
+            return 160f + SpellCodex.All.Count * 20f + 12 * 28f + MaterialTree.All.Count * 22f;
         }
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick)

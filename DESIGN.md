@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.7. Companion artifact: `material-codex.html`.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.8. Spell catalog: [`SPELLS.md`](SPELLS.md). Material tree: Liber Materia.*
 
 ---
 
@@ -77,13 +77,19 @@ Masters may also **quality-shift** (add a mundane primordial) to nudge a substan
 Shared edge → stable; diagonal (Fire/Water, Air/Earth) → violent.
 
 ### The tree
-Full branch-by-branch tree (Energy · Weather · Stone & Metal · Water & Ice · Life) with recipes and notes lives in **`material-codex.html`**. Life is the handoff point: **Mud + Vita + Aether → Plant** (soulless life) — inert matter doesn't grow until something breathes into it.
+Full branch-by-branch tree and the long spell list live in **[`SPELLS.md`](SPELLS.md)**. Families mix runes in different ways — there is no single Material × Aspect law.
+
+**Plant = Water · Earth · Salt** (wet earth given a body). Add Life to grow. Add Aether when you generate soulless life that was not implied. **Ice = Water · Salt · Cold** (body of water, quality-shifted). Codex “Mud · Life · Aether” is true soulless plant-life, a creature-grade substance.
 
 ---
 
 ## 4. The spell grammar
 
-**Material (noun) × Aspect (verb) × Formation (placement) = spell.** Sparse. Not a full grid. A combo that *looks* as if it should work can still fizzle.
+There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
+
+Families mix differently (Energy travels or erupts; Life is wet earth given a body; Mind is Sulphur coloured by a substance; Manifestation needs class runes *and* a creature formula). Formation is how you place a written spell, not a third rune.
+
+A combo that *looks* as if it should work can still fizzle if it is not written. The draft catalog is [`SPELLS.md`](SPELLS.md).
 
 Casting is no longer automatic. **Cast** (or the held slot / F) opens aim:
 1. Pick a formation the string can naturally take.
@@ -212,7 +218,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Material tree** — v1 built in `material-codex.html`; keep growing branches (poison/blood/light? deeper Life sub-tree for beasts).
+- [~] **Material tree & spell catalog** — v1 in `SPELLS.md` (from Liber Materia + taste). Ratify Plant/Ice split, flight, dark matter, manifestation gates.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).

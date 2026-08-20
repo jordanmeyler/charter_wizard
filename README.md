@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.7). This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.8). The spell and rune catalog to review is [`SPELLS.md`](SPELLS.md). This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -61,6 +61,7 @@ Walk into a pit and you return to the last safe floor.
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Scripts/Magic/SpellGrammar.cs` | New Material × Aspect × Formation recipes (keep them sparse) |
 | `Assets/Scripts/Magic/SpellShape.cs` | Which formations a material × aspect may even attempt |
+| `SPELLS.md` | Primary runes, family mixing rules, full spell list |
 | `DESIGN.md` | The source of truth |
 
 ## Not in this slice (on purpose)
