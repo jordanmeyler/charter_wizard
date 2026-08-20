@@ -8,7 +8,7 @@ Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are out of this pa
 
 There is no damage. A spell **kills**, **restrains**, or does **neither**.
 
-Formation (Shot, Pillar, Spread, Remote, Self) is **how you place** a finished chain. It is not a rune.
+Formation (Shot, Pillar, Spread, Remote, Self) is **written in the chain**, not chosen later. Earth at the end of a body stands (Pillar). Mercury without breath goes *into* a thing or lands away (Remote). Breath already in the chain, then Mercury, flies (Shot). A body around the feet is Spread. Flight stays on the caster (Self).
 
 ---
 

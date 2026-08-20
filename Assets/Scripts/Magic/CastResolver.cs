@@ -295,14 +295,34 @@ namespace RuneMagic
                 return false;
             }
 
-            if (material == RuneId.None || !RuneCatalog.IsFormAspect(aspect) || shape == SpellShape.None)
+            if (material == RuneId.None || !RuneCatalog.IsFormAspect(aspect))
             {
                 prepared = new PreparedSpell(material, aspect, shape, SpellId.None, blendKind, note);
                 return true;
             }
 
-            SpellGrammar.TryGet(material, aspect, shape, out var recipe);
-            prepared = new PreparedSpell(material, aspect, shape, recipe.Spell, blendKind, note, recipe.Name);
+            if (shape != SpellShape.None &&
+                SpellGrammar.TryGet(material, aspect, shape, out var recipe))
+            {
+                prepared = new PreparedSpell(material, aspect, recipe.Shape, recipe.Spell, blendKind, note, recipe.Name);
+                return true;
+            }
+
+            prepared = new PreparedSpell(material, aspect, shape, SpellId.None, blendKind, note);
+            return true;
+        }
+
+        public bool TryChooseFree(Composition composition, FreeAttunement attunement, out CodexEntry pick)
+        {
+            attunement = attunement ?? new FreeAttunement();
+            var pool = ChainBook.CollectForFree(composition, SpellShape.None, attunement.FillBudget);
+            if (pool.Count == 0)
+            {
+                pick = default;
+                return false;
+            }
+
+            pick = PickWeighted(pool, attunement);
             return true;
         }
 
@@ -364,7 +384,8 @@ namespace RuneMagic
             SpellShape shape,
             SpellId[] acceptedKeys,
             Grimoire grimoire,
-            FreeAttunement attunement = null)
+            FreeAttunement attunement = null,
+            CodexEntry lockedFree = default)
         {
             if (composition.Sequence == null || composition.Sequence.Length == 0)
             {
@@ -376,7 +397,7 @@ namespace RuneMagic
 
             if (stance == CastingStance.Free)
             {
-                return ResolveFree(composition, shape, acceptedKeys, grimoire, attunement);
+                return ResolveFree(composition, shape, acceptedKeys, grimoire, attunement, lockedFree);
             }
 
             if (!TryPrepare(composition, shape, out var prepared))
@@ -428,17 +449,18 @@ namespace RuneMagic
             SpellShape shape,
             SpellId[] acceptedKeys,
             Grimoire grimoire,
-            FreeAttunement attunement)
+            FreeAttunement attunement,
+            CodexEntry lockedFree)
         {
             attunement = attunement ?? new FreeAttunement();
-            var pool = ChainBook.CollectForFree(composition, shape, attunement.FillBudget);
+            var pool = ChainBook.CollectForFree(composition, SpellShape.None, attunement.FillBudget);
             if (pool.Count == 0)
             {
                 return Fail(false, true, 0.06f, SpellId.None, shape, composition.MaterialA, composition.Aspect,
                     $"Free reaches and finds no written chain {FillWords(attunement.FillBudget)} would complete. The surge folds inward.");
             }
 
-            var pick = PickWeighted(pool, attunement);
+            var pick = lockedFree.Spell != SpellId.None ? lockedFree : PickWeighted(pool, attunement);
             attunement.Record(pick);
             grimoire.LearnRecipe(FirstMaterial(pick), LastAspect(pick), pick.Shape);
 

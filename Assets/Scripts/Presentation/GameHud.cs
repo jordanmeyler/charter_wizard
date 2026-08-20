@@ -235,7 +235,7 @@ namespace RuneMagic
             if (_director.Held.Occupied)
             {
                 GUI.Label(new Rect(312, y + 40, 440, 40),
-                    $"{_director.Held.Name}  ·  Charter\nClick the slot or press F, then choose a form and aim.",
+                    $"{_director.Held.Name}  ·  Charter\nClick the slot or press F, then aim. The chain already wrote the form.",
                     body);
             }
             else
@@ -276,37 +276,19 @@ namespace RuneMagic
             GUI.Label(new Rect(16, y + 8, 720, 22),
                 $"Aim  ·  {_director.PendingPreview}  ·  {_director.PendingStance}", title);
 
-            var shapes = _director.AvailableShapes;
-            if (shapes.Count == 0)
+            var shape = _director.ChosenShape;
+            if (shape == SpellShape.None)
             {
-                GUI.Label(new Rect(16, y + 36, 640, 40),
-                    _director.PendingStance == CastingStance.Free
-                        ? "Free finds no written chain that fill would complete. Esc to keep the string."
-                        : "No written form. Click the world to fizzle, or Esc to keep the string.",
+                GUI.Label(new Rect(16, y + 36, 720, 40),
+                    "The chain did not write a form. Click the world to fizzle, or Esc to keep the string.",
                     body);
             }
             else
             {
-                var x = 16f;
-                foreach (var shape in shapes)
-                {
-                    var chosen = _director.ChosenShape == shape;
-                    var color = chosen
-                        ? new Color(0.72f, 0.42f, 0.18f)
-                        : new Color(0.22f, 0.32f, 0.48f);
-                    var picked = shape;
-                    if (DrawAction(new Rect(x, y + 36, 118, 42), SpellFormations.NameOf(shape), true, color))
-                    {
-                        _director.ChooseShape(picked);
-                    }
-
-                    x += 128f;
-                }
-
-                var hint = _director.ChosenShape == SpellShape.None
-                    ? "Pick a formation, then click the world."
-                    : SpellFormations.Get(_director.ChosenShape).Hint;
-                GUI.Label(new Rect(x + 8, y + 40, 420, 36), hint, body);
+                var def = SpellFormations.Get(shape);
+                GUI.Label(new Rect(16, y + 36, 720, 40),
+                    $"{def.Name} is in the sentence. {def.Hint}",
+                    body);
             }
 
             if (DrawAction(new Rect(Screen.width - 176, y + 36, 160, 42), "Cancel", true, new Color(0.28f, 0.22f, 0.22f)))

@@ -48,6 +48,7 @@ namespace RuneMagic
         Transform _player;
         Composition _pendingComposition;
         CastingStance _pendingStance;
+        CodexEntry _pendingFree;
         bool _pendingFromHeld;
 
         public void Begin(SanctumBuild build)
@@ -459,26 +460,6 @@ namespace RuneMagic
             BeginAim(Held.Composition, Held.Stance, fromHeld: true);
         }
 
-        public void ChooseShape(SpellShape shape)
-        {
-            if (Mode != PlayMode.Aiming)
-            {
-                return;
-            }
-
-            ChosenShape = shape;
-            var def = SpellFormations.Get(shape);
-            PendingPreview = _pendingStance == CastingStance.Free
-                ? ChainBook.PreviewFree(_pendingComposition, Attunement.FillBudget, shape)
-                : _resolver.PreviewName(_pendingComposition, shape);
-            if (string.IsNullOrEmpty(PendingPreview))
-            {
-                PendingPreview = _resolver.PreviewName(_pendingComposition, shape);
-            }
-
-            Log($"{def.Name}. {def.Hint}");
-        }
-
         public void CancelAim()
         {
             if (Mode != PlayMode.Aiming)
@@ -489,6 +470,7 @@ namespace RuneMagic
             Mode = PlayMode.Exploring;
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
+            _pendingFree = default;
             Log(_pendingFromHeld
                 ? $"The cast is withheld. You still hold {Held.Name}."
                 : "The cast is withheld. The string is still on the Charter.");
@@ -501,17 +483,10 @@ namespace RuneMagic
                 return;
             }
 
-            var shapes = AvailableShapes;
-            if (shapes.Count > 0 && ChosenShape == SpellShape.None)
-            {
-                Log("Pick a formation first — Shot, Pillar, Spread, Remote, or Self.");
-                return;
-            }
-
             var shape = ChosenShape;
-            if (shapes.Count == 0)
+            if (shape == SpellShape.None && _pendingFree.Spell != SpellId.None)
             {
-                shape = SpellShape.Spread;
+                shape = _pendingFree.Shape;
             }
 
             var composition = _pendingComposition;
@@ -528,7 +503,9 @@ namespace RuneMagic
             Mode = PlayMode.Exploring;
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
-            Release(composition, stance, shape, worldPoint);
+            var lockedFree = _pendingFree;
+            _pendingFree = default;
+            Release(composition, stance, shape, worldPoint, lockedFree);
         }
 
         void BeginAim(Composition composition, CastingStance stance, bool fromHeld)
@@ -544,64 +521,51 @@ namespace RuneMagic
                 return;
             }
 
-            composition.TryFoldMaterials(out var material, out _);
-
             _pendingComposition = composition;
             _pendingStance = stance;
             _pendingFromHeld = fromHeld;
+            _pendingFree = default;
             PendingStance = stance;
             ChosenShape = SpellShape.None;
+            AvailableShapes = System.Array.Empty<SpellShape>();
 
             if (stance == CastingStance.Free)
             {
-                var pool = ChainBook.CollectForFree(composition, SpellShape.None, Attunement.FillBudget);
-                if (pool.Count == 0)
+                if (!_resolver.TryChooseFree(composition, Attunement, out var pick))
                 {
                     Log($"Free finds no spell that {CastResolver.FillWords(Attunement.FillBudget)} would complete.");
                     return;
                 }
 
-                PendingPreview = ChainBook.PreviewFree(composition, Attunement.FillBudget);
-                var shapes = ChainBook.ShapesFor(pool);
-                AvailableShapes = shapes;
-                Mode = PlayMode.Aiming;
-                if (shapes.Count == 1)
-                {
-                    ChooseShape(shapes[0]);
-                    return;
-                }
+                LockAim(pick.Shape, $"{pick.Name} · {SpellFormations.NameOf(pick.Shape)}", pick);
+                var clash = ChainBook.CollectForFree(composition, SpellShape.None, Attunement.FillBudget).Count > 1
+                    ? " Attunement chose this sentence, including how it lands."
+                    : string.Empty;
+                Log($"{pick.Name} is {SpellFormations.NameOf(pick.Shape)} — the chain writes the form.{clash} {SpellFormations.Get(pick.Shape).Hint} Esc cancels.");
+                return;
+            }
 
-                Log($"{PendingPreview}. Choose how it aims, then click the world. Esc cancels.");
+            if (ChainBook.TryMatch(composition, SpellShape.None, out var written))
+            {
+                LockAim(written.Shape, $"{written.Name} · {SpellFormations.NameOf(written.Shape)}");
+                Log($"{written.Name} is {SpellFormations.NameOf(written.Shape)} — the chain writes the form. {SpellFormations.Get(written.Shape).Hint} Esc cancels.");
                 return;
             }
 
             PendingPreview = _resolver.PreviewName(composition);
-            var charterShapes = ChainBook.ShapesFor(composition);
-            if (charterShapes.Count == 0)
-            {
-                var aspect = composition.Aspect;
-                if (material != RuneId.None && RuneCatalog.IsFormAspect(aspect))
-                {
-                    charterShapes = SpellFormations.Available(material, aspect);
-                }
-            }
-
-            AvailableShapes = charterShapes;
             Mode = PlayMode.Aiming;
+            Log("Those runes are not a written sentence. The form is in the chain, not a later choice. Click to fizzle, or Esc to keep the string.");
+        }
 
-            if (charterShapes.Count == 0)
-            {
-                Log("Those runes have no written form. Click the world to fizzle, or Esc to keep the string.");
-                return;
-            }
-
-            if (charterShapes.Count == 1)
-            {
-                ChooseShape(charterShapes[0]);
-                return;
-            }
-
-            Log($"{PendingPreview}. Choose how it aims, then click the world. Esc cancels.");
+        void LockAim(SpellShape shape, string preview, CodexEntry freePick = default)
+        {
+            _pendingFree = freePick;
+            ChosenShape = shape;
+            PendingPreview = preview;
+            AvailableShapes = shape == SpellShape.None
+                ? System.Array.Empty<SpellShape>()
+                : new[] { shape };
+            Mode = PlayMode.Aiming;
         }
 
         public void LoadCodex(int number)
@@ -624,7 +588,7 @@ namespace RuneMagic
             }
 
             var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
-            Log($"Testing {entry.Name}: {entry.Recipe}.{gate} Charter Cast or Free Cast to aim.");
+            Log($"Testing {entry.Name}: {entry.Recipe} · {entry.Form}.{gate} The form is in the sentence. Charter Cast or Free Cast to aim.");
         }
 
         void HandleAimingInput()
@@ -712,21 +676,27 @@ namespace RuneMagic
             Log($"{clicked.DisplayName} is a lock. String a key, then Charter Cast, Store, or Free Cast.");
         }
 
-        void Release(Composition composition, CastingStance stance, SpellShape shape, Vector3 requested)
+        void Release(
+            Composition composition,
+            CastingStance stance,
+            SpellShape shape,
+            Vector3 requested,
+            CodexEntry lockedFree = default)
         {
             if (Busy)
             {
                 return;
             }
 
-            StartCoroutine(ReleaseRoutine(composition, stance, shape, requested));
+            StartCoroutine(ReleaseRoutine(composition, stance, shape, requested, lockedFree));
         }
 
         System.Collections.IEnumerator ReleaseRoutine(
             Composition composition,
             CastingStance stance,
             SpellShape shape,
-            Vector3 requested)
+            Vector3 requested,
+            CodexEntry lockedFree)
         {
             if (Mode == PlayMode.Charter)
             {
@@ -747,7 +717,7 @@ namespace RuneMagic
                 target = LockAtAim(shape, origin, requested);
                 CurrentTarget = target;
                 var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
-                outcome = _resolver.Resolve(composition, stance, shape, accepted, Grimoire, Attunement);
+                outcome = _resolver.Resolve(composition, stance, shape, accepted, Grimoire, Attunement, lockedFree);
                 var potency = outcome.Potency;
                 if (outcome.Shape != SpellShape.None)
                 {

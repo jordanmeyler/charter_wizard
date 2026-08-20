@@ -11,9 +11,9 @@ Four rooms, east to west of the spawn. Tiles are substances (ash, timber, hearth
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
 | **Ash Court** | Ash Mite `{Fire · Salt}` | Almost any formed offensive spell | The most basic lock. Many keys. |
-| **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Fire × Mercury · Shot, Fire × Salt · Pillar, Fire × Sulphur · Spread — or Snuff / Smother | Terrain is a lock. Fire wants a form, then a place. |
-| **The Drop** | Pit / missing Earth | Earth × Mercury · Shot, Earth × Salt · Pillar or Remote, Earth × Life · Pillar | Traversal. You aim the earth; it does not auto-bridge. |
-| **Storm Cell** | Storm rod `{Spark · waiting}` | Spark × Mercury · Shot (Fire + Air first — Spark is its own rune), or Live-floor / Jolt / Brilliant-arc | A join becomes a rune, then the chain continues. |
+| **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Flame-pillar (Fire · Salt · Earth), Melt (Fire · Salt · Mercury), Ignite, Snuff / Smother | Terrain is a lock. The chain writes whether fire stands or goes *into* the wick. |
+| **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth, Pillar), Pit (Earth · Mercury · Air, Remote), Bridge | Traversal. Rest that stands is a pillar; rest that leaves is remote. |
+| **Storm Cell** | Storm rod `{Spark · waiting}` | Lightning (Fire · Air · Air · Mercury, Shot), Live-floor (Fire · Air · Salt, Spread), Jolt | A join becomes a rune, then the chain continues. The form is in that sentence. |
 
 Walk the orange Free charm in Ash Court if you want Fireball written for you. You can ignore it and compose from first principles.
 
@@ -44,7 +44,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
-- After a cast: pick **Shot / Pillar / Spread / Remote** (only the forms that string can take), then **click the world**. Esc cancels and keeps the string.
+- After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; Mercury without breath is remote). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
@@ -65,7 +65,7 @@ Walk into a pit and you return to the last safe floor.
 | `Assets/Scripts/Magic/RuneCatalog.cs` | New rune names, families, meanings |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Scripts/Magic/SpellGrammar.cs` | New Material × Aspect × Formation recipes (keep them sparse) |
-| `Assets/Scripts/Magic/SpellShape.cs` | Which formations a material × aspect may even attempt |
+| `Assets/Scripts/Magic/SpellShape.cs` | How a written form is aimed (range, lock radius) |
 | `SPELLS.md` | Primary runes, family mixing rules, full spell list |
 | `DESIGN.md` | The source of truth |
 

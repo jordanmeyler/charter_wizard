@@ -118,36 +118,10 @@ namespace RuneMagic
             if (!RuneCatalog.IsFormAspect(aspect))
             {
                 var blendNote = blend.HasValue ? $" {blend.Value.Note}" : string.Empty;
-                return $"Charter: {SlotSummary()} — {RuneCatalog.NameOf(material)} is a clause, waiting. An unfinished sentence fizzles.{blendNote}";
+                return $"Charter: {SlotSummary()} — {RuneCatalog.NameOf(material)} is a clause, waiting. The form is in the sentence, not a later choice.{blendNote}";
             }
 
-            var forms = SpellFormations.Available(material, aspect);
-            if (forms.Count == 0)
-            {
-                return $"Charter: {SlotSummary()} — those runes have no natural form. Charter will fizzle.";
-            }
-
-            var written = 0;
-            foreach (var shape in forms)
-            {
-                if (SpellGrammar.TryGet(material, aspect, shape, out _))
-                {
-                    written++;
-                }
-            }
-
-            var formNames = new string[forms.Count];
-            for (var i = 0; i < forms.Count; i++)
-            {
-                formNames[i] = SpellFormations.NameOf(forms[i]);
-            }
-
-            if (written == 0)
-            {
-                return $"Charter: {SlotSummary()} — may take {string.Join(", ", formNames)}. No Charter form is written. Charter fizzles.";
-            }
-
-            return $"Charter: {SlotSummary()} — may take {string.Join(", ", formNames)}. Charter Cast to aim.";
+            return $"Charter: {SlotSummary()} — that sentence is not written. Charter will fizzle.";
         }
 
         public string DescribeFree(FreeAttunement attunement)
