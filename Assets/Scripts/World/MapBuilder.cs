@@ -154,9 +154,21 @@ namespace RuneMagic
             }
 
             var world = WorldGrid.Center(origin.x + prop.x, origin.y + prop.y);
+            if (!string.IsNullOrEmpty(prop.item) && CatalogBook.TryItem(prop.item, out var catalogItem))
+            {
+                ApplyItem(prop, catalogItem);
+            }
+
             var type = prop.type.ToLowerInvariant();
             switch (type)
             {
+                case "item":
+                    if (CatalogBook.TryItem(prop.item, out var spawned))
+                    {
+                        WorldItem.Spawn(world, spawned);
+                    }
+
+                    break;
                 case "plaque":
                     if (!string.IsNullOrEmpty(prop.text))
                     {
@@ -197,7 +209,8 @@ namespace RuneMagic
                 IdOf(prop, "ash-mite"),
                 ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
                 ParseKeys(prop.keys, MiteKeys),
-                ensouled: false);
+                ensouled: false,
+                spriteId: prop.sprite);
             return encounter;
         }
 
@@ -206,7 +219,7 @@ namespace RuneMagic
             var actor = new GameObject(NameOf(prop, "Cold Torch"));
             actor.transform.position = world;
             var torch = actor.AddComponent<TorchFixture>();
-            torch.Bind(NameOf(prop, "Cold Torch"), IdOf(prop, "cold-torch"), ParseKeys(prop.keys, TorchKeys));
+            torch.Bind(NameOf(prop, "Cold Torch"), IdOf(prop, "cold-torch"), ParseKeys(prop.keys, TorchKeys), prop.sprite);
             return torch;
         }
 
@@ -215,7 +228,7 @@ namespace RuneMagic
             var actor = new GameObject(NameOf(prop, "Storm Rod"));
             actor.transform.position = world;
             var rod = actor.AddComponent<LightningConduit>();
-            rod.Bind(NameOf(prop, "Storm Rod"), IdOf(prop, "storm-rod"), ParseKeys(prop.keys, RodKeys));
+            rod.Bind(NameOf(prop, "Storm Rod"), IdOf(prop, "storm-rod"), ParseKeys(prop.keys, RodKeys), prop.sprite);
             return rod;
         }
 
@@ -339,6 +352,51 @@ namespace RuneMagic
             }
 
             return null;
+        }
+
+        static void ApplyItem(MapProp prop, CatalogItem item)
+        {
+            if (string.IsNullOrEmpty(prop.type) || prop.type == "item")
+            {
+                switch ((item.kind ?? string.Empty).ToLowerInvariant())
+                {
+                    case "mite":
+                    case "torch":
+                    case "rod":
+                    case "chasm":
+                    case "charm":
+                        prop.type = item.kind;
+                        break;
+                    default:
+                        prop.type = "item";
+                        break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(prop.displayName))
+            {
+                prop.displayName = item.name;
+            }
+
+            if (string.IsNullOrEmpty(prop.sprite))
+            {
+                prop.sprite = item.sprite;
+            }
+
+            if ((prop.formula == null || prop.formula.Length == 0) && item.formula != null)
+            {
+                prop.formula = item.formula;
+            }
+
+            if ((prop.keys == null || prop.keys.Length == 0) && item.keys != null)
+            {
+                prop.keys = item.keys;
+            }
+
+            if (string.IsNullOrEmpty(prop.formulaId))
+            {
+                prop.formulaId = item.id;
+            }
         }
 
         static string NameOf(MapProp prop, string fallback) =>

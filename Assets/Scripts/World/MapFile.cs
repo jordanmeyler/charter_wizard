@@ -50,6 +50,8 @@ namespace RuneMagic
         public string formulaId;
         public string[] formula;
         public string[] keys;
+        public string sprite;
+        public string item;
     }
 
     [Serializable]
@@ -134,12 +136,12 @@ namespace RuneMagic
 
         public static RuneId ParseRune(string value)
         {
-            return Enum.TryParse(value, true, out RuneId rune) ? rune : RuneId.None;
+            return RuneCatalog.TryParseName(value, out var rune) ? rune : RuneId.None;
         }
 
         public static SpellId ParseSpell(string value)
         {
-            return Enum.TryParse(value, true, out SpellId spell) ? spell : SpellId.None;
+            return SpellRegistry.Parse(value);
         }
 
         public static Vector3 HeadingOf(string dir)

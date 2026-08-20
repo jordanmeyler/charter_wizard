@@ -26,7 +26,7 @@ namespace RuneMagic
         Vector3 _rest;
         float _phase;
 
-        public void Bind(string displayName, string formulaId, RuneId[] formula, SpellId[] keys, bool ensouled)
+        public void Bind(string displayName, string formulaId, RuneId[] formula, SpellId[] keys, bool ensouled, string spriteId = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
@@ -35,7 +35,7 @@ namespace RuneMagic
             Ensouled = ensouled;
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sprite = SpriteFactory.AshMite();
+            _renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId);
             _renderer.sortingOrder = 12;
             FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
 

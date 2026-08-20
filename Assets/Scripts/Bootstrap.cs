@@ -63,6 +63,8 @@ namespace RuneMagic
                 {
                     build.Charm.AddComponent<FreeCharm>().Bind(director.Grimoire, director.Log);
                 }
+
+                BindWorldItems(director);
             }
             catch (System.Exception exception)
             {
@@ -150,7 +152,7 @@ namespace RuneMagic
             halo.sortingOrder = 7;
 
             var sprite = player.AddComponent<SpriteRenderer>();
-            sprite.sprite = SpriteFactory.Adept();
+            sprite.sprite = SpriteFactory.Named("adept");
             sprite.sortingOrder = 20;
             sprite.color = Color.white;
 
@@ -176,6 +178,15 @@ namespace RuneMagic
             }
 
             return player;
+        }
+
+        static void BindWorldItems(SanctumDirector director)
+        {
+            var items = Object.FindObjectsByType<WorldItem>(FindObjectsSortMode.None);
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i].Bind(director.Grimoire, director.Log);
+            }
         }
     }
 }

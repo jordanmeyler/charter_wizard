@@ -63,9 +63,22 @@ You do not place rooms in `Main.unity`. Maps are JSON. The four-room sanctum is 
 | Unity `Window → Rune Magic → Map Painter` | Same JSON inside the editor. Left-click stamps a tile; Shift-click places a prop; Alt-click clears. |
 | `Assets/Scripts/World/MapFile.cs` / `MapBuilder.cs` | The format and the runtime stamp. |
 
-A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
+A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`, `item`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
 
-Tiles are still painted in code (`SpriteFactory`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow.
+Tiles are still painted in code (`SpriteFactory`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. You can replace or add sprites yourself — see Catalog below.
+
+## Catalog — recipes, sprites, items
+
+**Yes: one master file controls the recipes.** The game loads [`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json) at boot. That file is the fifty story-chains plus the joins (Fire · Air → Spark). [`SPELLS.md`](SPELLS.md) is the prose companion; if they disagree, the JSON wins in play. `SpellCodex.cs` is only a fallback if the JSON is missing.
+
+[`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop.
+
+| Tool | Use it for |
+| --- | --- |
+| [`Tools/catalog-editor.html`](Tools/catalog-editor.html) | Edit recipes, joins, pixel sprites, and items. Export `spells.json` / `art.json` back into `Assets/Resources/Catalog/`. |
+| Unity `Window → Rune Magic → Catalog` | Jump to those files |
+
+A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place it on a map with `"type": "item", "item": "your-id"` or set `"sprite"` on a mite/torch.
 
 ## Where to grow the trees
 
@@ -82,9 +95,12 @@ Tiles are still painted in code (`SpriteFactory`): each material has its own cob
 | `Assets/Scripts/World/TileTypes.cs` | New tile kinds |
 | `Assets/Scripts/Magic/RuneCatalog.cs` | New rune names, families, meanings |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
-| `Assets/Scripts/Magic/SpellGrammar.cs` | New Material × Aspect × Formation recipes (keep them sparse) |
+| `Assets/Resources/Catalog/spells.json` | Master recipes and joins (what the game actually casts) |
+| `Assets/Resources/Catalog/art.json` | Custom sprites and items |
+| `Tools/catalog-editor.html` | Paint sprites and rewrite recipes without opening C# |
+| `Assets/Scripts/Magic/SpellGrammar.cs` | Legacy compressed pair recipes (fallback only) |
 | `Assets/Scripts/Magic/SpellShape.cs` | How a written form is aimed (range, lock radius) |
-| `SPELLS.md` | Primary runes, family mixing rules, full spell list |
+| `SPELLS.md` | Prose companion to the JSON book |
 | `DESIGN.md` | The source of truth |
 
 ## Not in this slice (on purpose)

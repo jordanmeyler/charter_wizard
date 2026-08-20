@@ -18,15 +18,26 @@ namespace RuneMagic
 
         SpriteRenderer _renderer;
         TextMesh _label;
+        string _spriteId = "rod";
+        string _spriteLit = "rod-live";
 
-        public void Bind(string displayName, string formulaId, SpellId[] keys)
+        public void Bind(string displayName, string formulaId, SpellId[] keys, string spriteId = null, string spriteLit = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys;
+            if (!string.IsNullOrEmpty(spriteId))
+            {
+                _spriteId = spriteId;
+            }
+
+            if (!string.IsNullOrEmpty(spriteLit))
+            {
+                _spriteLit = spriteLit;
+            }
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sprite = SpriteFactory.LightningRod(false);
+            _renderer.sprite = SpriteFactory.Named(_spriteId);
             _renderer.sortingOrder = 5;
             FixtureGlow.Attach(transform, new Color(0.55f, 0.75f, 1f, 0.4f), 1.4f, 0.1f);
             _label = WorldLabel.Attach(transform, "Storm rod", new Vector3(0f, 1.15f, 0f),
@@ -47,7 +58,7 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
-            _renderer.sprite = SpriteFactory.LightningRod(true);
+            _renderer.sprite = SpriteFactory.Named(_spriteLit);
             if (_label != null)
             {
                 _label.text = "Live bolt";

@@ -9,6 +9,40 @@ namespace RuneMagic
 
         static readonly Color Clear = new(0f, 0f, 0f, 0f);
 
+        public static Sprite Named(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return Square(new Color(0.4f, 0.38f, 0.42f));
+            }
+
+            if (CatalogBook.TrySprite(id, out var custom) && custom != null)
+            {
+                return custom;
+            }
+
+            switch (id.Trim().ToLowerInvariant())
+            {
+                case "adept": return Adept();
+                case "ash-mite":
+                case "mite": return AshMite();
+                case "torch":
+                case "torch-unlit": return Torch(false);
+                case "torch-lit": return Torch(true);
+                case "rod":
+                case "rod-idle": return LightningRod(false);
+                case "rod-live": return LightningRod(true);
+                case "charm": return Charm();
+                case "plaque": return Plaque();
+                case "pit": return Pit();
+                case "bridge": return Bridge();
+                case "door": return Door(false);
+                case "door-open": return Door(true);
+                case "target": return TargetRing();
+                default: return Square(new Color(0.45f, 0.4f, 0.48f));
+            }
+        }
+
         public static Sprite Circle(Color color, int size = 48)
         {
             return Memo($"circle:{color}:{size}", () =>
