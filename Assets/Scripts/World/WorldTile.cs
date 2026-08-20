@@ -27,7 +27,7 @@ namespace RuneMagic
             Def = def;
             transform.position = new Vector3(coord.x + 0.5f, coord.y + 0.5f, 0f);
 
-            _renderer = gameObject.GetComponent<SpriteRenderer>() ?? gameObject.AddComponent<SpriteRenderer>();
+            _renderer = gameObject.AddComponent<SpriteRenderer>();
             ApplyVisual();
             ApplyCollider();
         }
@@ -73,27 +73,36 @@ namespace RuneMagic
 
         void ApplyVisual()
         {
-            switch (Kind)
+            try
             {
-                case TileKind.Wall:
-                    _renderer.sprite = SpriteFactory.Wall(Substance);
-                    _renderer.sortingOrder = 3;
-                    break;
-                case TileKind.Pit:
-                    _renderer.sprite = SpriteFactory.Pit();
-                    _renderer.sortingOrder = 1;
-                    break;
-                case TileKind.Bridge:
-                    _renderer.sprite = SpriteFactory.Bridge();
-                    _renderer.sortingOrder = 1;
-                    break;
-                case TileKind.Door:
-                    ApplyDoorSprite(open: false);
-                    break;
-                default:
-                    _renderer.sprite = SpriteFactory.Floor(Substance);
-                    _renderer.sortingOrder = 0;
-                    break;
+                switch (Kind)
+                {
+                    case TileKind.Wall:
+                        _renderer.sprite = SpriteFactory.Wall(Substance);
+                        _renderer.sortingOrder = 3;
+                        break;
+                    case TileKind.Pit:
+                        _renderer.sprite = SpriteFactory.Pit();
+                        _renderer.sortingOrder = 1;
+                        break;
+                    case TileKind.Bridge:
+                        _renderer.sprite = SpriteFactory.Bridge();
+                        _renderer.sortingOrder = 1;
+                        break;
+                    case TileKind.Door:
+                        ApplyDoorSprite(open: false);
+                        break;
+                    default:
+                        _renderer.sprite = SpriteFactory.Floor(Substance);
+                        _renderer.sortingOrder = 0;
+                        break;
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogError("Tile sprite failed (" + Kind + " " + Substance + "): " + exception);
+                _renderer.sprite = SpriteFactory.Square(new Color(0.32f, 0.3f, 0.34f));
+                _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : 0;
             }
         }
 

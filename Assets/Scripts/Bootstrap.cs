@@ -5,7 +5,7 @@ namespace RuneMagic
     public static class Bootstrap
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        static void Boot()
+        static void Schedule()
         {
             if (AdeptAvatar.Find() != null)
             {
@@ -22,6 +22,22 @@ namespace RuneMagic
                 return;
             }
 
+            if (Object.FindFirstObjectByType<SanctumBoot>() != null)
+            {
+                return;
+            }
+
+            var boot = new GameObject("SanctumBoot");
+            boot.AddComponent<SanctumBoot>();
+        }
+
+        public static void Run()
+        {
+            if (AdeptAvatar.Find() != null)
+            {
+                return;
+            }
+
             Camera cam = null;
             try
             {
@@ -29,7 +45,7 @@ namespace RuneMagic
             }
             catch (System.Exception exception)
             {
-                Debug.LogWarning("Camera setup failed: " + exception.Message);
+                Debug.LogWarning("Camera setup failed: " + exception);
             }
 
             var directorObject = new GameObject("Sanctum");
@@ -49,7 +65,23 @@ namespace RuneMagic
             }
             catch (System.Exception exception)
             {
-                Debug.LogWarning("Sanctum layout failed: " + exception.Message);
+                Debug.LogError("Sanctum layout failed: " + exception);
+                director.Log("Sanctum layout failed: " + exception.Message);
+                var leftover = GameObject.Find("SanctumGrid");
+                if (leftover != null)
+                {
+                    Object.Destroy(leftover);
+                }
+
+                try
+                {
+                    build = SanctumLayout.FallbackCourt();
+                    director.Begin(build);
+                }
+                catch (System.Exception fallback)
+                {
+                    Debug.LogError("Fallback court failed: " + fallback);
+                }
             }
 
             var spawn = build != null ? build.Spawn : new Vector3(2.5f, 5.5f, 0f);
