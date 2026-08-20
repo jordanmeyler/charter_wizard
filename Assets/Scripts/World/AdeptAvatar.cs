@@ -18,7 +18,7 @@ namespace RuneMagic
         };
 
         float _airborneUntil;
-        float _stillUntilUnscaled;
+        float _stillUntil;
         SpriteRenderer _sprite;
         Color _baseColor = Color.white;
         Vector3 _restScale = Vector3.one;
@@ -53,7 +53,7 @@ namespace RuneMagic
                 return;
             }
 
-            _stillUntilUnscaled = Mathf.Max(_stillUntilUnscaled, Time.unscaledTime + seconds);
+            _stillUntil = Mathf.Max(_stillUntil, Time.time + seconds);
         }
 
         void Awake()
@@ -73,7 +73,7 @@ namespace RuneMagic
 
         void Update()
         {
-            WorldHeld = Time.unscaledTime < _stillUntilUnscaled;
+            WorldHeld = Time.time < _stillUntil;
             var bob = WorldHeld ? 1f : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
             transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             if (_sprite == null)
