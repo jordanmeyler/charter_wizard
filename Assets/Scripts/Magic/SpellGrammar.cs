@@ -92,5 +92,15 @@ namespace RuneMagic
         {
             return $"{RuneCatalog.NameOf(material)} × {RuneCatalog.NameOf(aspect)}";
         }
+
+        public static string RecipeLine(SpellRecipe recipe)
+        {
+            if (MaterialTree.TryFindSources(recipe.Material, out var left, out var right))
+            {
+                return $"{RuneCatalog.NameOf(left)} + {RuneCatalog.NameOf(right)} → {FormulaText(recipe.Material, recipe.Aspect)}";
+            }
+
+            return FormulaText(recipe.Material, recipe.Aspect);
+        }
     }
 }

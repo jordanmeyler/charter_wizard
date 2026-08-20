@@ -8,6 +8,7 @@ namespace RuneMagic
         public float moveSpeed = 5.2f;
 
         Rigidbody2D _body;
+        SanctumDirector _director;
 
         void Awake()
         {
@@ -19,6 +20,16 @@ namespace RuneMagic
 
         void FixedUpdate()
         {
+            if (_director == null)
+            {
+                _director = FindFirstObjectByType<SanctumDirector>();
+            }
+
+            if (_director != null && _director.Mode != PlayMode.Exploring)
+            {
+                return;
+            }
+
             var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             if (input.sqrMagnitude > 1f)
             {

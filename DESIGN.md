@@ -166,9 +166,11 @@ Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** react
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
+The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). Ethereal aspects never lived on a floor tile; the wall is where they stand beside the room's materials. You string runes — up to eight — then **Cast** immediately or **Store** one form to carry. Esc lists every written recipe (a developer ledger, not a knowledge gate).
+
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
-2. **Craft** — assemble a spell: element(s) for substance, an aspect for form & state, a stance (Charter/Free). Knowledge and items widen your options.
-3. **Cast** — the spell acts on the enemy or the world (a bolt, wall, pillar, or burst; freeze a fall, ignite grass, bridge lava, grow a climb).
+2. **Craft** — assemble a spell from the Charter wall: element(s) for substance, an aspect for form & state, a stance (Charter/Free). Knowledge and items widen your options.
+3. **Cast** — now, from the wall, or later from the single held slot. The spell acts on the enemy or the world (a bolt, wall, pillar, or burst; freeze a fall, ignite grass, bridge lava, grow a climb).
 4. **Overcome** — the right spell resolves it at once. No HP bar.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
@@ -181,7 +183,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).
-- [ ] **Field economy** — how runes manifest and deplete in the constant field; Aether scarcity.
+- [~] **Field economy** — Space stills the field into a Charter wall (constant primaries/aspects plus nearby tiles and creature formulas). Depletion and Aether scarcity still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
 - [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.

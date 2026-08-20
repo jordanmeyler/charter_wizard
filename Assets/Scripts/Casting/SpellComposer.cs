@@ -1,17 +1,24 @@
+using System.Collections.Generic;
+
 namespace RuneMagic
 {
     /// <summary>
-    /// Slots drawn from the field: one or two materials, then an aspect.
-    /// Two materials blend before the aspect is applied.
+    /// A linear rune string. Materials fold left to right; the last aspect
+    /// sets form. Eight slots is the present ceiling.
     /// </summary>
     public sealed class SpellComposer
     {
-        public RuneId MaterialA { get; private set; }
-        public RuneId MaterialB { get; private set; }
-        public RuneId Aspect { get; private set; }
+        public const int MaxSlots = 8;
+
+        readonly List<RuneId> _slots = new();
+
+        public IReadOnlyList<RuneId> Slots => _slots;
+        public int Count => _slots.Count;
+        public bool IsEmpty => _slots.Count == 0;
+        public bool IsFull => _slots.Count >= MaxSlots;
         public CastingStance Stance { get; private set; } = CastingStance.Charter;
 
-        public Composition Snapshot() => new(MaterialA, MaterialB, Aspect);
+        public Composition Snapshot() => Composition.FromSequence(_slots);
 
         public void ToggleStance()
         {
@@ -20,59 +27,88 @@ namespace RuneMagic
 
         public bool TryAdd(RuneId rune, out string note)
         {
-            if (RuneCatalog.IsAspect(rune))
+            if (rune == RuneId.None)
             {
-                Aspect = rune;
-                note = $"Aspect set to {RuneCatalog.NameOf(rune)}.";
-                return true;
-            }
-
-            if (!RuneCatalog.IsMaterial(rune))
-            {
-                note = $"{RuneCatalog.NameOf(rune)} is not a material or aspect. The starting field does not offer it.";
+                note = "The field offered nothing there.";
                 return false;
             }
 
-            if (MaterialA == RuneId.None)
+            if (IsFull)
             {
-                MaterialA = rune;
-                note = $"Material set to {RuneCatalog.NameOf(rune)}.";
-                return true;
+                note = "The string is full. Eight runes is the present ceiling.";
+                return false;
             }
 
-            if (MaterialB == RuneId.None && rune != MaterialA)
+            _slots.Add(rune);
+            note = Describe();
+            return true;
+        }
+
+        public bool TryRemoveAt(int index, out string note)
+        {
+            if (index < 0 || index >= _slots.Count)
             {
-                MaterialB = rune;
-                note = MaterialTree.TryBlend(MaterialA, MaterialB, out var blend)
-                    ? blend.Note
-                    : $"{RuneCatalog.NameOf(MaterialA)} and {RuneCatalog.NameOf(MaterialB)} have no recorded join yet.";
-                return true;
+                note = "That slot is empty.";
+                return false;
             }
 
-            MaterialA = rune;
-            MaterialB = RuneId.None;
-            note = $"Material replaced with {RuneCatalog.NameOf(rune)}.";
+            _slots.RemoveRange(index, _slots.Count - index);
+            note = IsEmpty ? "The string is released back into the field." : Describe();
             return true;
         }
 
         public void Clear()
         {
-            MaterialA = RuneId.None;
-            MaterialB = RuneId.None;
-            Aspect = RuneId.None;
+            _slots.Clear();
         }
 
         public string SlotSummary()
         {
-            if (MaterialB != RuneId.None)
+            if (IsEmpty)
             {
-                var blend = MaterialTree.TryBlend(MaterialA, MaterialB, out var result)
-                    ? RuneCatalog.NameOf(result.Result)
-                    : "unjoined";
-                return $"{RuneCatalog.NameOf(MaterialA)} + {RuneCatalog.NameOf(MaterialB)} → {blend} × {RuneCatalog.NameOf(Aspect)}";
+                return "empty string";
             }
 
-            return $"{RuneCatalog.NameOf(MaterialA)} × {RuneCatalog.NameOf(Aspect)}";
+            var parts = new string[_slots.Count];
+            for (var i = 0; i < _slots.Count; i++)
+            {
+                parts[i] = RuneCatalog.NameOf(_slots[i]);
+            }
+
+            return string.Join(" · ", parts);
+        }
+
+        public string Describe()
+        {
+            var composition = Snapshot();
+            if (!composition.TryFoldMaterials(out var material, out var blend) && composition.MaterialCount >= 2)
+            {
+                return $"{SlotSummary()} — those materials have no recorded join yet.";
+            }
+
+            var aspect = composition.Aspect;
+            if (material == RuneId.None && aspect == RuneId.None)
+            {
+                return "The string is empty.";
+            }
+
+            if (material == RuneId.None)
+            {
+                return $"{SlotSummary()} — aspect {RuneCatalog.NameOf(aspect)} waits on a material.";
+            }
+
+            if (aspect == RuneId.None)
+            {
+                var blendNote = blend.HasValue ? $" {blend.Value.Note}" : string.Empty;
+                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} waits on an aspect.{blendNote}";
+            }
+
+            if (SpellGrammar.TryGet(material, aspect, out var recipe))
+            {
+                return $"{SlotSummary()} → {recipe.Name}.";
+            }
+
+            return $"{SlotSummary()} → {SpellGrammar.FormulaText(material, aspect)}. No Charter form is written yet.";
         }
     }
 }

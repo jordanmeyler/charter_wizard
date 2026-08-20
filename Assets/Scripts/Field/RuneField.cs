@@ -1,37 +1,92 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuneMagic
 {
     /// <summary>
-    /// The constant matrix: the same runes stream for novice and master.
-    /// Casting reads the field; it is not tile-based. World tiles carry
-    /// elements, but they do not change what flows around you.
+    /// The constant matrix: the same primaries and aspects stream for novice
+    /// and master. Nearby tiles and creature formulas add local colour.
+    /// Casting reads the field from the Charter wall, not from these orbs.
     /// </summary>
     public sealed class RuneField : MonoBehaviour
     {
+        public const float PerceptionRadius = 7.5f;
+
         public static readonly RuneId[] StartingStream =
         {
             RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur
         };
 
-        SpellComposer _composer;
-        System.Action<string> _log;
+        SanctumDirector _director;
 
-        public void Bind(SpellComposer composer, System.Action<string> log)
+        public void Bind(SanctumDirector director)
         {
-            _composer = composer;
-            _log = log;
+            _director = director;
             for (var i = 0; i < StartingStream.Length; i++)
             {
                 SpawnOrb(StartingStream[i], i);
             }
         }
 
-        public void Select(RuneId rune)
+        public static List<RuneId> Perceive(Vector3 origin, WorldGrid grid, ISpellLock[] locks)
         {
-            _composer.TryAdd(rune, out var note);
-            _log?.Invoke(note);
+            var seen = new List<RuneId>();
+            foreach (var rune in StartingStream)
+            {
+                AddUnique(seen, rune);
+            }
+
+            if (grid != null)
+            {
+                foreach (var tile in grid.All)
+                {
+                    if (tile == null || tile.Element == RuneId.None)
+                    {
+                        continue;
+                    }
+
+                    if (Vector2.Distance(origin, tile.transform.position) <= PerceptionRadius)
+                    {
+                        AddUnique(seen, tile.Element);
+                    }
+                }
+            }
+
+            if (locks != null)
+            {
+                foreach (var encounter in locks)
+                {
+                    if (encounter is not EncounterLock living || living.Resolved)
+                    {
+                        continue;
+                    }
+
+                    if (Vector2.Distance(origin, living.WorldPosition) > PerceptionRadius)
+                    {
+                        continue;
+                    }
+
+                    foreach (var rune in living.Formula)
+                    {
+                        AddUnique(seen, rune);
+                    }
+                }
+            }
+
+            seen.Sort(CompareFieldOrder);
+            return seen;
+        }
+
+        void LateUpdate()
+        {
+            var show = _director == null || _director.Mode == PlayMode.Exploring;
+            if (transform.localScale.x > 0f == show)
+            {
+                return;
+            }
+
+            transform.localScale = show ? Vector3.one : Vector3.zero;
         }
 
         void SpawnOrb(RuneId rune, int index)
@@ -40,6 +95,7 @@ namespace RuneMagic
             orb.transform.SetParent(transform, false);
             var collider = orb.AddComponent<CircleCollider2D>();
             collider.radius = 0.28f;
+            collider.isTrigger = true;
             var view = orb.AddComponent<RuneOrb>();
             var angle = index * Mathf.PI * 2f / StartingStream.Length;
             var radius = 1.55f + (index % 2) * 0.28f;
@@ -50,6 +106,38 @@ namespace RuneMagic
             }
 
             view.Bind(this, rune, angle, radius, speed);
+        }
+
+        static void AddUnique(List<RuneId> seen, RuneId rune)
+        {
+            if (rune == RuneId.None || seen.Contains(rune))
+            {
+                return;
+            }
+
+            seen.Add(rune);
+        }
+
+        static int CompareFieldOrder(RuneId left, RuneId right)
+        {
+            return Rank(left).CompareTo(Rank(right));
+        }
+
+        static int Rank(RuneId rune)
+        {
+            if (RuneCatalog.IsAspect(rune))
+            {
+                return 200 + (int)rune;
+            }
+
+            switch (rune)
+            {
+                case RuneId.Fire: return 10;
+                case RuneId.Air: return 11;
+                case RuneId.Earth: return 12;
+                case RuneId.Water: return 13;
+                default: return 50 + (int)rune;
+            }
         }
     }
 }

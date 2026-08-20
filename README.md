@@ -19,7 +19,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 | Design rule | In this slice |
 | --- | --- |
-| Casting is perception, not position | Runes stream around the player. You compose from the field. |
+| Casting is perception, not position | Space opens a Charter wall over the world. You compose from the field, not from a tile you stand on. |
 | The world is the same materials | Floor, wall, wood, fire-stone, spark-stone, and pit tiles each carry an element. The HUD names the tile underfoot. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
@@ -35,12 +35,16 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 ### Controls
 
+You only move and cast.
+
 - **WASD** move
-- **Click** a circling rune, or press **1–7**
-- **Tab** or **Q** Bound (Charter) / Unbound (Free)
-- **F** or **Enter** cast
-- **C** clear slots
-- **G** grimoire
+- **Space** open the Charter — a wall of runes over the world. Space again closes it.
+- In the Charter: **click runes** to string them (up to 8). **Cast** now, or **Store** one form to hold.
+- **F** / **Enter** release the held spell (or Cast while the Charter is open)
+- **R** Store while the Charter is open
+- **Backspace** / **C** unmake the last rune
+- **Tab** / **Q** Bound (Charter) / Unbound (Free) — only while the Charter is open
+- **Esc** pause and show every written spell recipe (developer ledger)
 
 Walk into a pit and you return to the last safe floor.
 
