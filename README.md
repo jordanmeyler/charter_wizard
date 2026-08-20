@@ -31,7 +31,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 1. Install [Unity Hub](https://unity.com/download) and **Unity 6.3 LTS** (`6000.3.22f1` or a nearby 6.3).
 2. Open this folder in Hub (`Assets`, `Packages`, `ProjectSettings`).
-3. Open `Assets/Scenes/Main.unity` and press Play.
+3. Open `Assets/Scenes/Main.unity` and press Play. Leave the scene as the camera and light — the adept, rooms, and locks spawn at runtime. Do not place a character in the scene.
 
 ### Controls
 

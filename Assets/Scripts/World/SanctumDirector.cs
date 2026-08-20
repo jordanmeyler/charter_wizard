@@ -35,6 +35,7 @@ namespace RuneMagic
         PlayMode _modeBeforePause = PlayMode.Exploring;
         ISpellLock _focus;
         SpriteRenderer _targetRing;
+        Transform _player;
 
         public void Begin(SanctumBuild build)
         {
@@ -43,6 +44,32 @@ namespace RuneMagic
             _rooms = build.Rooms;
             _safePoint = build.Spawn;
             CurrentRoom = _rooms != null && _rooms.Length > 0 ? _rooms[0] : null;
+        }
+
+        public void BindPlayer(GameObject player)
+        {
+            _player = player != null ? player.transform : null;
+        }
+
+        Transform PlayerTransform()
+        {
+            if (_player != null)
+            {
+                return _player;
+            }
+
+            var avatar = AdeptAvatar.Find();
+            if (avatar != null)
+            {
+                _player = avatar.transform;
+            }
+
+            return _player;
+        }
+
+        static bool LockAlive(ISpellLock encounter)
+        {
+            return encounter is MonoBehaviour body && body != null && !encounter.Resolved;
         }
 
         void Update()
@@ -60,18 +87,18 @@ namespace RuneMagic
 
         void TrackPlayer()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = PlayerTransform();
             if (player == null || Grid == null)
             {
                 return;
             }
 
-            Underfoot = Grid.TileAtWorld(player.transform.position);
+            Underfoot = Grid.TileAtWorld(player.position);
             if (_rooms != null)
             {
                 foreach (var room in _rooms)
                 {
-                    if (room.Contains(player.transform.position))
+                    if (room.Contains(player.position))
                     {
                         CurrentRoom = room;
                         break;
@@ -363,8 +390,8 @@ namespace RuneMagic
 
         void RefreshVisibleRunes()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            var origin = player != null ? player.transform.position : _safePoint;
+            var player = PlayerTransform();
+            var origin = player != null ? player.position : _safePoint;
             VisibleRunes = RuneField.Perceive(origin, Grid, _locks);
         }
 
@@ -392,8 +419,8 @@ namespace RuneMagic
             _focus = clicked;
             CurrentTarget = clicked;
 
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null && Vector2.Distance(player.transform.position, clicked.WorldPosition) > 3.6f)
+            var player = PlayerTransform();
+            if (player != null && Vector2.Distance(player.position, clicked.WorldPosition) > 3.6f)
             {
                 Log($"Walk closer to the {clicked.DisplayName} before you cast.");
                 return;
@@ -427,69 +454,82 @@ namespace RuneMagic
             }
 
             Busy = true;
-            var target = CurrentTarget != null && !CurrentTarget.Resolved ? CurrentTarget : null;
-            var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
-            var outcome = _resolver.Resolve(composition, stance, accepted, Grimoire);
-            var aim = AimPoint(target);
-            var origin = CasterPosition();
-            var caption = outcome.Spell != SpellId.None
-                ? _resolver.PreviewName(composition)
-                : "unformed surge";
-
-            composition.TryFoldMaterials(out var material, out _);
-            var aspect = composition.Aspect;
-            if (material == RuneId.None && outcome.Spell != SpellId.None &&
-                SpellGrammar.TryGetBySpell(outcome.Spell, out var recipe))
+            try
             {
-                material = recipe.Material;
-                aspect = recipe.Aspect;
-            }
+                var target = LockAlive(CurrentTarget) ? CurrentTarget : null;
+                var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
+                var outcome = _resolver.Resolve(composition, stance, accepted, Grimoire);
+                var aim = AimPoint(target);
+                var origin = CasterPosition();
+                var caption = outcome.Spell != SpellId.None
+                    ? _resolver.PreviewName(composition)
+                    : "unformed surge";
 
-            var finished = false;
-            SpellFx.Play(origin, aim, material, aspect, caption, () => finished = true);
-            while (!finished)
-            {
-                yield return null;
-            }
-
-            Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
-
-            if (outcome.Resolved && target != null && !target.Resolved)
-            {
-                Grimoire.LearnInterpretation(target.FormulaId);
-                var flavor = target.Resolve(outcome.Spell);
-                OpenDoorFor(target);
-                if (_focus == target)
+                composition.TryFoldMaterials(out var material, out _);
+                var aspect = composition.Aspect;
+                if (material == RuneId.None && outcome.Spell != SpellId.None &&
+                    SpellGrammar.TryGetBySpell(outcome.Spell, out var recipe))
                 {
-                    _focus = null;
+                    material = recipe.Material;
+                    aspect = recipe.Aspect;
                 }
 
-                CurrentTarget = null;
-                Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
-            }
-            else
-            {
-                Log(outcome.Log);
-            }
+                var finished = false;
+                SpellFx.Play(origin, aim, material, aspect, caption, () => finished = true);
+                var timeout = 1.25f;
+                while (!finished && timeout > 0f)
+                {
+                    timeout -= Time.unscaledDeltaTime;
+                    yield return null;
+                }
 
-            CheckFinished();
-            Busy = false;
+                Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
+
+                if (outcome.Resolved && LockAlive(target))
+                {
+                    Grimoire.LearnInterpretation(target.FormulaId);
+                    var flavor = target.Resolve(outcome.Spell);
+                    OpenDoorFor(target);
+                    if (_focus == target)
+                    {
+                        _focus = null;
+                    }
+
+                    CurrentTarget = null;
+                    Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
+                }
+                else
+                {
+                    Log(outcome.Log);
+                }
+
+                CheckFinished();
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogWarning("Cast failed: " + exception.Message);
+                Log("The spell fizzled. Try again — the lock still holds.");
+            }
+            finally
+            {
+                Busy = false;
+            }
         }
 
         Vector3 CasterPosition()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            return player != null ? player.transform.position : _safePoint;
+            var player = PlayerTransform();
+            return player != null ? player.position : _safePoint;
         }
 
         Vector3 AimPoint(ISpellLock target)
         {
-            if (target != null)
+            if (LockAlive(target))
             {
                 return target.WorldPosition;
             }
 
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = PlayerTransform();
             var facing = Vector2.right;
             if (player != null)
             {
@@ -499,7 +539,12 @@ namespace RuneMagic
                     facing = motor.Facing;
                 }
 
-                return player.transform.position + (Vector3)(facing.normalized * 2.1f);
+                if (facing.sqrMagnitude < 0.01f)
+                {
+                    facing = Vector2.right;
+                }
+
+                return player.position + (Vector3)(facing.normalized * 2.1f);
             }
 
             return _safePoint + Vector3.right * 2.1f;
@@ -526,11 +571,11 @@ namespace RuneMagic
 
         ISpellLock ResolveFocus()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = PlayerTransform();
             if (_focus != null)
             {
-                if (_focus.Resolved || player == null ||
-                    Vector2.Distance(player.transform.position, _focus.WorldPosition) > 6.5f)
+                if (!LockAlive(_focus) || player == null ||
+                    Vector2.Distance(player.position, _focus.WorldPosition) > 6.5f)
                 {
                     _focus = null;
                 }
@@ -545,13 +590,13 @@ namespace RuneMagic
 
         ISpellLock FindNearestLock()
         {
-            var player = GameObject.FindGameObjectWithTag("Player");
+            var player = PlayerTransform();
             if (player == null)
             {
                 return null;
             }
 
-            return FindLockNear(player.transform.position, 3.4f);
+            return FindLockNear(player.position, 3.4f);
         }
 
         ISpellLock FindLockNear(Vector3 point, float radius)
@@ -565,7 +610,7 @@ namespace RuneMagic
 
             foreach (var encounter in _locks)
             {
-                if (encounter == null || encounter.Resolved)
+                if (!LockAlive(encounter))
                 {
                     continue;
                 }
@@ -591,7 +636,7 @@ namespace RuneMagic
                 _targetRing.sortingOrder = 16;
             }
 
-            var show = CurrentTarget != null && !CurrentTarget.Resolved && Mode != PlayMode.Paused;
+            var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused;
             _targetRing.gameObject.SetActive(show);
             if (!show)
             {
@@ -625,7 +670,7 @@ namespace RuneMagic
 
             foreach (var encounter in _locks)
             {
-                if (encounter != null && !encounter.Resolved)
+                if (LockAlive(encounter))
                 {
                     return;
                 }
