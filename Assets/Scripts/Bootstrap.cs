@@ -118,7 +118,11 @@ namespace RuneMagic
             cam.transform.rotation = Quaternion.identity;
             cam.transform.position = new Vector3(2.5f, 5.5f, -10f);
 
-            var follow = cam.GetComponent<FollowCamera2D>() ?? cam.gameObject.AddComponent<FollowCamera2D>();
+            var follow = cam.GetComponent<FollowCamera2D>();
+            if (follow == null)
+            {
+                follow = cam.gameObject.AddComponent<FollowCamera2D>();
+            }
             follow.damp = 8f;
             return cam;
         }
