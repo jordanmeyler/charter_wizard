@@ -4,9 +4,19 @@ namespace RuneMagic
 {
     /// <summary>
     /// Marks the player without relying on the Player tag existing in the project.
+    /// The adept’s recipe is mind, body, and soul — always in the weave.
     /// </summary>
     public sealed class AdeptAvatar : MonoBehaviour
     {
+        public const string DisplayTitle = "Adept";
+        public const RuneId Wash = RuneId.Mercury;
+        public static readonly RuneId[] Formula =
+        {
+            RuneId.Sulphur,
+            RuneId.Salt,
+            RuneId.Mercury
+        };
+
         float _airborneUntil;
         SpriteRenderer _sprite;
         Color _baseColor = Color.white;

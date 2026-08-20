@@ -26,7 +26,9 @@ namespace RuneMagic
             WeaveKind kind,
             int groupId,
             int groupIndex,
-            int groupSize)
+            int groupSize,
+            string title = null,
+            bool living = false)
         {
             Shown = shown;
             Rune = join;
@@ -35,6 +37,8 @@ namespace RuneMagic
             GroupId = groupId;
             GroupIndex = groupIndex;
             GroupSize = groupSize < 1 ? 1 : groupSize;
+            Title = title ?? string.Empty;
+            Living = living;
         }
 
         public RuneId Shown { get; }
@@ -44,15 +48,17 @@ namespace RuneMagic
         public int GroupId { get; }
         public int GroupIndex { get; }
         public int GroupSize { get; }
+        public string Title { get; }
+        public bool Living { get; }
         public bool IsGroup => GroupId != 0 && GroupSize > 1;
         public bool IsTear => Kind == WeaveKind.Tear || (Shown == RuneId.None && Rune == RuneId.None);
+        public string GroupTitle => !string.IsNullOrEmpty(Title) ? Title : string.Empty;
     }
 
     /// <summary>
-    /// Walks what is on screen as a weave. Joins unfold to their full
-    /// basic recipe — one rune, one column — and stay grouped. Plant is
-    /// Water, Earth, Salt across three cells. Odd rows travel right,
-    /// even rows left.
+    /// Walks what is on screen as a weave. Material joins unfold to
+    /// basics. Creature recipes stay as written — Life marks a living
+    /// formula and is not unfolded. The adept is mind, body, and soul.
     /// </summary>
     public static class RoomSentence
     {
@@ -109,9 +115,14 @@ namespace RuneMagic
                 AddAmbient(sequence, RuneId.Air);
             }
 
-            // The adept is ensouled. A soul is what lets a living being work
-            // magic; that going is always in the field, even over a tear.
-            AddAmbient(sequence, RuneId.Mercury);
+            // You are always in the field: mind, body, and soul.
+            AppendCreature(
+                sequence,
+                AdeptAvatar.DisplayTitle,
+                AdeptAvatar.Wash,
+                AdeptAvatar.Formula,
+                WeaveKind.Ambient,
+                atHead: true);
 
             return sequence;
         }
@@ -207,7 +218,19 @@ namespace RuneMagic
                     }
 
                     spokenLocks.Add(id);
-                    AppendSource(sequence, source, MaterialId.None, WeaveKind.Lock);
+                    if (locks[i] is EncounterLock creature && creature.Formula != null && creature.Formula.Length > 0)
+                    {
+                        AppendCreature(
+                            sequence,
+                            creature.DisplayName,
+                            CreatureWash(creature),
+                            creature.Formula,
+                            WeaveKind.Lock);
+                    }
+                    else
+                    {
+                        AppendSource(sequence, source, MaterialId.None, WeaveKind.Lock);
+                    }
                 }
             }
 
@@ -257,6 +280,84 @@ namespace RuneMagic
                     AppendRune(sequence, buffer[i], material, kind);
                 }
             }
+        }
+
+        static void AppendCreature(
+            List<WeaveGlyph> sequence,
+            string title,
+            RuneId wash,
+            IReadOnlyList<RuneId> formula,
+            WeaveKind kind,
+            bool atHead = false)
+        {
+            if (formula == null || formula.Count == 0)
+            {
+                return;
+            }
+
+            var written = new List<RuneId>(formula.Count);
+            var living = false;
+            for (var i = 0; i < formula.Count; i++)
+            {
+                if (formula[i] == RuneId.None)
+                {
+                    continue;
+                }
+
+                written.Add(formula[i]);
+                if (formula[i] == RuneId.Vita)
+                {
+                    living = true;
+                }
+            }
+
+            if (written.Count == 0)
+            {
+                return;
+            }
+
+            // Living recipes stay as written. Life is a mark, not a join to unfold.
+            var glyphs = new List<WeaveGlyph>(written.Count);
+            if (written.Count == 1)
+            {
+                glyphs.Add(new WeaveGlyph(written[0], wash, MaterialId.None, kind, 0, 0, 1, title, living));
+            }
+            else
+            {
+                var id = NextGroup++;
+                for (var i = 0; i < written.Count; i++)
+                {
+                    glyphs.Add(new WeaveGlyph(
+                        written[i], wash, MaterialId.None, kind, id, i, written.Count, title, living));
+                }
+            }
+
+            if (atHead)
+            {
+                sequence.InsertRange(0, glyphs);
+            }
+            else
+            {
+                sequence.AddRange(glyphs);
+            }
+        }
+
+        static RuneId CreatureWash(EncounterLock creature)
+        {
+            if (creature.Formula != null)
+            {
+                for (var i = 0; i < creature.Formula.Length; i++)
+                {
+                    if (creature.Formula[i] == RuneId.Vita)
+                    {
+                        return RuneId.Vita;
+                    }
+                }
+            }
+
+            return creature.Ensouled ? RuneId.Mercury : (creature.Formula != null && creature.Formula.Length > 0
+                ? creature.Formula[0]
+                : RuneId.Salt);
         }
 
         static void AppendRune(List<WeaveGlyph> sequence, RuneId rune, MaterialId material, WeaveKind kind)

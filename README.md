@@ -10,7 +10,7 @@ Four rooms, east to west of the spawn. Tiles are **materials** (ash, timber, hea
 
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
-| **Ash Court** | Ash Mite `{Fire · Salt}` | Almost any formed offensive spell | The most basic lock. Many keys. |
+| **Ash Court** | Ash Mite `{Fire · Salt · Life}` | Almost any formed offensive spell | A living creature writes its recipe. Life stays Life. The adept is mind · body · soul. |
 | **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Flame-pillar (Fire · Salt · Earth), Melt (Fire · Mercury), Ignite (Fire · Sulphur · Salt), Snuff / Smother | Terrain is a lock. Salt stands fire as a pillar or a wick. Mercury sends hunger *into* the wick. |
 | **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth: click start and stop), any pillar, Hop (Air · Salt · Air, Self), Flight, Bridge | Traversal. Rest that stands fills a hollow or bars the floor. Breath given a body leaps or flies. |
 | **Storm Cell** | Storm rod `{Spark · waiting}` | Lightning (Fire · Air · Air · Mercury, Shot), Live-floor (Fire · Air · Salt, Spread), Jolt (Fireball + Sulphur) | A join becomes a rune, then the chain continues. Sulphur turns the same spark into a different work. |
@@ -40,7 +40,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of the eleven, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
-- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. **Mercury is ambient** because the adept is ensouled — a soul is what lets a living being work magic. Walk to bring other missing runes into view. The grid is the camera’s sentence, manifestations included. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. A living creature on screen writes its recipe as written (the ash mite is Fire · Salt · Life). Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
