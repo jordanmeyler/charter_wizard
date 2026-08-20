@@ -86,6 +86,27 @@ namespace RuneMagic
             return string.Join(" · ", parts);
         }
 
+        /// <summary>
+        /// Unfolds a join to the eleven basics. Plant becomes Water, Earth,
+        /// Salt. Ash becomes Fire, Water, Earth, Salt. Each ingredient is
+        /// one column in the Charter weave.
+        /// </summary>
+        public static int ExpandRecipe(RuneId rune, List<RuneId> dest)
+        {
+            if (dest == null)
+            {
+                return 0;
+            }
+
+            var start = dest.Count;
+            if (rune != RuneId.None)
+            {
+                AppendExpanded(dest, rune, 0);
+            }
+
+            return dest.Count - start;
+        }
+
         public static bool TryParseShape(string name, out SpellShape shape)
         {
             shape = SpellShape.None;

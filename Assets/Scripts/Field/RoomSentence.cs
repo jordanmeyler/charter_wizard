@@ -49,8 +49,10 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Walks what is on screen as a weave. Joins stretch one column per
-    /// ingredient and stay grouped. Odd rows travel right, even rows left.
+    /// Walks what is on screen as a weave. Joins unfold to their full
+    /// basic recipe — one rune, one column — and stay grouped. Plant is
+    /// Water, Earth, Salt across three cells. Odd rows travel right,
+    /// even rows left.
     /// </summary>
     public static class RoomSentence
     {
@@ -259,12 +261,14 @@ namespace RuneMagic
 
         static void AppendRune(List<WeaveGlyph> sequence, RuneId rune, MaterialId material, WeaveKind kind)
         {
-            if (ChainBook.TryBirth(rune, out var sources) && sources.Count > 0)
+            var recipe = new List<RuneId>(8);
+            ChainBook.ExpandRecipe(rune, recipe);
+            if (recipe.Count > 1)
             {
                 var id = NextGroup++;
-                for (var i = 0; i < sources.Count; i++)
+                for (var i = 0; i < recipe.Count; i++)
                 {
-                    sequence.Add(new WeaveGlyph(sources[i], rune, material, kind, id, i, sources.Count));
+                    sequence.Add(new WeaveGlyph(recipe[i], rune, material, kind, id, i, recipe.Count));
                 }
 
                 return;
