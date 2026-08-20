@@ -91,7 +91,7 @@ namespace RuneMagic
 
         public IEnumerable<RuneId> Materials()
         {
-            if (Sequence.Length > 0)
+            if (Sequence != null && Sequence.Length > 0)
             {
                 for (var i = 0; i < Sequence.Length; i++)
                 {

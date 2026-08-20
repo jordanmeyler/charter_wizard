@@ -31,7 +31,7 @@ namespace RuneMagic
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (Collected || !other.CompareTag("Player"))
+            if (Collected || !AdeptAvatar.IsAdept(other))
             {
                 return;
             }

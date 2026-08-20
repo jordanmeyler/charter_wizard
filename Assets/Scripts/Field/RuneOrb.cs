@@ -29,17 +29,31 @@ namespace RuneMagic
             var labelObject = new GameObject("Glyph");
             labelObject.transform.SetParent(transform, false);
             labelObject.transform.localPosition = Vector3.zero;
+            var font = BuiltinFont.Get();
+            if (font == null)
+            {
+                Destroy(labelObject);
+                return;
+            }
+
             _label = labelObject.AddComponent<TextMesh>();
+            _label.font = font;
             _label.text = RuneCatalog.GlyphOf(rune);
             _label.anchor = TextAnchor.MiddleCenter;
             _label.alignment = TextAlignment.Center;
             _label.fontSize = 32;
             _label.characterSize = 0.12f;
             _label.color = Color.black;
-            _label.font = Resources.GetBuiltinResource<Font>("Arial.ttf")
-                          ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var labelRenderer = labelObject.GetComponent<MeshRenderer>();
-            labelRenderer.sortingOrder = 19;
+            if (labelRenderer != null)
+            {
+                if (font.material != null)
+                {
+                    labelRenderer.sharedMaterial = font.material;
+                }
+
+                labelRenderer.sortingOrder = 19;
+            }
         }
 
         void Update()
