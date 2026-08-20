@@ -353,29 +353,13 @@ namespace RuneMagic
 
         public static string Preview(Composition composition, SpellShape shape = SpellShape.None)
         {
-            if (TryMatch(composition, shape, out var named) && shape != SpellShape.None)
+            if (TryMatch(composition, shape, out var named))
             {
                 var gate = string.IsNullOrEmpty(named.Gate) ? string.Empty : $" ({named.Gate})";
-                return $"{named.Name}{gate}";
+                return $"{named.Name}{gate} · {SpellFormations.NameOf(named.Shape)} is written.";
             }
 
-            var shapes = ShapesFor(composition);
-            if (shapes.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            if (TryMatch(composition, shapes[0], out var first))
-            {
-                if (shapes.Count == 1)
-                {
-                    return $"{first.Name} · {SpellFormations.NameOf(first.Shape)} is written. Cast to aim.";
-                }
-
-                return $"{first.Name} and {shapes.Count - 1} more written form(s). Choose how it aims.";
-            }
-
-            return "A written chain. Cast to aim.";
+            return string.Empty;
         }
 
         static List<RuneId> Expand(IReadOnlyList<RuneId> tokens)

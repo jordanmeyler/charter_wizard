@@ -127,8 +127,7 @@ namespace RuneMagic
             Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
             Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
-            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.StonePillar, "Stone pillar", "Earth standing.");
-            Register(RuneId.Earth, RuneId.Salt, SpellShape.Remote, SpellId.RaisedEarth, "Raised earth", "A body of earth called up away from you.");
+            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.Wall, "Wall", "Compressed. Catalog: Earth · Salt · Earth. Form is in the chain.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
             Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");

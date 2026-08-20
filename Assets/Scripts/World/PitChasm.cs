@@ -42,11 +42,13 @@ namespace RuneMagic
                 }
             }
 
-            return spell == SpellId.StonePillar
+            return spell == SpellId.Wall || spell == SpellId.StonePillar
                 ? "A standing column of earth settles into the gap and holds."
-                : spell == SpellId.RaisedEarth
-                    ? "Earth answers away from you and fills the drop."
-                    : "Earth takes spirit and flies. Hurled stone piles into a bridge.";
+                : spell == SpellId.Pit || spell == SpellId.RaisedEarth
+                    ? "Earth answers away from you and leaves a hollow filled."
+                    : spell == SpellId.Bridge
+                        ? "A body of rest given breath spans the drop."
+                        : "Earth takes spirit and flies. Hurled stone piles into a bridge.";
         }
     }
 }

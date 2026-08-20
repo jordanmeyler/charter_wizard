@@ -76,21 +76,19 @@ There is **no damage**. A spell kills, restrains, or does neither (traverse, hea
 
 A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Flight and Chain are longer because more happened.
 
-Formation is how you place a finished chain, not a rune in it.
+**Formation is part of the spell.** The chain writes how it lands. There is no Remote / Pillar fork at cast time.
+
+| The sentence does this | Form | Example |
+|---|---|---|
+| Asked to rest (Earth at the end of a body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
+| Sent *into* a thing, or placed away (Mercury, no breath) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
+| Breath already in the chain, then sent | **Shot** | Fireball: Fire · Air · Salt · Mercury. Lightning. Ice-spear. |
+| A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
+| Kept on the caster | **Self** | Flight |
+
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
-
-**Cast** (or the held slot / F) opens aim:
-1. Pick a formation the string can naturally take.
-2. Click the world — aim a line, raise a column, release at your feet, or place at a distance.
-
-| Formation | What you do | Typical use |
-|---|---|---|
-| **Shot** | Click through a point. The spell flies that way. | Hunting spark, lightning, ice-spear |
-| **Pillar** | Click the ground. A column rises there. | Flame-pillar, ice, wall, vine |
-| **Spread** | Click to confirm. It wells from where you stand. | Live-floor, fog, sprout, hop |
-| **Remote** | Click a distant point. The spell forms there. | Melt, rain, pit, call-growth |
-| **Self** | Confirm on the caster. | Flight |
 
 **Charter:** an unwritten or unfinished combo **fizzles**. No blanks are filled. **Free:** fills missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence is never “upgraded” by filling toward a longer one. Free is still never the required key.
 
@@ -183,7 +181,7 @@ The player **moves and casts**. Perception is a stance, not a tile overlay: **Sp
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
 2. **Craft** — assemble a chain from the Charter wall. Two runes birth a join or wait. A finished spell is a sentence.
-3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. Choose Shot, Pillar, Spread, or Remote if that string can take it, then click where it goes. Unwritten Charter strings fizzle. Free fills up to the fill budget and, on a clash, attunement picks.
+3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten Charter strings fizzle. Free fills up to the fill budget and, on a clash, attunement picks the whole sentence — form included.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
@@ -196,7 +194,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
-- [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free fills.
+- [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
 - [~] **Field economy** — Space stills the field into a Charter wall (the eleven, plus nearby tiles and creature formulas). Depletion still open. Primordial runes later.
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
