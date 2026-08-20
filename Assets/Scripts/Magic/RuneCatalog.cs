@@ -110,9 +110,9 @@ namespace RuneMagic
                 new RuneDef(RuneId.Steam, RuneFamily.Material, "Steam", "St", "Hunger forced through yield. Fire · Water. Water that cannot stay water."),
                 new RuneDef(RuneId.Dust, RuneFamily.Material, "Dust", "Ds", "Breath forced through rest. Air · Earth. Rest that has lost its weight."),
                 new RuneDef(RuneId.Storm, RuneFamily.Material, "Storm", "Sr", "The seed inside the hanging veil. Spark · Cloud."),
-                new RuneDef(RuneId.Ice, RuneFamily.Material, "Ice", "Ic", "Yield given a body, then stilled. Water · Salt · Death."),
-                new RuneDef(RuneId.Stone, RuneFamily.Material, "Stone", "Sn", "Rest given a body, then stilled. Earth · Salt · Death."),
-                new RuneDef(RuneId.Glass, RuneFamily.Material, "Glass", "Gl", "Grains, a fire-body, then still. Sand · Flame · Death."),
+                new RuneDef(RuneId.Ice, RuneFamily.Material, "Ice", "Ic", "Yield given a body and asked to rest. Water · Salt · Earth. It will thaw."),
+                new RuneDef(RuneId.Stone, RuneFamily.Material, "Stone", "Sn", "Rest given a body. Earth · Salt."),
+                new RuneDef(RuneId.Glass, RuneFamily.Material, "Glass", "Gl", "Grains, a fire-body, asked to rest. Sand · Flame · Earth."),
                 new RuneDef(RuneId.Sand, RuneFamily.Material, "Sand", "Sd", "Grit given a body. Dust · Salt. Also mud given breath until it dries."),
                 new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Yield and rest given a vegetable body. Water · Earth · Salt. Not living until Life."),
                 new RuneDef(RuneId.Lightning, RuneFamily.Material, "Lightning", "Ln", "The seed stretched through more breath. Spark · Air. A path, not a body."),
@@ -129,8 +129,8 @@ namespace RuneMagic
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
                 new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "Waking plant sent. Grove · Mercury."),
                 new RuneDef(RuneId.Forest, RuneFamily.Material, "Forest", "Fr", "Waking plant asked to rest as a mass."),
-                new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "Waking plant, then stilled. Grove · Death."),
-                new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "A fire-body after the motion left. Flame · Death."),
+                new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "A living plant, then the grave. Grove · Death. Death-work."),
+                new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
 
                 new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "A body. “This, here, is a thing.” Without it the work is weather or a quality."),
                 new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Going. A path opening. Through space if breath is in the chain; into a thing if not."),
@@ -138,8 +138,8 @@ namespace RuneMagic
 
                 new RuneDef(RuneId.Aether, RuneFamily.Catalyst, "Aether", "Ae", "Prima materia. Inert alone. Union of Light and Dark aspects."),
 
-                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Waking. The thing keeps being itself. Only if the subject or product is living."),
-                new RuneDef(RuneId.Mors, RuneFamily.Existential, "Death", "Mo", "Still. The motion leaves the thing. Not moral."),
+                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Modifier. Marks a living recipe — plant, heal, hop, a called beast. Not a school."),
+                new RuneDef(RuneId.Mors, RuneFamily.Existential, "Death", "Mo", "Modifier. The grave. Reserved for Free and arcane work. Not in ordinary recipes."),
                 new RuneDef(RuneId.Male, RuneFamily.Existential, "Male", "Ma", "Old name for projective polarity. Use Animus."),
                 new RuneDef(RuneId.Female, RuneFamily.Existential, "Female", "Fe", "Old name for receptive polarity. Use Anima."),
 

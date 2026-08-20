@@ -77,13 +77,13 @@ namespace RuneMagic
             Register(RuneId.Fire, RuneId.Mercury, SpellShape.Shot, SpellId.Fireball, "Fireball", "Compressed. Catalog: Fire · Air · Salt · Mercury.");
             Register(RuneId.Fire, RuneId.Salt, SpellShape.Pillar, SpellId.FlamePillar, "Flame-pillar", "A standing column of fire.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");
-            Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death of a flame, placed at a point.");
+            Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death-work. Hunger marked by the grave, placed on a flame.");
             Register(RuneId.Fire, RuneId.Lumen, SpellShape.Shot, SpellId.SunLance, "Sun-lance", "Light riding fire.");
             Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Projective fire. It goes out and does not return.");
             Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
-            Register(RuneId.Water, RuneId.Mors, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Water given body, then stilled. Standing ice.");
+            Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Yield given a body and asked to rest. Hard water. No Death.");
             Register(RuneId.Water, RuneId.Sulphur, SpellShape.Remote, SpellId.Lull, "Lull", "Mind of water. Sleep, placed elsewhere.");
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
             Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Fog, "Fog", "Dark water as cover around you.");
@@ -93,13 +93,13 @@ namespace RuneMagic
             Register(RuneId.Spark, RuneId.Salt, SpellShape.Spread, SpellId.LiveFloor, "Live-floor", "Charged ground around the caster.");
             Register(RuneId.Spark, RuneId.Sulphur, SpellShape.Remote, SpellId.Jolt, "Jolt", "Stun placed at a point.");
             Register(RuneId.Spark, RuneId.Lumen, SpellShape.Shot, SpellId.BrilliantArc, "Brilliant-arc", "Spark with Light riding it.");
-            Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death of a spark, thrown.");
+            Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
             Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
             Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.StonePillar, "Stone pillar", "Earth standing.");
             Register(RuneId.Earth, RuneId.Salt, SpellShape.Remote, SpellId.RaisedEarth, "Raised earth", "A body of earth called up away from you.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
-            Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death of earth, from the feet out.");
+            Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gale, "Gale", "Air thrown as a line.");

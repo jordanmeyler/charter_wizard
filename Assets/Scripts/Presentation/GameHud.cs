@@ -322,7 +322,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "The eleven, then joins. Fire · Air is Spark — its own rune. Life only on the living. Esc closes.",
+                "Ordinary book has no Death. Life marks a living recipe. 41–50 are Free / grave-work. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -387,9 +387,9 @@ namespace RuneMagic
             y += 18f;
             GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (a body) · Mercury (going) · Sulphur (passion / mind)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Poles: Life (waking) · Death (still)     Veils: Light (shown) · Dark (withheld)", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Veils: Light (shown) · Dark (withheld)     Modifiers: Life (marks a living recipe) · Death (grave / Free only)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Spark·Air→Lightning. Water·Salt·Death→Ice. Plant·Life→Grove.", row);
+            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Ice is Water·Salt·Earth (not Death). Plant·Life→Grove.", row);
             y += 28f;
 
             SpellBook? current = null;
@@ -408,12 +408,13 @@ namespace RuneMagic
                 }
 
                 GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
-                GUI.Label(new Rect(26, y, 120, 18), entry.Name, row);
-                GUI.Label(new Rect(150, y, 360, 18), entry.Want, row);
+                var title = string.IsNullOrEmpty(entry.Gate) ? entry.Name : $"{entry.Name}  ({entry.Gate})";
+                GUI.Label(new Rect(26, y, 130, 18), title, row);
+                GUI.Label(new Rect(160, y, 340, 18), entry.Want, row);
                 var chain = string.IsNullOrEmpty(entry.Via)
                     ? entry.Recipe
                     : $"{entry.Recipe}   =   {entry.Via}";
-                GUI.Label(new Rect(516, y, 320, 18), chain, muted);
+                GUI.Label(new Rect(506, y, 330, 18), chain, muted);
                 GUI.Label(new Rect(840, y, 60, 18), entry.Form, muted);
                 GUI.Label(new Rect(904, y, 80, 18), entry.Outcome.ToString(), muted);
                 y += 20f;

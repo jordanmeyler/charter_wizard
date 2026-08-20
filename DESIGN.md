@@ -38,10 +38,10 @@ Each rune is a **concept**, not a mechanic. Players will eventually see effects,
 | **Salt** | A body. “This, here, is a thing.” |
 | **Mercury** | Going. A path opening. Through space if breath is already in the chain; *into* a thing if not. |
 | **Sulphur** | Passion. A mind that can be reached. |
-| **Life** | Waking. Only if the subject or product is living. |
-| **Death** | Still. The motion leaves. Not moral. |
 | **Light** | Shown. The veil is lifted. |
 | **Dark** | Withheld. The veil is drawn. |
+| **Life** | Modifier. Marks a living recipe (plant, heal, hop, a called beast). Not a school. |
+| **Death** | Modifier. The grave. **Reserved** — not in ordinary recipes. Load-bearing for Free. |
 
 A join is not a modifier. **Fire · Air** becomes **Spark**, which is its own rune and combines again (**Spark · Air → Lightning**). Two runes birth a join or wait as a clause. Three or more is a spell. Longer chains are stories.
 
@@ -62,11 +62,11 @@ A chain is a sentence, left to right. Two roots meeting become a third:
 | Fire · Water | **Steam** | Hunger forced through yield. |
 | Air · Earth | **Dust** | Breath forced through rest. |
 
-Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**. Ice is not a two-root join: **Water · Salt · Death** (yield given a body, then stilled). Plant is **Water · Earth · Salt**; Grove is Plant · Life.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest). Death is not how you freeze water. Plant is **Water · Earth · Salt**; Grove is Plant · Life.
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 
-Full wrought list and the sixty story-chains: **[`SPELLS.md`](SPELLS.md)**. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
+Full wrought list and fifty story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ---
 
@@ -74,7 +74,7 @@ Full wrought list and the sixty story-chains: **[`SPELLS.md`](SPELLS.md)**. Each
 
 There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
 
-A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Mind-work can stay short (**Fire · Sulphur · Mercury**). Flight and Chain and Homunculus are longer because more happened.
+A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Flight and Chain are longer because more happened.
 
 Formation is how you place a finished chain, not a rune in it.
 
@@ -160,7 +160,7 @@ Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, le
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — strikes everything in the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
-- **Water · Salt · Death → Ice** — bridge, root-trap, or shatterable surface.
+- **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement).
 
@@ -185,10 +185,10 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — sixty story-chains in `SPELLS.md`. Eleven basic runes; joins are wrought runes. Composer still folds the short slice.
+- [~] **Spell catalog** — fifty story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. Composer still folds the short slice.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
-- [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).
+- [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free borrows.
 - [~] **Field economy** — Space stills the field into a Charter wall (the eleven, plus nearby tiles and creature formulas). Depletion still open. Primordial runes later.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.

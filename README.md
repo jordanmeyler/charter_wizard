@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.8). The eleven basic runes and the story-chains are in [`SPELLS.md`](SPELLS.md). Joins become their own runes (Fire · Air → Spark; Spark · Air → Lightning). Primordial runes are later. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.9). The eleven basic runes and fifty story-chains are in [`SPELLS.md`](SPELLS.md). Joins become their own runes (Fire · Air → Spark). Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
