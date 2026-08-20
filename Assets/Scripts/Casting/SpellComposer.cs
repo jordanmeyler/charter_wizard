@@ -94,21 +94,44 @@ namespace RuneMagic
 
             if (material == RuneId.None)
             {
-                return $"{SlotSummary()} — aspect {RuneCatalog.NameOf(aspect)} waits on a material.";
+                return $"{SlotSummary()} — {RuneCatalog.NameOf(aspect)} waits on a material.";
             }
 
-            if (aspect == RuneId.None)
+            if (!RuneCatalog.IsFormAspect(aspect))
             {
                 var blendNote = blend.HasValue ? $" {blend.Value.Note}" : string.Empty;
-                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} waits on an aspect.{blendNote}";
+                return $"{SlotSummary()} — {RuneCatalog.NameOf(material)} is not a spell. It needs a non-elemental aspect.{blendNote}";
             }
 
-            if (SpellGrammar.TryGet(material, aspect, out var recipe))
+            var forms = SpellFormations.Available(material, aspect);
+            if (forms.Count == 0)
             {
-                return $"{SlotSummary()} → {recipe.Name}.";
+                return Stance == CastingStance.Free
+                    ? $"{SlotSummary()} — no natural form. Free will borrow a random spell of that type."
+                    : $"{SlotSummary()} — those runes have no natural form. Charter will fizzle.";
             }
 
-            return $"{SlotSummary()} → {SpellGrammar.FormulaText(material, aspect)}. No Charter form is written yet.";
+            var written = 0;
+            foreach (var shape in forms)
+            {
+                if (SpellGrammar.TryGet(material, aspect, shape, out _))
+                {
+                    written++;
+                }
+            }
+
+            var formNames = new string[forms.Count];
+            for (var i = 0; i < forms.Count; i++)
+            {
+                formNames[i] = SpellFormations.NameOf(forms[i]);
+            }
+
+            if (written == 0)
+            {
+                return $"{SlotSummary()} — may take {string.Join(", ", formNames)}. No Charter form is written. Charter fizzles; Free borrows.";
+            }
+
+            return $"{SlotSummary()} — may take {string.Join(", ", formNames)}. Cast to choose how it aims.";
         }
     }
 }

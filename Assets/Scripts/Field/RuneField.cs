@@ -15,7 +15,11 @@ namespace RuneMagic
         public static readonly RuneId[] StartingStream =
         {
             RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
-            RuneId.Salt, RuneId.Mercury, RuneId.Sulphur
+            RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
+            RuneId.Vita, RuneId.Mors,
+            RuneId.Lumen, RuneId.Umbra,
+            RuneId.Animus, RuneId.Anima,
+            RuneId.Aether
         };
 
         SanctumDirector _director;
@@ -105,7 +109,7 @@ namespace RuneMagic
             collider.isTrigger = true;
             var view = orb.AddComponent<RuneOrb>();
             var angle = index * Mathf.PI * 2f / StartingStream.Length;
-            var radius = 1.55f + (index % 2) * 0.28f;
+            var radius = 1.85f + (index % 3) * 0.32f;
             var speed = 0.55f + index * 0.04f;
             if (index % 2 == 1)
             {
@@ -135,6 +139,21 @@ namespace RuneMagic
             if (RuneCatalog.IsAspect(rune))
             {
                 return 200 + (int)rune;
+            }
+
+            if (rune == RuneId.Vita || rune == RuneId.Mors)
+            {
+                return 300 + (int)rune;
+            }
+
+            if (rune == RuneId.Lumen || rune == RuneId.Umbra || rune == RuneId.Animus || rune == RuneId.Anima)
+            {
+                return 400 + (int)rune;
+            }
+
+            if (rune == RuneId.Aether)
+            {
+                return 500;
             }
 
             switch (rune)

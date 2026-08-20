@@ -100,26 +100,26 @@ namespace RuneMagic
                 new RuneDef(RuneId.Sand, RuneFamily.Material, "Sand", "Sd", "Mud dried by Air."),
                 new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Mud, Vita, and Aether. Soulless life."),
 
-                new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body / matter. Solid, lasting, self-directed. Default: oneself."),
-                new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Motion / spirit. Projectiles, flow, weakening. Default: the enemy."),
-                new RuneDef(RuneId.Sulphur, RuneFamily.Aspect, "Sulphur", "Su", "Mind / soul-mood. Fear, sleep, command. Default: something else."),
+                new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body / matter. Lasting, still. Not a formation — it asks for a standing shape."),
+                new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Motion / spirit. Flow and flight. Not a formation — it asks to travel."),
+                new RuneDef(RuneId.Sulphur, RuneFamily.Aspect, "Sulphur", "Su", "Mind / soul-mood. Eruption, fear, sleep, command."),
 
                 new RuneDef(RuneId.Aether, RuneFamily.Catalyst, "Aether", "Ae", "Prima materia. Inert alone. Union of Light and Dark aspects."),
 
-                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Vita", "Vi", "Life. The animating pole."),
-                new RuneDef(RuneId.Mors, RuneFamily.Existential, "Mors", "Mo", "Death. The stilling pole."),
-                new RuneDef(RuneId.Male, RuneFamily.Existential, "Male", "Ma", "Projective polarity. Placeholder name."),
-                new RuneDef(RuneId.Female, RuneFamily.Existential, "Female", "Fe", "Receptive polarity. Placeholder name."),
+                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Vita. The animating pole. Required for anything that grows."),
+                new RuneDef(RuneId.Mors, RuneFamily.Existential, "Death", "Mo", "Mors. The stilling pole. Snuffs, stills, and ends."),
+                new RuneDef(RuneId.Male, RuneFamily.Existential, "Male", "Ma", "Old name for projective polarity. Use Animus."),
+                new RuneDef(RuneId.Female, RuneFamily.Existential, "Female", "Fe", "Old name for receptive polarity. Use Anima."),
 
                 new RuneDef(RuneId.Hot, RuneFamily.PrimordialMundane, "Hot", "Ht", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Cold, RuneFamily.PrimordialMundane, "Cold", "Cd", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Wet, RuneFamily.PrimordialMundane, "Wet", "Wt", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Dry, RuneFamily.PrimordialMundane, "Dry", "Dr", "Mundane quality. Knowledge-gated; synthesizable."),
 
-                new RuneDef(RuneId.Animus, RuneFamily.PrimordialDivine, "Animus", "As", "Male soul. Divine primordial. Not craftable from the field."),
-                new RuneDef(RuneId.Anima, RuneFamily.PrimordialDivine, "Anima", "Aa", "Female soul. Divine primordial. Not craftable from the field."),
-                new RuneDef(RuneId.Lumen, RuneFamily.PrimordialDivine, "Lumen", "Lu", "Light. Divine primordial."),
-                new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Umbra", "Um", "Dark. Divine primordial.")
+                new RuneDef(RuneId.Animus, RuneFamily.PrimordialDivine, "Animus", "As", "Projective soul. Drive, force, the going-out."),
+                new RuneDef(RuneId.Anima, RuneFamily.PrimordialDivine, "Anima", "Aa", "Receptive soul. Draw, welcome, the taking-in."),
+                new RuneDef(RuneId.Lumen, RuneFamily.PrimordialDivine, "Light", "Lu", "Lumen. Sol, projective light."),
+                new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Umbra. Luna, receptive dark.")
             };
 
             ById = new System.Collections.Generic.Dictionary<RuneId, RuneDef>(defs.Length);
@@ -136,6 +136,32 @@ namespace RuneMagic
 
         public static bool IsAspect(RuneId id) =>
             id != RuneId.None && ById.TryGetValue(id, out var def) && def.Family == RuneFamily.Aspect;
+
+        /// <summary>
+        /// A spell needs a non-elemental aspect. Elements and blends are never enough.
+        /// Tria prima, Life/Death, Light/Dark, and Animus/Anima all count.
+        /// Aether, qualities, and the old Male/Female labels do not.
+        /// </summary>
+        public static bool IsFormAspect(RuneId id)
+        {
+            switch (id)
+            {
+                case RuneId.Salt:
+                case RuneId.Mercury:
+                case RuneId.Sulphur:
+                case RuneId.Vita:
+                case RuneId.Mors:
+                case RuneId.Animus:
+                case RuneId.Anima:
+                case RuneId.Lumen:
+                case RuneId.Umbra:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsElemental(RuneId id) => IsMaterial(id);
 
         public static string NameOf(RuneId id) => id == RuneId.None ? "—" : Get(id).Name;
 

@@ -24,25 +24,26 @@ namespace RuneMagic
 
         static readonly SpellId[] MiteKeys =
         {
-            SpellId.Fireball, SpellId.FlameWall, SpellId.WaterJet, SpellId.IceWall,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.WaterJet, SpellId.IcePillar,
             SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt,
-            SpellId.HurledStone, SpellId.StoneWall, SpellId.Dread,
-            SpellId.Gale, SpellId.Scald, SpellId.ScatterDust
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
+            SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
+            SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc
         };
 
         static readonly SpellId[] TorchKeys =
         {
-            SpellId.Fireball, SpellId.FlameWall, SpellId.Frenzy
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother
         };
 
         static readonly SpellId[] PitKeys =
         {
-            SpellId.HurledStone, SpellId.StoneWall
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth, SpellId.Menhir
         };
 
         static readonly SpellId[] RodKeys =
         {
-            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt
+            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout
         };
 
         public static SanctumBuild Construct()
@@ -119,7 +120,7 @@ namespace RuneMagic
                 WorldGrid.Center(o.x + 2, o.y + 5));
             room.ExitDoors = PlaceExit(grid, o, RuneId.Plant);
 
-            HintPlaque.Spawn(WorldGrid.Center(o.x + 3, o.y + 8), "Fire wants a form.");
+            HintPlaque.Spawn(WorldGrid.Center(o.x + 3, o.y + 8), "Fire wants a form — then a place.");
 
             var torchObject = new GameObject("ColdTorch");
             torchObject.transform.position = WorldGrid.Center(o.x + 6, o.y + 5);
@@ -149,7 +150,7 @@ namespace RuneMagic
                 WorldGrid.Center(o.x + 2, o.y + 5));
             room.ExitDoors = PlaceExit(grid, o, RuneId.Earth);
 
-            HintPlaque.Spawn(WorldGrid.Center(o.x + 2, o.y + 8), "Earth + Spirit.");
+            HintPlaque.Spawn(WorldGrid.Center(o.x + 2, o.y + 8), "Earth × Mercury, then Shot — or Salt as a pillar.");
 
             var pitMark = new GameObject("PitMark");
             pitMark.transform.position = WorldGrid.Center(o.x + 6, o.y + 2);

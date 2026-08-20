@@ -23,6 +23,15 @@ namespace RuneMagic
                 case RuneId.Mercury: return new Color(0.55f, 0.78f, 0.62f);
                 case RuneId.Sulphur: return new Color(0.93f, 0.78f, 0.22f);
                 case RuneId.Aether: return new Color(0.78f, 0.62f, 0.95f);
+                case RuneId.Vita: return new Color(0.42f, 0.82f, 0.48f);
+                case RuneId.Mors: return new Color(0.42f, 0.18f, 0.28f);
+                case RuneId.Animus: return new Color(0.86f, 0.42f, 0.38f);
+                case RuneId.Anima: return new Color(0.62f, 0.48f, 0.86f);
+                case RuneId.Lumen: return new Color(0.98f, 0.94f, 0.72f);
+                case RuneId.Umbra: return new Color(0.18f, 0.16f, 0.28f);
+                case RuneId.Ice: return new Color(0.62f, 0.82f, 0.95f);
+                case RuneId.Stone: return new Color(0.48f, 0.46f, 0.44f);
+                case RuneId.Storm: return new Color(0.45f, 0.55f, 0.78f);
                 default: return new Color(0.7f, 0.7f, 0.75f);
             }
         }
