@@ -322,7 +322,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                "Codex draft. Kill, restrain, or neither — no damage. Families mix differently. Esc closes.",
+                "From the effect first. Life only on living things. Ice is Water · Salt · Death. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -387,7 +387,7 @@ namespace RuneMagic
             y += 18f;
             GUI.Label(new Rect(0, y, 980, 18), "Tria prima: Salt (body) · Mercury (motion) · Sulphur (mind)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Existential: Life · Death     Light/Dark: Light · Dark · Animus · Anima     Catalyst: Aether     Ice = Water · Salt · Death (stilling, not Cold)", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Life = living things only. Ice = Water · Salt · Death. Shade has Death, not Life.", row);
             y += 28f;
 
             SpellBook? current = null;
@@ -405,12 +405,12 @@ namespace RuneMagic
                     y += 24f;
                 }
 
-                GUI.Label(new Rect(0, y, 28, 18), entry.Number.ToString(), muted);
-                GUI.Label(new Rect(28, y, 140, 18), entry.Name, row);
-                GUI.Label(new Rect(172, y, 280, 18), entry.Recipe, row);
-                GUI.Label(new Rect(456, y, 70, 18), entry.Form, muted);
-                GUI.Label(new Rect(530, y, 80, 18), entry.Outcome.ToString(), muted);
-                GUI.Label(new Rect(615, y, 480, 18), entry.Effect, muted);
+                GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
+                GUI.Label(new Rect(26, y, 120, 18), entry.Name, row);
+                GUI.Label(new Rect(150, y, 420, 18), entry.Want, row);
+                GUI.Label(new Rect(576, y, 260, 18), entry.Recipe, muted);
+                GUI.Label(new Rect(840, y, 60, 18), entry.Form, muted);
+                GUI.Label(new Rect(904, y, 80, 18), entry.Outcome.ToString(), muted);
                 y += 20f;
             }
 

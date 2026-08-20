@@ -38,7 +38,7 @@ namespace RuneMagic
 
         static readonly SpellId[] PitKeys =
         {
-            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth, SpellId.Menhir
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth
         };
 
         static readonly SpellId[] RodKeys =

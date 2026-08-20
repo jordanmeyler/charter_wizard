@@ -42,7 +42,7 @@ namespace RuneMagic
                 }
             }
 
-            return spell == SpellId.StonePillar || spell == SpellId.Menhir
+            return spell == SpellId.StonePillar
                 ? "A standing column of earth settles into the gap and holds."
                 : spell == SpellId.RaisedEarth
                     ? "Earth answers away from you and fills the drop."

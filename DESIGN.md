@@ -79,7 +79,7 @@ Shared edge → stable; diagonal (Fire/Water, Air/Earth) → violent.
 ### The tree
 Full branch-by-branch tree and the long spell list live in **[`SPELLS.md`](SPELLS.md)**. Families mix runes in different ways — there is no single Material × Aspect law.
 
-**Plant = Water · Earth · Salt** (wet earth given a body). Add Life to grow. **Ice = Water · Salt · Death** (water given a body, then stilled). Water · Death with no Salt is Still — the pool stops and stays water. Codex “Mud · Life · Aether” is creature-grade soulless plant-life. The starting sixty live in [`SPELLS.md`](SPELLS.md).
+**Plant = Water · Earth · Salt** (vegetable body, not yet living). Add **Life** only when the thing is living — growth, heal, hop, flight, homunculus, a called beast. Ice, stone, fire, wind, and shades do **not** carry Life. **Ice = Water · Salt · Death**. The starting sixty are written from the effect first in [`SPELLS.md`](SPELLS.md).
 
 ---
 
