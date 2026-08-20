@@ -9,7 +9,7 @@
       "sprite": "charm",
       "teachesSpell": "Fireball",
       "teachesFormula": "ash-mite",
-      "note": "The charm unspools. Fire × Mercury · Shot → Fireball. The mite is burning matter. You borrowed a key; later you will compose others."
+      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others."
     },
     {
       "id": "ash-mite",

@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.13). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.14). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project with a four-room sanctum slice of that system.
 
 ## What is implemented
 
@@ -11,9 +11,9 @@ Four rooms, east to west of the spawn. Tiles are **materials** (ash, timber, hea
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
 | **Ash Court** | Ash Mite `{Fire · Salt · Life}` | Almost any formed offensive spell | A living creature writes its recipe. Life stays Life. The adept is mind · body · soul. |
-| **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Flame-pillar (Fire · Salt · Earth), Melt (Fire · Mercury), Ignite (Fire · Sulphur · Salt), Snuff / Smother | Terrain is a lock. Salt stands fire as a pillar or a wick. Mercury sends hunger *into* the wick. |
-| **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth: click start and stop), any pillar, Hop (Air · Salt · Air, Self), Flight, Bridge | Traversal. Rest that stands fills a hollow or bars the floor. Breath given a body leaps or flies. |
-| **Storm Cell** | Storm rod `{Spark · waiting}` | Lightning (Fire · Air · Air · Mercury, Shot), Live-floor (Fire · Air · Salt, Spread), Jolt (Fireball + Sulphur) | A join becomes a rune, then the chain continues. Sulphur turns the same spark into a different work. |
+| **Wick Chapel** | Cold torch `{Plant · Dry wick}` | Flame-pillar (Fire · Salt · Earth), Melt (Fire · Salt · Mercury), Ignite (Fire · Sulphur · Salt), Snuff / Smother | Terrain is a lock. Salt stands fire as a pillar or a wick. A stood fire-body is what goes *into* the wick. |
+| **The Drop** | Pit / missing Earth | Wall (Earth · Salt · Earth: click start and stop), any pillar, Hop (Air · Salt · Air, Self), Flight, Bridge | Traversal. Rest that stands fills a hollow or bars the floor. Breath given a body leaps or flies. Order is the sentence: Hop and Flight use the same ideas in a different order. |
+| **Storm Cell** | Storm rod `{Spark · waiting}` | Lightning (Fire · Air · Mercury, Shot), Live-floor (Fire · Air · Salt, Spread), Jolt (Lightning + Sulphur) | Fire given breath and sent is a bolt. A join can stand as Lightning, then Mercury sends it. |
 
 Walk the orange Free charm in Ash Court if you want Fireball written for you. You can ignore it and compose from first principles.
 
@@ -23,9 +23,9 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
-| Chains, not pairs | The catalog spells resolve in play. Fireball is Fire · Air · Mercury — a moving spark, no Salt. The Grimoire lists them all; click a name to string it. |
+| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. The Grimoire lists them all; click a name to string it. |
 | Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
-| Free is never required | Every lock has a Charter key. Free fills a blank, leans on attunement, and cannot be stored. |
+| Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
 ## Open and play
 
@@ -41,15 +41,15 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **Space** opens the Charter — a wall of the eleven, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
 - In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. A living creature on screen writes its recipe as written (the ash mite is Fire · Salt · Life). Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
-- **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
-- **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
+- **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
+- **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
-- After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Mercury without breath is remote; hop and flight stay on you). Esc cancels and keeps the string.
+- After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
 
-Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten Charter string fizzles. Free fills a blank; used types grow. The right key unmakes the lock and opens the door east.
+Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
 Walk into a pit and you return to the last safe floor. A pillar or wall fills that hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles. Flight lets you walk over pits for a short while.
 

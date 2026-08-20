@@ -135,10 +135,10 @@ namespace RuneMagic
             var preview = ChainBook.PreviewFree(Snapshot(), attunement.FillBudget);
             if (string.IsNullOrEmpty(preview))
             {
-                return $"Free: no written chain {CastResolver.FillWords(attunement.FillBudget)} would complete.";
+                return $"Free: no written chain it can unscramble or complete with {CastResolver.FillWords(attunement.FillBudget)}.";
             }
 
-            return $"Free: {preview}. Attunement weighs clashes. Cannot be stored.";
+            return $"Free: {preview}. Attunement weighs clashes. Order can be unscrambled. Cannot be stored.";
         }
     }
 }

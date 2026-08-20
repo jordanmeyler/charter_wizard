@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.13. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.14. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -36,7 +36,7 @@ Each rune is a **concept**, not a mechanic. Players will eventually see effects,
 | **Earth** | Rest. Patience. That which remains. |
 | **Water** | Yield. Mercy. That which becomes what holds it. |
 | **Salt** | A standing body. Manifestation that stays — walls, pillars, a floor that holds. Not how a spark flies. |
-| **Mercury** | Going. A path opening. Through space if breath is already in the chain; *into* a thing if not. |
+| **Mercury** | Going. A path opening. Hunger sent is fire. Breath then Mercury is a bolt. A stood body then Mercury goes *into* a thing. |
 | **Sulphur** | The wildcard. Add it and the work becomes something else, the way Life makes a plant living. |
 | **Light** | Shown. The veil is lifted. |
 | **Dark** | Withheld. The veil is drawn. |
@@ -74,15 +74,15 @@ Full wrought list and the written story-chains: **[`SPELLS.md`](SPELLS.md)**. 1�
 
 There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
 
-A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing (Melt). Fireball is a moving spark: **Fire · Air · Mercury** (or **Spark · Mercury** if Spark is already in the field). Salt is for work that *stands* — Flame-pillar is **Fire · Salt · Earth**. Sulphur is the wildcard: add it and the sentence is a different spell (Fireball · Sulphur is Jolt; Melt · Sulphur is Rage), the way Life makes a plant living. Death is not in the ordinary book. Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt). Chain is longer because more happened.
+A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **Fire · Mercury**. Add breath and the same send is a bolt: **Fire · Air · Mercury** (or **Spark · Mercury** / **Lightning · Mercury** if that join already stands). Melt is the stood fire-body sent *into* a thing: **Fire · Salt · Mercury**. Salt is for work that *stands* — Flame-pillar is **Fire · Salt · Earth**. Sulphur is the wildcard: add it and the sentence is a different spell (Fire · Sulphur · Mercury is Rage; Lightning · Sulphur is Jolt), the way Life makes a plant living. Death is not in the ordinary book. Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt) — the same ideas, a different order. Chain is longer because more happened.
 
 **Formation is part of the spell.** The chain writes how it lands. There is no Remote / Pillar fork at cast time.
 
 | The sentence does this | Form | Example |
 |---|---|---|
 | Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
-| Sent *into* a thing, or placed away (Mercury, no breath) | **Remote** | Melt: Fire · **Mercury**. Pit. Rain. |
-| Breath already in the chain, then sent | **Shot** | Fireball: Fire · Air · Mercury. Lightning. Ice-spear. |
+| Sent *into* a thing, or placed away (a stood body, then Mercury) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
+| Hunger sent, or breath already in the chain, then sent | **Shot** | Fire: Fire · Mercury. Lightning: Fire · Air · Mercury. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight |
 
@@ -90,9 +90,9 @@ Cast opens aim for the form the sentence already wrote. Click the world — fly 
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 
-**Charter:** an unwritten or unfinished combo **fizzles**. No blanks are filled. **Free:** fills missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence is never “upgraded” by filling toward a longer one. Free is still never the required key.
+**Charter:** an unwritten, unfinished, or **scrambled** combo **fizzles**. The written order is the sentence. No blanks are filled. **Free:** may **unscramble** the same runes into a valid recipe, and may fill missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. Mercury · Fire becomes Fire; Charter would refuse it. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence — even a scrambled one Free can read — is never “upgraded” by filling toward a longer one. Free is still never the required key.
 
-The catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
+The catalog chains now resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
 ---
 
@@ -131,12 +131,12 @@ Not a stance toggle. Three actions on the same string:
 |---|---|
 | **Charter Cast** | The sentence must already be written. Wrong or unfinished recipes **fizzle**. Reliable. Overpowers; does not dispel. |
 | **Store** | Holds one **Charter** sentence to aim later. **Free cannot be stored** — it is wild and untamable. An item may later hold a single Free working; that is a Charter-path benefit you do not get for free. |
-| **Free Cast** | Completes the string. Fill budget starts at **1** (2/3 of a recipe is enough). Several matches → **attunement-weighted random pick**. Using a spell or type grows that focus (clash weight + larger effect). Death-work the Charter will not write still needs Free. |
+| **Free Cast** | Completes the string. **Unscrambles** a valid bag of runes into a written sentence. Fill budget starts at **1** (2/3 of a recipe is enough). Several matches → **attunement-weighted random pick**. Using a spell or type grows that focus (clash weight + larger effect). Death-work the Charter will not write still needs Free. |
 
 | | **Charter** | **Free** |
 |---|---|---|
 | Access | open to all; rejects no one | open to all |
-| Reliability | the written sentence, or nothing | fills blanks; clashes are a roll |
+| Reliability | the written sentence in order, or nothing | unscrambles; fills blanks; clashes are a roll |
 | Power in a vacuum | tamer | wilder, and it grows with use |
 | Clashes | there are none — exact or fizzle | attunement leans the roll |
 | Forbidden | can't touch souls / the worst grave-work | all available |
@@ -183,7 +183,7 @@ The player **moves and casts**. Perception is a stance, not a tile overlay. The 
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as Fire · Water · Earth · Salt, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes Spark as Fire · Air.
 2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
-3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten Charter strings fizzle. Free fills up to the fill budget and, on a clash, attunement picks the whole sentence — form included.
+3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten or scrambled Charter strings fizzle. Free unscrambles a valid bag, fills up to the fill budget, and, on a clash, attunement picks the whole sentence — form included.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
@@ -198,7 +198,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
 - [~] **Field economy** — tiles are materials with full signatures. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. World-strings can hang more sentences later. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
-- [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Decay of unused types, higher budgets, and a Free-store item are still open.
+- [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Free also unscrambles a valid bag of runes. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
 - [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.
