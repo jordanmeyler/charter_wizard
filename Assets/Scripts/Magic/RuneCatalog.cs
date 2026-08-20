@@ -140,13 +140,13 @@ namespace RuneMagic
                 new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "A living plant, then the grave. Grove · Death. Death-work."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
 
-                new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "A body. “This, here, is a thing.” Without it the work is weather or a quality."),
-                new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Going. A path opening. Through space if breath is in the chain; into a thing if not."),
-                new RuneDef(RuneId.Sulphur, RuneFamily.Aspect, "Sulphur", "Su", "Passion. A mind that can be reached."),
+                new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body. A standing manifestation — walls, pillars, and the flesh of a creature."),
+                new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Soul / going. A path opening. The adept’s soul is always in the field."),
+                new RuneDef(RuneId.Sulphur, RuneFamily.Aspect, "Sulphur", "Su", "Mind. Also the wildcard — add it and the sentence becomes something else."),
 
                 new RuneDef(RuneId.Aether, RuneFamily.Catalyst, "Aether", "Ae", "Prima materia. Inert alone. Union of Light and Dark aspects."),
 
-                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Modifier. Marks a living recipe — plant, heal, hop, a called beast. Not a school."),
+                new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Marks a living recipe. Shown as written — Life is not unfolded. Soulless creatures carry it; the adept’s soul is Mercury instead."),
                 new RuneDef(RuneId.Mors, RuneFamily.Existential, "Death", "Mo", "Modifier. The grave. Reserved for Free and arcane work. Not in ordinary recipes."),
                 new RuneDef(RuneId.Male, RuneFamily.Existential, "Male", "Ma", "Old name for projective polarity. Use Animus."),
                 new RuneDef(RuneId.Female, RuneFamily.Existential, "Female", "Fe", "Old name for receptive polarity. Use Anima."),

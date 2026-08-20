@@ -191,7 +191,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 
 **Call living** is the same story as 40, with the creature’s own matter in place of Earth · Water. Always Life. Always the formula you learned.
 
-- Ash mite → Fire · Salt · Life · Mercury  
+- Ash mite → Fire · Salt · Life (the creature). Calling it adds Mercury to send it.
 - Hound → Earth · Water · Salt · Life · Mercury  
 - Fetch-bird → Air · Salt · Life · Mercury  
 

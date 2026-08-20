@@ -132,7 +132,7 @@ namespace RuneMagic
                 "Ash Mite",
                 "ash-mite",
                 WorldGrid.Center(o.x + 7, o.y + 6),
-                new[] { RuneId.Fire, RuneId.Salt },
+                new[] { RuneId.Fire, RuneId.Salt, RuneId.Vita },
                 MiteKeys,
                 ensouled: false);
             room.Lock = mite;

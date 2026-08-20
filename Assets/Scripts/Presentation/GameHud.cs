@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. Air is the room’s breath. Mercury is your soul — it is always here. A gold ring is a join stretched across its recipe. Hover to hold still.",
+                "The wall is the eleven — only what is on screen can be drawn. You are mind · body · soul. A living creature writes its own recipe (Life stays Life). Hover to hold still.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
@@ -243,7 +243,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                DrawJoinSlab(bounds, glyph.Rune);
+                DrawJoinSlab(bounds, glyph);
                 var previous = GUI.color;
                 GUI.color = new Color(1f, 1f, 1f, 0.22f);
                 for (var n = start + 1; n < i; n++)
@@ -257,7 +257,7 @@ namespace RuneMagic
             }
         }
 
-        void DrawJoinSlab(Rect bounds, RuneId join)
+        void DrawJoinSlab(Rect bounds, WeaveGlyph glyph)
         {
             const float pad = 4f;
             const float banner = 16f;
@@ -267,22 +267,27 @@ namespace RuneMagic
                 bounds.width + pad * 2f,
                 bounds.height + banner + pad);
 
-            var wash = Color.Lerp(RunePalette.Of(join), new Color(0.06f, 0.05f, 0.04f), 0.18f);
+            var wash = Color.Lerp(RunePalette.Of(glyph.Rune), new Color(0.06f, 0.05f, 0.04f), 0.18f);
             wash.a = 0.92f;
             var previous = GUI.color;
             GUI.color = wash;
             GUI.DrawTexture(slab, Texture2D.whiteTexture);
 
-            var gold = new Color(0.98f, 0.82f, 0.32f, 0.96f);
-            GUI.color = gold;
+            var rim = glyph.Living
+                ? new Color(0.62f, 0.92f, 0.42f, 0.96f)
+                : new Color(0.98f, 0.82f, 0.32f, 0.96f);
+            GUI.color = rim;
             DrawFrame(slab, 3f);
             GUI.DrawTexture(new Rect(slab.x + 4f, bounds.y - 2f, slab.width - 8f, 2f), Texture2D.whiteTexture);
             GUI.DrawTexture(new Rect(slab.x + 8f, slab.yMax - 6f, slab.width - 16f, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
 
-            var title = Label(12, FontStyle.Bold, gold);
+            var caption = !string.IsNullOrEmpty(glyph.GroupTitle)
+                ? glyph.GroupTitle
+                : RuneCatalog.NameOf(glyph.Rune);
+            var title = Label(12, FontStyle.Bold, rim);
             title.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(new Rect(slab.x, slab.y, slab.width, banner), RuneCatalog.NameOf(join), title);
+            GUI.Label(new Rect(slab.x, slab.y, slab.width, banner), caption, title);
         }
 
         static Rect Union(Rect a, Rect b)
