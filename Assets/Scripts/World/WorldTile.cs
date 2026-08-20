@@ -8,6 +8,7 @@ namespace RuneMagic
         public Vector2Int Coord { get; private set; }
         public TileDef Def { get; private set; }
         public TileKind Kind => Def.Kind;
+        public MaterialId Material => Def.Material;
         public TileSubstance Substance => Def.Substance;
         public RuneId Element => Def.Element;
         public IReadOnlyList<RuneId> Emission => Def.Emission;
@@ -34,7 +35,7 @@ namespace RuneMagic
 
         public void BecomeBridge()
         {
-            Def = new TileDef(TileKind.Bridge, TileSubstance.Stone);
+            Def = new TileDef(TileKind.Bridge, MaterialId.Stone);
             ApplyVisual();
             if (_collider != null)
             {
@@ -78,7 +79,7 @@ namespace RuneMagic
                 switch (Kind)
                 {
                     case TileKind.Wall:
-                        _renderer.sprite = SpriteFactory.Wall(Substance);
+                        _renderer.sprite = SpriteFactory.Wall(Material);
                         _renderer.sortingOrder = 3;
                         break;
                     case TileKind.Pit:
@@ -93,14 +94,14 @@ namespace RuneMagic
                         ApplyDoorSprite(open: false);
                         break;
                     default:
-                        _renderer.sprite = SpriteFactory.Floor(Substance);
+                        _renderer.sprite = SpriteFactory.Floor(Material);
                         _renderer.sortingOrder = 0;
                         break;
                 }
             }
             catch (System.Exception exception)
             {
-                Debug.LogError("Tile sprite failed (" + Kind + " " + Substance + "): " + exception);
+                Debug.LogError("Tile sprite failed (" + Kind + " " + Material + "): " + exception);
                 _renderer.sprite = SpriteFactory.Square(new Color(0.32f, 0.3f, 0.34f));
                 _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : 0;
             }

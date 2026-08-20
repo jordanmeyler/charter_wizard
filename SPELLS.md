@@ -2,6 +2,8 @@
 
 A spell is a **chain of concepts**. It should read as a sentence. A short chain is a simple sentence. A long chain is a story with a turn. Complicated work uses more runes because more happened.
 
+World substances — what you stamp on a tile — live beside this book in [`MATERIALS.md`](MATERIALS.md). A material is a sentence the world has already become.
+
 Players will eventually see **effects, not names**. If you only watch what the world does, the chain has to be the only explanation that fits.
 
 Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are out of this pass.
