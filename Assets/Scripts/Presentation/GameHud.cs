@@ -27,16 +27,17 @@ namespace RuneMagic
                 return;
             }
 
-            DrawPanel(12, 12, 520, 168);
+            DrawPanel(12, 12, 540, 196);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
             var accent = Label(15, FontStyle.Bold, StanceColor());
 
-            GUI.Label(new Rect(28, 20, 500, 28), "Rune Magic", title);
-            GUI.Label(new Rect(28, 48, 500, 22), $"Stance: {_director.Composer.Stance}   Taint: {_director.Taint:0.00}", accent);
-            GUI.Label(new Rect(28, 70, 500, 22), $"Compose: {_director.Composer.SlotSummary()}", body);
-            GUI.Label(new Rect(28, 92, 500, 22), TargetLine(), body);
-            GUI.Label(new Rect(28, 114, 490, 54), _director.LastLog, body);
+            GUI.Label(new Rect(28, 20, 520, 28), "Rune Magic", title);
+            GUI.Label(new Rect(28, 48, 520, 22), RoomLine(), body);
+            GUI.Label(new Rect(28, 70, 520, 22), $"Stance: {_director.Composer.Stance}   Taint: {_director.Taint:0.00}", accent);
+            GUI.Label(new Rect(28, 92, 520, 22), $"Compose: {_director.Composer.SlotSummary()}", body);
+            GUI.Label(new Rect(28, 114, 520, 22), TargetLine(), body);
+            GUI.Label(new Rect(28, 136, 510, 58), _director.LastLog, body);
 
             DrawPanel(12, Screen.height - 78, 640, 66);
             GUI.Label(new Rect(28, Screen.height - 70, 620, 50),
@@ -47,6 +48,13 @@ namespace RuneMagic
             {
                 DrawGrimoire();
             }
+        }
+
+        string RoomLine()
+        {
+            var room = _director.CurrentRoom != null ? _director.CurrentRoom.Name : "Sanctum";
+            var tile = _director.Underfoot != null ? _director.Underfoot.Def.DisplayName : "empty air";
+            return $"Room: {room}   Underfoot: {tile}";
         }
 
         string TargetLine()

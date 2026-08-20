@@ -4,7 +4,8 @@ namespace RuneMagic
 {
     /// <summary>
     /// The constant matrix: the same runes stream for novice and master.
-    /// Casting reads the field; it is not tile-based.
+    /// Casting reads the field; it is not tile-based. World tiles carry
+    /// elements, but they do not change what flows around you.
     /// </summary>
     public sealed class RuneField : MonoBehaviour
     {

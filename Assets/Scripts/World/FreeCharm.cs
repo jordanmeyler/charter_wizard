@@ -18,12 +18,15 @@ namespace RuneMagic
             _log = log;
 
             var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Square(new Color(0.85f, 0.55f, 0.2f), 24);
-            renderer.sortingOrder = 4;
+            renderer.sprite = SpriteFactory.Charm();
+            renderer.sortingOrder = 5;
 
             var hit = gameObject.AddComponent<CircleCollider2D>();
             hit.isTrigger = true;
             hit.radius = 0.4f;
+
+            WorldLabel.Attach(transform, "Free charm", new Vector3(0f, 0.7f, 0f),
+                new Color(1f, 0.72f, 0.3f));
         }
 
         void OnTriggerEnter2D(Collider2D other)
@@ -35,8 +38,8 @@ namespace RuneMagic
 
             Collected = true;
             _grimoire.LearnRecipe(RuneId.Fire, RuneId.Mercury);
-            _grimoire.LearnInterpretation("cinder-moth");
-            _log?.Invoke("The charm unspools. Fire × Mercury → Fireball. The moth is that formula, walking. You borrowed it; later you will compose.");
+            _grimoire.LearnInterpretation("ash-mite");
+            _log?.Invoke("The charm unspools. Fire × Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others.");
             Destroy(gameObject);
         }
     }
