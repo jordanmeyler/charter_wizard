@@ -13,8 +13,8 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Four tutorial rooms. Each room's substances speak the runes the
-    /// puzzle needs — the tapestry, not the tile labels, is what you read.
+    /// Four tutorial rooms. Stamp <see cref="MaterialId"/> on tiles;
+    /// the Charter weave reads each material's full signature.
     /// </summary>
     public static class SanctumLayout
     {
@@ -65,11 +65,11 @@ namespace RuneMagic
 
             rooms[0] = BuildAshCourt(grid, r1, locks, 0, out var charm);
             rooms[1] = BuildWickChapel(grid, r2, locks, 1);
-            Connect(grid, r1, r2, TileSubstance.Stone);
+            Connect(grid, r1, r2, MaterialId.Stone);
             rooms[2] = BuildTheDrop(grid, r3, locks, 2);
-            Connect(grid, r2, r3, TileSubstance.Timber);
+            Connect(grid, r2, r3, MaterialId.Timber);
             rooms[3] = BuildStormCell(grid, r4, locks, 3);
-            Connect(grid, r3, r4, TileSubstance.Vein);
+            Connect(grid, r3, r4, MaterialId.Vein);
 
             return new SanctumBuild
             {
@@ -85,7 +85,7 @@ namespace RuneMagic
         {
             var root = new GameObject("SanctumGrid");
             var grid = root.AddComponent<WorldGrid>();
-            grid.RoomShell(0, 0, 8, 8, TileSubstance.Stone, TileSubstance.Stone);
+            grid.RoomShell(0, 0, 8, 8, MaterialId.Stone, MaterialId.Stone);
             var room = new RoomInfo("fallback", "Broken sanctum",
                 new RectInt(0, 0, 9, 9),
                 WorldGrid.Center(2, 4));
@@ -106,16 +106,16 @@ namespace RuneMagic
 
         static RoomInfo BuildAshCourt(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index, out GameObject charm)
         {
-            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Stone, TileSubstance.Ash);
+            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, MaterialId.Stone, MaterialId.Ash);
 
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Ember, 6, 6, 7, 5, 8, 6, 7, 7, 6, 5, 8, 5);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, 6, 7, 8, 7, 5, 6, 9, 6);
+            Stamp(grid, o, TileKind.Floor, MaterialId.Ember, 6, 6, 7, 5, 8, 6, 7, 7, 6, 5, 8, 5);
+            Stamp(grid, o, TileKind.Floor, MaterialId.SaltCrust, 6, 7, 8, 7, 5, 6, 9, 6);
 
             var room = new RoomInfo("ash-court", "Ash Court",
                 new RectInt(o.x, o.y, RoomW, RoomH),
                 WorldGrid.Center(o.x + 2, o.y + 5));
 
-            room.ExitDoors = PlaceExit(grid, o, TileSubstance.Stone);
+            room.ExitDoors = PlaceExit(grid, o, MaterialId.Stone);
 
             HintPlaque.Spawn(WorldGrid.Center(o.x + 3, o.y + 8), "Read the weave. A lock with many keys.");
             RuneStringSource.Spawn(
@@ -140,14 +140,14 @@ namespace RuneMagic
 
         static RoomInfo BuildWickChapel(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index)
         {
-            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Timber, TileSubstance.Timber);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, 6, 6, 5, 5, 7, 5, 6, 4, 6, 5, 5, 6, 7, 6);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Moss, 2, 2, 10, 2, 2, 8, 10, 8);
+            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, MaterialId.Timber, MaterialId.Timber);
+            Stamp(grid, o, TileKind.Floor, MaterialId.Hearth, 6, 6, 5, 5, 7, 5, 6, 4, 6, 5, 5, 6, 7, 6);
+            Stamp(grid, o, TileKind.Floor, MaterialId.Moss, 2, 2, 10, 2, 2, 8, 10, 8);
 
             var room = new RoomInfo("wick-chapel", "Wick Chapel",
                 new RectInt(o.x, o.y, RoomW, RoomH),
                 WorldGrid.Center(o.x + 2, o.y + 5));
-            room.ExitDoors = PlaceExit(grid, o, TileSubstance.Timber);
+            room.ExitDoors = PlaceExit(grid, o, MaterialId.Timber);
 
             HintPlaque.Spawn(WorldGrid.Center(o.x + 3, o.y + 8), "Hunger sleeps in the wood. Give it a body.");
             RuneStringSource.Spawn(
@@ -166,24 +166,24 @@ namespace RuneMagic
 
         static RoomInfo BuildTheDrop(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index)
         {
-            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Stone, TileSubstance.Stone);
+            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, MaterialId.Stone, MaterialId.Stone);
 
             var pits = new List<Vector2Int>();
             for (var x = o.x + 5; x <= o.x + 7; x++)
             {
                 for (var y = o.y + 1; y <= o.y + RoomH - 2; y++)
                 {
-                    grid.Set(x, y, TileKind.Pit, TileSubstance.Void);
+                    grid.Set(x, y, TileKind.Pit, MaterialId.Void);
                     pits.Add(new Vector2Int(x, y));
                 }
             }
 
-            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, 4, 4, 4, 5, 4, 6, 3, 5);
+            Stamp(grid, o, TileKind.Floor, MaterialId.SaltCrust, 4, 4, 4, 5, 4, 6, 3, 5);
 
             var room = new RoomInfo("the-drop", "The Drop",
                 new RectInt(o.x, o.y, RoomW, RoomH),
                 WorldGrid.Center(o.x + 2, o.y + 5));
-            room.ExitDoors = PlaceExit(grid, o, TileSubstance.Stone);
+            room.ExitDoors = PlaceExit(grid, o, MaterialId.Stone);
 
             HintPlaque.Spawn(WorldGrid.Center(o.x + 2, o.y + 8), "The weave tears. Rest is missing.");
             RuneStringSource.Spawn(
@@ -206,10 +206,10 @@ namespace RuneMagic
 
         static RoomInfo BuildStormCell(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index)
         {
-            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Stone, TileSubstance.Vein);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, 4, 5, 5, 4, 5, 5, 5, 6, 4, 4, 4, 6);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Scoured, 8, 5, 7, 4, 7, 5, 7, 6, 8, 4, 8, 6);
-            grid.Set(o.x + 6, o.y + 5, TileKind.Floor, TileSubstance.Metal);
+            grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, MaterialId.Stone, MaterialId.Vein);
+            Stamp(grid, o, TileKind.Floor, MaterialId.Hearth, 4, 5, 5, 4, 5, 5, 5, 6, 4, 4, 4, 6);
+            Stamp(grid, o, TileKind.Floor, MaterialId.Scoured, 8, 5, 7, 4, 7, 5, 7, 6, 8, 4, 8, 6);
+            grid.Set(o.x + 6, o.y + 5, TileKind.Floor, MaterialId.Metal);
 
             var room = new RoomInfo("storm-cell", "Storm Cell",
                 new RectInt(o.x, o.y, RoomW, RoomH),
@@ -230,34 +230,34 @@ namespace RuneMagic
             return room;
         }
 
-        static void Stamp(WorldGrid grid, Vector2Int origin, TileKind kind, TileSubstance substance, params int[] cells)
+        static void Stamp(WorldGrid grid, Vector2Int origin, TileKind kind, MaterialId material, params int[] cells)
         {
             for (var i = 0; i + 1 < cells.Length; i += 2)
             {
-                grid.Set(origin.x + cells[i], origin.y + cells[i + 1], kind, substance);
+                grid.Set(origin.x + cells[i], origin.y + cells[i + 1], kind, material);
             }
         }
 
-        static void Connect(WorldGrid grid, Vector2Int from, Vector2Int to, TileSubstance hall)
+        static void Connect(WorldGrid grid, Vector2Int from, Vector2Int to, MaterialId hall)
         {
             var hallX0 = from.x + RoomW;
             var hallX1 = to.x - 1;
             var y0 = 0;
             var y1 = RoomH - 1;
-            grid.Fill(hallX0, y0, hallX1, y1, TileKind.Wall, TileSubstance.Stone);
+            grid.Fill(hallX0, y0, hallX1, y1, TileKind.Wall, MaterialId.Stone);
             grid.Fill(hallX0, 4, hallX1, 6, TileKind.Floor, hall);
             grid.Set(to.x, 4, TileKind.Floor, hall);
             grid.Set(to.x, 5, TileKind.Floor, hall);
             grid.Set(to.x, 6, TileKind.Floor, hall);
         }
 
-        static WorldTile[] PlaceExit(WorldGrid grid, Vector2Int origin, TileSubstance substance)
+        static WorldTile[] PlaceExit(WorldGrid grid, Vector2Int origin, MaterialId material)
         {
             return new[]
             {
-                grid.Set(origin.x + RoomW - 1, origin.y + 4, TileKind.Door, substance),
-                grid.Set(origin.x + RoomW - 1, origin.y + 5, TileKind.Door, substance),
-                grid.Set(origin.x + RoomW - 1, origin.y + 6, TileKind.Door, substance)
+                grid.Set(origin.x + RoomW - 1, origin.y + 4, TileKind.Door, material),
+                grid.Set(origin.x + RoomW - 1, origin.y + 5, TileKind.Door, material),
+                grid.Set(origin.x + RoomW - 1, origin.y + 6, TileKind.Door, material)
             };
         }
 

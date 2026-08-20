@@ -3,7 +3,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// One glyph in the living tapestry. It rides a wandering home, not a tile.
+    /// One world-space glyph. The Charter weave is now a HUD grid; this
+    /// stays for later placed strings and tests.
     /// </summary>
     public sealed class TapestryStrand : MonoBehaviour
     {

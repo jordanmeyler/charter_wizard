@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.10. Spell catalog: [`SPELLS.md`](SPELLS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.11. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -162,7 +162,7 @@ Not a stance toggle. Three actions on the same string:
 
 **The world is made of the same materials as spells** (water, wood, oil, gas, stone, lava, ice, grass), so the four combination laws govern **spell-on-world**, not just spell-crafting.
 
-Tiles are substances with a short **rune signature**. Those signatures do not sit on the tile — they speak into a **tapestry layer** that drifts, weaves, and thins over voids. Where two teaching-joins meet in the same breath (Fire · Air, Fire · Plant…), the wrought rune can appear in the field. Ordered **world-strings** can hang a sentence in that layer; the adept's place can do the same later. The player reads glyphs, then weaves.
+Tiles are **materials** (`WorldMaterial` / `MaterialId`), each with its own paint and a **full signature** — roots plus the manifestation the mix has already become. Timber is Water · Earth · Salt · Plant, not a lone Earth. Those signatures do not hover on the floor while you walk. They unroll in the **Charter** as a sideways-scrolling grid: even rows left to right, odd rows right to left, one continuous sentence of the current room. Contiguous same-material runs collapse to one clause. Voids tear the weave. Locks and world-strings enter when the scan reaches their tile. The player reads glyphs there, then weaves.
 
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — strikes everything in the pool.
@@ -179,10 +179,10 @@ Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** react
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and a **living tapestry** of runes spoken by those tiles, by creature formulas, and later by place and world-strings. Glyphs drift and weave; they are not glued to a floor square. **Space** stills the tapestry into a **Charter wall** (the eleven writeable runes, plus whatever the room is already holding). You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a drifting glyph to draw that rune from the weave. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
+The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and, only in the Charter, a **woven grid** of runes spoken by those tiles, by creature formulas, and by world-strings. Glyphs are not glued to a floor square and they do not follow you while you explore. **Space** opens the **Charter**: the eleven writeable runes on the wall, and the room’s sentence in a scrolling alternating-row grid. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a cell in the weave to draw that rune. Esc lists every *written* recipe and the material catalog (a developer ledger, not a knowledge gate).
 
-1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the tapestry the room is writing. Ash Court reads hunger and salt. The Drop is a tear — Earth is missing. Storm Cell lets Fire and Air meet until Spark is born in the field.
-2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the tapestry. Two runes birth a join or wait. A finished spell is a sentence.
+1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Fire · Plant · Ash, then ember and salt. The Drop is a tear. Storm Cell writes Spark into the vein.
+2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
 3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten Charter strings fizzle. Free fills up to the fill budget and, on a clash, attunement picks the whole sentence — form included.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
@@ -197,7 +197,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
-- [~] **Field economy** — tiles speak a substance-signature into a drifting tapestry; Space stills it into a Charter wall (the eleven, plus local colour). World-strings and the adept's place can hang more sentences later. Depletion still open. Primordial runes later.
+- [~] **Field economy** — tiles are materials with full signatures. The weave is Charter-only: a sideways-scrolling boustrophedon of the current room. World-strings and the adept's place can hang more sentences later. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.

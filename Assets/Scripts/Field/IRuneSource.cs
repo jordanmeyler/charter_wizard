@@ -12,8 +12,8 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Anything that speaks runes into the tapestry. Tiles first; later the
-    /// adept's place, scripted world-strings, and other living details.
+    /// Anything that speaks runes into the room's Charter weave. Tiles
+    /// first; later the adept's place, world-strings, and other living details.
     /// </summary>
     public interface IRuneSource
     {

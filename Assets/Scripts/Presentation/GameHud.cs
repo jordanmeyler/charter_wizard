@@ -42,15 +42,7 @@ namespace RuneMagic
 
             if (mode == PlayMode.Charter)
             {
-                if (mouse.y <= BarHeight + 196f)
-                {
-                    return true;
-                }
-
-                if (mouse.y >= Screen.height - 320f)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -117,32 +109,80 @@ namespace RuneMagic
             var hint = Label(13, FontStyle.Normal, new Color(0.7f, 0.74f, 0.82f));
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
-            GUI.Label(new Rect(28, 50, 900, 22),
-                "The wall is the eleven. Click a drifting glyph to draw what the room is made of. Charter wants the whole recipe. Free fills a blank.",
+            GUI.Label(new Rect(28, 50, 980, 22),
+                "The wall is the eleven. The grid is the room — every material’s full sentence, woven side to side. Charter wants the whole recipe. Free fills a blank.",
                 body);
-            GUI.Label(new Rect(28, 74, 900, 20),
+            GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
                 hint);
 
-            DrawRuneWall();
+            var wallBottom = DrawRuneWall();
+            DrawRoomWeave(wallBottom + 6f);
             DrawComposeDock();
         }
 
-        void DrawRuneWall()
+        float DrawRuneWall()
         {
             var runes = _director.VisibleRunes;
             const float left = 28f;
-            const float top = 108f;
-            const float size = 92f;
-            const float gap = 12f;
+            const float top = 98f;
+            const float size = 68f;
+            const float gap = 8f;
             var columns = Mathf.Max(1, Mathf.FloorToInt((Screen.width - 56f) / (size + gap)));
-
+            var rows = 1;
             for (var i = 0; i < runes.Count; i++)
             {
                 var col = i % columns;
                 var row = i / columns;
+                rows = row + 1;
                 var rect = new Rect(left + col * (size + gap), top + row * (size + gap), size, size);
                 DrawRuneCard(rect, runes[i], () => _director.AddRune(runes[i]));
+            }
+
+            return top + rows * (size + gap);
+        }
+
+        void DrawRoomWeave(float top)
+        {
+            var tapestry = _director.Tapestry;
+            var dockTop = Screen.height - 214f - BarHeight;
+            var height = Mathf.Max(72f, dockTop - top - 8f);
+            DrawPanel(16, top, Screen.width - 32, height);
+
+            var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
+            var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.76f, 0.84f));
+            GUI.Label(new Rect(28, top + 8, 720, 20), "The room’s weave", heading);
+            var reading = tapestry != null && !string.IsNullOrEmpty(tapestry.Reading)
+                ? tapestry.Reading
+                : "the field is quiet";
+            GUI.Label(new Rect(220, top + 8, Screen.width - 260, 20), reading, hint);
+
+            var rows = RuneTapestry.Rows;
+            var cols = RuneTapestry.Cols;
+            var gap = 5f;
+            var gridTop = top + 32f;
+            var cell = Mathf.Min(56f, (height - 40f) / rows - gap);
+            cell = Mathf.Max(34f, cell);
+            var width = cols * (cell + gap);
+            var left = Mathf.Max(28f, (Screen.width - width) * 0.5f);
+
+            for (var row = 0; row < rows; row++)
+            {
+                for (var col = 0; col < cols; col++)
+                {
+                    var rect = new Rect(left + col * (cell + gap), gridTop + row * (cell + gap), cell, cell);
+                    var glyph = tapestry != null
+                        ? tapestry.Cell(row, col)
+                        : new WeaveGlyph(RuneId.None, MaterialId.None, WeaveKind.Tear);
+                    if (glyph.IsTear)
+                    {
+                        DrawEmptySlot(rect, "tear");
+                        continue;
+                    }
+
+                    var rune = glyph.Rune;
+                    DrawRuneCard(rect, rune, () => _director.WeaveFromField(rune));
+                }
             }
         }
 
@@ -331,7 +371,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                $"{_director.Attunement.Notes()}   ·   Click a name to string it. 41–50: Death / Free. Esc closes.",
+                $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -339,17 +379,7 @@ namespace RuneMagic
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawCodex(0f, heading, row, muted, loadable: true);
 
-            y += 16f;
-            GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
-            y += 28f;
-            foreach (var blend in MaterialTree.All)
-            {
-                var tone = blend.Result.Kind == BlendKind.Violent ? "violent" : "stable";
-                GUI.Label(new Rect(0, y, 820, 20),
-                    $"{RuneCatalog.NameOf(blend.Left)} + {RuneCatalog.NameOf(blend.Right)} → {RuneCatalog.NameOf(blend.Result.Result)}   ({tone})",
-                    row);
-                y += 22f;
-            }
+            y = DrawMaterialsLedger(y, heading, row, muted);
 
             GUI.EndScrollView();
         }
@@ -365,13 +395,35 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
             GUI.Label(new Rect(40, 62, 980, 22),
-                "Developer ledger. Full codex draft plus material joins. Esc resumes.",
+                "Developer ledger. Written spells, world materials, and joins. Esc resumes.",
                 subtitle);
 
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
             var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawCodex(0f, heading, row, muted, loadable: false);
+
+            y = DrawMaterialsLedger(y, heading, row, muted);
+
+            GUI.EndScrollView();
+        }
+
+        float DrawMaterialsLedger(float y, GUIStyle heading, GUIStyle row, GUIStyle muted)
+        {
+            y += 16f;
+            GUI.Label(new Rect(0, y, 700, 24), "World materials", heading);
+            y += 22f;
+            GUI.Label(new Rect(0, y, 980, 18),
+                "Stamp MaterialId on a tile. The Charter weave reads the full signature, not just a root.",
+                muted);
+            y += 22f;
+            foreach (var material in MaterialCatalog.All)
+            {
+                GUI.Label(new Rect(0, y, 150, 20), material.Name, row);
+                GUI.Label(new Rect(160, y, 280, 20), material.SignatureText(), muted);
+                GUI.Label(new Rect(450, y, 620, 20), material.Note, row);
+                y += 20f;
+            }
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -385,7 +437,7 @@ namespace RuneMagic
                 y += 22f;
             }
 
-            GUI.EndScrollView();
+            return y;
         }
 
         float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted, bool loadable)
@@ -442,7 +494,8 @@ namespace RuneMagic
 
         static float CodexHeight()
         {
-            return 160f + SpellCodex.All.Count * 20f + 12 * 28f + MaterialTree.All.Count * 22f;
+            return 220f + SpellCodex.All.Count * 20f + 12 * 28f
+                + MaterialCatalog.All.Count * 20f + MaterialTree.All.Count * 22f;
         }
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick)
@@ -510,17 +563,14 @@ namespace RuneMagic
 
         string FieldLine()
         {
-            var reading = string.IsNullOrEmpty(_director.FieldReading)
-                ? "the field is still gathering"
-                : _director.FieldReading;
-            return $"Tapestry  {reading}";
+            return "The weave waits in the Charter. Space unrolls the room.";
         }
 
         string TargetAndLog()
         {
             var target = _director.CurrentTarget;
             var lockLine = target == null
-                ? "Click a drifting rune to draw it. Space stills the Charter wall."
+                ? "Space opens the Charter. The room’s weave is only visible there."
                 : $"{target.DisplayName}  {{{target.FormulaText()}}}";
             return $"{lockLine}\n{_director.LastLog}";
         }

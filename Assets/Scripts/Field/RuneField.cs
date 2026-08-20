@@ -4,8 +4,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Perception helper for the Charter wall. The living picture of the
-    /// field is <see cref="RuneTapestry"/> — this only lists what can be strung.
+    /// Perception helper for the Charter wall. The wall is always the
+    /// eleven writeable runes. The room's sentence lives in the weave grid.
     /// </summary>
     public static class RuneField
     {

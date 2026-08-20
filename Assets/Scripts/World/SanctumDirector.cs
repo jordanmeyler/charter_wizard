@@ -284,7 +284,7 @@ namespace RuneMagic
         {
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
-            Log("The weave stills. Draw from the wall or a glyph, then Charter Cast, Store, or Free Cast.");
+            Log("The room unrolls. Draw from the wall or the weave, then Charter Cast, Store, or Free Cast.");
         }
 
         public void CloseCharter()
@@ -297,11 +297,12 @@ namespace RuneMagic
             Mode = PlayMode.Exploring;
             if (string.IsNullOrEmpty(LastLog) ||
                 LastLog.StartsWith("The field stands still") ||
-                LastLog.StartsWith("The weave stills"))
+                LastLog.StartsWith("The weave stills") ||
+                LastLog.StartsWith("The room unrolls"))
             {
                 Log(Held.Occupied
                     ? $"The wall folds. You still hold {Held.Name}."
-                    : "The wall folds. The field keeps moving.");
+                    : "The wall folds. The room's weave waits for the Charter.");
             }
         }
 

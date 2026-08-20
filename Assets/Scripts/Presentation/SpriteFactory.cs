@@ -52,38 +52,29 @@ namespace RuneMagic
             });
         }
 
-        public static Sprite Floor(RuneId element) => Floor(TileSubstances.FromElement(element));
+        public static Sprite Floor(RuneId element) => Floor(MaterialCatalog.FromElement(element));
 
-        public static Sprite Floor(TileSubstance substance)
+        public static Sprite Floor(TileSubstance substance) =>
+            Floor(MaterialCatalog.FromLegacy(substance));
+
+        public static Sprite Floor(MaterialId material)
         {
-            return Memo($"floor:{substance}", () => PaintFloor(substance));
+            return Memo($"floor:{material}", () => PaintFloor(MaterialCatalog.Of(material)));
         }
 
-        public static Sprite Wall(RuneId element) => Wall(TileSubstances.FromElement(element));
+        public static Sprite Wall(RuneId element) => Wall(MaterialCatalog.FromElement(element));
 
-        public static Sprite Wall(TileSubstance substance)
+        public static Sprite Wall(TileSubstance substance) =>
+            Wall(MaterialCatalog.FromLegacy(substance));
+
+        public static Sprite Wall(MaterialId material)
         {
-            return Memo($"wall:{substance}", () =>
+            return Memo($"wall:{material}", () =>
             {
+                var def = MaterialCatalog.Of(material);
                 var canvas = new PixelCanvas(32);
                 var mortar = new Color(0.12f, 0.1f, 0.1f);
-                Color brick;
-                switch (substance)
-                {
-                    case TileSubstance.Timber:
-                        brick = new Color(0.42f, 0.26f, 0.14f);
-                        break;
-                    case TileSubstance.Metal:
-                        brick = new Color(0.34f, 0.36f, 0.4f);
-                        break;
-                    case TileSubstance.Ash:
-                        brick = new Color(0.22f, 0.18f, 0.16f);
-                        break;
-                    default:
-                        brick = new Color(0.28f, 0.24f, 0.32f);
-                        break;
-                }
-
+                var brick = def.WallTone;
                 canvas.Clear(mortar);
                 for (var row = 0; row < 5; row++)
                 {
@@ -414,53 +405,54 @@ namespace RuneMagic
             });
         }
 
-        static Sprite PaintFloor(TileSubstance substance)
+        static Sprite PaintFloor(WorldMaterial material)
         {
             var canvas = new PixelCanvas(32);
-            switch (substance)
+            var tone = material.FloorTone;
+            switch (material.Paint)
             {
-                case TileSubstance.Timber:
-                    PaintPlanks(canvas, new Color(0.46f, 0.3f, 0.16f), new Color(0.32f, 0.2f, 0.1f));
+                case MaterialPaint.Planks:
+                    PaintPlanks(canvas, tone, Color.Lerp(tone, Color.black, 0.35f));
                     break;
-                case TileSubstance.Ash:
-                    PaintCobble(canvas, new Color(0.22f, 0.18f, 0.16f));
+                case MaterialPaint.Ash:
+                    PaintCobble(canvas, tone);
                     Speckle(canvas, new Color(0.55f, 0.28f, 0.12f, 0.7f), 14);
                     Speckle(canvas, new Color(0.08f, 0.07f, 0.07f, 0.8f), 10);
                     break;
-                case TileSubstance.Hearth:
-                    PaintCobble(canvas, new Color(0.42f, 0.22f, 0.16f));
+                case MaterialPaint.Hearth:
+                    PaintCobble(canvas, tone);
                     PaintVein(canvas, new Color(0.92f, 0.38f, 0.16f, 0.7f));
                     break;
-                case TileSubstance.Ember:
-                    PaintCobble(canvas, new Color(0.2f, 0.1f, 0.08f));
+                case MaterialPaint.Ember:
+                    PaintCobble(canvas, tone);
                     Speckle(canvas, new Color(0.95f, 0.42f, 0.12f, 0.85f), 12);
                     PaintVein(canvas, new Color(0.85f, 0.22f, 0.08f, 0.65f));
                     break;
-                case TileSubstance.Damp:
-                    PaintCobble(canvas, new Color(0.2f, 0.28f, 0.4f));
+                case MaterialPaint.Damp:
+                    PaintCobble(canvas, tone);
                     canvas.Blend(6, 10, new Color(0.45f, 0.7f, 0.9f, 0.35f));
                     canvas.Blend(18, 22, new Color(0.45f, 0.7f, 0.9f, 0.35f));
                     canvas.Line(4, 16, 12, 14, new Color(0.4f, 0.62f, 0.85f, 0.4f));
                     break;
-                case TileSubstance.Vein:
-                    PaintCobble(canvas, new Color(0.32f, 0.3f, 0.24f));
+                case MaterialPaint.Vein:
+                    PaintCobble(canvas, tone);
                     canvas.ThickLine(4, 6, 14, 18, new Color(0.98f, 0.86f, 0.28f, 0.75f));
                     canvas.ThickLine(14, 18, 26, 10, new Color(0.98f, 0.86f, 0.28f, 0.75f));
                     canvas.ThickLine(8, 24, 22, 28, new Color(0.85f, 0.7f, 0.2f, 0.55f));
                     break;
-                case TileSubstance.Scoured:
-                    PaintCobble(canvas, new Color(0.3f, 0.34f, 0.38f));
+                case MaterialPaint.Scoured:
+                    PaintCobble(canvas, tone);
                     canvas.Line(2, 8, 28, 6, new Color(0.8f, 0.88f, 0.95f, 0.28f));
                     canvas.Line(3, 18, 30, 16, new Color(0.8f, 0.88f, 0.95f, 0.22f));
                     canvas.Line(1, 26, 26, 24, new Color(0.75f, 0.84f, 0.92f, 0.2f));
                     break;
-                case TileSubstance.Moss:
-                    PaintCobble(canvas, new Color(0.28f, 0.26f, 0.16f));
+                case MaterialPaint.Moss:
+                    PaintCobble(canvas, tone);
                     canvas.FillCircle(10, 12, 4, new Color(0.28f, 0.52f, 0.22f, 0.8f));
                     canvas.FillCircle(22, 20, 5, new Color(0.22f, 0.46f, 0.2f, 0.75f));
                     canvas.FillCircle(16, 8, 3, new Color(0.34f, 0.58f, 0.26f, 0.7f));
                     break;
-                case TileSubstance.Metal:
+                case MaterialPaint.Metal:
                     canvas.Clear(new Color(0.18f, 0.18f, 0.2f));
                     canvas.Fill(2, 2, 13, 13, new Color(0.42f, 0.44f, 0.48f));
                     canvas.Fill(17, 2, 13, 13, new Color(0.36f, 0.38f, 0.42f));
@@ -472,14 +464,120 @@ namespace RuneMagic
                     canvas.FillCircle(26, 26, 1, new Color(0.7f, 0.7f, 0.72f));
                     canvas.Rect(0, 0, 32, 32, new Color(0.12f, 0.12f, 0.14f));
                     break;
-                case TileSubstance.SaltCrust:
-                    PaintCobble(canvas, new Color(0.42f, 0.4f, 0.38f));
+                case MaterialPaint.Salt:
+                    PaintCobble(canvas, tone);
                     Speckle(canvas, new Color(0.95f, 0.95f, 0.9f, 0.8f), 16);
                     canvas.Set(8, 20, Color.white);
                     canvas.Set(21, 9, Color.white);
                     break;
+                case MaterialPaint.Ice:
+                    PaintCobble(canvas, tone);
+                    canvas.Line(4, 8, 26, 6, new Color(1f, 1f, 1f, 0.45f));
+                    canvas.Line(6, 20, 28, 18, new Color(0.85f, 0.95f, 1f, 0.35f));
+                    Speckle(canvas, new Color(1f, 1f, 1f, 0.55f), 8);
+                    break;
+                case MaterialPaint.Sand:
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.18f));
+                    PaintCobble(canvas, tone);
+                    Speckle(canvas, new Color(0.9f, 0.78f, 0.45f, 0.7f), 18);
+                    break;
+                case MaterialPaint.Mud:
+                    PaintCobble(canvas, tone);
+                    canvas.Blend(8, 12, new Color(0.18f, 0.12f, 0.08f, 0.45f));
+                    canvas.Blend(20, 22, new Color(0.2f, 0.14f, 0.08f, 0.4f));
+                    canvas.Line(4, 18, 16, 16, new Color(0.15f, 0.1f, 0.06f, 0.5f));
+                    break;
+                case MaterialPaint.Lava:
+                    PaintCobble(canvas, Color.Lerp(tone, Color.black, 0.45f));
+                    PaintVein(canvas, new Color(1f, 0.45f, 0.08f, 0.85f));
+                    Speckle(canvas, new Color(1f, 0.7f, 0.15f, 0.8f), 10);
+                    break;
+                case MaterialPaint.Steam:
+                    PaintCobble(canvas, tone);
+                    Speckle(canvas, new Color(1f, 1f, 1f, 0.35f), 14);
+                    canvas.Line(3, 10, 12, 4, new Color(1f, 1f, 1f, 0.25f));
+                    canvas.Line(18, 22, 28, 14, new Color(1f, 1f, 1f, 0.2f));
+                    break;
+                case MaterialPaint.Dust:
+                    PaintCobble(canvas, tone);
+                    Speckle(canvas, new Color(0.7f, 0.62f, 0.48f, 0.55f), 16);
+                    break;
+                case MaterialPaint.Glass:
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.35f));
+                    canvas.Fill(3, 3, 12, 12, Color.Lerp(tone, Color.white, 0.25f));
+                    canvas.Fill(17, 3, 12, 12, tone);
+                    canvas.Fill(3, 17, 12, 12, tone);
+                    canvas.Fill(17, 17, 12, 12, Color.Lerp(tone, Color.white, 0.18f));
+                    canvas.Set(6, 6, Color.white);
+                    canvas.Set(24, 22, new Color(1f, 1f, 1f, 0.7f));
+                    canvas.Rect(0, 0, 32, 32, Color.Lerp(tone, Color.black, 0.4f));
+                    break;
+                case MaterialPaint.Crystal:
+                    PaintCobble(canvas, tone);
+                    canvas.ThickLine(8, 4, 16, 22, new Color(0.9f, 0.8f, 1f, 0.7f));
+                    canvas.ThickLine(20, 6, 12, 26, new Color(0.75f, 0.55f, 0.95f, 0.55f));
+                    canvas.Set(16, 12, Color.white);
+                    break;
+                case MaterialPaint.Obsidian:
+                    PaintCobble(canvas, tone);
+                    canvas.Line(4, 10, 14, 6, new Color(0.45f, 0.3f, 0.6f, 0.45f));
+                    canvas.Line(18, 24, 28, 18, new Color(0.35f, 0.22f, 0.5f, 0.4f));
+                    Speckle(canvas, new Color(0.2f, 0.16f, 0.28f, 0.7f), 8);
+                    break;
+                case MaterialPaint.Grove:
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.25f));
+                    canvas.FillCircle(10, 12, 6, new Color(0.2f, 0.42f, 0.16f, 0.9f));
+                    canvas.FillCircle(22, 18, 7, new Color(0.16f, 0.36f, 0.14f, 0.85f));
+                    canvas.FillCircle(16, 8, 4, new Color(0.28f, 0.5f, 0.2f, 0.75f));
+                    Speckle(canvas, new Color(0.4f, 0.65f, 0.22f, 0.7f), 10);
+                    break;
+                case MaterialPaint.Cloud:
+                    canvas.Clear(Color.Lerp(tone, Color.white, 0.15f));
+                    canvas.FillCircle(10, 16, 8, new Color(1f, 1f, 1f, 0.45f));
+                    canvas.FillCircle(20, 14, 9, new Color(0.92f, 0.94f, 0.98f, 0.4f));
+                    canvas.FillCircle(16, 20, 6, new Color(0.8f, 0.84f, 0.9f, 0.35f));
+                    break;
+                case MaterialPaint.Rain:
+                    PaintCobble(canvas, tone);
+                    canvas.Line(6, 26, 4, 6, new Color(0.55f, 0.75f, 0.95f, 0.45f));
+                    canvas.Line(14, 28, 12, 8, new Color(0.55f, 0.75f, 0.95f, 0.35f));
+                    canvas.Line(22, 24, 20, 4, new Color(0.55f, 0.75f, 0.95f, 0.4f));
+                    canvas.Line(28, 22, 26, 8, new Color(0.55f, 0.75f, 0.95f, 0.3f));
+                    break;
+                case MaterialPaint.Snow:
+                    PaintCobble(canvas, tone);
+                    Speckle(canvas, new Color(1f, 1f, 1f, 0.85f), 18);
+                    canvas.Set(10, 18, Color.white);
+                    canvas.Set(22, 8, Color.white);
+                    break;
+                case MaterialPaint.Glacier:
+                    PaintCobble(canvas, tone);
+                    canvas.ThickLine(2, 8, 30, 20, new Color(0.45f, 0.55f, 0.62f, 0.55f));
+                    canvas.Line(4, 22, 28, 10, new Color(1f, 1f, 1f, 0.35f));
+                    break;
+                case MaterialPaint.Acid:
+                    PaintCobble(canvas, tone);
+                    Speckle(canvas, new Color(0.85f, 1f, 0.25f, 0.7f), 14);
+                    canvas.Blend(12, 16, new Color(0.7f, 0.95f, 0.2f, 0.4f));
+                    break;
+                case MaterialPaint.Water:
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.2f));
+                    canvas.FillCircle(16, 16, 13, tone);
+                    canvas.Line(4, 14, 28, 12, new Color(0.7f, 0.88f, 1f, 0.4f));
+                    canvas.Line(6, 20, 26, 18, new Color(0.55f, 0.78f, 0.95f, 0.3f));
+                    break;
+                case MaterialPaint.Plant:
+                    PaintCobble(canvas, Color.Lerp(tone, new Color(0.28f, 0.26f, 0.16f), 0.45f));
+                    canvas.FillCircle(12, 14, 5, tone);
+                    canvas.FillCircle(20, 20, 4, Color.Lerp(tone, Color.black, 0.15f));
+                    canvas.Line(16, 8, 16, 22, new Color(0.18f, 0.32f, 0.1f, 0.7f));
+                    break;
+                case MaterialPaint.Void:
+                    canvas.Clear(tone);
+                    canvas.FillCircle(16, 16, 10, Color.black);
+                    break;
                 default:
-                    PaintCobble(canvas, new Color(0.28f, 0.28f, 0.32f));
+                    PaintCobble(canvas, tone);
                     PaintVein(canvas, new Color(0.55f, 0.38f, 0.22f, 0.45f));
                     break;
             }
