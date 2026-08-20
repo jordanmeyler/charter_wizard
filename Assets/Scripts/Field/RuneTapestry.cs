@@ -13,7 +13,7 @@ namespace RuneMagic
         public const float PerceptionRadius = 8.2f;
         public const int Rows = 4;
         public const int Cols = 12;
-        const float ScrollSpeed = 0.55f;
+        const float ScrollSpeed = 0.22f;
 
         SanctumDirector _director;
         WorldGrid _grid;
@@ -28,6 +28,7 @@ namespace RuneMagic
         public IReadOnlyList<WeaveGlyph> Sequence => _sequence;
         public IReadOnlyList<RuneId> Vicinity => _vicinityList;
         public float Scroll { get; private set; }
+        public bool HoverPaused { get; set; }
         public bool Showing => _director != null && _director.Mode == PlayMode.Charter && _sequence.Count > 0;
 
         public void Bind(SanctumDirector director, SanctumBuild build)
@@ -77,12 +78,12 @@ namespace RuneMagic
 
         public WeaveGlyph Cell(int row, int col)
         {
-            if (_sequence.Count == 0 || row < 0 || row >= Rows || col < 0 || col >= Cols)
+            if (_sequence.Count == 0 || row < 0 || row >= Rows || col < 0 || col > Cols)
             {
                 return new WeaveGlyph(RuneId.None, MaterialId.None, WeaveKind.Tear);
             }
 
-            var along = row % 2 == 0 ? col : Cols - 1 - col;
+            var along = row % 2 == 0 ? col : Cols - col;
             var visual = row * Cols + along;
             var index = Mod(Mathf.FloorToInt(Scroll) + visual, _sequence.Count);
             return _sequence[index];
@@ -93,6 +94,7 @@ namespace RuneMagic
             if (_director == null || _director.Mode != PlayMode.Charter)
             {
                 _readingText = string.Empty;
+                HoverPaused = false;
                 return;
             }
 
@@ -109,10 +111,13 @@ namespace RuneMagic
                 return;
             }
 
-            Scroll += Time.unscaledDeltaTime * ScrollSpeed;
-            if (Scroll >= _sequence.Count)
+            if (!HoverPaused)
             {
-                Scroll -= _sequence.Count;
+                Scroll += Time.unscaledDeltaTime * ScrollSpeed;
+                if (Scroll >= _sequence.Count)
+                {
+                    Scroll -= _sequence.Count;
+                }
             }
 
             RefreshReading();

@@ -40,12 +40,50 @@ namespace RuneMagic
             Births[RuneId.Blight] = new[] { RuneId.Grove, RuneId.Mors };
             Births[RuneId.Snow] = new[] { RuneId.Cloud, RuneId.Ice };
             Births[RuneId.Vine] = new[] { RuneId.Grove, RuneId.Mercury };
+            Births[RuneId.Metal] = new[] { RuneId.Lava, RuneId.Earth };
+            Births[RuneId.Crystal] = new[] { RuneId.Stone, RuneId.Water };
+            Births[RuneId.Glacier] = new[] { RuneId.Ice, RuneId.Stone };
+            Births[RuneId.Acid] = new[] { RuneId.Steam, RuneId.Metal };
+            Births[RuneId.Inferno] = new[] { RuneId.Fire, RuneId.Fire, RuneId.Salt };
 
             Shapes["shot"] = SpellShape.Shot;
             Shapes["pillar"] = SpellShape.Pillar;
             Shapes["spread"] = SpellShape.Spread;
             Shapes["remote"] = SpellShape.Remote;
             Shapes["self"] = SpellShape.Self;
+        }
+
+        public static bool IsWrought(RuneId rune)
+        {
+            return rune != RuneId.None && Births.ContainsKey(rune);
+        }
+
+        public static bool TryBirth(RuneId rune, out IReadOnlyList<RuneId> sources)
+        {
+            if (Births.TryGetValue(rune, out var parts))
+            {
+                sources = parts;
+                return true;
+            }
+
+            sources = System.Array.Empty<RuneId>();
+            return false;
+        }
+
+        public static string BirthText(RuneId rune)
+        {
+            if (!TryBirth(rune, out var sources) || sources.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var parts = new string[sources.Count];
+            for (var i = 0; i < sources.Count; i++)
+            {
+                parts[i] = RuneCatalog.GlyphOf(sources[i]);
+            }
+
+            return string.Join(" · ", parts);
         }
 
         public static bool TryParseShape(string name, out SpellShape shape)

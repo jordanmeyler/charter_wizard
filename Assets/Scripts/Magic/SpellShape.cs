@@ -41,11 +41,11 @@ namespace RuneMagic
     {
         public static readonly FormationDef Shot = new(
             SpellShape.Shot, "Shot", "aim a line",
-            "Click through a point. The spell flies that way.", 7.6f, 1.05f);
+            "Click through a point. The spell flies that way.", 8.4f, 1.45f);
 
         public static readonly FormationDef Pillar = new(
             SpellShape.Pillar, "Pillar", "raise a column",
-            "Click the ground. A column rises there.", 4.6f, 1.15f);
+            "Click the ground. A column rises there.", 6.2f, 1.45f);
 
         public static readonly FormationDef Spread = new(
             SpellShape.Spread, "Spread", "release at your feet",
