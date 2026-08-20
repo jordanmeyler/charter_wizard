@@ -24,7 +24,7 @@ namespace RuneMagic
             return Get(coord);
         }
 
-        public WorldTile Set(int x, int y, TileKind kind, RuneId element)
+        public WorldTile Set(int x, int y, TileKind kind, TileSubstance substance)
         {
             var coord = new Vector2Int(x, y);
             if (_tiles.TryGetValue(coord, out var existing) && existing != null)
@@ -32,29 +32,44 @@ namespace RuneMagic
                 Destroy(existing.gameObject);
             }
 
-            var tileObject = new GameObject($"Tile_{kind}_{x}_{y}");
+            var tileObject = new GameObject($"Tile_{kind}_{substance}_{x}_{y}");
             tileObject.transform.SetParent(transform, false);
             var tile = tileObject.AddComponent<WorldTile>();
-            tile.Bind(coord, new TileDef(kind, element));
+            tile.Bind(coord, new TileDef(kind, substance));
             _tiles[coord] = tile;
             return tile;
         }
 
-        public void Fill(int x0, int y0, int x1, int y1, TileKind kind, RuneId element)
+        public WorldTile Set(int x, int y, TileKind kind, RuneId element)
+        {
+            return Set(x, y, kind, TileSubstances.FromElement(element));
+        }
+
+        public void Fill(int x0, int y0, int x1, int y1, TileKind kind, TileSubstance substance)
         {
             for (var y = y0; y <= y1; y++)
             {
                 for (var x = x0; x <= x1; x++)
                 {
-                    Set(x, y, kind, element);
+                    Set(x, y, kind, substance);
                 }
             }
         }
 
-        public void RoomShell(int x0, int y0, int x1, int y1, RuneId wall, RuneId floor)
+        public void Fill(int x0, int y0, int x1, int y1, TileKind kind, RuneId element)
+        {
+            Fill(x0, y0, x1, y1, kind, TileSubstances.FromElement(element));
+        }
+
+        public void RoomShell(int x0, int y0, int x1, int y1, TileSubstance wall, TileSubstance floor)
         {
             Fill(x0, y0, x1, y1, TileKind.Wall, wall);
             Fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, TileKind.Floor, floor);
+        }
+
+        public void RoomShell(int x0, int y0, int x1, int y1, RuneId wall, RuneId floor)
+        {
+            RoomShell(x0, y0, x1, y1, TileSubstances.FromElement(wall), TileSubstances.FromElement(floor));
         }
 
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);

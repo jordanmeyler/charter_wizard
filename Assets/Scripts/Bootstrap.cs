@@ -55,9 +55,10 @@ namespace RuneMagic
             var spawn = build != null ? build.Spawn : new Vector3(2.5f, 5.5f, 0f);
             var player = SpawnPlayer(spawn, cam);
             director.BindPlayer(player);
-            var fieldHost = new GameObject("RuneField");
-            fieldHost.transform.SetParent(player.transform, false);
-            fieldHost.AddComponent<RuneField>().Bind(director);
+            var tapestryHost = new GameObject("RuneTapestry");
+            var tapestry = tapestryHost.AddComponent<RuneTapestry>();
+            tapestry.Bind(director, build);
+            director.BindTapestry(tapestry);
         }
 
         static Camera PrepareCamera()

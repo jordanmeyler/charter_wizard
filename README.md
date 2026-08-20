@@ -6,7 +6,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.10). The eleven basi
 
 ## What is implemented
 
-Four rooms, east to west of the spawn. Tiles carry an element. Enemies and terrain are both locks.
+Four rooms, east to west of the spawn. Tiles are substances (ash, timber, hearthstone, void, spark-vein…) and each substance speaks runes into a **living tapestry** that drifts over the room. Enemies and terrain are both locks. You read the glyphs, then weave a key.
 
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
@@ -19,8 +19,8 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 | Design rule | In this slice |
 | --- | --- |
-| Casting is perception, not position | Space opens a Charter wall over the world. You compose from the field, not from a tile you stand on. |
-| The world is the same materials | Floor, wall, wood, fire-stone, spark-stone, and pit tiles each carry an element. The HUD names the tile underfoot. |
+| Casting is perception, not position | Runes live on their own layer. They drift and weave from what the room is made of; they are not stamped on a tile. Space stills the tapestry into a Charter wall. Click a glyph to draw it. |
+| The world is the same materials | Ash, timber, hearth, ember, damp stone, spark-vein, wind-scoured stone, moss, iron, salt crust, and void each speak a short rune signature. The HUD shows the tapestry reading, not just the floor name. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
 | Terrain = lock | Torch, pit, and rod accept keys the same way the mite does. |
 | Chains, not pairs | The fifty catalog spells resolve in play. Fireball is Fire · Air · Salt · Mercury. The Grimoire lists them all; click a name to string it. |
@@ -38,8 +38,9 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
-- **Space** open the Charter — a wall of runes over the world. Space again closes it.
-- In the Charter: **click runes** to string them (up to 8). The wall is the eleven basic runes. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- **Space** stills the tapestry into the Charter — a wall of runes over the world. Space again closes it.
+- **Click a drifting glyph** to draw that rune from the weave (opens the Charter if it is folded).
+- In the Charter: **click wall runes** or world glyphs to string them (up to 8). The wall is the eleven basic runes plus what the room is holding. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written. Wrong strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later). Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
@@ -57,7 +58,10 @@ Walk into a pit and you return to the last safe floor.
 | File | What to add |
 | --- | --- |
 | `Assets/Scripts/World/SanctumLayout.cs` | New rooms and tile layouts |
-| `Assets/Scripts/World/TileTypes.cs` | New tile kinds / element names |
+| `Assets/Scripts/World/TileSubstance.cs` | New floor substances and the runes they speak |
+| `Assets/Scripts/Field/RuneTapestry.cs` | How the living rune layer weaves |
+| `Assets/Scripts/Field/RuneStringSource.cs` | Ordered world-sentences in the field |
+| `Assets/Scripts/World/TileTypes.cs` | New tile kinds / substance names |
 | `Assets/Scripts/Magic/RuneCatalog.cs` | New rune names, families, meanings |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Scripts/Magic/SpellGrammar.cs` | New Material × Aspect × Formation recipes (keep them sparse) |

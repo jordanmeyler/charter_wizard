@@ -6,7 +6,7 @@ namespace RuneMagic
     /// Every enemy is a lock. The formula is visible (perception is equal).
     /// Interpretation and keys are knowledge-gated.
     /// </summary>
-    public sealed class EncounterLock : MonoBehaviour, ISpellLock
+    public sealed class EncounterLock : MonoBehaviour, ISpellLock, IRuneSource
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -15,6 +15,12 @@ namespace RuneMagic
         public bool Ensouled { get; private set; }
         public bool Resolved { get; private set; }
         public Vector3 WorldPosition => transform.position;
+
+        public bool IsEmitting => !Resolved && Formula != null && Formula.Length > 0;
+        public Vector3 WorldOrigin => transform.position;
+        public float VoiceRadius => 3.4f;
+        public float VoiceWeight => 2.4f;
+        public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
         SpriteRenderer _renderer;
         Vector3 _rest;
@@ -68,12 +74,25 @@ namespace RuneMagic
             return $"{DisplayName} unmakes. A simple lock; many keys would have turned it.";
         }
 
+        public void Collect(System.Collections.Generic.List<RuneId> buffer)
+        {
+            if (!IsEmitting)
+            {
+                return;
+            }
+
+            for (var i = 0; i < Formula.Length; i++)
+            {
+                buffer.Add(Formula[i]);
+            }
+        }
+
         public string FormulaText()
         {
             var parts = new string[Formula.Length];
             for (var i = 0; i < Formula.Length; i++)
             {
-                parts[i] = RuneCatalog.NameOf(Formula[i]);
+                parts[i] = $"{RuneCatalog.GlyphOf(Formula[i])} {RuneCatalog.NameOf(Formula[i])}";
             }
 
             return string.Join(" · ", parts);

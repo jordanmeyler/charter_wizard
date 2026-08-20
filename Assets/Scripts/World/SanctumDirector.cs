@@ -25,6 +25,8 @@ namespace RuneMagic
         public PlayMode Mode { get; private set; } = PlayMode.Exploring;
         public FreeAttunement Attunement { get; } = new();
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
+        public RuneTapestry Tapestry { get; private set; }
+        public string FieldReading { get; private set; } = string.Empty;
         public IReadOnlyList<RuneId> VisibleRunes { get; private set; } = System.Array.Empty<RuneId>();
         public IReadOnlyList<SpellShape> AvailableShapes { get; private set; } = System.Array.Empty<SpellShape>();
         public SpellShape ChosenShape { get; private set; }
@@ -66,6 +68,11 @@ namespace RuneMagic
         public void BindPlayer(GameObject player)
         {
             _player = player != null ? player.transform : null;
+        }
+
+        public void BindTapestry(RuneTapestry tapestry)
+        {
+            Tapestry = tapestry;
         }
 
         Transform PlayerTransform()
@@ -128,6 +135,8 @@ namespace RuneMagic
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
             }
+
+            FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
         }
 
         void HandleInput()
@@ -264,13 +273,18 @@ namespace RuneMagic
             {
                 StoreDraft();
             }
+
+            if (Input.GetMouseButtonDown(0) && !GameHud.BlocksWorldPick(Mode))
+            {
+                TryWeaveFromPointer();
+            }
         }
 
         public void OpenCharter()
         {
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
-            Log("The field stands still. String runes, then Charter Cast, Store, or Free Cast.");
+            Log("The weave stills. Draw from the wall or a glyph, then Charter Cast, Store, or Free Cast.");
         }
 
         public void CloseCharter()
@@ -281,7 +295,9 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
-            if (string.IsNullOrEmpty(LastLog) || LastLog.StartsWith("The field stands still"))
+            if (string.IsNullOrEmpty(LastLog) ||
+                LastLog.StartsWith("The field stands still") ||
+                LastLog.StartsWith("The weave stills"))
             {
                 Log(Held.Occupied
                     ? $"The wall folds. You still hold {Held.Name}."
@@ -338,6 +354,27 @@ namespace RuneMagic
 
             Composer.TryAdd(rune, out var note);
             Log(note);
+        }
+
+        public void WeaveFromField(RuneId rune)
+        {
+            if (Busy || Mode == PlayMode.Aiming || Mode == PlayMode.Paused || Mode == PlayMode.Grimoire)
+            {
+                return;
+            }
+
+            if (rune == RuneId.None)
+            {
+                return;
+            }
+
+            if (Mode != PlayMode.Charter)
+            {
+                OpenCharter();
+            }
+
+            Composer.TryAdd(rune, out var note);
+            Log($"You draw {RuneCatalog.NameOf(rune)} from the weave. {note}");
         }
 
         public void RemoveDraftFrom(int index)
@@ -592,7 +629,7 @@ namespace RuneMagic
 
         void HandleWorldClick()
         {
-            if (GameHud.PointerOverChrome(Mode))
+            if (GameHud.BlocksWorldPick(Mode))
             {
                 return;
             }
@@ -606,6 +643,14 @@ namespace RuneMagic
             var world = camera.ScreenToWorldPoint(Input.mousePosition);
             world.z = 0f;
             var clicked = FindLockNear(world, 1.2f);
+            var lockDistance = clicked != null
+                ? Vector2.Distance(world, clicked.WorldPosition)
+                : float.MaxValue;
+            if (lockDistance > 0.7f && TryWeaveAt(world))
+            {
+                return;
+            }
+
             if (clicked == null)
             {
                 return;
@@ -1040,6 +1085,27 @@ namespace RuneMagic
         public void Log(string message)
         {
             LastLog = message;
+        }
+
+        void TryWeaveFromPointer()
+        {
+            if (!TryMouseWorld(out var world))
+            {
+                return;
+            }
+
+            TryWeaveAt(world);
+        }
+
+        bool TryWeaveAt(Vector3 world)
+        {
+            if (Tapestry == null || !Tapestry.TryPick(world, out var rune))
+            {
+                return false;
+            }
+
+            WeaveFromField(rune);
+            return true;
         }
     }
 }
