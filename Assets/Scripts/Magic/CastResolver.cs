@@ -258,9 +258,10 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Charter is coherent: an unwritten chain fizzles.
-    /// Free fills up to FillBudget missing runes (1 now), and attunement
-    /// weighs clashes and grows the work.
+    /// Charter is coherent: an unwritten or scrambled chain fizzles.
+    /// Free may unscramble the same runes into a written sentence, or
+    /// fill up to FillBudget missing runes (1 now). Attunement weighs
+    /// clashes and grows the work.
     /// </summary>
     public sealed class CastResolver
     {
@@ -457,7 +458,7 @@ namespace RuneMagic
             if (pool.Count == 0)
             {
                 return Fail(false, true, 0.06f, SpellId.None, shape, composition.MaterialA, composition.Aspect,
-                    $"Free reaches and finds no written chain {FillWords(attunement.FillBudget)} would complete. The surge folds inward.");
+                    $"Free reaches and finds no written chain it can unscramble or complete with {FillWords(attunement.FillBudget)}. The surge folds inward.");
             }
 
             var pick = lockedFree.Spell != SpellId.None ? lockedFree : PickWeighted(pool, attunement);
@@ -473,11 +474,14 @@ namespace RuneMagic
             var clash = pool.Count > 1
                 ? $" {pool.Count} chains fit; attunement drew {pick.Name}."
                 : string.Empty;
-            var fillNote = fills == 0
-                ? $"Free takes the finished sentence.{clash} "
-                : fills == 1
-                    ? $"Free fills a rune and the chain becomes {pick.Name}.{clash} "
-                    : $"Free fills {fills} runes and the chain becomes {pick.Name}.{clash} ";
+            var scrambled = ChainBook.IsScrambled(composition, pick);
+            var fillNote = scrambled
+                ? $"Free unscrambles the runes and the chain becomes {pick.Name}.{clash} "
+                : fills == 0
+                    ? $"Free takes the finished sentence.{clash} "
+                    : fills == 1
+                        ? $"Free fills a rune and the chain becomes {pick.Name}.{clash} "
+                        : $"Free fills {fills} runes and the chain becomes {pick.Name}.{clash} ";
 
             var material = FirstMaterial(pick);
             var potency = attunement.Potency(pick);

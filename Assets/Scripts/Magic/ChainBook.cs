@@ -4,7 +4,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// Matches a player string to a catalog story-chain.
-    /// Joins fold; via-forms expand to the same sentence.
+    /// Charter wants the written order. Joins fold; via-forms
+    /// expand. Free may also unscramble the same runes into a
+    /// valid sentence, or fill missing ones up to a budget.
     /// </summary>
     public static class ChainBook
     {
@@ -289,47 +291,87 @@ namespace RuneMagic
             return matches;
         }
 
+        public static List<CodexEntry> CollectUnscrambled(Composition composition, SpellShape shape)
+        {
+            var matches = new List<CodexEntry>();
+            var sequence = composition.Sequence;
+            if (sequence == null || sequence.Length == 0)
+            {
+                return matches;
+            }
+
+            foreach (var candidate in SpellCodex.All)
+            {
+                if (shape != SpellShape.None && candidate.Shape != shape)
+                {
+                    continue;
+                }
+
+                if (Matches(candidate, sequence))
+                {
+                    continue;
+                }
+
+                if (FillsNeeded(sequence, candidate) == 0)
+                {
+                    AddUnique(matches, candidate);
+                }
+            }
+
+            return matches;
+        }
+
         public static List<CodexEntry> CollectForFree(
             Composition composition,
             SpellShape shape,
             int fillBudget)
         {
             var exact = CollectExact(composition, shape);
-            return exact.Count > 0 ? exact : CollectFillable(composition, shape, fillBudget);
+            if (exact.Count > 0)
+            {
+                return exact;
+            }
+
+            var unscrambled = CollectUnscrambled(composition, shape);
+            return unscrambled.Count > 0
+                ? unscrambled
+                : CollectFillable(composition, shape, fillBudget);
         }
 
         public static bool FitsWithFills(IReadOnlyList<RuneId> player, CodexEntry entry, int fillBudget)
         {
             var fills = FillsNeeded(player, entry);
-            return fills >= 0 && fills <= fillBudget;
+            return fills > 0 && fills <= fillBudget;
+        }
+
+        public static bool IsScrambled(Composition composition, CodexEntry entry)
+        {
+            if (composition.Sequence == null || composition.Sequence.Length == 0)
+            {
+                return false;
+            }
+
+            return !Matches(entry, composition.Sequence) && FillsNeeded(composition.Sequence, entry) == 0;
         }
 
         /// <summary>
-        /// How many recipe tokens Free must supply. 0 is an exact sentence.
-        /// -1 means the player string is not a subsequence of the recipe or via.
+        /// How many recipe tokens Free must supply. 0 is a finished sentence
+        /// (written in order, or the same runes in another order).
+        /// -1 means the player string is not those runes.
         /// Raise FillBudget later and this same count still decides the fit.
+        /// Free may also ignore order when counting fills, so Mercury · Air
+        /// can still become Lightning if the budget covers Fire.
         /// </summary>
         public static int FillsNeeded(IReadOnlyList<RuneId> player, CodexEntry entry)
         {
-            var normalized = Normalize(player);
-            var recipe = CountFills(normalized, Normalize(entry.RecipeRunes));
+            var recipe = CountFillsToward(player, entry.RecipeRunes);
             if (entry.ViaRunes.Count == 0)
             {
                 return recipe;
             }
 
-            var via = CountFills(normalized, Normalize(entry.ViaRunes));
-            if (recipe < 0)
-            {
-                return via;
-            }
-
-            if (via < 0)
-            {
-                return recipe;
-            }
-
-            return recipe < via ? recipe : via;
+            var via = CountFillsToward(player, entry.ViaRunes);
+            return BetterFit(recipe, via);
         }
 
         public static int FillsNeeded(Composition composition, CodexEntry entry)
@@ -345,7 +387,12 @@ namespace RuneMagic
         public static string PreviewFree(Composition composition, int fillBudget, SpellShape shape = SpellShape.None)
         {
             var exact = CollectExact(composition, shape);
-            var pool = exact.Count > 0 ? exact : CollectFillable(composition, shape, fillBudget);
+            var unscrambled = exact.Count > 0 ? null : CollectUnscrambled(composition, shape);
+            var pool = exact.Count > 0
+                ? exact
+                : unscrambled != null && unscrambled.Count > 0
+                    ? unscrambled
+                    : CollectFillable(composition, shape, fillBudget);
             if (pool.Count == 0)
             {
                 return string.Empty;
@@ -357,6 +404,13 @@ namespace RuneMagic
                 return pool.Count == 1
                     ? $"Free takes the finished sentence: {names}"
                     : $"Free takes a finished sentence among {names}";
+            }
+
+            if (unscrambled != null && unscrambled.Count > 0)
+            {
+                return pool.Count == 1
+                    ? $"Free unscrambles the runes into {names}"
+                    : $"Free unscrambles the runes and picks among {names}";
             }
 
             var blank = fillBudget == 1 ? "a blank" : fillBudget + " blanks";
@@ -377,6 +431,28 @@ namespace RuneMagic
 
             var text = string.Join(", ", parts);
             return pool.Count > cap ? text + $" and {pool.Count - cap} more" : text;
+        }
+
+        static int CountFillsToward(IReadOnlyList<RuneId> player, IReadOnlyList<RuneId> recipe)
+        {
+            var ordered = CountFills(Normalize(player), Normalize(recipe));
+            var bag = CountBagFills(Expand(player), Expand(recipe));
+            return BetterFit(ordered, bag);
+        }
+
+        static int BetterFit(int left, int right)
+        {
+            if (left < 0)
+            {
+                return right;
+            }
+
+            if (right < 0)
+            {
+                return left;
+            }
+
+            return left < right ? left : right;
         }
 
         static int CountFills(IReadOnlyList<RuneId> player, IReadOnlyList<RuneId> recipe)
@@ -405,6 +481,38 @@ namespace RuneMagic
             }
 
             return i == player.Count ? skipped : -1;
+        }
+
+        static int CountBagFills(IReadOnlyList<RuneId> player, IReadOnlyList<RuneId> recipe)
+        {
+            if (player == null || recipe == null || player.Count == 0 || recipe.Count == 0)
+            {
+                return -1;
+            }
+
+            if (player.Count > recipe.Count)
+            {
+                return -1;
+            }
+
+            var needed = new Dictionary<RuneId, int>();
+            for (var i = 0; i < recipe.Count; i++)
+            {
+                needed.TryGetValue(recipe[i], out var count);
+                needed[recipe[i]] = count + 1;
+            }
+
+            for (var i = 0; i < player.Count; i++)
+            {
+                if (!needed.TryGetValue(player[i], out var count) || count <= 0)
+                {
+                    return -1;
+                }
+
+                needed[player[i]] = count - 1;
+            }
+
+            return recipe.Count - player.Count;
         }
 
         static void AddUnique(List<CodexEntry> matches, CodexEntry entry)

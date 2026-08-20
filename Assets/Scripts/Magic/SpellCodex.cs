@@ -81,17 +81,17 @@ namespace RuneMagic
 
         static CodexEntry[] BuiltIn() => new[]
         {
-            E(1, SpellBook.End, SpellId.Fireball, "A seed of heat that flies.", "Fireball", "Fire · Air · Mercury", "Spark · Mercury", "Shot", SpellOutcome.Kill),
+            E(1, SpellBook.End, SpellId.Fireball, "Hunger sent. Fire that flies.", "Fireball", "Fire · Mercury", "", "Shot", SpellOutcome.Kill),
             E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "Flame · Earth", "Pillar", SpellOutcome.Kill),
-            E(3, SpellBook.Cross, SpellId.Melt, "Hunger sent into a thing. No breath, so it does not fly.", "Melt", "Fire · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying.", "Melt", "Fire · Salt · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Neither),
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
             E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),
-            E(7, SpellBook.End, SpellId.LightningBolt, "The seed stretched through more breath and sent. A path, not a body.", "Lightning", "Fire · Air · Air · Mercury", "Spark · Air · Mercury", "Shot", SpellOutcome.Kill),
-            E(8, SpellBook.End, SpellId.ChainLightning, "That path finds yield given a body. The pool is what dies.", "Chain", "Fire · Air · Air · Mercury · Water · Salt", "Lightning · Mercury · Water · Salt", "Remote", SpellOutcome.Kill),
+            E(7, SpellBook.End, SpellId.LightningBolt, "Hunger given breath and sent. A bolt, not a body.", "Lightning", "Fire · Air · Mercury", "Lightning · Mercury", "Shot", SpellOutcome.Kill),
+            E(8, SpellBook.End, SpellId.ChainLightning, "That bolt finds yield given a body. The pool is what dies.", "Chain", "Fire · Air · Mercury · Water · Salt", "Lightning · Mercury · Water · Salt", "Remote", SpellOutcome.Kill),
             E(9, SpellBook.Hold, SpellId.LiveFloor, "The seed given a body around your feet. They cannot step.", "Live-floor", "Fire · Air · Salt", "Spark · Salt", "Spread", SpellOutcome.Kill),
-            E(10, SpellBook.Hold, SpellId.Jolt, "The moving spark, turned by Sulphur, reaches a mind.", "Jolt", "Fire · Air · Sulphur · Mercury", "Spark · Sulphur · Mercury", "Remote", SpellOutcome.Restrain),
-            E(11, SpellBook.Hold, SpellId.Thunderclap, "The arc meets rest, then every mind around you.", "Thunderclap", "Fire · Air · Air · Earth · Sulphur", "Lightning · Earth · Sulphur", "Spread", SpellOutcome.Restrain),
+            E(10, SpellBook.Hold, SpellId.Jolt, "The bolt, turned by Sulphur, reaches a mind.", "Jolt", "Fire · Air · Sulphur · Mercury", "Spark · Sulphur · Mercury", "Remote", SpellOutcome.Restrain),
+            E(11, SpellBook.Hold, SpellId.Thunderclap, "The bolt meets rest, then every mind around you.", "Thunderclap", "Fire · Air · Earth · Sulphur", "Lightning · Earth · Sulphur", "Spread", SpellOutcome.Restrain),
             E(12, SpellBook.Weather, SpellId.StormCall, "Breath holds yield; a seed is inside. Weather arrives.", "Storm", "Air · Water · Fire · Air", "Cloud · Spark", "Remote", SpellOutcome.Kill),
             E(13, SpellBook.Weather, SpellId.Rain, "The hanging veil is drawn down. Fire drowns.", "Rain", "Air · Water · Earth", "Cloud · Earth", "Remote", SpellOutcome.Neither),
             E(14, SpellBook.SeeHide, SpellId.Fog, "The hanging veil is withheld and given a body.", "Fog", "Air · Water · Dark · Salt", "Cloud · Dark · Salt", "Spread", SpellOutcome.Neither),
@@ -115,7 +115,7 @@ namespace RuneMagic
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "Air · Salt · Mercury", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
-            E(35, SpellBook.Mind, SpellId.Rage, "Melt turned by Sulphur: hunger’s wildcard sent into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "Wind · Air", "Shot", SpellOutcome.Restrain),
@@ -195,7 +195,7 @@ namespace RuneMagic
         static void ValidateFills(List<string> broken)
         {
             if (!TryGet(SpellId.Fireball, out var fireballEntry) ||
-                !ChainBook.SameStory(fireballEntry.RecipeRunes, ChainBook.Parse("Fire · Air · Salt · Mercury")))
+                !ChainBook.SameStory(fireballEntry.RecipeRunes, ChainBook.Parse("Fire · Mercury")))
             {
                 return;
             }
@@ -212,17 +212,42 @@ namespace RuneMagic
                 broken.Add("Fire · Salt should clash between at least two fillable chains");
             }
 
-            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury });
+            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Mercury });
             var exact = ChainBook.CollectExact(fireball, SpellShape.None);
-            if (exact.Count == 0)
+            if (exact.Count == 0 || exact[0].Spell != SpellId.Fireball)
             {
-                broken.Add("Fireball exact match failed");
+                broken.Add("Fire · Mercury should be Fireball");
+            }
+
+            var scrambled = Composition.FromSequence(new[] { RuneId.Mercury, RuneId.Fire });
+            if (ChainBook.CollectExact(scrambled, SpellShape.None).Count != 0)
+            {
+                broken.Add("Mercury · Fire must fizzle under Charter — order is the sentence");
+            }
+
+            var unscrambled = ChainBook.CollectUnscrambled(scrambled, SpellShape.None);
+            if (unscrambled.Count == 0 || unscrambled[0].Spell != SpellId.Fireball)
+            {
+                broken.Add("Free should unscramble Mercury · Fire into Fireball");
+            }
+
+            var lightning = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury });
+            var bolt = ChainBook.CollectExact(lightning, SpellShape.None);
+            if (bolt.Count == 0 || bolt[0].Spell != SpellId.LightningBolt)
+            {
+                broken.Add("Fire · Air · Mercury should be Lightning");
             }
 
             var free = ChainBook.CollectForFree(fireball, SpellShape.None, 2);
             if (free.Count != exact.Count)
             {
                 broken.Add("A finished sentence must not fill toward a longer chain");
+            }
+
+            var freeScramble = ChainBook.CollectForFree(scrambled, SpellShape.None, 1);
+            if (freeScramble.Count == 0 || freeScramble[0].Spell != SpellId.Fireball)
+            {
+                broken.Add("Free must prefer an unscrambled finished sentence over filling a longer one");
             }
 
             if (ChainBook.CollectFillable(salt, SpellShape.None, 0).Count != 0)
