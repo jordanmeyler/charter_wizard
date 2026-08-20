@@ -4,19 +4,16 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// The constant matrix: the same primaries and aspects stream for novice
-    /// and master. Nearby tiles and creature formulas add local colour.
-    /// Casting reads the field from the Charter wall, not from these orbs.
-    /// </summary>
-    public sealed class RuneField : MonoBehaviour
-    {
-        public const float PerceptionRadius = 7.5f;
-
-        public static readonly RuneId[] StartingStream =
+        /// The constant matrix: the eleven basic runes stream for novice
+        /// and master. Nearby tiles and creature formulas add local colour.
+        /// Casting reads the field from the Charter wall, not from these orbs.
+        /// Primordial runes are not in this pass.
+        /// </summary>
+        public sealed class RuneField : MonoBehaviour
         {
-            RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
-            RuneId.Salt, RuneId.Mercury, RuneId.Sulphur
-        };
+            public const float PerceptionRadius = 7.5f;
+
+            public static readonly RuneId[] StartingStream = RuneCatalog.BasicRunes;
 
         SanctumDirector _director;
         Transform _orbRoot;
@@ -105,7 +102,7 @@ namespace RuneMagic
             collider.isTrigger = true;
             var view = orb.AddComponent<RuneOrb>();
             var angle = index * Mathf.PI * 2f / StartingStream.Length;
-            var radius = 1.55f + (index % 2) * 0.28f;
+            var radius = 1.85f + (index % 3) * 0.32f;
             var speed = 0.55f + index * 0.04f;
             if (index % 2 == 1)
             {
@@ -135,6 +132,21 @@ namespace RuneMagic
             if (RuneCatalog.IsAspect(rune))
             {
                 return 200 + (int)rune;
+            }
+
+            if (rune == RuneId.Vita || rune == RuneId.Mors)
+            {
+                return 300 + (int)rune;
+            }
+
+            if (rune == RuneId.Lumen || rune == RuneId.Umbra || rune == RuneId.Animus || rune == RuneId.Anima)
+            {
+                return 400 + (int)rune;
+            }
+
+            if (rune == RuneId.Aether)
+            {
+                return 500;
             }
 
             switch (rune)

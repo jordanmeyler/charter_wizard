@@ -33,19 +33,30 @@ namespace RuneMagic
 
         static MaterialTree()
         {
-            Add(RuneId.Fire, RuneId.Air, RuneId.Spark, BlendKind.Stable, "Share Hot. Fire + Air → Spark.");
-            Add(RuneId.Air, RuneId.Water, RuneId.Cloud, BlendKind.Stable, "Share Wet. Air + Water → Cloud.");
-            Add(RuneId.Water, RuneId.Earth, RuneId.Mud, BlendKind.Stable, "Share Cold. Water + Earth → Mud.");
-            Add(RuneId.Fire, RuneId.Earth, RuneId.Lava, BlendKind.Stable, "Share Dry. Fire + Earth → Lava.");
+            Add(RuneId.Fire, RuneId.Air, RuneId.Spark, BlendKind.Stable, "Hunger given breath. Fire · Air → Spark.");
+            Add(RuneId.Air, RuneId.Water, RuneId.Cloud, BlendKind.Stable, "Breath holding yield. Air · Water → Cloud.");
+            Add(RuneId.Water, RuneId.Earth, RuneId.Mud, BlendKind.Stable, "Yield meeting rest. Water · Earth → Mud.");
+            Add(RuneId.Fire, RuneId.Earth, RuneId.Lava, BlendKind.Stable, "Hunger meeting rest. Fire · Earth → Lava.");
 
-            Add(RuneId.Fire, RuneId.Water, RuneId.Steam, BlendKind.Violent, "Opposed diagonal. Fire + Water → Steam.");
-            Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Opposed diagonal. Air + Earth → Dust.");
+            Add(RuneId.Fire, RuneId.Water, RuneId.Steam, BlendKind.Violent, "Hunger forced through yield. Fire · Water → Steam.");
+            Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Breath forced through rest. Air · Earth → Dust.");
 
-            Add(RuneId.Spark, RuneId.Air, RuneId.Storm, BlendKind.Stable, "Spark driven into Air → Storm.");
-            Add(RuneId.Spark, RuneId.Water, RuneId.Storm, BlendKind.Stable, "Spark driven into Water → Storm.");
-            Add(RuneId.Water, RuneId.Cold, RuneId.Ice, BlendKind.Stable, "Water drawn toward Cold → Ice.");
-            Add(RuneId.Lava, RuneId.Cold, RuneId.Stone, BlendKind.Stable, "Lava cooled → Stone.");
-            Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud dried by Air → Sand.");
+            Add(RuneId.Spark, RuneId.Air, RuneId.Lightning, BlendKind.Stable, "The seed stretched through more breath. Spark · Air → Lightning.");
+            Add(RuneId.Lightning, RuneId.Earth, RuneId.Thunder, BlendKind.Stable, "The arc meeting rest. Lightning · Earth → Thunder.");
+            Add(RuneId.Spark, RuneId.Cloud, RuneId.Storm, BlendKind.Stable, "The seed inside the hanging veil. Spark · Cloud → Storm.");
+            Add(RuneId.Cloud, RuneId.Earth, RuneId.Rain, BlendKind.Stable, "The hanging veil drawn down. Cloud · Earth → Rain.");
+            Add(RuneId.Cloud, RuneId.Water, RuneId.Rain, BlendKind.Stable, "The hanging veil yields more. Cloud · Water → Rain.");
+            Add(RuneId.Cloud, RuneId.Ice, RuneId.Snow, BlendKind.Stable, "The hanging veil given ice’s story. Cloud · Ice → Snow.");
+            Add(RuneId.Lava, RuneId.Water, RuneId.Obsidian, BlendKind.Violent, "Hungry earth quenched. Lava · Water → Obsidian.");
+            Add(RuneId.Lava, RuneId.Earth, RuneId.Metal, BlendKind.Stable, "Hungry earth given more rest. Lava · Earth → Metal.");
+            Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud given breath until it dries. Mud · Air → Sand.");
+            Add(RuneId.Sand, RuneId.Fire, RuneId.Glass, BlendKind.Stable, "Grains meet hunger, then rest. Sand · Flame · Earth → Glass.");
+            Add(RuneId.Stone, RuneId.Water, RuneId.Crystal, BlendKind.Stable, "Stone grown with yield. Stone · Water → Crystal.");
+            Add(RuneId.Ice, RuneId.Stone, RuneId.Glacier, BlendKind.Stable, "Still water given stone. Ice · Stone → Glacier.");
+            Add(RuneId.Steam, RuneId.Metal, RuneId.Acid, BlendKind.Violent, "Steam forced through Metal → Acid.");
+            Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Hunger leaves a vegetable body as Ash.");
+            Add(RuneId.Plant, RuneId.Vita, RuneId.Forest, BlendKind.Stable, "The vegetable body waking. Plant · Life → Grove.");
+            Add(RuneId.Plant, RuneId.Mors, RuneId.Blight, BlendKind.Stable, "Death-work. A living plant, then the grave. Grove · Death → Blight.");
         }
 
         public static IReadOnlyList<(RuneId Left, RuneId Right, BlendResult Result)> All => Canonical;

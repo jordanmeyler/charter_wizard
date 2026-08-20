@@ -31,7 +31,26 @@ namespace RuneMagic
         public RuneId MaterialB { get; }
         public RuneId Aspect { get; }
 
-        public bool HasBlank => MaterialA == RuneId.None || Aspect == RuneId.None;
+        public bool HasBlank
+        {
+            get
+            {
+                if (Sequence != null && Sequence.Length > 0)
+                {
+                    for (var i = 0; i < Sequence.Length; i++)
+                    {
+                        if (Sequence[i] == RuneId.None)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                return MaterialA == RuneId.None || !RuneCatalog.IsFormAspect(Aspect);
+            }
+        }
         public bool HasSecondMaterial => MaterialCount >= 2;
         public int MaterialCount
         {
@@ -63,7 +82,7 @@ namespace RuneMagic
             {
                 var rune = slots[i];
                 copy[i] = rune;
-                if (RuneCatalog.IsAspect(rune))
+                if (RuneCatalog.IsFormAspect(rune))
                 {
                     aspect = rune;
                     continue;
@@ -167,20 +186,26 @@ namespace RuneMagic
 
     public readonly struct PreparedSpell
     {
-        public PreparedSpell(RuneId material, RuneId aspect, SpellId spell, BlendKind? blend, string note)
+        public PreparedSpell(RuneId material, RuneId aspect, SpellShape shape, SpellId spell, BlendKind? blend, string note, string name = "", bool freeOnly = false)
         {
             Material = material;
             Aspect = aspect;
+            Shape = shape;
             Spell = spell;
             Blend = blend;
             Note = note;
+            Name = name;
+            FreeOnly = freeOnly;
         }
 
         public RuneId Material { get; }
         public RuneId Aspect { get; }
+        public SpellShape Shape { get; }
         public SpellId Spell { get; }
         public BlendKind? Blend { get; }
         public string Note { get; }
+        public string Name { get; }
+        public bool FreeOnly { get; }
         public bool IsFormed => Spell != SpellId.None;
     }
 
@@ -190,29 +215,41 @@ namespace RuneMagic
             bool resolved,
             bool revealedRecipe,
             bool backfired,
+            bool fizzled,
             float taintDelta,
             SpellId spell,
+            SpellShape shape,
+            RuneId material,
+            RuneId aspect,
             string log)
         {
             Resolved = resolved;
             RevealedRecipe = revealedRecipe;
             Backfired = backfired;
+            Fizzled = fizzled;
             TaintDelta = taintDelta;
             Spell = spell;
+            Shape = shape;
+            Material = material;
+            Aspect = aspect;
             Log = log;
         }
 
         public bool Resolved { get; }
         public bool RevealedRecipe { get; }
         public bool Backfired { get; }
+        public bool Fizzled { get; }
         public float TaintDelta { get; }
         public SpellId Spell { get; }
+        public SpellShape Shape { get; }
+        public RuneId Material { get; }
+        public RuneId Aspect { get; }
         public string Log { get; }
     }
 
     /// <summary>
-    /// Charter is coherent and reliable. Free is a risk dial and a teacher.
-    /// Free is never the required key; it is only a tempting shortcut.
+    /// Charter is coherent and reliable. An unwritten combo fizzles.
+    /// Free never invents a new form — it borrows a random written spell of that type.
     /// </summary>
     public sealed class CastResolver
     {
@@ -223,115 +260,177 @@ namespace RuneMagic
             _random = new Random(seed);
         }
 
-        public bool TryPrepare(Composition composition, out PreparedSpell prepared)
+        public bool TryPrepare(Composition composition, SpellShape shape, out PreparedSpell prepared)
         {
-            if (!composition.TryFoldMaterials(out var material, out var blend))
+            composition.TryFoldMaterials(out var material, out var blend);
+            var blendKind = blend?.Kind;
+            var note = blend?.Note ?? string.Empty;
+            var aspect = composition.Aspect;
+
+            if (ChainBook.TryMatch(composition, shape, out var written))
+            {
+                if (material == RuneId.None)
+                {
+                    material = FirstMaterial(written);
+                }
+
+                prepared = new PreparedSpell(material, aspect, written.Shape, written.Spell, blendKind, note, written.Name, written.FreeOnly);
+                return true;
+            }
+
+            if (material == RuneId.None && composition.Sequence != null && composition.Sequence.Length >= 2)
             {
                 prepared = default;
                 return false;
             }
 
-            var blendKind = blend?.Kind;
-            var note = blend?.Note ?? string.Empty;
-
-            if (material == RuneId.None || composition.Aspect == RuneId.None)
+            if (material == RuneId.None || !RuneCatalog.IsFormAspect(aspect) || shape == SpellShape.None)
             {
-                prepared = new PreparedSpell(material, composition.Aspect, SpellId.None, blendKind, note);
+                prepared = new PreparedSpell(material, aspect, shape, SpellId.None, blendKind, note);
                 return true;
             }
 
-            SpellGrammar.TryGet(material, composition.Aspect, out var recipe);
-            prepared = new PreparedSpell(material, composition.Aspect, recipe.Spell, blendKind, note);
+            SpellGrammar.TryGet(material, aspect, shape, out var recipe);
+            prepared = new PreparedSpell(material, aspect, shape, recipe.Spell, blendKind, note, recipe.Name);
             return true;
         }
 
-        public string PreviewName(Composition composition)
+        public string PreviewName(Composition composition, SpellShape shape = SpellShape.None)
         {
-            if (!TryPrepare(composition, out var prepared))
+            var chain = ChainBook.Preview(composition, shape);
+            if (!string.IsNullOrEmpty(chain))
             {
-                return "unjoined string";
+                return chain;
             }
 
-            if (prepared.IsFormed && SpellGrammar.TryGet(prepared.Material, prepared.Aspect, out var recipe))
+            if (!composition.TryFoldMaterials(out var material, out _))
             {
-                return recipe.Name;
+                return composition.Sequence != null && composition.Sequence.Length > 0
+                    ? "unjoined string"
+                    : "empty string";
             }
 
-            if (prepared.Material == RuneId.None && prepared.Aspect == RuneId.None)
+            if (material == RuneId.None && !RuneCatalog.IsFormAspect(composition.Aspect))
             {
                 return "empty string";
             }
 
-            return SpellGrammar.FormulaText(prepared.Material, prepared.Aspect);
+            if (material == RuneId.None)
+            {
+                return $"{RuneCatalog.NameOf(composition.Aspect)} waits on a material";
+            }
+
+            if (!RuneCatalog.IsFormAspect(composition.Aspect))
+            {
+                return $"{RuneCatalog.NameOf(material)} is a clause, waiting";
+            }
+
+            if (shape != SpellShape.None &&
+                SpellGrammar.TryGet(material, composition.Aspect, shape, out var named))
+            {
+                return named.Name;
+            }
+
+            return SpellGrammar.FormulaText(material, composition.Aspect, shape);
+        }
+
+        static RuneId FirstMaterial(CodexEntry entry)
+        {
+            for (var i = 0; i < entry.RecipeRunes.Count; i++)
+            {
+                if (RuneCatalog.IsMaterial(entry.RecipeRunes[i]))
+                {
+                    return entry.RecipeRunes[i];
+                }
+            }
+
+            return RuneId.None;
         }
 
         public CastOutcome Resolve(
             Composition composition,
             CastingStance stance,
+            SpellShape shape,
             SpellId[] acceptedKeys,
             Grimoire grimoire)
         {
-            if (stance == CastingStance.Charter && composition.HasBlank)
+            if (stance == CastingStance.Charter && composition.Sequence.Length == 0)
             {
-                return new CastOutcome(false, false, false, 0f, SpellId.None,
-                    "Charter refuses a blank. Specify a material and an aspect, or shift to Free.");
+                return Fail(false, false, 0f, SpellId.None, shape, RuneId.None, composition.Aspect,
+                    "Charter refuses a blank. String a chain, or shift to Free.");
             }
 
-            if (!TryPrepare(composition, out var prepared))
+            if (!TryPrepare(composition, shape, out var prepared))
             {
-                return new CastOutcome(false, false, false, 0f, SpellId.None,
+                return Fail(false, false, 0f, SpellId.None, shape, RuneId.None, composition.Aspect,
                     DescribeUnjoined(composition));
             }
 
             if (stance == CastingStance.Charter)
             {
-                return ResolveCharter(prepared, acceptedKeys, grimoire);
+                return ResolveCharter(prepared, shape, acceptedKeys, grimoire);
             }
 
-            return ResolveFree(composition, prepared, acceptedKeys, grimoire);
+            return ResolveFree(composition, prepared, shape, acceptedKeys, grimoire);
         }
 
-        CastOutcome ResolveCharter(PreparedSpell prepared, SpellId[] acceptedKeys, Grimoire grimoire)
+        CastOutcome ResolveCharter(PreparedSpell prepared, SpellShape shape, SpellId[] acceptedKeys, Grimoire grimoire)
         {
             if (!prepared.IsFormed)
             {
-                return new CastOutcome(false, false, false, 0f, SpellId.None,
-                    $"{SpellGrammar.FormulaText(prepared.Material, prepared.Aspect)} is coherent as far as it goes, but no Charter form is written yet.");
+                var reason = !SpellFormations.MakesSense(prepared.Material, prepared.Aspect, shape)
+                    ? $"{SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, shape)} has no natural form. The string fizzles."
+                    : $"{SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, shape)} looks as if it should work. It does not. No Charter form is written. The string fizzles.";
+                return Fail(false, true, 0f, SpellId.None, shape, prepared.Material, prepared.Aspect, reason);
             }
 
-            grimoire.LearnRecipe(prepared.Material, prepared.Aspect);
-            var name = SpellGrammar.TryGet(prepared.Material, prepared.Aspect, out var recipe)
-                ? recipe.Name
-                : SpellGrammar.FormulaText(prepared.Material, prepared.Aspect);
+            if (prepared.FreeOnly)
+            {
+                return Fail(false, true, 0f, SpellId.None, shape, prepared.Material, prepared.Aspect,
+                    $"{prepared.Name} is Death-work the Charter will not write. Shift to Free.");
+            }
+
+            grimoire.LearnRecipe(prepared.Material, prepared.Aspect, prepared.Shape);
+            var name = !string.IsNullOrEmpty(prepared.Name)
+                ? prepared.Name
+                : SpellGrammar.TryGet(prepared.Material, prepared.Aspect, prepared.Shape, out var recipe)
+                    ? recipe.Name
+                    : SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, prepared.Shape);
 
             if (IsKey(prepared.Spell, acceptedKeys))
             {
-                return new CastOutcome(true, true, false, 0f, prepared.Spell,
+                return new CastOutcome(true, true, false, false, 0f, prepared.Spell, prepared.Shape,
+                    prepared.Material, prepared.Aspect,
                     $"{name} turns the lock. The encounter is resolved.");
             }
 
-            return new CastOutcome(false, true, false, 0f, prepared.Spell,
+            return new CastOutcome(false, true, false, false, 0f, prepared.Spell, prepared.Shape,
+                prepared.Material, prepared.Aspect,
                 $"{name} holds together — Charter overpowers, it does not dispel — but this lock does not accept that key.");
         }
 
-        CastOutcome ResolveFree(Composition composition, PreparedSpell prepared, SpellId[] acceptedKeys, Grimoire grimoire)
+        CastOutcome ResolveFree(Composition composition, PreparedSpell prepared, SpellShape shape, SpellId[] acceptedKeys, Grimoire grimoire)
         {
             var filled = prepared;
             var fillNote = string.Empty;
 
-            if (composition.HasBlank)
+            if (!filled.IsFormed)
             {
-                filled = AutoFill(composition);
-                fillNote = "Blanks flood from the field. ";
+                if (!TryBorrow(composition, prepared, shape, out filled))
+                {
+                    return Fail(false, false, 0.12f, SpellId.None, shape, prepared.Material, prepared.Aspect,
+                        "Free reaches for a spell of that type and finds none written. The surge folds inward.");
+                }
+
+                fillNote = composition.HasBlank
+                    ? "Blanks flood from the field. Free borrows a written form of that type. "
+                    : "No Charter form is written. Free borrows a random spell of that type. ";
             }
 
-            if (filled.IsFormed)
-            {
-                grimoire.LearnRecipe(filled.Material, filled.Aspect);
-            }
+            grimoire.LearnRecipe(filled.Material, filled.Aspect, filled.Shape);
 
             var reliability = 0.7f;
-            if (composition.HasBlank)
+            if (composition.HasBlank || !prepared.IsFormed)
             {
                 reliability -= 0.3f;
             }
@@ -343,52 +442,116 @@ namespace RuneMagic
 
             var roll = _random.NextDouble();
             var isKey = filled.IsFormed && IsKey(filled.Spell, acceptedKeys);
-            var name = filled.IsFormed && SpellGrammar.TryGet(filled.Material, filled.Aspect, out var recipe)
-                ? recipe.Name
-                : "an unshaped surge";
+            var name = !string.IsNullOrEmpty(filled.Name)
+                ? filled.Name
+                : filled.IsFormed && SpellGrammar.TryGet(filled.Material, filled.Aspect, filled.Shape, out var recipe)
+                    ? recipe.Name
+                    : "an unshaped surge";
 
             if (isKey && roll <= reliability)
             {
-                return new CastOutcome(true, filled.IsFormed, false, 0.08f, filled.Spell,
+                return new CastOutcome(true, true, false, false, 0.08f, filled.Spell, filled.Shape,
+                    filled.Material, filled.Aspect,
                     fillNote + $"{name} tears the lock open. Free is a shortcut, not the required key. Hubris gathers.");
             }
 
             if (roll < 0.28)
             {
-                return new CastOutcome(false, filled.IsFormed, true, 0.18f, filled.Spell,
+                return new CastOutcome(false, true, true, false, 0.18f, filled.Spell, filled.Shape,
+                    filled.Material, filled.Aspect,
                     fillNote + $"{name} backfires. Target inverts, or the surge folds inward. Taint remains.");
             }
 
-            return new CastOutcome(false, filled.IsFormed, false, 0.1f, filled.Spell,
+            return new CastOutcome(false, true, false, false, 0.1f, filled.Spell, filled.Shape,
+                filled.Material, filled.Aspect,
                 fillNote + $"{name} sputters. Magnitude without coherence. The lock holds.");
         }
 
-        PreparedSpell AutoFill(Composition composition)
+        bool TryBorrow(Composition composition, PreparedSpell prepared, SpellShape shape, out PreparedSpell borrowed)
         {
-            var material = composition.MaterialA;
-            BlendKind? blend = null;
+            var material = prepared.Material;
+            var aspect = RuneCatalog.IsFormAspect(prepared.Aspect) ? prepared.Aspect : RuneId.None;
 
-            if (material == RuneId.None)
+            if (material == RuneId.None && composition.MaterialA != RuneId.None)
             {
-                var primaries = new[] { RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water };
-                material = primaries[_random.Next(primaries.Length)];
+                material = composition.MaterialA;
             }
 
-            if (composition.HasSecondMaterial && MaterialTree.TryBlend(material, composition.MaterialB, out var blended))
+            var pool = new List<SpellRecipe>();
+            Collect(pool, material, aspect, shape);
+            if (pool.Count == 0 && shape != SpellShape.None)
             {
-                material = blended.Result;
-                blend = blended.Kind;
+                Collect(pool, material, aspect, SpellShape.None);
             }
 
-            var aspect = composition.Aspect;
-            if (aspect == RuneId.None)
+            if (pool.Count == 0 && aspect != RuneId.None)
             {
-                var aspects = new[] { RuneId.Salt, RuneId.Mercury, RuneId.Sulphur };
-                aspect = aspects[_random.Next(aspects.Length)];
+                Collect(pool, material, RuneId.None, SpellShape.None);
             }
 
-            SpellGrammar.TryGet(material, aspect, out var recipe);
-            return new PreparedSpell(material, aspect, recipe.Spell, blend, "Free-fill");
+            if (pool.Count == 0 && material != RuneId.None)
+            {
+                Collect(pool, material, RuneId.None, SpellShape.None);
+            }
+
+            if (pool.Count == 0)
+            {
+                foreach (var recipe in SpellGrammar.All)
+                {
+                    pool.Add(recipe);
+                }
+            }
+
+            if (pool.Count > 0)
+            {
+                var pick = pool[_random.Next(pool.Count)];
+                borrowed = new PreparedSpell(pick.Material, pick.Aspect, pick.Shape, pick.Spell, prepared.Blend, "Free-borrow", pick.Name);
+                return true;
+            }
+
+            var written = new List<CodexEntry>();
+            foreach (var entry in SpellCodex.All)
+            {
+                if (shape == SpellShape.None || entry.Shape == shape)
+                {
+                    written.Add(entry);
+                }
+            }
+
+            if (written.Count == 0)
+            {
+                borrowed = default;
+                return false;
+            }
+
+            var borrowedEntry = written[_random.Next(written.Count)];
+            borrowed = new PreparedSpell(FirstMaterial(borrowedEntry), prepared.Aspect, borrowedEntry.Shape,
+                borrowedEntry.Spell, prepared.Blend, "Free-borrow", borrowedEntry.Name, borrowedEntry.FreeOnly);
+            return true;
+        }
+
+        static void Collect(List<SpellRecipe> pool, RuneId material, RuneId aspect, SpellShape shape)
+        {
+            foreach (var recipe in SpellGrammar.OfType(material, aspect))
+            {
+                if (shape == SpellShape.None || recipe.Shape == shape)
+                {
+                    pool.Add(recipe);
+                }
+            }
+        }
+
+        static CastOutcome Fail(
+            bool revealed,
+            bool fizzled,
+            float taint,
+            SpellId spell,
+            SpellShape shape,
+            RuneId material,
+            RuneId aspect,
+            string log)
+        {
+            return new CastOutcome(false, revealed, false, fizzled, taint, spell, shape, material, aspect, log);
         }
 
         static string DescribeUnjoined(Composition composition)

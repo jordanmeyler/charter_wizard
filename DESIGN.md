@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.6. Companion artifact: `material-codex.html`.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.9. Spell catalog: [`SPELLS.md`](SPELLS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -25,70 +25,76 @@ Players distrust orthodoxy by default, so most reach for Free first — the desi
 
 ---
 
-## 2. The rune families
+## 2. The eleven basic runes
 
-### Materials — *what the spell is made of*
-The elements and everything they blend into (section 3 + `material-codex.html`).
+Each rune is a **concept**, not a mechanic. Players will eventually see effects, not names, so the concept has to be what the effect shows. Full table: [`SPELLS.md`](SPELLS.md).
 
-### Aspects — *what the spell does* (tria prima)
-Soft tendencies: **Body = me, Spirit = them, Mind = the world.**
+| Rune | Concept |
+|---|---|
+| **Fire** | Hunger. The will to consume so it can continue. |
+| **Air** | Breath. The between. That which has no weight and will not stay. |
+| **Earth** | Rest. Patience. That which remains. |
+| **Water** | Yield. Mercy. That which becomes what holds it. |
+| **Salt** | A body. “This, here, is a thing.” |
+| **Mercury** | Going. A path opening. Through space if breath is already in the chain; *into* a thing if not. |
+| **Sulphur** | Passion. A mind that can be reached. |
+| **Light** | Shown. The veil is lifted. |
+| **Dark** | Withheld. The veil is drawn. |
+| **Life** | Modifier. Marks a living recipe (plant, heal, hop, a called beast). Not a school. |
+| **Death** | Modifier. The grave. **Reserved** — not in ordinary recipes. Load-bearing for Free. |
 
-| Rune | Principle | Reshapes into… | Default target |
-|---|---|---|---|
-| **Salt** | Body / Matter | solid, lasting terrain; self-effects | oneself |
-| **Mercury** | Motion / Spirit | projectiles, jets, flow; weakening | the enemy |
-| **Sulphur** | Mind / Soul | fear, sleep, command | something else |
+A join is not a modifier. **Fire · Air** becomes **Spark**, which is its own rune and combines again (**Spark · Air → Lightning**). Two runes birth a join or wait as a clause. Three or more is a spell. Longer chains are stories.
 
-### Catalyst — Aether (section 6)
-Inert alone. The prima materia / philosopher's stone.
-
-### Existential — *state & nature of a being*
-- **Life ⟷ Death** (Vita ⟷ Mors) — animating axis.
-- **Male ⟷ Female** (Animus ⟷ Anima) — polarity axis (projective ⟷ receptive; united, generative).
-
-### Primordials — *the deep layer masters can work with*
-- **Mundane:** **Hot/Cold**, **Wet/Dry**. Synthesizable; **knowledge-gated only.**
-- **Divine:** components of the Aether aspects (section 6). **Not craftable.** Primordial access is **hard-gated by an item or deed** — knowledge alone never opens it.
+Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are **out of this pass**. They stay in the catalog as reserved names and are not on the Charter wall.
 
 ---
 
-## 3. The material tree
+## 3. Joins and the tree
 
-### The grammar of a spell
-Every spell has two parts, and each **aspect does double duty** — it sets *what is cast* (the substance's state) **and** *how it's cast* (the manifestation).
-- **Elements = substance.** Blend for richer matter: Fire+Air=**Spark**, Air+Water=**Cloud**, Water+Earth=**Mud**, Fire+Earth=**Lava** (shared quality → stable); Fire+Water=**Steam**, Air+Earth=**Dust** (opposed → violent, area-filling).
-- **Aspects = form & state** (the tria prima as operators):
-  - **Salt (body)** → matter **solid & still**: walls, ice, pillars, terrain, self-cloak.
-  - **Mercury (motion)** → matter **flowing & flying**: bolts, jets, waves.
-  - **Sulphur (mind)** → matter **erupts or reaches a mind**: bursts, ignition, fear, command.
-- Complex substances take a blend **and** an aspect: **Ice = Water + Earth + Salt** (cold water, earth's hard chill, fixed solid). *States come from modifiers, not element-doubling.*
-Masters may also **quality-shift** (add a mundane primordial) to nudge a substance. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
+A chain is a sentence, left to right. Two roots meeting become a third:
 
-### The quality square
-| | **Dry** | **Wet** |
+| Join | Becomes | Concept |
 |---|---|---|
-| **Hot** | Fire | Air |
-| **Cold** | Earth | Water |
+| Fire · Air | **Spark** | Hunger given breath. A seed of charge. |
+| Air · Water | **Cloud** | Breath holding yield. A hanging veil. |
+| Water · Earth | **Mud** | Yield meeting rest. |
+| Fire · Earth | **Lava** | Hunger meeting rest. |
+| Fire · Water | **Steam** | Hunger forced through yield. |
+| Air · Earth | **Dust** | Breath forced through rest. |
 
-Shared edge → stable; diagonal (Fire/Water, Air/Earth) → violent.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest). Death is not how you freeze water. Plant is **Water · Earth · Salt**; Grove is Plant · Life.
 
-### The tree
-Full branch-by-branch tree (Energy · Weather · Stone & Metal · Water & Ice · Life) with recipes and notes lives in **`material-codex.html`**. Life is the handoff point: **Mud + Vita + Aether → Plant** (soulless life) — inert matter doesn't grow until something breathes into it.
+The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
+
+Full wrought list and fifty story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ---
 
 ## 4. The spell grammar
 
-**Material (noun) × Aspect (verb) = spell.** Orthogonal.
+There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
 
-| Material | + Mercury | + Salt | + Sulphur |
-|---|---|---|---|
-| **Fire** | Fireball | Flame-wall | Frenzy |
-| **Water** | Water-jet / wave | Ice-wall | Lull (sleep) |
-| **Spark** | Lightning bolt | Live-floor | Jolt (stun) |
-| **Earth** | Hurled stone | Stone wall | Dread |
+A spell is a **chain that tells a story**. Fireball is not Fire · Mercury — that is hunger going *into* a thing. Fireball is hunger that learned breath, was given a body, and was sent: **Fire · Air · Salt · Mercury** (or **Spark · Salt · Mercury** if Spark is already in the field). Life only marks a living recipe. Death is not in the ordinary book. Mind-work can stay short (**Fire · Sulphur · Mercury**). Flight and Chain are longer because more happened.
 
-**Form matters.** The aspect sets the manifestation — a **bolt** (Mercury) shoots to a point, a **wall/pillar** (Salt) stands and shapes space, a **burst** (Sulphur) erupts. The *same* material solves an obstacle differently by form: a fire bolt is doused behind a waterfall; a fire *pillar* rises behind it. Richer spells → more precise shapes → more (and more elegant) solutions.
+Formation is how you place a finished chain, not a rune in it.
+
+A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
+
+**Cast** (or the held slot / F) opens aim:
+1. Pick a formation the string can naturally take.
+2. Click the world — aim a line, raise a column, release at your feet, or place at a distance.
+
+| Formation | What you do | Typical use |
+|---|---|---|
+| **Shot** | Click through a point. The spell flies that way. | Hunting spark, lightning, ice-spear |
+| **Pillar** | Click the ground. A column rises there. | Flame-pillar, ice, wall, vine |
+| **Spread** | Click to confirm. It wells from where you stand. | Live-floor, fog, sprout, hop |
+| **Remote** | Click a distant point. The spell forms there. | Melt, rain, pit, call-growth |
+| **Self** | Confirm on the caster. | Flight |
+
+**Charter:** an unwritten combo **fizzles**, even when the formation made sense. **Free:** an unwritten or blank string **borrows a random written spell of that type**. Free is still never the required key.
+
+The fifty catalog chains now resolve in play. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
 ---
 
@@ -154,7 +160,7 @@ Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, le
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — strikes everything in the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
-- **Cold + Water → Ice** — bridge, root-trap, or shatterable surface.
+- **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement).
 
@@ -166,12 +172,12 @@ Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** react
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). Ethereal aspects never lived on a floor tile; the wall is where they stand beside the room's materials. You string runes — up to eight — then **Cast** immediately or **Store** one form to carry. Esc lists every written recipe (a developer ledger, not a knowledge gate).
+The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). The constant stream is the **eleven basic runes**, plus nearby tiles and creature formulas. You string runes — up to eight — then **Cast** (aim a formation) or **Store** one string to carry. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
-2. **Craft** — assemble a spell from the Charter wall: element(s) for substance, an aspect for form & state, a stance (Charter/Free). Knowledge and items widen your options.
-3. **Cast** — now, from the wall, or later from the single held slot. The spell acts on the enemy or the world (a bolt, wall, pillar, or burst; freeze a fall, ignite grass, bridge lava, grow a climb).
-4. **Overcome** — the right spell resolves it at once. No HP bar.
+2. **Craft** — assemble a chain from the Charter wall. Two runes birth a join or wait. A finished spell is a sentence.
+3. **Aim** — Cast from the wall, or later from the held slot. Choose Shot, Pillar, Spread, or Remote if that string can take it, then click where it goes. Unwritten Charter strings fizzle. Free borrows a random written spell of that type.
+4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
 
@@ -179,11 +185,12 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Material tree** — v1 built in `material-codex.html`; keep growing branches (poison/blood/light? deeper Life sub-tree for beasts).
+- [~] **Spell catalog** — fifty story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. Composer still folds the short slice.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
-- [ ] **Death rune** — sanctioned uses vs off-Charter (lean: policed by soul-involvement / primordial reach, not morality).
-- [~] **Field economy** — Space stills the field into a Charter wall (constant primaries/aspects plus nearby tiles and creature formulas). Depletion and Aether scarcity still open.
+- [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
+- [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free borrows.
+- [~] **Field economy** — Space stills the field into a Charter wall (the eleven, plus nearby tiles and creature formulas). Depletion still open. Primordial runes later.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
 - [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.

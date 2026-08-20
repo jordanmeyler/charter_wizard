@@ -8,13 +8,13 @@ namespace RuneMagic
     /// </summary>
     public sealed class Grimoire
     {
-        readonly HashSet<(RuneId Material, RuneId Aspect)> _knownRecipes = new();
+        readonly HashSet<(RuneId Material, RuneId Aspect, SpellShape Shape)> _knownRecipes = new();
         readonly HashSet<string> _knownInterpretations = new();
 
-        public IReadOnlyCollection<(RuneId Material, RuneId Aspect)> KnownRecipes => _knownRecipes;
+        public IReadOnlyCollection<(RuneId Material, RuneId Aspect, SpellShape Shape)> KnownRecipes => _knownRecipes;
 
-        public bool KnowsRecipe(RuneId material, RuneId aspect) =>
-            _knownRecipes.Contains((material, aspect));
+        public bool KnowsRecipe(RuneId material, RuneId aspect, SpellShape shape) =>
+            _knownRecipes.Contains((material, aspect, shape));
 
         public bool KnowsRecipe(SpellId spell)
         {
@@ -29,9 +29,9 @@ namespace RuneMagic
             return false;
         }
 
-        public void LearnRecipe(RuneId material, RuneId aspect)
+        public void LearnRecipe(RuneId material, RuneId aspect, SpellShape shape)
         {
-            _knownRecipes.Add((material, aspect));
+            _knownRecipes.Add((material, aspect, shape));
         }
 
         public void LearnInterpretation(string id)
@@ -41,16 +41,16 @@ namespace RuneMagic
 
         public bool KnowsInterpretation(string id) => _knownInterpretations.Contains(id);
 
-        public string DescribeSpell(RuneId material, RuneId aspect)
+        public string DescribeSpell(RuneId material, RuneId aspect, SpellShape shape)
         {
-            if (!SpellGrammar.TryGet(material, aspect, out var recipe))
+            if (!SpellGrammar.TryGet(material, aspect, shape, out var recipe))
             {
-                return $"{SpellGrammar.FormulaText(material, aspect)} has no recorded Charter form.";
+                return $"{SpellGrammar.FormulaText(material, aspect, shape)} has no recorded Charter form.";
             }
 
-            return KnowsRecipe(material, aspect)
+            return KnowsRecipe(material, aspect, shape)
                 ? $"{recipe.Name} — {recipe.Effect}"
-                : $"{SpellGrammar.FormulaText(material, aspect)} — unlearned. Borrow it or compose it to write it down.";
+                : $"{SpellGrammar.FormulaText(material, aspect, shape)} — unlearned. Borrow it or compose it to write it down.";
         }
     }
 }

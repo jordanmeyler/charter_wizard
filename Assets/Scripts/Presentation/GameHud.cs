@@ -28,6 +28,11 @@ namespace RuneMagic
                 return true;
             }
 
+            if (mode == PlayMode.Aiming && mouse.y <= BarHeight + 108f)
+            {
+                return true;
+            }
+
             return mouse.x <= 560f && mouse.y >= Screen.height - 168f;
         }
 
@@ -59,6 +64,14 @@ namespace RuneMagic
                 return;
             }
 
+            if (_director.Mode == PlayMode.Aiming)
+            {
+                DrawWorldChrome();
+                DrawAimDock();
+                DrawSpellBar();
+                return;
+            }
+
             DrawWorldChrome();
             DrawSpellBar();
         }
@@ -85,7 +98,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 900, 22),
-                "Runes from the field and the room. String them. Cast now, or store one form.",
+                "A chain is a sentence. Two runes birth a join or wait. Cast when the story is finished.",
                 body);
             GUI.Label(new Rect(28, 74, 900, 20),
                 $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc / Grimoire",
@@ -173,10 +186,9 @@ namespace RuneMagic
                 $"Held: {held}\nOne slot. Store rewrites it.", body);
 
             if (_director.Held.Occupied &&
-                DrawAction(new Rect(Screen.width - 184, y, 160, 42), "Release held", true, new Color(0.42f, 0.3f, 0.18f)))
+                DrawAction(new Rect(Screen.width - 184, y, 160, 42), "Aim held", true, new Color(0.42f, 0.3f, 0.18f)))
             {
                 _director.CastHeld();
-                _director.CloseCharter();
             }
         }
 
@@ -196,7 +208,7 @@ namespace RuneMagic
             if (_director.Held.Occupied)
             {
                 GUI.Label(new Rect(312, y + 40, 440, 40),
-                    $"{_director.Held.Name}  ·  {_director.Held.Stance}\nClick the slot, the lock, or press F to cast.",
+                    $"{_director.Held.Name}  ·  {_director.Held.Stance}\nClick the slot or press F, then choose a form and aim.",
                     body);
             }
             else
@@ -207,7 +219,7 @@ namespace RuneMagic
             }
 
             GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 980f), 64),
-                "WASD move · Space Charter · click a lock to cast · Esc / Grimoire",
+                "WASD move · Space Charter · Cast then aim · Esc / Grimoire",
                 hint);
 
             var grim = new Rect(Screen.width - 188, y + 22, 168, 52);
@@ -223,6 +235,56 @@ namespace RuneMagic
                 {
                     _director.OpenGrimoire();
                 }
+            }
+        }
+
+        void DrawAimDock()
+        {
+            var height = 92f;
+            var y = Screen.height - BarHeight - height;
+            DrawPanel(0, y, Screen.width, height);
+
+            var title = Label(18, FontStyle.Bold, new Color(0.95f, 0.86f, 0.52f));
+            var body = Label(13, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
+            GUI.Label(new Rect(16, y + 8, 720, 22),
+                $"Aim  ·  {_director.PendingPreview}  ·  {_director.PendingStance}", title);
+
+            var shapes = _director.AvailableShapes;
+            if (shapes.Count == 0)
+            {
+                GUI.Label(new Rect(16, y + 36, 640, 40),
+                    _director.PendingStance == CastingStance.Free
+                        ? "No natural form. Pick any formation — Free borrows a written spell of that type."
+                        : "No natural form. Click the world to fizzle, or Esc to keep the string.",
+                    body);
+            }
+            else
+            {
+                var x = 16f;
+                foreach (var shape in shapes)
+                {
+                    var chosen = _director.ChosenShape == shape;
+                    var color = chosen
+                        ? new Color(0.72f, 0.42f, 0.18f)
+                        : new Color(0.22f, 0.32f, 0.48f);
+                    var picked = shape;
+                    if (DrawAction(new Rect(x, y + 36, 118, 42), SpellFormations.NameOf(shape), true, color))
+                    {
+                        _director.ChooseShape(picked);
+                    }
+
+                    x += 128f;
+                }
+
+                var hint = _director.ChosenShape == SpellShape.None
+                    ? "Pick a formation, then click the world."
+                    : SpellFormations.Get(_director.ChosenShape).Hint;
+                GUI.Label(new Rect(x + 8, y + 40, 420, 36), hint, body);
+            }
+
+            if (DrawAction(new Rect(Screen.width - 176, y + 36, 160, 42), "Cancel", true, new Color(0.28f, 0.22f, 0.22f)))
+            {
+                _director.CancelAim();
             }
         }
 
@@ -259,25 +321,14 @@ namespace RuneMagic
             var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
-            GUI.Label(new Rect(40, 56, 900, 22),
-                "Every written spell in this slice. Compose them from the Charter. Esc closes the book.",
+            GUI.Label(new Rect(40, 56, 980, 22),
+                "All fifty are written. Click a name to string it for testing. 41–50: Death / Free. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
-            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-
-            GUI.Label(new Rect(0, 0, 700, 24), "Spells  ·  Material × Aspect", heading);
-            var y = 28f;
-            var recipes = new List<SpellRecipe>(SpellGrammar.All);
-            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-            foreach (var recipe in recipes)
-            {
-                GUI.Label(new Rect(0, y, 220, 20), recipe.Name, row);
-                GUI.Label(new Rect(230, y, 360, 20), SpellGrammar.RecipeLine(recipe), row);
-                GUI.Label(new Rect(600, y, 420, 20), recipe.Effect, muted);
-                y += 24f;
-            }
+            var y = DrawCodex(0f, heading, row, muted, loadable: true);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -304,25 +355,14 @@ namespace RuneMagic
             var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
 
             GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
-            GUI.Label(new Rect(40, 62, 900, 22),
-                "Developer ledger. Every Charter recipe in the game, plus material joins. Esc resumes.",
+            GUI.Label(new Rect(40, 62, 980, 22),
+                "Developer ledger. Full codex draft plus material joins. Esc resumes.",
                 subtitle);
 
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
-            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-
-            GUI.Label(new Rect(0, 0, 700, 24), "Spells  ·  Material × Aspect", heading);
-            var y = 28f;
-            var recipes = new List<SpellRecipe>(SpellGrammar.All);
-            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
-            foreach (var recipe in recipes)
-            {
-                GUI.Label(new Rect(0, y, 220, 20), recipe.Name, row);
-                GUI.Label(new Rect(230, y, 360, 20), SpellGrammar.RecipeLine(recipe), row);
-                GUI.Label(new Rect(600, y, 420, 20), recipe.Effect, muted);
-                y += 24f;
-            }
+            var y = DrawCodex(0f, heading, row, muted, loadable: false);
 
             y += 16f;
             GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
@@ -339,15 +379,61 @@ namespace RuneMagic
             GUI.EndScrollView();
         }
 
-        static int SpellGrammarCount()
+        float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted, bool loadable)
         {
-            var count = 0;
-            foreach (var _ in SpellGrammar.All)
+            GUI.Label(new Rect(0, y, 900, 22), "The eleven basic runes", heading);
+            y += 24f;
+            GUI.Label(new Rect(0, y, 980, 18), "Roots: Fire (hunger) · Air (breath) · Earth (rest) · Water (yield)", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (a body) · Mercury (going) · Sulphur (passion / mind)", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "Veils: Light (shown) · Dark (withheld)     Modifiers: Life (marks a living recipe) · Death (grave / Free only)", row);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Ice is Water·Salt·Earth (not Death). Plant·Life→Grove.", row);
+            y += 28f;
+
+            SpellBook? current = null;
+            foreach (var entry in SpellCodex.All)
             {
-                count++;
+                if (current != entry.Book)
+                {
+                    if (current != null)
+                    {
+                        y += 10f;
+                    }
+
+                    current = entry.Book;
+                    GUI.Label(new Rect(0, y, 900, 22), SpellCodex.BookName(entry.Book), heading);
+                    y += 24f;
+                }
+
+                GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
+                var title = string.IsNullOrEmpty(entry.Gate) ? entry.Name : $"{entry.Name}  ({entry.Gate})";
+                var nameRect = new Rect(26, y, 130, 18);
+                if (loadable && GUI.Button(nameRect, title, row))
+                {
+                    _director.LoadCodex(entry.Number);
+                }
+                else if (!loadable)
+                {
+                    GUI.Label(nameRect, title, row);
+                }
+                GUI.Label(new Rect(160, y, 340, 18), entry.Want, row);
+                var chain = string.IsNullOrEmpty(entry.Via)
+                    ? entry.Recipe
+                    : $"{entry.Recipe}   =   {entry.Via}";
+                GUI.Label(new Rect(506, y, 330, 18), chain, muted);
+                GUI.Label(new Rect(840, y, 60, 18), entry.Form, muted);
+                GUI.Label(new Rect(904, y, 80, 18), entry.Outcome.ToString(), muted);
+                y += 20f;
             }
 
-            return count;
+            return y;
+        }
+
+        static float CodexHeight()
+        {
+            return 160f + SpellCodex.All.Count * 20f + 12 * 28f + MaterialTree.All.Count * 22f;
         }
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick)
@@ -425,7 +511,7 @@ namespace RuneMagic
                 ? $"Known reading: {target.DisplayName}."
                 : "The formula is visible. Its meaning is not yet yours.";
             var ready = _director.Held.Occupied
-                ? $"Click it or press F to throw {_director.Held.Name}."
+                ? $"Press F or click the slot to choose how {_director.Held.Name} aims."
                 : "Space to compose a key, or click the lock.";
             return $"{target.DisplayName}  {{{target.FormulaText()}}}  — {reading} {ready}";
         }

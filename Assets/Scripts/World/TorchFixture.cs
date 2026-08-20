@@ -38,9 +38,11 @@ namespace RuneMagic
                 _label.color = new Color(1f, 0.82f, 0.35f);
             }
 
-            return spell == SpellId.FlameWall
+            return spell == SpellId.FlamePillar
                 ? "A flame-pillar takes the wick. The chapel wakes."
-                : "Fire finds the dry wood. The torch burns.";
+                : spell == SpellId.Snuff || spell == SpellId.Smother
+                    ? "The wick is a lock of fire as much as wood. Ending it still turns the chapel."
+                    : "Fire finds the dry wood. The torch burns.";
         }
 
         void Update()

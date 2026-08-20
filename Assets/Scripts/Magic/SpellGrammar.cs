@@ -6,30 +6,79 @@ namespace RuneMagic
     {
         None = 0,
         Fireball,
-        FlameWall,
+        FlamePillar,
         Frenzy,
+        Snuff,
+        SunLance,
+        Drive,
+        Smother,
         WaterJet,
-        IceWall,
+        IcePillar,
         Lull,
+        Spring,
+        Fog,
+        Draw,
         LightningBolt,
         LiveFloor,
         Jolt,
+        BrilliantArc,
+        Blackout,
         HurledStone,
-        StoneWall,
+        StonePillar,
+        RaisedEarth,
         Dread,
+        Menhir,
+        GraveDust,
+        ShadowWell,
         Gale,
-        StillAir,
         Daze,
+        DayWake,
+        Gloom,
         Scald,
-        ScatterDust
+        ScatterDust,
+        Sprout,
+        VineRise,
+        CallGrowth,
+        Melt,
+        Ignite,
+        ChainLightning,
+        Thunderclap,
+        StormCall,
+        Rain,
+        Flood,
+        IceSpear,
+        Snowfall,
+        Thaw,
+        Wall,
+        Pit,
+        Bridge,
+        Quagmire,
+        LavaFlood,
+        ObsidianPath,
+        Vine,
+        Mend,
+        Hop,
+        Flight,
+        Rage,
+        Terror,
+        Veil,
+        CallBeast,
+        Blight,
+        Shade,
+        Unmake,
+        GraveSleep,
+        CorpseCall,
+        GraveIce,
+        LastBreath
     }
 
     public readonly struct SpellRecipe
     {
-        public SpellRecipe(RuneId material, RuneId aspect, SpellId spell, string name, string effect)
+        public SpellRecipe(RuneId material, RuneId aspect, SpellShape shape, SpellId spell, string name, string effect)
         {
             Material = material;
             Aspect = aspect;
+            Shape = shape;
             Spell = spell;
             Name = name;
             Effect = effect;
@@ -37,58 +86,80 @@ namespace RuneMagic
 
         public RuneId Material { get; }
         public RuneId Aspect { get; }
+        public SpellShape Shape { get; }
         public SpellId Spell { get; }
         public string Name { get; }
         public string Effect { get; }
-        public (RuneId Material, RuneId Aspect) Key => (Material, Aspect);
+        public (RuneId Material, RuneId Aspect, SpellShape Shape) Key => (Material, Aspect, Shape);
     }
 
     /// <summary>
-    /// Material (noun) × Aspect (verb) = spell. Orthogonal axes from the design reference.
+    /// Compressed sanctum slice: folded material × last operator × formation.
+    /// The real language is the story-chains in SPELLS.md / SpellCodex.
+    /// A sensible-looking combo that is not written here fizzles under Charter.
     /// </summary>
     public static class SpellGrammar
     {
-        static readonly Dictionary<(RuneId, RuneId), SpellRecipe> Recipes = new();
+        static readonly Dictionary<(RuneId, RuneId, SpellShape), SpellRecipe> Recipes = new();
+        static readonly List<SpellRecipe> Ordered = new();
 
         static SpellGrammar()
         {
-            Register(RuneId.Fire, RuneId.Mercury, SpellId.Fireball, "Fireball", "Motion of fire. A jet or bolt.");
-            Register(RuneId.Fire, RuneId.Salt, SpellId.FlameWall, "Flame-wall", "Body of fire. Lasting terrain.");
-            Register(RuneId.Fire, RuneId.Sulphur, SpellId.Frenzy, "Frenzy", "Mind of fire. Heat in the thoughts.");
+            Register(RuneId.Fire, RuneId.Mercury, SpellShape.Shot, SpellId.Fireball, "Fireball", "Compressed. Catalog: Fire · Air · Salt · Mercury.");
+            Register(RuneId.Fire, RuneId.Salt, SpellShape.Pillar, SpellId.FlamePillar, "Flame-pillar", "A standing column of fire.");
+            Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");
+            Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death-work. Hunger marked by the grave, placed on a flame.");
+            Register(RuneId.Fire, RuneId.Lumen, SpellShape.Shot, SpellId.SunLance, "Sun-lance", "Light riding fire.");
+            Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Projective fire. It goes out and does not return.");
+            Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
-            Register(RuneId.Water, RuneId.Mercury, SpellId.WaterJet, "Water-jet", "Motion of water. Wave or jet.");
-            Register(RuneId.Water, RuneId.Salt, SpellId.IceWall, "Ice-wall", "Body of water. Solid, lasting.");
-            Register(RuneId.Water, RuneId.Sulphur, SpellId.Lull, "Lull", "Mind of water. Sleep.");
+            Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
+            Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Yield given a body and asked to rest. Hard water. No Death.");
+            Register(RuneId.Water, RuneId.Sulphur, SpellShape.Remote, SpellId.Lull, "Lull", "Mind of water. Sleep, placed elsewhere.");
+            Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
+            Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Fog, "Fog", "Dark water as cover around you.");
+            Register(RuneId.Water, RuneId.Anima, SpellShape.Remote, SpellId.Draw, "Draw", "Receptive pull. It calls, it does not strike.");
 
-            Register(RuneId.Spark, RuneId.Mercury, SpellId.LightningBolt, "Lightning bolt", "Motion of spark.");
-            Register(RuneId.Spark, RuneId.Salt, SpellId.LiveFloor, "Live-floor", "Body of spark. Charged ground.");
-            Register(RuneId.Spark, RuneId.Sulphur, SpellId.Jolt, "Jolt", "Mind of spark. Stun.");
+            Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Air · Mercury.");
+            Register(RuneId.Spark, RuneId.Salt, SpellShape.Spread, SpellId.LiveFloor, "Live-floor", "Charged ground around the caster.");
+            Register(RuneId.Spark, RuneId.Sulphur, SpellShape.Remote, SpellId.Jolt, "Jolt", "Stun placed at a point.");
+            Register(RuneId.Spark, RuneId.Lumen, SpellShape.Shot, SpellId.BrilliantArc, "Brilliant-arc", "Spark with Light riding it.");
+            Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
-            Register(RuneId.Earth, RuneId.Mercury, SpellId.HurledStone, "Hurled stone", "Motion of earth.");
-            Register(RuneId.Earth, RuneId.Salt, SpellId.StoneWall, "Stone wall", "Body of earth.");
-            Register(RuneId.Earth, RuneId.Sulphur, SpellId.Dread, "Dread", "Mind of earth. Weight and fear.");
+            Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
+            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.StonePillar, "Stone pillar", "Earth standing.");
+            Register(RuneId.Earth, RuneId.Salt, SpellShape.Remote, SpellId.RaisedEarth, "Raised earth", "A body of earth called up away from you.");
+            Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
+            Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
+            Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
-            Register(RuneId.Air, RuneId.Mercury, SpellId.Gale, "Gale", "Motion of air. Provisional.");
-            Register(RuneId.Air, RuneId.Salt, SpellId.StillAir, "Still-air", "Body of air. Provisional.");
-            Register(RuneId.Air, RuneId.Sulphur, SpellId.Daze, "Daze", "Mind of air. Provisional.");
+            Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gale, "Gale", "Air thrown as a line.");
+            Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");
+            Register(RuneId.Air, RuneId.Lumen, SpellShape.Spread, SpellId.DayWake, "Day-wake", "Light blooming from the feet.");
+            Register(RuneId.Air, RuneId.Umbra, SpellShape.Spread, SpellId.Gloom, "Gloom", "Dark air around you.");
 
-            Register(RuneId.Steam, RuneId.Mercury, SpellId.Scald, "Scald", "Violent Fire+Water in motion.");
-            Register(RuneId.Dust, RuneId.Mercury, SpellId.ScatterDust, "Scatter-dust", "Violent Air+Earth in motion.");
+            Register(RuneId.Steam, RuneId.Mercury, SpellShape.Shot, SpellId.Scald, "Scald", "Violent Fire+Water in motion.");
+            Register(RuneId.Dust, RuneId.Mercury, SpellShape.Shot, SpellId.ScatterDust, "Scatter-dust", "Violent Air+Earth in motion.");
+            Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
+            Register(RuneId.Plant, RuneId.Vita, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "Living plant standing as a column.");
+            Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");
         }
 
-        static void Register(RuneId material, RuneId aspect, SpellId spell, string name, string effect)
+        static void Register(RuneId material, RuneId aspect, SpellShape shape, SpellId spell, string name, string effect)
         {
-            Recipes[(material, aspect)] = new SpellRecipe(material, aspect, spell, name, effect);
+            var recipe = new SpellRecipe(material, aspect, shape, spell, name, effect);
+            Recipes[(material, aspect, shape)] = recipe;
+            Ordered.Add(recipe);
         }
 
-        public static bool TryGet(RuneId material, RuneId aspect, out SpellRecipe recipe)
+        public static bool TryGet(RuneId material, RuneId aspect, SpellShape shape, out SpellRecipe recipe)
         {
-            return Recipes.TryGetValue((material, aspect), out recipe);
+            return Recipes.TryGetValue((material, aspect, shape), out recipe);
         }
 
         public static bool TryGetBySpell(SpellId spell, out SpellRecipe recipe)
         {
-            foreach (var entry in Recipes.Values)
+            foreach (var entry in Ordered)
             {
                 if (entry.Spell == spell)
                 {
@@ -101,21 +172,35 @@ namespace RuneMagic
             return false;
         }
 
-        public static IEnumerable<SpellRecipe> All => Recipes.Values;
+        public static IEnumerable<SpellRecipe> All => Ordered;
 
-        public static string FormulaText(RuneId material, RuneId aspect)
+        public static IEnumerable<SpellRecipe> OfType(RuneId material, RuneId aspect)
         {
-            return $"{RuneCatalog.NameOf(material)} × {RuneCatalog.NameOf(aspect)}";
+            foreach (var recipe in Ordered)
+            {
+                var materialOk = material == RuneId.None || recipe.Material == material;
+                var aspectOk = aspect == RuneId.None || recipe.Aspect == aspect;
+                if (materialOk && aspectOk)
+                {
+                    yield return recipe;
+                }
+            }
+        }
+
+        public static string FormulaText(RuneId material, RuneId aspect, SpellShape shape = SpellShape.None)
+        {
+            var pair = $"{RuneCatalog.NameOf(material)} × {RuneCatalog.NameOf(aspect)}";
+            return shape == SpellShape.None ? pair : $"{pair} · {SpellFormations.NameOf(shape)}";
         }
 
         public static string RecipeLine(SpellRecipe recipe)
         {
             if (MaterialTree.TryFindSources(recipe.Material, out var left, out var right))
             {
-                return $"{RuneCatalog.NameOf(left)} + {RuneCatalog.NameOf(right)} → {FormulaText(recipe.Material, recipe.Aspect)}";
+                return $"{RuneCatalog.NameOf(left)} + {RuneCatalog.NameOf(right)} → {FormulaText(recipe.Material, recipe.Aspect, recipe.Shape)}";
             }
 
-            return FormulaText(recipe.Material, recipe.Aspect);
+            return FormulaText(recipe.Material, recipe.Aspect, recipe.Shape);
         }
     }
 }
