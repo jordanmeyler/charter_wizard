@@ -210,7 +210,7 @@ namespace RuneMagic
                     }
 
                     var shown = glyph.Shown;
-                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true);
+                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true, true);
                 }
             }
         }
@@ -572,9 +572,9 @@ namespace RuneMagic
                 + MaterialCatalog.All.Count * 20f + MaterialTree.All.Count * 22f;
         }
 
-        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available)
+        void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false)
         {
-            var wrought = ChainBook.IsWrought(rune);
+            var wrought = !oneSpace && ChainBook.IsWrought(rune);
             var fill = Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
             fill.a = available ? 0.92f : 0.35f;
             var previous = GUI.color;

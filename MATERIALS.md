@@ -2,7 +2,7 @@
 
 A running development list, kept beside [`SPELLS.md`](SPELLS.md). Spells are sentences you write. **Materials are sentences the world has already become.** Stamp one on a tile with `MaterialId`; each has its own floor/wall paint and a `WorldMaterial` you can grow later (physics, reactions, map palettes).
 
-The Charter weave reads the **full signature** — roots plus the manifestation — not just Fire or Earth.
+The Charter weave reads a material’s **manifestation unfolded to basics** — one rune per column — not a cramped join name. Timber (Plant) is Water | Earth | Salt. Ash is Fire | Water | Earth | Salt.
 
 Runtime catalog: `Assets/Scripts/World/MaterialCatalog.cs`. Apply with:
 
@@ -23,7 +23,7 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 4. **Void** / pits tear the weave. They contribute a gap, not a rune.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
-Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join stretches one column per ingredient and stays inside one gold ring — Plant is three columns, Water · Earth · Salt. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
+Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join unfolds to the full recipe and stays inside one gold ring — each ingredient takes one column. Plant is three columns (Water, Earth, Salt). Ash is four (Fire, Water, Earth, Salt) because Plant unfolds. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
 
 **Air is ambient.** Anything that still has a floor or a wall is a place that can be breathed. The weave carries Air in almost every view. A screen that is only void — a tear, no room left — has no breath.
 
