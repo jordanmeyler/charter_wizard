@@ -110,7 +110,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. Gold ring = a join (Plant is Water · Earth · Salt). Hover the weave to hold it still.",
+                "The wall is the eleven — only what is on screen can be drawn. Air is already in the room. Gold ring = a join (Plant is Water · Earth · Salt). Hover the weave to hold it still.",
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",

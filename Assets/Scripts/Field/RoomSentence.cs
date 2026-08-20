@@ -8,7 +8,8 @@ namespace RuneMagic
         Material,
         Lock,
         String,
-        Tear
+        Tear,
+        Ambient
     }
 
     public readonly struct WeaveGlyph
@@ -29,7 +30,8 @@ namespace RuneMagic
     /// <summary>
     /// Walks what is on screen as a weave: even rows left to right, odd
     /// rows right to left. Off-screen tiles do not speak. Contiguous
-    /// same-material runs collapse to one full signature. Locks and
+    /// same-material runs collapse to one full signature. Breath (Air)
+    /// is ambient wherever a floor or wall still holds a room. Locks and
     /// world-strings enter when the scan first reaches their tile.
     /// </summary>
     public static class RoomSentence
@@ -52,6 +54,7 @@ namespace RuneMagic
             var y1 = Mathf.FloorToInt(view.yMax);
             var lastMaterial = MaterialId.None;
             var lastWasTear = false;
+            var breathable = false;
             var spokenLocks = new HashSet<int>();
             var spokenStrings = new HashSet<int>();
 
@@ -69,12 +72,35 @@ namespace RuneMagic
                     }
 
                     var tile = grid.Get(x, y);
+                    if (tile != null && !tile.Def.TearsTapestry)
+                    {
+                        breathable = true;
+                    }
+
                     AppendTile(sequence, tile, ref lastMaterial, ref lastWasTear);
                     AppendHere(sequence, locks, strings, x, y, spokenLocks, spokenStrings);
                 }
             }
 
+            if (breathable)
+            {
+                AddAmbientAir(sequence);
+            }
+
             return sequence;
+        }
+
+        static void AddAmbientAir(List<WeaveGlyph> sequence)
+        {
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                if (sequence[i].Rune == RuneId.Air)
+                {
+                    return;
+                }
+            }
+
+            sequence.Insert(0, new WeaveGlyph(RuneId.Air, MaterialId.None, WeaveKind.Ambient));
         }
 
         static void AppendTile(
