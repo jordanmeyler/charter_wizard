@@ -2,13 +2,19 @@ using UnityEngine;
 
 namespace RuneMagic
 {
-    public sealed class TorchFixture : MonoBehaviour, ISpellLock
+    public sealed class TorchFixture : MonoBehaviour, ISpellLock, IRuneSource
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
         public SpellId[] AcceptedKeys { get; private set; }
         public bool Resolved { get; private set; }
         public Vector3 WorldPosition => transform.position;
+
+        public bool IsEmitting => true;
+        public Vector3 WorldOrigin => transform.position;
+        public float VoiceRadius => 3.2f;
+        public float VoiceWeight => 2.2f;
+        public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
         SpriteRenderer _renderer;
         TextMesh _label;
@@ -26,7 +32,16 @@ namespace RuneMagic
                 new Color(0.95f, 0.72f, 0.4f));
         }
 
-        public string FormulaText() => "Plant · Dry wick";
+        public void Collect(System.Collections.Generic.List<RuneId> buffer)
+        {
+            buffer.Add(RuneId.Plant);
+            if (Resolved)
+            {
+                buffer.Add(RuneId.Fire);
+            }
+        }
+
+        public string FormulaText() => "Pl Plant · dry wick";
 
         public string Resolve(SpellId spell)
         {

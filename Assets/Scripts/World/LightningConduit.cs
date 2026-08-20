@@ -2,13 +2,19 @@ using UnityEngine;
 
 namespace RuneMagic
 {
-    public sealed class LightningConduit : MonoBehaviour, ISpellLock
+    public sealed class LightningConduit : MonoBehaviour, ISpellLock, IRuneSource
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
         public SpellId[] AcceptedKeys { get; private set; }
         public bool Resolved { get; private set; }
         public Vector3 WorldPosition => transform.position;
+
+        public bool IsEmitting => true;
+        public Vector3 WorldOrigin => transform.position;
+        public float VoiceRadius => 3.4f;
+        public float VoiceWeight => 2.6f;
+        public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
         SpriteRenderer _renderer;
         TextMesh _label;
@@ -26,7 +32,16 @@ namespace RuneMagic
                 new Color(0.75f, 0.88f, 1f));
         }
 
-        public string FormulaText() => "Spark · waiting";
+        public void Collect(System.Collections.Generic.List<RuneId> buffer)
+        {
+            buffer.Add(RuneId.Spark);
+            if (Resolved)
+            {
+                buffer.Add(RuneId.Lightning);
+            }
+        }
+
+        public string FormulaText() => "Sp Spark · waiting";
 
         public string Resolve(SpellId spell)
         {

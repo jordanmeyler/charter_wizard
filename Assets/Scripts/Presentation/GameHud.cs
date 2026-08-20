@@ -15,7 +15,9 @@ namespace RuneMagic
             _director = director;
         }
 
-        public static bool PointerOverChrome(PlayMode mode)
+        public static bool PointerOverChrome(PlayMode mode) => BlocksWorldPick(mode);
+
+        public static bool BlocksWorldPick(PlayMode mode)
         {
             var mouse = Input.mousePosition;
             if (mouse.y <= BarHeight + 8f)
@@ -23,7 +25,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (mode == PlayMode.Charter || mode == PlayMode.Grimoire || mode == PlayMode.Paused)
+            if (mode == PlayMode.Grimoire || mode == PlayMode.Paused)
             {
                 return true;
             }
@@ -33,7 +35,25 @@ namespace RuneMagic
                 return true;
             }
 
-            return mouse.x <= 560f && mouse.y >= Screen.height - 168f;
+            if (mouse.x <= 560f && mouse.y >= Screen.height - 168f)
+            {
+                return true;
+            }
+
+            if (mode == PlayMode.Charter)
+            {
+                if (mouse.y <= BarHeight + 196f)
+                {
+                    return true;
+                }
+
+                if (mouse.y >= Screen.height - 320f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         void OnGUI()
@@ -78,14 +98,14 @@ namespace RuneMagic
 
         void DrawWorldChrome()
         {
-            DrawPanel(12, 12, 540, 132);
+            DrawPanel(12, 12, 560, 144);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
 
             GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
             GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 66, 520, 22), TargetLine(), body);
-            GUI.Label(new Rect(28, 90, 510, 46), _director.LastLog, body);
+            GUI.Label(new Rect(28, 66, 520, 22), FieldLine(), body);
+            GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
         }
 
         void DrawCharter()
@@ -98,7 +118,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 900, 22),
-                "A chain is a sentence. Two runes birth a join or wait. Cast when the story is finished.",
+                "The wall is the eleven. Click a drifting glyph in the world to draw what the room is made of.",
                 body);
             GUI.Label(new Rect(28, 74, 900, 20),
                 $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc / Grimoire",
@@ -496,24 +516,24 @@ namespace RuneMagic
         {
             var room = _director.CurrentRoom != null ? _director.CurrentRoom.Name : "Sanctum";
             var tile = _director.Underfoot != null ? _director.Underfoot.Def.DisplayName : "empty air";
-            return $"Room: {room}   Underfoot: {tile}";
+            return $"{room}   ·   underfoot: {tile}";
         }
 
-        string TargetLine()
+        string FieldLine()
+        {
+            var reading = string.IsNullOrEmpty(_director.FieldReading)
+                ? "the field is still gathering"
+                : _director.FieldReading;
+            return $"Tapestry  {reading}";
+        }
+
+        string TargetAndLog()
         {
             var target = _director.CurrentTarget;
-            if (target == null)
-            {
-                return "No lock in reach. Walk up to a creature or fixture, then compose.";
-            }
-
-            var reading = _director.Grimoire.KnowsInterpretation(target.FormulaId)
-                ? $"Known reading: {target.DisplayName}."
-                : "The formula is visible. Its meaning is not yet yours.";
-            var ready = _director.Held.Occupied
-                ? $"Press F or click the slot to choose how {_director.Held.Name} aims."
-                : "Space to compose a key, or click the lock.";
-            return $"{target.DisplayName}  {{{target.FormulaText()}}}  — {reading} {ready}";
+            var lockLine = target == null
+                ? "Click a drifting rune to draw it. Space stills the Charter wall."
+                : $"{target.DisplayName}  {{{target.FormulaText()}}}";
+            return $"{lockLine}\n{_director.LastLog}";
         }
 
         static GUIStyle Label(int size, FontStyle style, Color color)

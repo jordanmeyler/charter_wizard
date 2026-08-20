@@ -157,6 +157,8 @@ Charter **overpowers**, it does not dispel. **Free-fill:** leave runes blank, le
 
 **The world is made of the same materials as spells** (water, wood, oil, gas, stone, lava, ice, grass), so the four combination laws govern **spell-on-world**, not just spell-crafting.
 
+Tiles are substances with a short **rune signature**. Those signatures do not sit on the tile — they speak into a **tapestry layer** that drifts, weaves, and thins over voids. Where two teaching-joins meet in the same breath (Fire · Air, Fire · Plant…), the wrought rune can appear in the field. Ordered **world-strings** can hang a sentence in that layer; the adept's place can do the same later. The player reads glyphs, then weaves.
+
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — strikes everything in the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
@@ -172,10 +174,10 @@ Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** react
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay: **Space** stills the field into a **Charter wall** (runes over the world, veil behind them). The constant stream is the **eleven basic runes**, plus nearby tiles and creature formulas. You string runes — up to eight — then **Cast** (aim a formation) or **Store** one string to carry. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
+The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and a **living tapestry** of runes spoken by those tiles, by creature formulas, and later by place and world-strings. Glyphs drift and weave; they are not glued to a floor square. **Space** stills the tapestry into a **Charter wall** (the eleven writeable runes, plus whatever the room is already holding). You string runes — up to eight — then **Cast** (aim a formation) or **Store** one string to carry. Click a drifting glyph to draw that rune from the weave. Esc lists every *written* recipe (a developer ledger, not a knowledge gate).
 
-1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), the environment's materials, and the runes flowing in your field.
-2. **Craft** — assemble a chain from the Charter wall. Two runes birth a join or wait. A finished spell is a sentence.
+1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the tapestry the room is writing. Ash Court reads hunger and salt. The Drop is a tear — Earth is missing. Storm Cell lets Fire and Air meet until Spark is born in the field.
+2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the tapestry. Two runes birth a join or wait. A finished spell is a sentence.
 3. **Aim** — Cast from the wall, or later from the held slot. Choose Shot, Pillar, Spread, or Remote if that string can take it, then click where it goes. Unwritten Charter strings fizzle. Free borrows a random written spell of that type.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
 
@@ -190,7 +192,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is a cast-time choice (Shot / Pillar / Spread / Remote). Sparse recipes. Charter fizzles; Free borrows.
-- [~] **Field economy** — Space stills the field into a Charter wall (the eleven, plus nearby tiles and creature formulas). Depletion still open. Primordial runes later.
+- [~] **Field economy** — tiles speak a substance-signature into a drifting tapestry; Space stills it into a Charter wall (the eleven, plus local colour). World-strings and the adept's place can hang more sentences later. Depletion still open. Primordial runes later.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
 - [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.
