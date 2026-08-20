@@ -20,6 +20,7 @@ namespace RuneMagic
         public RuneSourceKind SourceKind => RuneSourceKind.Tile;
 
         SpriteRenderer _renderer;
+        SpriteRenderer _overlay;
         Collider2D _collider;
 
         public void Bind(Vector2Int coord, TileDef def)
@@ -61,6 +62,8 @@ namespace RuneMagic
             Def = def;
             ApplyVisual();
             RefreshCollider();
+            var grid = GetComponentInParent<WorldGrid>();
+            grid?.DressLooks();
         }
 
         public void OpenDoor()
@@ -98,11 +101,11 @@ namespace RuneMagic
                 switch (Kind)
                 {
                     case TileKind.Wall:
-                        _renderer.sprite = SpriteFactory.Wall(Material);
+                        _renderer.sprite = SpriteFactory.Wall(Material, Coord.x, Coord.y);
                         _renderer.sortingOrder = 3;
                         break;
                     case TileKind.Pit:
-                        _renderer.sprite = SpriteFactory.Pit();
+                        _renderer.sprite = SpriteFactory.Pit(Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:
@@ -113,7 +116,7 @@ namespace RuneMagic
                         ApplyDoorSprite(open: false);
                         break;
                     default:
-                        _renderer.sprite = SpriteFactory.Floor(Material);
+                        _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y);
                         _renderer.sortingOrder = 0;
                         break;
                 }
@@ -130,6 +133,59 @@ namespace RuneMagic
         {
             _renderer.sprite = SpriteFactory.Door(open);
             _renderer.sortingOrder = 4;
+        }
+
+        public void DressNeighborhood(WorldGrid grid)
+        {
+            if (_renderer == null || grid == null)
+            {
+                return;
+            }
+
+            if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+            {
+                var north = grid.Get(Coord.x, Coord.y + 1);
+                if (north != null && (north.Kind == TileKind.Wall || north.Kind == TileKind.Door))
+                {
+                    EnsureOverlay().sprite = SpriteFactory.WallShadow();
+                    _overlay.sortingOrder = _renderer.sortingOrder + 1;
+                    _overlay.enabled = true;
+                    return;
+                }
+
+                var mask = 0;
+                if (IsPit(grid.Get(Coord.x, Coord.y - 1))) mask |= 1;
+                if (IsPit(grid.Get(Coord.x, Coord.y + 1))) mask |= 2;
+                if (IsPit(grid.Get(Coord.x - 1, Coord.y))) mask |= 4;
+                if (IsPit(grid.Get(Coord.x + 1, Coord.y))) mask |= 8;
+                if (mask != 0)
+                {
+                    EnsureOverlay().sprite = SpriteFactory.PitRim(mask);
+                    _overlay.sortingOrder = _renderer.sortingOrder + 1;
+                    _overlay.enabled = true;
+                    return;
+                }
+            }
+
+            if (_overlay != null)
+            {
+                _overlay.enabled = false;
+            }
+        }
+
+        static bool IsPit(WorldTile tile) => tile != null && tile.Kind == TileKind.Pit;
+
+        SpriteRenderer EnsureOverlay()
+        {
+            if (_overlay != null)
+            {
+                return _overlay;
+            }
+
+            var child = new GameObject("TileOverlay");
+            child.transform.SetParent(transform, false);
+            _overlay = child.AddComponent<SpriteRenderer>();
+            return _overlay;
         }
 
         void ApplyCollider()

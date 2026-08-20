@@ -28,6 +28,7 @@ namespace RuneMagic
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.LightningRod(false);
             _renderer.sortingOrder = 5;
+            FixtureGlow.Attach(transform, new Color(0.55f, 0.75f, 1f, 0.4f), 1.4f, 0.1f);
             _label = WorldLabel.Attach(transform, "Storm rod", new Vector3(0f, 1.15f, 0f),
                 new Color(0.75f, 0.88f, 1f));
         }

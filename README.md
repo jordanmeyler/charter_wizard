@@ -31,7 +31,7 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 1. Install [Unity Hub](https://unity.com/download) and **Unity 6.3 LTS** (`6000.3.22f1` or a nearby 6.3).
 2. Open this folder in Hub (`Assets`, `Packages`, `ProjectSettings`).
-3. Open `Assets/Scenes/Main.unity` and press Play. Leave the scene as the camera and light — the adept, rooms, and locks spawn at runtime. Do not place a character in the scene.
+3. Open `Assets/Scenes/Main.unity` and press Play. Leave the scene as the camera and light — the adept, rooms, and locks spawn at runtime from `Assets/Resources/Maps/sanctum.json`. Do not place a character in the scene.
 
 ### Controls
 
@@ -53,11 +53,27 @@ Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote 
 
 Walk into a pit and you return to the last safe floor. A pillar or wall fills that hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles. Flight lets you walk over pits for a short while.
 
+## Building levels and scenes
+
+You do not place rooms in `Main.unity`. Maps are JSON. The four-room sanctum is `Assets/Resources/Maps/sanctum.json`. `Assets/Resources/Maps/index.json` chooses which map boots (`startup`).
+
+| Tool | Use it for |
+| --- | --- |
+| [`Tools/map-editor.html`](Tools/map-editor.html) | Browser painter — rooms, materials, pits, doors, plaques, rune-strings, locks, halls. Export JSON and drop it in `Assets/Resources/Maps/`. |
+| Unity `Window → Rune Magic → Map Painter` | Same JSON inside the editor. Left-click stamps a tile; Shift-click places a prop; Alt-click clears. |
+| `Assets/Scripts/World/MapFile.cs` / `MapBuilder.cs` | The format and the runtime stamp. |
+
+A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
+
+Tiles are still painted in code (`SpriteFactory`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow.
+
 ## Where to grow the trees
 
 | File | What to add |
 | --- | --- |
-| `Assets/Scripts/World/SanctumLayout.cs` | New rooms and tile layouts |
+| `Assets/Resources/Maps/` | New maps (JSON). Point `index.json` at the one to boot |
+| `Tools/map-editor.html` | Paint those maps without opening Unity |
+| `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if JSON is missing |
 | `Assets/Scripts/World/MaterialCatalog.cs` | New materials, signatures, and tile paints |
 | `MATERIALS.md` | Running material list (beside the spell book) |
 | `Assets/Scripts/Field/RuneTapestry.cs` | Charter-only room weave (scroll + alternating rows) |

@@ -37,6 +37,7 @@ namespace RuneMagic
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.AshMite();
             _renderer.sortingOrder = 12;
+            FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
 
             var body = gameObject.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;

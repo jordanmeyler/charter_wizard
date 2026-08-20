@@ -1,0 +1,401 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace RuneMagic
+{
+    /// <summary>
+    /// Stamps a <see cref="MapFile"/> onto a live grid. The sanctum JSON is
+    /// the first map; later chambers are the same format.
+    /// </summary>
+    public static class MapBuilder
+    {
+        public static readonly SpellId[] MiteKeys =
+        {
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.WaterJet, SpellId.IcePillar,
+            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt,
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
+            SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
+            SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
+            SpellId.ChainLightning, SpellId.Thunderclap, SpellId.StormCall, SpellId.LavaFlood,
+            SpellId.IceSpear, SpellId.Rage, SpellId.Blight, SpellId.Unmake, SpellId.LastBreath
+        };
+
+        public static readonly SpellId[] TorchKeys =
+        {
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother,
+            SpellId.Ignite, SpellId.Melt
+        };
+
+        public static readonly SpellId[] PitKeys =
+        {
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall,
+            SpellId.FlamePillar, SpellId.IcePillar, SpellId.VineRise,
+            SpellId.Hop, SpellId.Flight
+        };
+
+        public static readonly SpellId[] RodKeys =
+        {
+            SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout,
+            SpellId.ChainLightning, SpellId.StormCall, SpellId.Thunderclap
+        };
+
+        public static SanctumBuild Build(MapFile map)
+        {
+            if (map == null || map.rooms == null || map.rooms.Length == 0)
+            {
+                throw new System.ArgumentException("Map has no rooms.");
+            }
+
+            var root = new GameObject(string.IsNullOrEmpty(map.name) ? "MapGrid" : map.name);
+            var grid = root.AddComponent<WorldGrid>();
+            var rooms = new RoomInfo[map.rooms.Length];
+            var locks = new List<ISpellLock>();
+            GameObject charm = null;
+
+            for (var i = 0; i < map.rooms.Length; i++)
+            {
+                rooms[i] = BuildRoom(grid, map.rooms[i], locks, ref charm);
+            }
+
+            if (map.halls != null)
+            {
+                for (var i = 0; i < map.halls.Length; i++)
+                {
+                    Connect(grid, FindRoom(map.rooms, map.halls[i].from), FindRoom(map.rooms, map.halls[i].to),
+                        MapFile.ParseMaterial(map.halls[i].material));
+                }
+            }
+
+            grid.DressLooks();
+            var spawn = map.spawn != null
+                ? WorldGrid.Center(map.spawn.x, map.spawn.y)
+                : rooms[0].Entrance;
+
+            return new SanctumBuild
+            {
+                Grid = grid,
+                Spawn = spawn,
+                Locks = locks.ToArray(),
+                Rooms = rooms,
+                Charm = charm
+            };
+        }
+
+        static RoomInfo BuildRoom(WorldGrid grid, MapRoom spec, List<ISpellLock> locks, ref GameObject charm)
+        {
+            var origin = spec.origin != null ? spec.origin.Cell : Vector2Int.zero;
+            var width = Mathf.Max(3, spec.width);
+            var height = Mathf.Max(3, spec.height);
+            var wall = MapFile.ParseMaterial(spec.wall);
+            var floor = MapFile.ParseMaterial(spec.floor);
+            grid.RoomShell(origin.x, origin.y, origin.x + width - 1, origin.y + height - 1, wall, floor);
+            ApplyStamps(grid, origin, spec.stamps);
+
+            var room = new RoomInfo(
+                string.IsNullOrEmpty(spec.id) ? spec.name : spec.id,
+                string.IsNullOrEmpty(spec.name) ? spec.id : spec.name,
+                new RectInt(origin.x, origin.y, width, height),
+                WorldGrid.Center(origin.x + 2, origin.y + height / 2));
+
+            if (!string.IsNullOrEmpty(spec.exit) && spec.exit != "none")
+            {
+                room.ExitDoors = PlaceExit(grid, origin, width, height, spec.exit, wall);
+            }
+
+            if (spec.props == null)
+            {
+                return room;
+            }
+
+            for (var i = 0; i < spec.props.Length; i++)
+            {
+                PlaceProp(grid, origin, room, spec.props[i], locks, ref charm);
+            }
+
+            return room;
+        }
+
+        static void ApplyStamps(WorldGrid grid, Vector2Int origin, MapStamp[] stamps)
+        {
+            if (stamps == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < stamps.Length; i++)
+            {
+                var stamp = stamps[i];
+                if (stamp == null || stamp.cells == null)
+                {
+                    continue;
+                }
+
+                var kind = MapFile.ParseKind(stamp.kind);
+                var material = MapFile.ParseMaterial(stamp.material);
+                for (var c = 0; c + 1 < stamp.cells.Length; c += 2)
+                {
+                    grid.Set(origin.x + stamp.cells[c], origin.y + stamp.cells[c + 1], kind, material);
+                }
+            }
+        }
+
+        static void PlaceProp(
+            WorldGrid grid,
+            Vector2Int origin,
+            RoomInfo room,
+            MapProp prop,
+            List<ISpellLock> locks,
+            ref GameObject charm)
+        {
+            if (prop == null || string.IsNullOrEmpty(prop.type))
+            {
+                return;
+            }
+
+            var world = WorldGrid.Center(origin.x + prop.x, origin.y + prop.y);
+            var type = prop.type.ToLowerInvariant();
+            switch (type)
+            {
+                case "plaque":
+                    if (!string.IsNullOrEmpty(prop.text))
+                    {
+                        HintPlaque.Spawn(world, prop.text);
+                    }
+
+                    break;
+                case "runes":
+                    RuneStringSource.Spawn(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));
+                    break;
+                case "charm":
+                    charm = new GameObject("FreeCharm");
+                    charm.transform.position = world;
+                    break;
+                case "mite":
+                case "lock":
+                    BindLock(room, locks, SpawnMite(prop, world));
+                    break;
+                case "torch":
+                    BindLock(room, locks, SpawnTorch(prop, world));
+                    break;
+                case "rod":
+                    BindLock(room, locks, SpawnRod(prop, world));
+                    break;
+                case "chasm":
+                    BindLock(room, locks, SpawnChasm(prop, world, grid, room));
+                    break;
+            }
+        }
+
+        static EncounterLock SpawnMite(MapProp prop, Vector3 world)
+        {
+            var actor = new GameObject(NameOf(prop, "Ash Mite"));
+            actor.transform.position = world;
+            var encounter = actor.AddComponent<EncounterLock>();
+            encounter.Bind(
+                NameOf(prop, "Ash Mite"),
+                IdOf(prop, "ash-mite"),
+                ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
+                ParseKeys(prop.keys, MiteKeys),
+                ensouled: false);
+            return encounter;
+        }
+
+        static TorchFixture SpawnTorch(MapProp prop, Vector3 world)
+        {
+            var actor = new GameObject(NameOf(prop, "Cold Torch"));
+            actor.transform.position = world;
+            var torch = actor.AddComponent<TorchFixture>();
+            torch.Bind(NameOf(prop, "Cold Torch"), IdOf(prop, "cold-torch"), ParseKeys(prop.keys, TorchKeys));
+            return torch;
+        }
+
+        static LightningConduit SpawnRod(MapProp prop, Vector3 world)
+        {
+            var actor = new GameObject(NameOf(prop, "Storm Rod"));
+            actor.transform.position = world;
+            var rod = actor.AddComponent<LightningConduit>();
+            rod.Bind(NameOf(prop, "Storm Rod"), IdOf(prop, "storm-rod"), ParseKeys(prop.keys, RodKeys));
+            return rod;
+        }
+
+        static PitChasm SpawnChasm(MapProp prop, Vector3 world, WorldGrid grid, RoomInfo room)
+        {
+            var actor = new GameObject(NameOf(prop, "Chasm"));
+            actor.transform.position = world;
+            var pits = CollectPits(grid, room.Bounds);
+            var chasm = actor.AddComponent<PitChasm>();
+            chasm.Bind(NameOf(prop, "Chasm"), IdOf(prop, "chasm"), ParseKeys(prop.keys, PitKeys), grid, pits);
+            return chasm;
+        }
+
+        static List<Vector2Int> CollectPits(WorldGrid grid, RectInt bounds)
+        {
+            var pits = new List<Vector2Int>();
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                for (var x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    var tile = grid.Get(x, y);
+                    if (tile != null && tile.Kind == TileKind.Pit)
+                    {
+                        pits.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            return pits;
+        }
+
+        static void BindLock(RoomInfo room, List<ISpellLock> locks, ISpellLock encounter)
+        {
+            room.Lock = encounter;
+            locks.Add(encounter);
+        }
+
+        static void Connect(WorldGrid grid, MapRoom from, MapRoom to, MaterialId hall)
+        {
+            if (from == null || to == null || from.origin == null || to.origin == null)
+            {
+                return;
+            }
+
+            if (to.origin.x > from.origin.x)
+            {
+                var hallX0 = from.origin.x + from.width;
+                var hallX1 = to.origin.x - 1;
+                var mid = from.origin.y + from.height / 2;
+                grid.Fill(hallX0, from.origin.y, hallX1, from.origin.y + from.height - 1, TileKind.Wall, MaterialId.Stone);
+                grid.Fill(hallX0, mid - 1, hallX1, mid + 1, TileKind.Floor, hall);
+                grid.Set(to.origin.x, mid - 1, TileKind.Floor, hall);
+                grid.Set(to.origin.x, mid, TileKind.Floor, hall);
+                grid.Set(to.origin.x, mid + 1, TileKind.Floor, hall);
+                return;
+            }
+
+            if (to.origin.y > from.origin.y)
+            {
+                var hallY0 = from.origin.y + from.height;
+                var hallY1 = to.origin.y - 1;
+                var mid = from.origin.x + from.width / 2;
+                grid.Fill(from.origin.x, hallY0, from.origin.x + from.width - 1, hallY1, TileKind.Wall, MaterialId.Stone);
+                grid.Fill(mid - 1, hallY0, mid + 1, hallY1, TileKind.Floor, hall);
+                grid.Set(mid - 1, to.origin.y, TileKind.Floor, hall);
+                grid.Set(mid, to.origin.y, TileKind.Floor, hall);
+                grid.Set(mid + 1, to.origin.y, TileKind.Floor, hall);
+            }
+        }
+
+        static WorldTile[] PlaceExit(WorldGrid grid, Vector2Int origin, int width, int height, string exit, MaterialId material)
+        {
+            var midX = origin.x + width / 2;
+            var midY = origin.y + height / 2;
+            switch ((exit ?? "east").ToLowerInvariant())
+            {
+                case "west":
+                    return new[]
+                    {
+                        grid.Set(origin.x, midY - 1, TileKind.Door, material),
+                        grid.Set(origin.x, midY, TileKind.Door, material),
+                        grid.Set(origin.x, midY + 1, TileKind.Door, material)
+                    };
+                case "north":
+                    return new[]
+                    {
+                        grid.Set(midX - 1, origin.y + height - 1, TileKind.Door, material),
+                        grid.Set(midX, origin.y + height - 1, TileKind.Door, material),
+                        grid.Set(midX + 1, origin.y + height - 1, TileKind.Door, material)
+                    };
+                case "south":
+                    return new[]
+                    {
+                        grid.Set(midX - 1, origin.y, TileKind.Door, material),
+                        grid.Set(midX, origin.y, TileKind.Door, material),
+                        grid.Set(midX + 1, origin.y, TileKind.Door, material)
+                    };
+                default:
+                    return new[]
+                    {
+                        grid.Set(origin.x + width - 1, midY - 1, TileKind.Door, material),
+                        grid.Set(origin.x + width - 1, midY, TileKind.Door, material),
+                        grid.Set(origin.x + width - 1, midY + 1, TileKind.Door, material)
+                    };
+            }
+        }
+
+        static MapRoom FindRoom(MapRoom[] rooms, string id)
+        {
+            if (rooms == null || string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+
+            for (var i = 0; i < rooms.Length; i++)
+            {
+                if (rooms[i] != null && rooms[i].id == id)
+                {
+                    return rooms[i];
+                }
+            }
+
+            return null;
+        }
+
+        static string NameOf(MapProp prop, string fallback) =>
+            string.IsNullOrEmpty(prop.displayName) ? fallback : prop.displayName;
+
+        static string IdOf(MapProp prop, string fallback) =>
+            string.IsNullOrEmpty(prop.formulaId) ? fallback : prop.formulaId;
+
+        static RuneId[] ParseRunes(string[] names, params RuneId[] fallback)
+        {
+            if (names == null || names.Length == 0)
+            {
+                return fallback;
+            }
+
+            var runes = new RuneId[names.Length];
+            var count = 0;
+            for (var i = 0; i < names.Length; i++)
+            {
+                var rune = MapFile.ParseRune(names[i]);
+                if (rune != RuneId.None)
+                {
+                    runes[count++] = rune;
+                }
+            }
+
+            if (count == 0)
+            {
+                return fallback;
+            }
+
+            if (count != runes.Length)
+            {
+                System.Array.Resize(ref runes, count);
+            }
+
+            return runes;
+        }
+
+        static SpellId[] ParseKeys(string[] names, SpellId[] fallback)
+        {
+            if (names == null || names.Length == 0)
+            {
+                return fallback;
+            }
+
+            var keys = new List<SpellId>(names.Length);
+            for (var i = 0; i < names.Length; i++)
+            {
+                var spell = MapFile.ParseSpell(names[i]);
+                if (spell != SpellId.None)
+                {
+                    keys.Add(spell);
+                }
+            }
+
+            return keys.Count > 0 ? keys.ToArray() : fallback;
+        }
+    }
+}

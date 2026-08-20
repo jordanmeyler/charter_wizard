@@ -151,7 +151,110 @@ namespace RuneMagic
             Line(x0, y0 + 1, x1, y1 + 1, color);
         }
 
-        public Sprite ToSprite(float pixelsPerUnit = 0f)
+        public Color Get(int x, int y)
+        {
+            if ((uint)x >= (uint)Width || (uint)y >= (uint)Height)
+            {
+                return new Color(0f, 0f, 0f, 0f);
+            }
+
+            return _pixels[y * Width + x];
+        }
+
+        public void FillRounded(int x, int y, int width, int height, int radius, Color color)
+        {
+            var r = Mathf.Max(0, radius);
+            for (var py = y; py < y + height; py++)
+            {
+                for (var px = x; px < x + width; px++)
+                {
+                    var dx = px < x + r ? x + r - px : px >= x + width - r ? px - (x + width - 1 - r) : 0;
+                    var dy = py < y + r ? y + r - py : py >= y + height - r ? py - (y + height - 1 - r) : 0;
+                    if (dx * dx + dy * dy <= r * r + r)
+                    {
+                        Set(px, py, color);
+                    }
+                }
+            }
+        }
+
+        public void SoftCircle(int cx, int cy, int radius, Color color)
+        {
+            var r = Mathf.Max(1, radius);
+            for (var y = -r; y <= r; y++)
+            {
+                for (var x = -r; x <= r; x++)
+                {
+                    var d = Mathf.Sqrt(x * x + y * y);
+                    if (d > r)
+                    {
+                        continue;
+                    }
+
+                    var fade = color;
+                    fade.a = color.a * Mathf.Clamp01(1f - d / r);
+                    Blend(cx + x, cy + y, fade);
+                }
+            }
+        }
+
+        public void Shade(int x, int y, int width, int height, float amount)
+        {
+            for (var py = y; py < y + height; py++)
+            {
+                for (var px = x; px < x + width; px++)
+                {
+                    var under = Get(px, py);
+                    if (under.a <= 0f)
+                    {
+                        continue;
+                    }
+
+                    Set(px, py, Color.Lerp(under, Color.black, amount));
+                }
+            }
+        }
+
+        public void Highlight(int x, int y, int width, int height, float amount)
+        {
+            for (var py = y; py < y + height; py++)
+            {
+                for (var px = x; px < x + width; px++)
+                {
+                    var under = Get(px, py);
+                    if (under.a <= 0f)
+                    {
+                        continue;
+                    }
+
+                    Set(px, py, Color.Lerp(under, Color.white, amount));
+                }
+            }
+        }
+
+        public void Noise(HashRng rng, Color color, int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                Blend(rng.Range(0, Width), rng.Range(0, Height), color);
+            }
+        }
+
+        public void DitherBand(int y0, int y1, Color color, float density)
+        {
+            for (var y = y0; y <= y1; y++)
+            {
+                for (var x = 0; x < Width; x++)
+                {
+                    if (((x + y) & 1) == 0 && ((x * 13 + y * 7) % 10) / 10f < density)
+                    {
+                        Blend(x, y, color);
+                    }
+                }
+            }
+        }
+
+        public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
             {
@@ -161,7 +264,53 @@ namespace RuneMagic
             texture.SetPixels(_pixels);
             texture.Apply();
             var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : Mathf.Max(Width, Height);
-            return Sprite.Create(texture, new Rect(0f, 0f, Width, Height), new Vector2(0.5f, 0.5f), ppu);
+            return Sprite.Create(
+                texture,
+                new Rect(0f, 0f, Width, Height),
+                pivot ?? new Vector2(0.5f, 0.5f),
+                ppu);
+        }
+    }
+
+    public struct HashRng
+    {
+        uint _state;
+
+        public HashRng(int seed)
+        {
+            _state = (uint)seed * 747796405u + 2891336453u;
+            if (_state == 0)
+            {
+                _state = 1;
+            }
+        }
+
+        public float Value()
+        {
+            _state ^= _state << 13;
+            _state ^= _state >> 17;
+            _state ^= _state << 5;
+            return (_state & 0xFFFF) / 65535f;
+        }
+
+        public int Range(int min, int maxExclusive)
+        {
+            if (maxExclusive <= min)
+            {
+                return min;
+            }
+
+            return min + (int)(Value() * (maxExclusive - min));
+        }
+
+        public Color Jitter(Color color, float amount)
+        {
+            var delta = (Value() - 0.5f) * amount;
+            return new Color(
+                Mathf.Clamp01(color.r + delta),
+                Mathf.Clamp01(color.g + delta * 0.8f),
+                Mathf.Clamp01(color.b + delta * 0.6f),
+                color.a);
         }
     }
 }

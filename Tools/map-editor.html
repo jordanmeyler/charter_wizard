@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Rune Magic — Map Editor</title>
+  <style>
+    :root {
+      --bg: #100e12;
+      --panel: #1a161c;
+      --ink: #f0e6d4;
+      --muted: #9a8c7a;
+      --line: #3a2f34;
+      --accent: #d4a04a;
+      --fire: #e86a2a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 13px/1.4 "Iowan Old Style", Palatino, Georgia, serif; }
+    button, select, input, textarea { font: inherit; color: var(--ink); background: #241e24; border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+    button { cursor: pointer; }
+    button:hover, .tool.active { border-color: var(--accent); color: var(--accent); }
+    header { display: flex; gap: 12px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #161216; }
+    header h1 { margin: 0; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+    header .grow { flex: 1; }
+    main { display: grid; grid-template-columns: 220px 1fr 260px; height: calc(100% - 52px); }
+    aside, .palette { padding: 12px; border-right: 1px solid var(--line); overflow: auto; }
+    .palette { border-right: 0; border-left: 1px solid var(--line); }
+    h2 { margin: 0 0 8px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .room { padding: 6px 8px; margin-bottom: 4px; border: 1px solid transparent; cursor: pointer; }
+    .room.active { border-color: var(--accent); background: #2a2018; }
+    #stage { overflow: auto; padding: 18px; background: radial-gradient(ellipse at top, #1c1410, #0c0a0e 70%); }
+    #grid { display: grid; gap: 1px; background: #050406; border: 2px solid #2c2218; }
+    .cell { width: 22px; height: 22px; image-rendering: pixelated; position: relative; }
+    .cell .mark { position: absolute; inset: 2px; font-size: 10px; text-align: center; line-height: 18px; color: #fff; text-shadow: 0 0 2px #000; }
+    .swatch { display: flex; align-items: center; gap: 6px; padding: 3px; cursor: pointer; }
+    .swatch i { width: 14px; height: 14px; display: block; border: 1px solid #000; }
+    .swatch.active { outline: 1px solid var(--accent); }
+    .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    label.field { display: block; margin: 0 0 8px; color: var(--muted); }
+    label.field input, label.field select, label.field textarea { width: 100%; margin-top: 3px; }
+    textarea { min-height: 70px; }
+    .hint { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Map Editor</h1>
+    <input id="mapName" value="The Sanctum" />
+    <div class="grow"></div>
+    <button id="newMap">New map</button>
+    <button id="loadSanctum">Load sanctum</button>
+    <button id="importBtn">Import JSON</button>
+    <button id="exportBtn">Export JSON</button>
+    <input id="file" type="file" accept="application/json" hidden />
+  </header>
+  <main>
+    <aside>
+      <h2>Rooms</h2>
+      <div id="rooms"></div>
+      <button id="addRoom">Add room</button>
+      <p class="hint">Rooms sit on a shared grid. Place the next one 4 tiles east (width + 4) to leave a hall.</p>
+      <h2>Halls</h2>
+      <div id="halls"></div>
+      <div class="row">
+        <select id="hallFrom"></select>
+        <select id="hallTo"></select>
+        <select id="hallMat"></select>
+        <button id="addHall">Link</button>
+      </div>
+    </aside>
+    <section id="stage">
+      <div id="grid"></div>
+    </section>
+    <div class="palette">
+      <h2>Paint</h2>
+      <div class="row">
+        <button class="tool active" data-kind="Floor">Floor</button>
+        <button class="tool" data-kind="Wall">Wall</button>
+        <button class="tool" data-kind="Pit">Pit</button>
+        <button class="tool" data-kind="Door">Door</button>
+        <button class="tool" data-kind="Bridge">Bridge</button>
+        <button class="tool" data-prop="erase">Erase stamp</button>
+      </div>
+      <div id="materials"></div>
+      <h2>Props</h2>
+      <div class="row">
+        <button class="tool" data-prop="plaque">Plaque</button>
+        <button class="tool" data-prop="runes">Runes</button>
+        <button class="tool" data-prop="charm">Charm</button>
+        <button class="tool" data-prop="mite">Mite</button>
+        <button class="tool" data-prop="torch">Torch</button>
+        <button class="tool" data-prop="rod">Rod</button>
+        <button class="tool" data-prop="chasm">Chasm</button>
+        <button class="tool" data-prop="spawn">Spawn</button>
+      </div>
+      <label class="field">Plaque / rune text
+        <textarea id="propText">Hunger sleeps in the wood.</textarea>
+      </label>
+      <label class="field">Runes (comma)
+        <input id="propRunes" value="Fire, Salt" />
+      </label>
+      <h2>Selected room</h2>
+      <label class="field">Id <input id="roomId" /></label>
+      <label class="field">Name <input id="roomName" /></label>
+      <div class="row">
+        <label class="field">X <input id="roomX" type="number" /></label>
+        <label class="field">Y <input id="roomY" type="number" /></label>
+      </div>
+      <div class="row">
+        <label class="field">W <input id="roomW" type="number" /></label>
+        <label class="field">H <input id="roomH" type="number" /></label>
+      </div>
+      <label class="field">Wall material <select id="roomWall"></select></label>
+      <label class="field">Floor material <select id="roomFloor"></select></label>
+      <label class="field">Exit
+        <select id="roomExit">
+          <option>east</option><option>west</option><option>north</option><option>south</option><option>none</option>
+        </select>
+      </label>
+    </div>
+  </main>
+  <script>
+    const MATERIALS = [
+      ["Stone", "#474752"], ["Ash", "#382e29"], ["Timber", "#754d29"], ["Hearth", "#6b3829"],
+      ["Ember", "#331a14"], ["Damp", "#334766"], ["Vein", "#524d3d"], ["Scoured", "#4d5761"],
+      ["Moss", "#474229"], ["Metal", "#6b707a"], ["SaltCrust", "#6b6661"], ["Void", "#080508"],
+      ["Ice", "#9ec7e6"], ["Sand", "#b89a61"], ["Mud", "#523824"], ["Lava", "#8c2910"],
+      ["Steam", "#b3bdc7"], ["Dust", "#857561"], ["Glass", "#476b75"], ["Crystal", "#8c6bb8"],
+      ["Obsidian", "#14101a"], ["Grove", "#295224"], ["Cloud", "#b8c2d1"], ["Rain", "#384d66"],
+      ["Snow", "#e0e6f0"], ["Glacier", "#b3d1e0"], ["Acid", "#8cb82e"], ["Water", "#2e619e"], ["Plant", "#386b29"] ]
+    ];
+    const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
+    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", spawn: "S" };
+
+    const SANCTUM = {
+      id: "sanctum", name: "The Sanctum", spawn: { x: 2, y: 5 },
+      rooms: [
+        { id: "ash-court", name: "Ash Court", origin: { x: 0, y: 0 }, width: 13, height: 11, wall: "Stone", floor: "Ash", exit: "east",
+          stamps: [
+            { kind: "Floor", material: "Ember", cells: [6,6,7,5,8,6,7,7,6,5,8,5] },
+            { kind: "Floor", material: "SaltCrust", cells: [6,7,8,7,5,6,9,6] }
+          ],
+          props: [
+            { type: "plaque", x: 3, y: 8, text: "Read the weave. A lock with many keys." },
+            { type: "runes", x: 7, y: 8, runes: ["Fire", "Salt"], dir: "right" },
+            { type: "charm", x: 3, y: 3 },
+            { type: "mite", x: 7, y: 6, displayName: "Ash Mite", formulaId: "ash-mite", formula: ["Fire", "Salt"] }
+          ] },
+        { id: "wick-chapel", name: "Wick Chapel", origin: { x: 17, y: 0 }, width: 13, height: 11, wall: "Timber", floor: "Timber", exit: "east",
+          stamps: [
+            { kind: "Floor", material: "Hearth", cells: [6,6,5,5,7,5,6,4,6,5,5,6,7,6] },
+            { kind: "Floor", material: "Moss", cells: [2,2,10,2,2,8,10,8] }
+          ],
+          props: [
+            { type: "plaque", x: 3, y: 8, text: "Hunger sleeps in the wood. Give it a body." },
+            { type: "runes", x: 6, y: 8, runes: ["Fire", "Plant"], dir: "right" },
+            { type: "torch", x: 6, y: 5, displayName: "Cold Torch", formulaId: "cold-torch" }
+          ] },
+        { id: "the-drop", name: "The Drop", origin: { x: 34, y: 0 }, width: 13, height: 11, wall: "Stone", floor: "Stone", exit: "east",
+          stamps: [{ kind: "Pit", material: "Void", cells: [5,1,6,1,7,1,5,2,6,2,7,2,5,3,6,3,7,3,5,4,6,4,7,4,5,5,6,5,7,5,5,6,6,6,7,6,5,7,6,7,7,7,5,8,6,8,7,8,5,9,6,9,7,9] },
+            { kind: "Floor", material: "SaltCrust", cells: [4,4,4,5,4,6,3,5] }],
+          props: [
+            { type: "plaque", x: 2, y: 8, text: "Rest that stands fills the drop. Breath given a body leaps it." },
+            { type: "runes", x: 2, y: 6, runes: ["Earth", "Salt"], dir: "up" },
+            { type: "chasm", x: 4, y: 5, displayName: "Chasm", formulaId: "chasm" }
+          ] },
+        { id: "storm-cell", name: "Storm Cell", origin: { x: 51, y: 0 }, width: 13, height: 11, wall: "Stone", floor: "Vein", exit: "none",
+          stamps: [
+            { kind: "Floor", material: "Hearth", cells: [4,5,5,4,5,5,5,6,4,4,4,6] },
+            { kind: "Floor", material: "Scoured", cells: [8,5,7,4,7,5,7,6,8,4,8,6] },
+            { kind: "Floor", material: "Metal", cells: [6,5] }
+          ],
+          props: [
+            { type: "plaque", x: 3, y: 8, text: "Hunger meets breath. A seed is born." },
+            { type: "runes", x: 6, y: 8, runes: ["Fire", "Air", "Spark"], dir: "right" },
+            { type: "rod", x: 6, y: 5, displayName: "Storm Rod", formulaId: "storm-rod" }
+          ] }
+      ],
+      halls: [
+        { from: "ash-court", to: "wick-chapel", material: "Stone" },
+        { from: "wick-chapel", to: "the-drop", material: "Timber" },
+        { from: "the-drop", to: "storm-cell", material: "Vein" }
+      ]
+    };
+
+    const colorOf = Object.fromEntries(MATERIALS);
+    let map = structuredClone(SANCTUM);
+    let roomIndex = 0;
+    let kind = "Floor";
+    let material = "Ash";
+    let propTool = null;
+    let painting = false;
+
+    function currentRoom() { return map.rooms[roomIndex]; }
+
+    function cellAt(room, x, y) {
+      const border = x === 0 || y === 0 || x === room.width - 1 || y === room.height - 1;
+      let cell = { kind: border ? "Wall" : "Floor", material: border ? room.wall : room.floor };
+      for (const stamp of room.stamps || []) {
+        const cells = stamp.cells || [];
+        for (let i = 0; i + 1 < cells.length; i += 2) {
+          if (cells[i] === x && cells[i + 1] === y) cell = { kind: stamp.kind, material: stamp.material };
+        }
+      }
+      return cell;
+    }
+
+    function setStamp(room, x, y, nextKind, nextMaterial) {
+      room.stamps = (room.stamps || []).map(stamp => ({
+        ...stamp,
+        cells: (stamp.cells || []).reduce((acc, _, i, arr) => {
+          if (i % 2) return acc;
+          if (arr[i] === x && arr[i + 1] === y) return acc;
+          acc.push(arr[i], arr[i + 1]);
+          return acc;
+        }, [])
+      })).filter(s => s.cells.length);
+      const border = x === 0 || y === 0 || x === room.width - 1 || y === room.height - 1;
+      const defKind = border ? "Wall" : "Floor";
+      const defMat = border ? room.wall : room.floor;
+      if (nextKind === defKind && nextMaterial === defMat) return;
+      let stamp = room.stamps.find(s => s.kind === nextKind && s.material === nextMaterial);
+      if (!stamp) {
+        stamp = { kind: nextKind, material: nextMaterial, cells: [] };
+        room.stamps.push(stamp);
+      }
+      stamp.cells.push(x, y);
+    }
+
+    function paintCell(x, y) {
+      const room = currentRoom();
+      if (!room || x < 0 || y < 0 || x >= room.width || y >= room.height) return;
+      if (propTool === "erase") {
+        setStamp(room, x, y, (x === 0 || y === 0 || x === room.width - 1 || y === room.height - 1) ? "Wall" : "Floor",
+          (x === 0 || y === 0 || x === room.width - 1 || y === room.height - 1) ? room.wall : room.floor);
+        room.props = (room.props || []).filter(p => !(p.x === x && p.y === y));
+      } else if (propTool === "spawn") {
+        map.spawn = { x: room.origin.x + x, y: room.origin.y + y };
+      } else if (propTool) {
+        room.props = room.props || [];
+        room.props = room.props.filter(p => !(p.x === x && p.y === y));
+        const prop = { type: propTool, x, y };
+        if (propTool === "plaque") prop.text = document.getElementById("propText").value;
+        if (propTool === "runes") {
+          prop.runes = document.getElementById("propRunes").value.split(",").map(s => s.trim()).filter(Boolean);
+          prop.dir = "right";
+          prop.text = document.getElementById("propText").value;
+        }
+        room.props.push(prop);
+      } else {
+        setStamp(room, x, y, kind, material);
+      }
+      draw();
+    }
+
+    function draw() {
+      const room = currentRoom();
+      document.getElementById("mapName").value = map.name || "";
+      renderRoomList();
+      renderHalls();
+      fillRoomFields();
+      const grid = document.getElementById("grid");
+      grid.style.gridTemplateColumns = `repeat(${room.width}, 22px)`;
+      grid.innerHTML = "";
+      const spawnLocal = {
+        x: map.spawn.x - room.origin.x,
+        y: map.spawn.y - room.origin.y
+      };
+      for (let y = room.height - 1; y >= 0; y--) {
+        for (let x = 0; x < room.width; x++) {
+          const cell = cellAt(room, x, y);
+          const el = document.createElement("div");
+          el.className = "cell";
+          el.style.background = colorOf[cell.material] || "#444";
+          if (cell.kind === "Wall") el.style.filter = "brightness(0.65)";
+          if (cell.kind === "Pit") el.style.background = "#080508";
+          const prop = (room.props || []).find(p => p.x === x && p.y === y);
+          const spawnHere = spawnLocal.x === x && spawnLocal.y === y &&
+            spawnLocal.x >= 0 && spawnLocal.x < room.width &&
+            spawnLocal.y >= 0 && spawnLocal.y < room.height;
+          const mark = (spawnHere ? "S" : "") ||
+            (prop ? PROP_MARK[prop.type] : "") || KIND_MARK[cell.kind] || "";
+          if (mark) el.innerHTML = `<span class="mark">${mark}</span>`;
+          el.addEventListener("mousedown", ev => { ev.preventDefault(); painting = true; paintCell(x, y); });
+          el.addEventListener("mouseenter", () => { if (painting) paintCell(x, y); });
+          grid.appendChild(el);
+        }
+      }
+    }
+
+    function renderRoomList() {
+      const host = document.getElementById("rooms");
+      host.innerHTML = "";
+      map.rooms.forEach((room, i) => {
+        const el = document.createElement("div");
+        el.className = "room" + (i === roomIndex ? " active" : "");
+        el.textContent = room.name + "  (" + room.origin.x + "," + room.origin.y + ")";
+        el.onclick = () => { syncRoomFields(); roomIndex = i; draw(); };
+        host.appendChild(el);
+      });
+      for (const id of ["hallFrom", "hallTo"]) {
+        const sel = document.getElementById(id);
+        sel.innerHTML = map.rooms.map(r => `<option value="${r.id}">${r.name}</option>`).join("");
+      }
+    }
+
+    function renderHalls() {
+      document.getElementById("halls").innerHTML = (map.halls || []).map((h, i) =>
+        `<div class="room">${h.from} → ${h.to} <button data-i="${i}" class="killHall">x</button></div>`
+      ).join("");
+      document.querySelectorAll(".killHall").forEach(btn => {
+        btn.onclick = () => { map.halls.splice(+btn.dataset.i, 1); draw(); };
+      });
+    }
+
+    function fillRoomFields() {
+      const room = currentRoom();
+      roomId.value = room.id;
+      roomName.value = room.name;
+      roomX.value = room.origin.x;
+      roomY.value = room.origin.y;
+      roomW.value = room.width;
+      roomH.value = room.height;
+      roomWall.value = room.wall;
+      roomFloor.value = room.floor;
+      roomExit.value = room.exit || "none";
+    }
+
+    function syncRoomFields() {
+      const room = currentRoom();
+      if (!room) return;
+      room.id = roomId.value;
+      room.name = roomName.value;
+      room.origin = { x: +roomX.value, y: +roomY.value };
+      room.width = Math.max(3, +roomW.value);
+      room.height = Math.max(3, +roomH.value);
+      room.wall = roomWall.value;
+      room.floor = roomFloor.value;
+      room.exit = roomExit.value;
+      map.name = document.getElementById("mapName").value;
+    }
+
+    function fillSelects() {
+      const opts = MATERIALS.map(([n]) => `<option value="${n}">${n}</option>`).join("");
+      roomWall.innerHTML = opts;
+      roomFloor.innerHTML = opts;
+      hallMat.innerHTML = opts;
+      const host = document.getElementById("materials");
+      host.innerHTML = MATERIALS.map(([n, c]) =>
+        `<div class="swatch${n === material ? " active" : ""}" data-mat="${n}"><i style="background:${c}"></i>${n}</div>`
+      ).join("");
+      host.querySelectorAll(".swatch").forEach(el => {
+        el.onclick = () => { material = el.dataset.mat; propTool = null; draw(); fillSelects(); };
+      });
+    }
+
+    document.querySelectorAll(".tool").forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll(".tool").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (btn.dataset.kind) { kind = btn.dataset.kind; propTool = null; }
+        else propTool = btn.dataset.prop;
+      };
+    });
+
+    ["roomId","roomName","roomX","roomY","roomW","roomH","roomWall","roomFloor","roomExit","mapName"].forEach(id => {
+      document.getElementById(id).addEventListener("change", () => { syncRoomFields(); draw(); });
+    });
+
+    addRoom.onclick = () => {
+      syncRoomFields();
+      const last = map.rooms[map.rooms.length - 1];
+      map.rooms.push({
+        id: "room-" + (map.rooms.length + 1),
+        name: "New Room",
+        origin: { x: last.origin.x + last.width + 4, y: last.origin.y },
+        width: 13, height: 11, wall: "Stone", floor: "Stone", exit: "none", stamps: [], props: []
+      });
+      roomIndex = map.rooms.length - 1;
+      draw();
+    };
+    addHall.onclick = () => {
+      map.halls = map.halls || [];
+      map.halls.push({ from: hallFrom.value, to: hallTo.value, material: hallMat.value });
+      draw();
+    };
+    newMap.onclick = () => {
+      map = { id: "untitled", name: "Untitled", spawn: { x: 2, y: 5 }, rooms: [{
+        id: "room-1", name: "First Room", origin: { x: 0, y: 0 }, width: 13, height: 11,
+        wall: "Stone", floor: "Stone", exit: "none", stamps: [], props: []
+      }], halls: [] };
+      roomIndex = 0;
+      draw();
+    };
+    loadSanctum.onclick = () => { map = structuredClone(SANCTUM); roomIndex = 0; draw(); };
+    exportBtn.onclick = () => {
+      syncRoomFields();
+      map.id = (map.name || "map").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const blob = new Blob([JSON.stringify(map, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = (map.id || "map") + ".json";
+      a.click();
+    };
+    importBtn.onclick = () => file.click();
+    file.onchange = () => {
+      const chosen = file.files[0];
+      if (!chosen) return;
+      chosen.text().then(text => { map = JSON.parse(text); roomIndex = 0; draw(); });
+    };
+    window.addEventListener("mouseup", () => painting = false);
+
+    fillSelects();
+    draw();
+  </script>
+</body>
+</html>

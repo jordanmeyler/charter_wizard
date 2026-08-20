@@ -6,7 +6,9 @@ namespace RuneMagic
     {
         public Transform Target;
         public float damp = 8f;
+        public float lookAhead = 0.85f;
         bool _snapped;
+        Vector3 _look;
 
         void LateUpdate()
         {
@@ -15,7 +17,10 @@ namespace RuneMagic
                 return;
             }
 
-            var desired = Target.position;
+            var motor = Target.GetComponent<PlayerMotor2D>();
+            var ahead = motor != null ? (Vector3)(motor.Facing * lookAhead) : Vector3.zero;
+            _look = Vector3.Lerp(_look, ahead, 1f - Mathf.Exp(-4f * Time.deltaTime));
+            var desired = Target.position + _look;
             desired.z = -10f;
             if (!_snapped)
             {

@@ -10,6 +10,7 @@ namespace RuneMagic
         float _airborneUntil;
         SpriteRenderer _sprite;
         Color _baseColor = Color.white;
+        Vector3 _restScale = Vector3.one;
 
         public bool IsAirborne => Time.time < _airborneUntil;
 
@@ -36,6 +37,7 @@ namespace RuneMagic
         void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();
+            _restScale = transform.localScale;
             if (_sprite != null)
             {
                 _baseColor = _sprite.color;
@@ -44,6 +46,8 @@ namespace RuneMagic
 
         void Update()
         {
+            var bob = 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
+            transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             if (_sprite == null)
             {
                 return;

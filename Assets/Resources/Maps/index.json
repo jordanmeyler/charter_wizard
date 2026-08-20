@@ -1,0 +1,4 @@
+{
+  "startup": "sanctum",
+  "maps": [ "sanctum" ]
+}

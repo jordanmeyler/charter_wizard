@@ -52,6 +52,7 @@ namespace RuneMagic
             var director = directorObject.AddComponent<SanctumDirector>();
             var hud = directorObject.AddComponent<GameHud>();
             hud.Bind(director);
+            directorObject.AddComponent<RoomAtmosphere>().Bind(director);
 
             SanctumBuild build = null;
             try
