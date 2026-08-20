@@ -29,7 +29,7 @@ namespace RuneMagic
             var coord = new Vector2Int(x, y);
             if (_tiles.TryGetValue(coord, out var existing) && existing != null)
             {
-                Destroy(existing.gameObject);
+                DestroyImmediate(existing.gameObject);
             }
 
             var tileObject = new GameObject($"Tile_{kind}_{substance}_{x}_{y}");

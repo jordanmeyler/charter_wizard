@@ -543,7 +543,7 @@ namespace RuneMagic
 
         static Sprite Memo(string key, System.Func<Sprite> build)
         {
-            if (Cache.TryGetValue(key, out var sprite))
+            if (Cache.TryGetValue(key, out var sprite) && sprite != null)
             {
                 return sprite;
             }

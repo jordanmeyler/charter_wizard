@@ -169,7 +169,14 @@ namespace RuneMagic
             if (_sampleIn <= 0f)
             {
                 _sampleIn = SampleInterval;
-                Resample();
+                try
+                {
+                    Resample();
+                }
+                catch (System.Exception exception)
+                {
+                    Debug.LogError("Tapestry sample failed: " + exception);
+                }
             }
 
             for (var i = _strands.Count - 1; i >= 0; i--)
