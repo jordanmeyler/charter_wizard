@@ -30,7 +30,7 @@ namespace RuneMagic
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.AshMite();
-            _renderer.sortingOrder = 7;
+            _renderer.sortingOrder = 12;
 
             var body = gameObject.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;

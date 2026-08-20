@@ -24,7 +24,7 @@ namespace RuneMagic
 
             _body = gameObject.AddComponent<SpriteRenderer>();
             _body.sprite = SpriteFactory.Circle(RunePalette.Of(rune), 40);
-            _body.sortingOrder = 8;
+            _body.sortingOrder = 18;
 
             var labelObject = new GameObject("Glyph");
             labelObject.transform.SetParent(transform, false);
@@ -39,7 +39,7 @@ namespace RuneMagic
             _label.font = Resources.GetBuiltinResource<Font>("Arial.ttf")
                           ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var labelRenderer = labelObject.GetComponent<MeshRenderer>();
-            labelRenderer.sortingOrder = 9;
+            labelRenderer.sortingOrder = 19;
         }
 
         void Update()

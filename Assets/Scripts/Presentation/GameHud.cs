@@ -5,12 +5,30 @@ namespace RuneMagic
 {
     public sealed class GameHud : MonoBehaviour
     {
+        public const float BarHeight = 96f;
+
         SanctumDirector _director;
         Vector2 _pauseScroll;
 
         public void Bind(SanctumDirector director)
         {
             _director = director;
+        }
+
+        public static bool PointerOverChrome(PlayMode mode)
+        {
+            var mouse = Input.mousePosition;
+            if (mouse.y <= BarHeight + 8f)
+            {
+                return true;
+            }
+
+            if (mode == PlayMode.Charter || mode == PlayMode.Grimoire || mode == PlayMode.Paused)
+            {
+                return true;
+            }
+
+            return mouse.x <= 560f && mouse.y >= Screen.height - 168f;
         }
 
         void OnGUI()
@@ -23,35 +41,43 @@ namespace RuneMagic
             if (_director.Mode == PlayMode.Paused)
             {
                 DrawPause();
+                DrawSpellBar();
+                return;
+            }
+
+            if (_director.Mode == PlayMode.Grimoire)
+            {
+                DrawGrimoire();
+                DrawSpellBar();
                 return;
             }
 
             if (_director.Mode == PlayMode.Charter)
             {
                 DrawCharter();
+                DrawSpellBar();
                 return;
             }
 
             DrawWorldChrome();
+            DrawSpellBar();
         }
 
         void DrawWorldChrome()
         {
-            DrawPanel(12, 12, 540, 148);
+            DrawPanel(12, 12, 540, 132);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
 
-            GUI.Label(new Rect(28, 20, 520, 28), "Rune Magic", title);
-            GUI.Label(new Rect(28, 48, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 70, 520, 22), TargetLine(), body);
-            GUI.Label(new Rect(28, 94, 510, 54), _director.LastLog, body);
-
-            DrawHeldBar(Screen.height - 86);
+            GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
+            GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
+            GUI.Label(new Rect(28, 66, 520, 22), TargetLine(), body);
+            GUI.Label(new Rect(28, 90, 510, 46), _director.LastLog, body);
         }
 
         void DrawCharter()
         {
-            DrawVeil(new Color(0.03f, 0.04f, 0.07f, 0.72f));
+            DrawVeil(new Color(0.03f, 0.04f, 0.07f, 0.38f));
 
             var title = Label(26, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
@@ -62,7 +88,7 @@ namespace RuneMagic
                 "Runes from the field and the room. String them. Cast now, or store one form.",
                 body);
             GUI.Label(new Rect(28, 74, 900, 20),
-                $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc recipes",
+                $"Stance: {_director.Composer.Stance}   ·   Tab/Q flip   ·   Space close   ·   Esc / Grimoire",
                 hint);
 
             DrawRuneWall();
@@ -90,7 +116,7 @@ namespace RuneMagic
         void DrawComposeDock()
         {
             var dockHeight = 188f;
-            var dockTop = Screen.height - dockHeight;
+            var dockTop = Screen.height - dockHeight - BarHeight;
             DrawPanel(0, dockTop, Screen.width, dockHeight);
 
             var body = Label(14, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
@@ -154,27 +180,118 @@ namespace RuneMagic
             }
         }
 
-        void DrawHeldBar(float y)
+        void DrawSpellBar()
         {
-            DrawPanel(12, y, 760, 74);
-            var body = Label(16, FontStyle.Bold, new Color(0.92f, 0.86f, 0.62f));
-            var detail = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
-            var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
+            var y = Screen.height - BarHeight;
+            DrawPanel(0, y, Screen.width, BarHeight);
+
+            var title = Label(18, FontStyle.Bold, new Color(0.95f, 0.86f, 0.52f));
+            var body = Label(14, FontStyle.Normal, new Color(0.86f, 0.88f, 0.94f));
+            var hint = Label(13, FontStyle.Normal, new Color(0.7f, 0.74f, 0.82f));
+
+            var slot = new Rect(16, y + 12, 280, BarHeight - 24);
+            DrawHeldSlot(slot);
+
+            GUI.Label(new Rect(312, y + 14, 420, 24), "Stored spell", title);
             if (_director.Held.Occupied)
             {
-                GUI.Label(new Rect(28, y + 10, 360, 24), $"Held: {_director.Held.Name}", body);
-                GUI.Label(new Rect(280, y + 10, 470, 24),
-                    $"{_director.Held.Stance}  ·  F to release", detail);
+                GUI.Label(new Rect(312, y + 40, 440, 40),
+                    $"{_director.Held.Name}  ·  {_director.Held.Stance}\nClick the slot, the lock, or press F to cast.",
+                    body);
             }
             else
             {
-                GUI.Label(new Rect(28, y + 10, 720, 24),
-                    "Held: empty    Space opens the Charter to compose.", detail);
+                GUI.Label(new Rect(312, y + 40, 440, 40),
+                    "Empty. Space opens the Charter. String runes, then Store.",
+                    body);
             }
 
-            GUI.Label(new Rect(28, y + 40, 720, 22),
-                "WASD move  ·  Space read the field  ·  F release held spell  ·  Esc recipes",
+            GUI.Label(new Rect(760, y + 16, Screen.width - 980, 64),
+                "WASD move · Space Charter · click a lock to cast · Esc / Grimoire",
                 hint);
+
+            var grim = new Rect(Screen.width - 188, y + 22, 168, 52);
+            var open = _director.Mode == PlayMode.Grimoire;
+            if (DrawAction(grim, open ? "Close book" : "Grimoire", true,
+                    open ? new Color(0.55f, 0.42f, 0.18f) : new Color(0.32f, 0.24f, 0.42f)))
+            {
+                if (open)
+                {
+                    _director.CloseGrimoire();
+                }
+                else
+                {
+                    _director.OpenGrimoire();
+                }
+            }
+        }
+
+        void DrawHeldSlot(Rect rect)
+        {
+            var occupied = _director.Held.Occupied;
+            var fill = occupied
+                ? new Color(0.62f, 0.28f, 0.16f, 0.95f)
+                : new Color(0.12f, 0.13f, 0.18f, 0.9f);
+            var previous = GUI.color;
+            GUI.color = fill;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = new Color(1f, 0.86f, 0.4f, occupied ? 0.85f : 0.2f);
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 3f), Texture2D.whiteTexture);
+            GUI.color = previous;
+
+            var name = Label(20, FontStyle.Bold, occupied ? Color.white : new Color(0.55f, 0.58f, 0.66f));
+            name.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(rect, occupied ? _director.Held.Name : "No spell stored", name);
+
+            if (GUI.Button(rect, GUIContent.none, GUIStyle.none) && occupied && !_director.Busy)
+            {
+                _director.CastHeld();
+            }
+        }
+
+        void DrawGrimoire()
+        {
+            DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
+            var title = Label(28, FontStyle.Bold, Color.white);
+            var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
+            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+
+            GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
+            GUI.Label(new Rect(40, 56, 900, 22),
+                "Every written spell in this slice. Compose them from the Charter. Esc closes the book.",
+                subtitle);
+
+            var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
+            var innerHeight = 48f + SpellGrammarCount() * 24f + 40f + MaterialTree.All.Count * 22f;
+            _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
+
+            GUI.Label(new Rect(0, 0, 700, 24), "Spells  ·  Material × Aspect", heading);
+            var y = 28f;
+            var recipes = new List<SpellRecipe>(SpellGrammar.All);
+            recipes.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
+            foreach (var recipe in recipes)
+            {
+                GUI.Label(new Rect(0, y, 220, 20), recipe.Name, row);
+                GUI.Label(new Rect(230, y, 360, 20), SpellGrammar.RecipeLine(recipe), row);
+                GUI.Label(new Rect(600, y, 420, 20), recipe.Effect, muted);
+                y += 24f;
+            }
+
+            y += 16f;
+            GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
+            y += 28f;
+            foreach (var blend in MaterialTree.All)
+            {
+                var tone = blend.Result.Kind == BlendKind.Violent ? "violent" : "stable";
+                GUI.Label(new Rect(0, y, 820, 20),
+                    $"{RuneCatalog.NameOf(blend.Left)} + {RuneCatalog.NameOf(blend.Right)} → {RuneCatalog.NameOf(blend.Result.Result)}   ({tone})",
+                    row);
+                y += 22f;
+            }
+
+            GUI.EndScrollView();
         }
 
         void DrawPause()
@@ -301,13 +418,16 @@ namespace RuneMagic
             var target = _director.CurrentTarget;
             if (target == null)
             {
-                return "No lock in reach. You may still compose into the open field.";
+                return "No lock in reach. Walk up to a creature or fixture, then compose.";
             }
 
             var reading = _director.Grimoire.KnowsInterpretation(target.FormulaId)
                 ? $"Known reading: {target.DisplayName}."
                 : "The formula is visible. Its meaning is not yet yours.";
-            return $"{target.DisplayName}  {{{target.FormulaText()}}}  — {reading}";
+            var ready = _director.Held.Occupied
+                ? $"Click it or press F to throw {_director.Held.Name}."
+                : "Space to compose a key, or click the lock.";
+            return $"{target.DisplayName}  {{{target.FormulaText()}}}  — {reading} {ready}";
         }
 
         static GUIStyle Label(int size, FontStyle style, Color color)

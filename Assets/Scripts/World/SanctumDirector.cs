@@ -7,6 +7,7 @@ namespace RuneMagic
     {
         Exploring,
         Charter,
+        Grimoire,
         Paused
     }
 
@@ -17,12 +18,14 @@ namespace RuneMagic
         public ISpellLock CurrentTarget { get; private set; }
         public RoomInfo CurrentRoom { get; private set; }
         public WorldTile Underfoot { get; private set; }
-        public string LastLog { get; private set; } = "Walk. Space reads the field. Esc lists every written recipe.";
+        public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Store a spell, then click a lock or press F.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
         public PlayMode Mode { get; private set; } = PlayMode.Exploring;
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
         public IReadOnlyList<RuneId> VisibleRunes { get; private set; } = System.Array.Empty<RuneId>();
+        public bool Busy { get; private set; }
+        public bool CanMove => Mode == PlayMode.Exploring && !Busy;
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -30,6 +33,8 @@ namespace RuneMagic
         Vector3 _safePoint;
         bool _finished;
         PlayMode _modeBeforePause = PlayMode.Exploring;
+        ISpellLock _focus;
+        SpriteRenderer _targetRing;
 
         public void Begin(SanctumBuild build)
         {
@@ -43,7 +48,8 @@ namespace RuneMagic
         void Update()
         {
             TrackPlayer();
-            CurrentTarget = FindNearestLock();
+            CurrentTarget = ResolveFocus();
+            UpdateTargetRing();
             HandleInput();
         }
 
@@ -83,11 +89,41 @@ namespace RuneMagic
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                TogglePause();
+                if (Mode == PlayMode.Grimoire)
+                {
+                    CloseGrimoire();
+                }
+                else if (Mode == PlayMode.Charter)
+                {
+                    CloseCharter();
+                }
+                else if (Mode == PlayMode.Paused)
+                {
+                    TogglePause();
+                }
+                else
+                {
+                    OpenGrimoire();
+                }
+
                 return;
             }
 
-            if (Mode == PlayMode.Paused)
+            if (Input.GetKeyDown(KeyCode.G) && Mode != PlayMode.Charter)
+            {
+                if (Mode == PlayMode.Grimoire)
+                {
+                    CloseGrimoire();
+                }
+                else if (Mode != PlayMode.Paused)
+                {
+                    OpenGrimoire();
+                }
+
+                return;
+            }
+
+            if (Mode == PlayMode.Paused || Mode == PlayMode.Grimoire || Busy)
             {
                 return;
             }
@@ -115,6 +151,11 @@ namespace RuneMagic
             if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return))
             {
                 CastHeld();
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                HandleWorldClick();
             }
         }
 
@@ -200,6 +241,32 @@ namespace RuneMagic
             Time.timeScale = 0f;
         }
 
+        public void OpenGrimoire()
+        {
+            if (Mode == PlayMode.Paused || Busy)
+            {
+                return;
+            }
+
+            if (Mode == PlayMode.Charter)
+            {
+                Mode = PlayMode.Exploring;
+            }
+
+            Mode = PlayMode.Grimoire;
+            Log("The Grimoire. Every written Charter recipe is listed here.");
+        }
+
+        public void CloseGrimoire()
+        {
+            if (Mode != PlayMode.Grimoire)
+            {
+                return;
+            }
+
+            Mode = PlayMode.Exploring;
+        }
+
         public void AddRune(RuneId rune)
         {
             if (Mode != PlayMode.Charter)
@@ -230,15 +297,22 @@ namespace RuneMagic
 
         public void CastDraft()
         {
+            if (Busy)
+            {
+                return;
+            }
+
             if (Composer.IsEmpty)
             {
                 Log("Nothing is strung. Choose runes, or release a held form with F.");
                 return;
             }
 
-            Release(Composer.Snapshot(), Composer.Stance);
+            var composition = Composer.Snapshot();
+            var stance = Composer.Stance;
             Composer.Clear();
             CloseCharter();
+            Release(composition, stance);
         }
 
         public void StoreDraft()
@@ -261,6 +335,11 @@ namespace RuneMagic
 
         public void CastHeld()
         {
+            if (Busy)
+            {
+                return;
+            }
+
             if (!Held.Occupied)
             {
                 Log("No form is held. Space opens the Charter to compose one.");
@@ -284,20 +363,97 @@ namespace RuneMagic
             VisibleRunes = RuneField.Perceive(origin, Grid, _locks);
         }
 
+        void HandleWorldClick()
+        {
+            if (GameHud.PointerOverChrome(Mode))
+            {
+                return;
+            }
+
+            var camera = Camera.main;
+            if (camera == null)
+            {
+                return;
+            }
+
+            var world = camera.ScreenToWorldPoint(Input.mousePosition);
+            world.z = 0f;
+            var clicked = FindLockNear(world, 0.95f);
+            if (clicked == null)
+            {
+                return;
+            }
+
+            _focus = clicked;
+            CurrentTarget = clicked;
+
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null && Vector2.Distance(player.transform.position, clicked.WorldPosition) > 3.6f)
+            {
+                Log($"Walk closer to the {clicked.DisplayName} before you cast.");
+                return;
+            }
+
+            if (Held.Occupied)
+            {
+                CastHeld();
+                return;
+            }
+
+            OpenCharter();
+            Log($"{clicked.DisplayName} is a lock. String a key, then Cast or Store.");
+        }
+
         void Release(Composition composition, CastingStance stance)
         {
-            var accepted = CurrentTarget != null && !CurrentTarget.Resolved
-                ? CurrentTarget.AcceptedKeys
-                : System.Array.Empty<SpellId>();
+            if (Busy)
+            {
+                return;
+            }
 
+            StartCoroutine(ReleaseRoutine(composition, stance));
+        }
+
+        System.Collections.IEnumerator ReleaseRoutine(Composition composition, CastingStance stance)
+        {
+            Busy = true;
+            var target = CurrentTarget != null && !CurrentTarget.Resolved ? CurrentTarget : null;
+            var accepted = target != null ? target.AcceptedKeys : System.Array.Empty<SpellId>();
             var outcome = _resolver.Resolve(composition, stance, accepted, Grimoire);
+            var aim = AimPoint(target);
+            var origin = CasterPosition();
+            var caption = outcome.Spell != SpellId.None
+                ? _resolver.PreviewName(composition)
+                : "unformed surge";
+
+            composition.TryFoldMaterials(out var material, out _);
+            var aspect = composition.Aspect;
+            if (material == RuneId.None && outcome.Spell != SpellId.None &&
+                SpellGrammar.TryGetBySpell(outcome.Spell, out var recipe))
+            {
+                material = recipe.Material;
+                aspect = recipe.Aspect;
+            }
+
+            var finished = false;
+            SpellFx.Play(origin, aim, material, aspect, caption, () => finished = true);
+            while (!finished)
+            {
+                yield return null;
+            }
+
             Taint = Mathf.Clamp01(Taint + outcome.TaintDelta);
 
-            if (outcome.Resolved && CurrentTarget != null)
+            if (outcome.Resolved && target != null && !target.Resolved)
             {
-                Grimoire.LearnInterpretation(CurrentTarget.FormulaId);
-                var flavor = CurrentTarget.Resolve(outcome.Spell);
-                OpenDoorFor(CurrentTarget);
+                Grimoire.LearnInterpretation(target.FormulaId);
+                var flavor = target.Resolve(outcome.Spell);
+                OpenDoorFor(target);
+                if (_focus == target)
+                {
+                    _focus = null;
+                }
+
                 CurrentTarget = null;
                 Log(string.IsNullOrEmpty(flavor) ? outcome.Log : flavor);
             }
@@ -307,6 +463,36 @@ namespace RuneMagic
             }
 
             CheckFinished();
+            Busy = false;
+        }
+
+        Vector3 CasterPosition()
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+            return player != null ? player.transform.position : _safePoint;
+        }
+
+        Vector3 AimPoint(ISpellLock target)
+        {
+            if (target != null)
+            {
+                return target.WorldPosition;
+            }
+
+            var player = GameObject.FindGameObjectWithTag("Player");
+            var facing = Vector2.right;
+            if (player != null)
+            {
+                var motor = player.GetComponent<PlayerMotor2D>();
+                if (motor != null)
+                {
+                    facing = motor.Facing;
+                }
+
+                return player.transform.position + (Vector3)(facing.normalized * 2.1f);
+            }
+
+            return _safePoint + Vector3.right * 2.1f;
         }
 
         void OpenDoorFor(ISpellLock resolved)
@@ -328,17 +514,41 @@ namespace RuneMagic
             }
         }
 
+        ISpellLock ResolveFocus()
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (_focus != null)
+            {
+                if (_focus.Resolved || player == null ||
+                    Vector2.Distance(player.transform.position, _focus.WorldPosition) > 6.5f)
+                {
+                    _focus = null;
+                }
+                else
+                {
+                    return _focus;
+                }
+            }
+
+            return FindNearestLock();
+        }
+
         ISpellLock FindNearestLock()
         {
-            ISpellLock best = null;
-            var bestDistance = 3.4f;
-            if (_locks == null)
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null)
             {
                 return null;
             }
 
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player == null)
+            return FindLockNear(player.transform.position, 3.4f);
+        }
+
+        ISpellLock FindLockNear(Vector3 point, float radius)
+        {
+            ISpellLock best = null;
+            var bestDistance = radius;
+            if (_locks == null)
             {
                 return null;
             }
@@ -350,7 +560,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                var distance = Vector2.Distance(player.transform.position, encounter.WorldPosition);
+                var distance = Vector2.Distance(point, encounter.WorldPosition);
                 if (distance < bestDistance)
                 {
                     bestDistance = distance;
@@ -359,6 +569,29 @@ namespace RuneMagic
             }
 
             return best;
+        }
+
+        void UpdateTargetRing()
+        {
+            if (_targetRing == null)
+            {
+                var ring = new GameObject("TargetRing");
+                _targetRing = ring.AddComponent<SpriteRenderer>();
+                _targetRing.sprite = SpriteFactory.TargetRing();
+                _targetRing.sortingOrder = 16;
+            }
+
+            var show = CurrentTarget != null && !CurrentTarget.Resolved && Mode != PlayMode.Paused;
+            _targetRing.gameObject.SetActive(show);
+            if (!show)
+            {
+                return;
+            }
+
+            _targetRing.transform.position = CurrentTarget.WorldPosition + new Vector3(0f, -0.05f, 0f);
+            var pulse = 0.95f + Mathf.Sin(Time.time * 6f) * 0.12f;
+            _targetRing.transform.localScale = Vector3.one * pulse;
+            _targetRing.color = new Color(1f, 0.86f, 0.35f, 0.95f);
         }
 
         public void FallInPit(Transform player)
