@@ -81,6 +81,24 @@ namespace RuneMagic
             };
         }
 
+        public static SanctumBuild FallbackCourt()
+        {
+            var root = new GameObject("SanctumGrid");
+            var grid = root.AddComponent<WorldGrid>();
+            grid.RoomShell(0, 0, 8, 8, TileSubstance.Stone, TileSubstance.Stone);
+            var room = new RoomInfo("fallback", "Broken sanctum",
+                new RectInt(0, 0, 9, 9),
+                WorldGrid.Center(2, 4));
+            return new SanctumBuild
+            {
+                Grid = grid,
+                Spawn = WorldGrid.Center(2, 4),
+                Locks = System.Array.Empty<ISpellLock>(),
+                Rooms = new[] { room },
+                Charm = null
+            };
+        }
+
         static Vector2Int RoomOrigin(int index)
         {
             return new Vector2Int(index * (RoomW + HallW), 0);
@@ -90,8 +108,8 @@ namespace RuneMagic
         {
             grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Stone, TileSubstance.Ash);
 
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Ember, (6, 6), (7, 5), (8, 6), (7, 7), (6, 5), (8, 5));
-            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, (6, 7), (8, 7), (5, 6), (9, 6));
+            Stamp(grid, o, TileKind.Floor, TileSubstance.Ember, 6, 6, 7, 5, 8, 6, 7, 7, 6, 5, 8, 5);
+            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, 6, 7, 8, 7, 5, 6, 9, 6);
 
             var room = new RoomInfo("ash-court", "Ash Court",
                 new RectInt(o.x, o.y, RoomW, RoomH),
@@ -123,8 +141,8 @@ namespace RuneMagic
         static RoomInfo BuildWickChapel(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index)
         {
             grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Timber, TileSubstance.Timber);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, (6, 6), (5, 5), (7, 5), (6, 4), (6, 5), (5, 6), (7, 6));
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Moss, (2, 2), (10, 2), (2, 8), (10, 8));
+            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, 6, 6, 5, 5, 7, 5, 6, 4, 6, 5, 5, 6, 7, 6);
+            Stamp(grid, o, TileKind.Floor, TileSubstance.Moss, 2, 2, 10, 2, 2, 8, 10, 8);
 
             var room = new RoomInfo("wick-chapel", "Wick Chapel",
                 new RectInt(o.x, o.y, RoomW, RoomH),
@@ -160,7 +178,7 @@ namespace RuneMagic
                 }
             }
 
-            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, (4, 4), (4, 5), (4, 6), (3, 5));
+            Stamp(grid, o, TileKind.Floor, TileSubstance.SaltCrust, 4, 4, 4, 5, 4, 6, 3, 5);
 
             var room = new RoomInfo("the-drop", "The Drop",
                 new RectInt(o.x, o.y, RoomW, RoomH),
@@ -189,8 +207,8 @@ namespace RuneMagic
         static RoomInfo BuildStormCell(WorldGrid grid, Vector2Int o, ISpellLock[] locks, int index)
         {
             grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, TileSubstance.Stone, TileSubstance.Vein);
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, (4, 5), (5, 4), (5, 5), (5, 6), (4, 4), (4, 6));
-            Stamp(grid, o, TileKind.Floor, TileSubstance.Scoured, (8, 5), (7, 4), (7, 5), (7, 6), (8, 4), (8, 6));
+            Stamp(grid, o, TileKind.Floor, TileSubstance.Hearth, 4, 5, 5, 4, 5, 5, 5, 6, 4, 4, 4, 6);
+            Stamp(grid, o, TileKind.Floor, TileSubstance.Scoured, 8, 5, 7, 4, 7, 5, 7, 6, 8, 4, 8, 6);
             grid.Set(o.x + 6, o.y + 5, TileKind.Floor, TileSubstance.Metal);
 
             var room = new RoomInfo("storm-cell", "Storm Cell",
@@ -212,11 +230,11 @@ namespace RuneMagic
             return room;
         }
 
-        static void Stamp(WorldGrid grid, Vector2Int origin, TileKind kind, TileSubstance substance, params (int x, int y)[] cells)
+        static void Stamp(WorldGrid grid, Vector2Int origin, TileKind kind, TileSubstance substance, params int[] cells)
         {
-            for (var i = 0; i < cells.Length; i++)
+            for (var i = 0; i + 1 < cells.Length; i += 2)
             {
-                grid.Set(origin.x + cells[i].x, origin.y + cells[i].y, kind, substance);
+                grid.Set(origin.x + cells[i], origin.y + cells[i + 1], kind, substance);
             }
         }
 
