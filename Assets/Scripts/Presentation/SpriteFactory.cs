@@ -179,30 +179,136 @@ namespace RuneMagic
 
         public static Sprite Adept()
         {
-            return Memo("adept", () =>
+            return Memo("adept-v2", () =>
+            {
+                var canvas = new PixelCanvas(64);
+                canvas.Clear(Clear);
+                var outline = new Color(0.98f, 0.92f, 1f);
+                var cloak = new Color(0.46f, 0.28f, 0.82f);
+                var hood = new Color(0.22f, 0.1f, 0.42f);
+                var lining = new Color(0.95f, 0.72f, 0.28f);
+                var skin = new Color(0.98f, 0.84f, 0.7f);
+                var staff = new Color(0.55f, 0.32f, 0.14f);
+                var gem = new Color(0.45f, 0.95f, 1f);
+
+                canvas.FillCircle(32, 14, 11, outline);
+                canvas.Fill(18, 12, 28, 30, outline);
+                canvas.Fill(22, 8, 20, 10, outline);
+
+                canvas.Fill(20, 14, 24, 26, cloak);
+                canvas.Fill(24, 10, 16, 10, hood);
+                canvas.FillCircle(32, 28, 9, hood);
+                canvas.FillCircle(32, 27, 5, skin);
+                canvas.Set(30, 28, new Color(0.12f, 0.08f, 0.12f));
+                canvas.Set(34, 28, new Color(0.12f, 0.08f, 0.12f));
+                canvas.Fill(30, 24, 4, 1, new Color(0.55f, 0.22f, 0.28f));
+                canvas.Fill(16, 20, 8, 5, lining);
+                canvas.Fill(40, 20, 8, 5, lining);
+                canvas.Fill(48, 10, 4, 36, staff);
+                canvas.FillCircle(50, 48, 5, gem);
+                canvas.FillCircle(50, 48, 2, Color.white);
+                canvas.Fill(24, 8, 6, 10, cloak);
+                canvas.Fill(34, 8, 6, 10, cloak);
+                canvas.Fill(26, 6, 12, 4, lining);
+                return canvas.ToSprite(32);
+            });
+        }
+
+        public static Sprite Glow(Color color, int size = 64)
+        {
+            return Memo($"glow:{color}:{size}", () =>
+            {
+                var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+                {
+                    filterMode = FilterMode.Bilinear,
+                    wrapMode = TextureWrapMode.Clamp
+                };
+
+                var mid = (size - 1) * 0.5f;
+                for (var y = 0; y < size; y++)
+                {
+                    for (var x = 0; x < size; x++)
+                    {
+                        var dx = (x - mid) / mid;
+                        var dy = (y - mid) / mid;
+                        var distance = Mathf.Sqrt(dx * dx + dy * dy);
+                        var alpha = Mathf.Clamp01(1.05f - distance);
+                        alpha *= alpha;
+                        var pixel = color;
+                        pixel.a = alpha * color.a;
+                        texture.SetPixel(x, y, pixel);
+                    }
+                }
+
+                texture.Apply();
+                return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+            });
+        }
+
+        public static Sprite Bolt(Color color)
+        {
+            return Memo($"bolt:{color}", () =>
+            {
+                var canvas = new PixelCanvas(48, 20);
+                canvas.Clear(Clear);
+                var core = Color.Lerp(color, Color.white, 0.45f);
+                canvas.Fill(6, 7, 36, 6, color);
+                canvas.Fill(4, 8, 40, 4, core);
+                canvas.FillCircle(42, 10, 6, color);
+                canvas.FillCircle(42, 10, 3, Color.white);
+                canvas.FillCircle(8, 10, 4, core);
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite Pillar(Color color)
+        {
+            return Memo($"pillar:{color}", () =>
+            {
+                var canvas = new PixelCanvas(28, 56);
+                canvas.Clear(Clear);
+                var rim = Color.Lerp(color, Color.white, 0.35f);
+                canvas.Fill(8, 2, 12, 50, color);
+                canvas.Fill(10, 4, 8, 46, rim);
+                canvas.FillCircle(14, 50, 8, color);
+                canvas.FillCircle(14, 50, 4, Color.white);
+                canvas.Fill(4, 2, 20, 6, rim);
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite Burst(Color color)
+        {
+            return Memo($"burst:{color}", () =>
             {
                 var canvas = new PixelCanvas(48);
                 canvas.Clear(Clear);
-                var cloak = new Color(0.42f, 0.3f, 0.68f);
-                var hood = new Color(0.28f, 0.18f, 0.48f);
-                var lining = new Color(0.62f, 0.48f, 0.86f);
-                var skin = new Color(0.93f, 0.8f, 0.68f);
-                var staff = new Color(0.38f, 0.24f, 0.12f);
+                canvas.FillCircle(24, 24, 18, color);
+                canvas.FillCircle(24, 24, 11, Color.Lerp(color, Color.white, 0.4f));
+                canvas.FillCircle(24, 24, 5, Color.white);
+                canvas.ThickLine(24, 4, 24, 12, Color.white);
+                canvas.ThickLine(24, 36, 24, 44, Color.white);
+                canvas.ThickLine(4, 24, 12, 24, Color.white);
+                canvas.ThickLine(36, 24, 44, 24, Color.white);
+                return canvas.ToSprite(32);
+            });
+        }
 
-                canvas.Fill(18, 6, 12, 16, cloak);
-                canvas.Fill(14, 8, 20, 12, cloak);
-                canvas.Fill(16, 4, 16, 6, hood);
-                canvas.FillCircle(24, 22, 7, hood);
-                canvas.FillCircle(24, 21, 4, skin);
-                canvas.Set(23, 22, new Color(0.2f, 0.12f, 0.16f));
-                canvas.Set(26, 22, new Color(0.2f, 0.12f, 0.16f));
-                canvas.Fill(12, 10, 6, 4, lining);
-                canvas.Fill(30, 10, 6, 4, lining);
-                canvas.Fill(36, 8, 3, 22, staff);
-                canvas.FillCircle(37, 31, 3, new Color(0.75f, 0.55f, 0.95f));
-                canvas.Fill(17, 4, 5, 8, cloak);
-                canvas.Fill(26, 4, 5, 8, cloak);
-                return canvas.ToSprite(40);
+        public static Sprite TargetRing()
+        {
+            return Memo("target-ring", () =>
+            {
+                var canvas = new PixelCanvas(48);
+                canvas.Clear(Clear);
+                var gold = new Color(1f, 0.86f, 0.32f);
+                canvas.Circle(24, 24, 18, gold);
+                canvas.Circle(24, 24, 17, Color.white);
+                canvas.Circle(24, 24, 16, gold);
+                canvas.Fill(22, 2, 4, 8, gold);
+                canvas.Fill(22, 38, 4, 8, gold);
+                canvas.Fill(2, 22, 8, 4, gold);
+                canvas.Fill(38, 22, 8, 4, gold);
+                return canvas.ToSprite(28);
             });
         }
 

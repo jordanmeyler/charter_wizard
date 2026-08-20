@@ -86,6 +86,21 @@ namespace RuneMagic
             return Recipes.TryGetValue((material, aspect), out recipe);
         }
 
+        public static bool TryGetBySpell(SpellId spell, out SpellRecipe recipe)
+        {
+            foreach (var entry in Recipes.Values)
+            {
+                if (entry.Spell == spell)
+                {
+                    recipe = entry;
+                    return true;
+                }
+            }
+
+            recipe = default;
+            return false;
+        }
+
         public static IEnumerable<SpellRecipe> All => Recipes.Values;
 
         public static string FormulaText(RuneId material, RuneId aspect)

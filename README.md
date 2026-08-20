@@ -35,16 +35,18 @@ Walk the orange Free charm in Ash Court if you want Fireball written for you. Yo
 
 ### Controls
 
-You only move and cast.
+You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock.
 
-- **WASD** move
+- **WASD** / arrows move
 - **Space** open the Charter — a wall of runes over the world. Space again closes it.
 - In the Charter: **click runes** to string them (up to 8). **Cast** now, or **Store** one form to hold.
-- **F** / **Enter** release the held spell (or Cast while the Charter is open)
+- The **bottom bar** shows the stored spell. Click the slot, click a lock, or press **F** / **Enter** to throw it.
+- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell for now.
 - **R** Store while the Charter is open
 - **Backspace** / **C** unmake the last rune
 - **Tab** / **Q** Bound (Charter) / Unbound (Free) — only while the Charter is open
-- **Esc** pause and show every written spell recipe (developer ledger)
+
+Casts are visible: Mercury flies as a bolt, Salt rises as a wall, Sulphur bursts. The right key unmakes the lock and opens the door east.
 
 Walk into a pit and you return to the last safe floor.
 

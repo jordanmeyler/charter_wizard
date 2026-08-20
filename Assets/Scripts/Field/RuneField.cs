@@ -19,10 +19,14 @@ namespace RuneMagic
         };
 
         SanctumDirector _director;
+        Transform _orbRoot;
 
         public void Bind(SanctumDirector director)
         {
             _director = director;
+            var root = new GameObject("Orbs");
+            root.transform.SetParent(transform, false);
+            _orbRoot = root.transform;
             for (var i = 0; i < StartingStream.Length; i++)
             {
                 SpawnOrb(StartingStream[i], i);
@@ -80,19 +84,22 @@ namespace RuneMagic
 
         void LateUpdate()
         {
-            var show = _director == null || _director.Mode == PlayMode.Exploring;
-            if (transform.localScale.x > 0f == show)
+            if (_orbRoot == null)
             {
                 return;
             }
 
-            transform.localScale = show ? Vector3.one : Vector3.zero;
+            var show = _director == null || _director.Mode == PlayMode.Exploring;
+            if (_orbRoot.gameObject.activeSelf != show)
+            {
+                _orbRoot.gameObject.SetActive(show);
+            }
         }
 
         void SpawnOrb(RuneId rune, int index)
         {
             var orb = new GameObject($"Rune_{RuneCatalog.NameOf(rune)}");
-            orb.transform.SetParent(transform, false);
+            orb.transform.SetParent(_orbRoot != null ? _orbRoot : transform, false);
             var collider = orb.AddComponent<CircleCollider2D>();
             collider.radius = 0.28f;
             collider.isTrigger = true;
