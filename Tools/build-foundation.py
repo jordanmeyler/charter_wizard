@@ -173,6 +173,7 @@ def assert_walkable(data):
     must(open_reach, "join foyer", join)
     must(open_reach, "grove east bank", world("grove-court", rooms, 14, 8))
     must(open_reach, "grove plant lip", world("grove-court", rooms, 11, 8))
+    must(open_reach, "grove spark lip", world("grove-court", rooms, 13, 14))
     must_not(open_reach, "grove key", world("grove-court", rooms, 6, 8))
     must_not(open_reach, "grove stone", world("grove-court", rooms, 1, 8))
     must(open_reach, "cistern mouth", world("cistern", rooms, 3, 8))
@@ -746,7 +747,7 @@ def main():
         room(
             id="spark-cell",
             name="The Seed of Charge",
-            origin={"x": 4, "y": 100},
+            origin={"x": 10, "y": 100},
             width=20,
             height=14,
             wall="Stone",
