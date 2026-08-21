@@ -96,6 +96,21 @@ namespace RuneMagic
                 : new Color(0.1f, 0.08f, 0.06f);
         }
 
+        public static Color MarkInk(RuneId id, bool available = true)
+        {
+            var tone = Of(id);
+            var ink = Luma(tone) > 0.78f
+                ? Color.Lerp(tone, new Color(0.32f, 0.26f, 0.16f), 0.28f)
+                : Color.Lerp(tone, Color.white, 0.18f);
+            if (!available)
+            {
+                ink = Color.Lerp(ink, new Color(0.34f, 0.34f, 0.38f), 0.72f);
+                ink.a = 0.42f;
+            }
+
+            return ink;
+        }
+
         public static Color Caption(RuneId id, bool available)
         {
             if (!available)

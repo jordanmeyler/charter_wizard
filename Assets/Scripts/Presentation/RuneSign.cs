@@ -22,7 +22,7 @@ namespace RuneMagic
             }
 
             var mark = Child(parent, "Mark", new Vector3(0.3f, 0.48f, 0f), 8);
-            mark.sprite = RuneMark.AsSprite(rune, GlyphView.Ink);
+            mark.sprite = RuneMark.AsSprite(rune, RunePalette.MarkInk(rune));
             mark.color = Color.white;
             mark.transform.localScale = Vector3.one * 0.55f;
 
@@ -39,8 +39,8 @@ namespace RuneMagic
             slab.color = Color.white;
 
             var mark = Child(parent, "Mark", new Vector3(0.12f, 0.04f, 0f), 4);
-            mark.sprite = RuneMark.AsSprite(rune, GlyphView.Ink);
-            mark.color = new Color(0.92f, 0.86f, 0.68f, 0.95f);
+            mark.sprite = RuneMark.AsSprite(rune, RunePalette.MarkInk(rune));
+            mark.color = Color.white;
             mark.transform.localScale = Vector3.one * 0.62f;
 
             if (SpriteFactory.HasNature(rune))
@@ -59,7 +59,7 @@ namespace RuneMagic
             shaft.color = Color.white;
 
             var mark = Child(parent, "Mark", new Vector3(0f, 0.72f, 0f), 7);
-            mark.sprite = RuneMark.AsSprite(rune, GlyphView.Ink);
+            mark.sprite = RuneMark.AsSprite(rune, RunePalette.MarkInk(rune));
             mark.color = Color.white;
             mark.transform.localScale = Vector3.one * 0.48f;
 
