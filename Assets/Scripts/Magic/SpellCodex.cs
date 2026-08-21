@@ -144,8 +144,9 @@ namespace RuneMagic
             E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt · Earth", "Lava · Salt · Earth", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(63, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
-            E(64, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain)
+            E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. It will thaw.", "Ice-wall", "Water · Salt · Earth · Salt · Water · Salt · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
+            E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
+            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -234,6 +235,31 @@ namespace RuneMagic
                 broken.Add("Earth · Salt should be Earth-pillar");
             }
 
+            var ice = Composition.FromSequence(new[] { RuneId.Ice });
+            var icePillar = ChainBook.CollectExact(ice, SpellShape.None);
+            if (icePillar.Count == 0 || icePillar[0].Spell != SpellId.IcePillar)
+            {
+                broken.Add("Ice should still be Ice-pillar");
+            }
+
+            var iceWall = Composition.FromSequence(new[] { RuneId.Ice, RuneId.Salt, RuneId.Ice });
+            var iceWallExact = ChainBook.CollectExact(iceWall, SpellShape.None);
+            if (iceWallExact.Count == 0 || iceWallExact[0].Spell != SpellId.IceWall)
+            {
+                broken.Add("Ice · Salt · Ice should be Ice-wall");
+            }
+
+            var iceWallRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt,
+                RuneId.Water, RuneId.Salt, RuneId.Earth
+            });
+            var iceWallFromRoots = ChainBook.CollectExact(iceWallRoots, SpellShape.None);
+            if (iceWallFromRoots.Count == 0 || iceWallFromRoots[0].Spell != SpellId.IceWall)
+            {
+                broken.Add("Water · Salt · Earth · Salt · Water · Salt · Earth should be Ice-wall");
+            }
+
             var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Mercury });
             var exact = ChainBook.CollectExact(fireball, SpellShape.None);
             if (exact.Count == 0 || exact[0].Spell != SpellId.Fireball)
@@ -308,9 +334,10 @@ namespace RuneMagic
             }
 
             if (SpellVerb.Of(SpellId.IceSpear).Status == StatusId.Frozen
-                || SpellVerb.Of(SpellId.IcePillar).Status == StatusId.Frozen)
+                || SpellVerb.Of(SpellId.IcePillar).Status == StatusId.Frozen
+                || SpellVerb.Of(SpellId.IceWall).Status == StatusId.Frozen)
             {
-                broken.Add("Ice-spear and ice-pillar must not freeze a living body");
+                broken.Add("Ice-spear, ice-pillar, and ice-wall must not freeze a living body");
             }
 
             if (SpellVerb.Of(SpellId.Snowfall).Status != StatusId.Frozen

@@ -78,7 +78,7 @@ There is **no hit-point bar**. A spell kills, restrains, or does neither (traver
 
 **Statuses share one host.** Burning, Frozen, Soaked, Stunned, Sleeping, Rooted, Frightened, Raging, Charmed, Confused, Poisoned are debuffs. Veiled is a hide buff. **Wards** are the four elements given a body and held on you (`Element · Salt · Sulphur`). Only one ward stands at a time.
 
-**Focus.** Wards and mind ailments must be held. They last until you cast another sentence that uses the same rune — the ward’s element, or Sulphur for a mind. A little fizzle plays on you (the ward) or on them (the ailment). Hunger, poison, and frost exist of their own accord: ignite, poison, and frozen do not drop when you speak again. Ice-spear and ice-pillar make hard water; they do not freeze a living body. **Freeze** (`Ice · Sulphur`) and weather like **Snowfall** / **Snowstorm** do. Poisoned flesh dies in a few seconds; fire, ice, and earth shrug it off.
+**Focus.** Wards and mind ailments must be held. They last until you cast another sentence that uses the same rune — the ward’s element, or Sulphur for a mind. A little fizzle plays on you (the ward) or on them (the ailment). Hunger, poison, and frost exist of their own accord: ignite, poison, and frozen do not drop when you speak again. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze a living body. **Freeze** (`Ice · Sulphur`) and weather like **Snowfall** / **Snowstorm** do. Poisoned flesh dies in a few seconds; fire, ice, and earth shrug it off.
 
 The four roots are a square. Adjacent sides have a winner. Opposites do not touch.
 
@@ -97,13 +97,13 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 
 | The sentence does this | Form | Example |
 |---|---|---|
-| Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
+| Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. Ice-wall: Ice · Salt · Ice. |
 | Sent *into* a thing, or placed away (a stood body, then Mercury) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
 | Hunger sent, or breath already in the chain, then sent | **Shot** | Fire: Fire · Mercury. Lightning: Fire · Air · Mercury. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight. Wards. |
 
-Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier.
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 
@@ -195,8 +195,9 @@ Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — charge runs the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
 - **Water + Plant → growth** — wet vegetable bodies climb toward Grove and **across adjacent pits**.
-- **Water · Salt as floor** — yield given a body is walkable. Water work (Douse, Flood, Rain, Water-jet) **fills a connected pit smaller than 4×4** and leaves a water floor. Larger hollows stay open.
-- **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
+- **Water drowns** — yield holding a vessel has no floor. Walking a water tile (or a water-filled pit) sends you back. Flight and hop still clear it.
+- **Water work fills a connected pit smaller than 4×4** with drowning water. Larger hollows stay open. Ice is how that water is asked to stand.
+- **Water · Salt · Earth → Ice** — hard water that thaws, and **a walkable freeze over a pool**. Ice-pillar, Ice-wall, Ice-spear, and Snowfall freeze water tiles. Fire / Thaw remember yield. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
 - **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice. Fire eats vine. Room masonry is not a spell-body. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and keys stay in the pack.
@@ -239,13 +240,13 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Freeze. **64** Snowstorm. Wards and mind ailments are held by focus.
-- [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, hop extras, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open. Extra keys from hop paths wait for a later secret.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. Wards and mind ailments are held by focus.
+- [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
-- [~] **Field economy** — tiles are materials with full signatures plus **flammability** and **conductivity** numbers. Fire, wet, charge, and growth now tick. Plants grow across pits. Water · Salt fills small hollows. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. A wrought join on screen appears as itself; its basics are scattered through the grid. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. Casters show the marks they are writing over their heads. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
+- [~] **Field economy** — tiles are materials with full signatures plus **flammability** and **conductivity** numbers. Fire, wet, charge, and growth now tick. Plants grow across pits. Water fills small hollows and **drowns** until ice freezes it. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. A wrought join on screen appears as itself; its basics are scattered through the grid. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. Casters show the marks they are writing over their heads. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
 - [~] **Combat that can kill** — golems slam, beginner wizards spend two seconds on a fireball, arrow racks fire projectiles. A caster shows the marks they are writing over their head. Lock-and-key still unmakes. Death respawns at the crystal. A real death / last-rites pass is later.
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Free also unscrambles a valid bag of runes. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.

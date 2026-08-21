@@ -6,7 +6,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basi
 
 ## What is implemented
 
-**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Past Door II, the Wrought Courts teach joins, keys, and inner doors — Door III wants grove, flood, and spark stones. Extra keys from hop paths stay in the pack. Doors gate on **possession, not sequence**.
+**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Past Door II, the Wrought Courts teach joins, keys, and inner doors — Door III wants grove, flood, and spark stones. Doors gate on **possession, not sequence**.
 
 Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: a wall of marks you have remembered, and a sideways-scrolling weave of everything on screen. **Play** sight shows only the marks; **Develop** (F1) shows names and the written book. Enemies and terrain are both locks.
 
@@ -15,21 +15,21 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
 | **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
-| **The Arrow Gauntlet** | Real arrow shots, then a pit either side of the stone | Earth-pillar (`Earth · Salt`), then walk around | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
+| **The Arrow Gauntlet** | Real arrow shots, then a full-width pit before the stone | Earth-pillar (`Earth · Salt`) or Wall, then hop or span the last step | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
 | **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
-| **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Bridge; Hop if you know Air | Salt stands a body. |
+| **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
 | **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
-| **The Living Thicket** | A pit, a key-door | Water the plants, burn the timber, or hop; grove key opens the west door | Plants grow across gaps. |
-| **The Cistern** | A 3×3 hollow, a key-door | Flood / Douse fills pits smaller than 4×4; hop the long trench | Water · Salt is a floor. |
+| **The Living Thicket** | A four-tile pit, then a living thicket, a key-door | Water the plants across the gap, then fire the thicket; grove key opens the west door | Grow, then burn. Hop cannot clear the gap. |
+| **The Cistern** | A drowning channel, a key-door | Ice-pillar / Ice-wall / Ice-spear freezes the water; hop still clears a short channel | Water drowns. Ice is a floor. |
 | **The Seed of Charge** | A live rod, a key-door | Click Spark, or write Fire · Air | The join is a rune when it already stands. |
-| **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. |
+| **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. Wall the ember adept and they stand a flame-pillar; the floor hungers first. |
 | **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
 
-Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for this floor. Water · Salt is a walkable floor. Water work fills a connected pit smaller than 4×4. Larger hollows stay open until you hop, span, or grow a plant across. You cannot swim a pit that is still a pit.
+Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for this floor. Water drowns. Ice freezes that water into a floor. Water work fills a connected pit smaller than 4×4 with drowning water. Larger hollows stay open until you hop, span, freeze, or grow a plant across. You cannot swim.
 
 | Design rule | In this slice |
 | --- | --- |
@@ -71,7 +71,7 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 
 Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. Each work is particles and light of its element — fire is embers, water is droplets, lightning is a jagged arc. Fog and poison mist hang until another element tears them. A **wind ward** turns poison fog. Walls and pillars stay as masonry or a column; water melts a basic earth wall and puts out a flame wall; water cools a lava wall to rock, which a boulder or Shatter then breaks. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
-Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**, and the work you stood in that room falls. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
+Walk into a pit — or into water — and you return to the last safe floor. You cannot swim. Ice, a span, hop, or flight crosses the pool. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**, and the work you stood in that room falls. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
 
 **Wards** are `Element · Salt · Sulphur`, held on you by focusing that element. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water, and a wind ward also turns poison fog. Only one ward stands at a time. Cast another sentence that uses the ward’s rune and the ward fizzles. Mind ailments (sleep, fear, rage, charm, confuse) are held the same way on Sulphur. Ignite, poison, and frozen exist on their own. Ice-spear does not freeze the living; Freeze and Snowstorm do. Poisoned enemies die shortly, or they are immune.
 
@@ -136,7 +136,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 ## Not in this slice (on purpose)
 
 - Full material tree, ternary nodes, and `material-codex.html`
-- Ice bridges over water, gas/oil explosions, and the rest of the later reaction list
+- Gas/oil explosions, and the rest of the later reaction list
 - Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work
 - A real death / last-rites pass (this slice respawns at the crystal)
 - Passive item-wards and mediums, and the Primordial-gate item

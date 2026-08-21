@@ -43,9 +43,10 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
 | 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
-| 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur. They lose the thread. |
-| 63 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
-| 64 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
+| 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
+| 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
+| 64 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
+| 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
 
 ---
 
@@ -73,7 +74,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 
 You spawn in the **hub**. Four rooms stand open around it — west, east, and two to the south. Each room is one element. Walk in. Read the altar. Use that element’s spells on the obstacle. Take the stone.
 
-**Door I** is the hub’s north door. It wants the four element stones. **Door II** wants the three aspect stones — only *that* section’s keys. **Door III** wants the three join stones (grove, flood, spark). Extra keys from hop paths sit in the pack for a later secret.
+**Door I** is the hub’s north door. It wants the four element stones. **Door II** wants the three aspect stones — only *that* section’s keys. **Door III** wants the three join stones (grove, flood, spark). Pits only appear when a crossing is the lesson.
 
 ---
 
@@ -90,8 +91,8 @@ Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wa
 ### Water · "The Ember Vault" — *douse, flow, fill, cool*
 Walk in from the west. A labelled **Water** waits near the mouth. A **Fire Golem** slams anyone in reach — hop or Stoneskin survives the blow; Douse / Water-jet / Rain still unmake it. Plant and moss sit by the Water altar: water them and they grow. A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
-### Earth · "The Arrow Gauntlet" — *raise walls, block, walk around*
-Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. Then walk around the cover to the Earth stone. A single pit sits on either side of the stone.
+### Earth · "The Arrow Gauntlet" — *raise walls, block, then the last step*
+Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. Walk around the cover. A **full-width pit** then cuts the last step to the stone — hop it, or stand a body in the hollow. The pit is the sequenced crossing, not a random hole.
 
 ### Air · "The Sundered Heights" — *gust, clear*
 Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is a **green fog** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
@@ -107,7 +108,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
-- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough.
+- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough. Ice-wall is Ice · Salt · Ice.
 - **Stone:** on the far ledge.
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
@@ -128,25 +129,25 @@ Three sockets: Body, Spirit, Mind. Insert them → the living work stands open.
 
 ## Section 3 — The Wrought Courts
 
-The aspects taught *how a sentence stands or goes.* This stage is more open: keys open doors, doors hide stones, and some doors you can hop past for an extra key. Joins already in the room (Spark, Plant, Water) appear as themselves in the Charter. The composing basics are still there, scattered — so you can click Spark, or write Fire · Air if you know.
+The aspects taught *how a sentence stands or goes.* This stage is more open: keys open doors, doors hide stones. Joins already in the room (Spark, Plant, Water, Ice) appear as themselves in the Charter. The composing basics are still there, scattered — so you can click Spark, or write Fire · Air if you know.
 
 ### Join Foyer · "The Wrought Cross"
-Open. Labels **Spark**, **Plant**, and **Water**. Four rooms stand off it. The north hall leads to Door III.
+Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off it. The north hall leads to Door III.
 
-### Grove Court · "The Living Thicket" — *grow, burn, hop*
-A two-tile pit splits the room. Plant and moss sit on both banks. **Water the plants** and they grow across the gap. **Fire the timber** on the north lip and the wall becomes ash — a walk-around. **Hop** the pit if you already know Air. A **grove key** sits on the east bank. The west door wants that key and hides the **grove stone**. South of the east bank, a short pit holds a **spare grove key** — hop it. The spare is not for Door III.
+### Grove Court · "The Living Thicket" — *grow, then burn*
+A **four-tile pit** splits the room wall-to-wall — too wide to hop. Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove key** waits on the west bank. A **living thicket** (timber, grove, plant) then seals the west door; a stone firebreak keeps the burn from eating the banks. **Fire the thicket** and it becomes ash. The west door wants the key and hides the **grove stone**. Both verbs are the lesson.
 
-### Cistern · "The Cistern" — *water as floor*
-**Water · Salt is a floor.** A 3×3 hollow blocks the lane — Flood, Douse, Rain, or Water-jet fills any pit smaller than 4×4 and you walk the pool. A longer trench to the south will not fill; hop it for a **spare flood key**. The **flood key** sits past the small hollow. The east door wants it and hides the **flood stone**.
+### Cistern · "The Cistern" — *water drowns; ice is a floor*
+A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. The room labels Water, Salt, Earth, and Ice so **Ice-pillar** (`Water · Salt · Earth`), **Ice-wall**, or **Ice-spear** can ask that water to stand. Walk the ice. Hop still clears a short channel. The **flood key** sits past the water. The east door wants it and hides the **flood stone**.
 
 ### Spark Cell · "The Seed of Charge" — *the join as a rune*
-Vein and metal already hold Spark. The Charter shows **Spark** as its own mark; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air if you know and the room has no seed. A **live rod** waits in the plate. The **spark key** is in the open; the east door hides the **spark stone**. A spare key sits across a hop pit.
+Vein and metal already hold Spark. The Charter shows **Spark** as its own mark; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air if you know and the room has no seed. A **live rod** waits in the plate. The **spark key** is in the open; the east door hides the **spark stone**.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
-Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
+Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
 
 ### Door III · Gate of Joins
-Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys stay in the pack.
+Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 
 ---
 
@@ -160,7 +161,8 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys 
 - **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
 - **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
-- **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits still use the last safe floor. A better death system waits.
+- **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits and drowning water use the last safe floor. A better death system waits.
+- **Pits earn their keep.** A hollow is a sequenced crossing — block, then hop, grow across, freeze water — not a random hole beside a stone.
 
 ---
 
@@ -171,7 +173,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys 
 | `hub` | The Cross | Choice. Four labelled roots. Door I. |
 | `fire-wing` | The Frozen Hall | Fire against ice |
 | `water-wing` | The Ember Vault | Water against fire |
-| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots, walk around |
+| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots, then hop or span the last pit |
 | `air-wing` | The Sundered Heights | Air as gust. Fog, not a wall. |
 | `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
@@ -179,10 +181,10 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys 
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |
 | `door-ii` | Gate of Aspects | Three aspect stones. Opens section 3. |
 | `join-foyer` | The Wrought Cross | Spark, Plant, Water labelled. Open courts. |
-| `grove-court` | The Living Thicket | Grow, burn, or hop a gap. Key → door → grove stone. Spare key by hop. |
-| `cistern` | The Cistern | Water · Salt fills small pits. Key → door → flood stone. |
+| `grove-court` | The Living Thicket | Grow a four-tile gap, then burn the thicket. Key → door → grove stone. |
+| `cistern` | The Cistern | Water drowns. Ice freezes it. Key → door → flood stone. |
 | `spark-cell` | The Seed of Charge | Spark as a rune. Key → door → spark stone. |
-| `arena` | The Mixed Court | Melee and ranged. Casters show their marks. |
+| `arena` | The Mixed Court | Melee and ranged. Casters show their marks. Wall the ember adept and the floor hungers, then a flame-pillar stands. |
 | `door-iii` | Gate of Joins | Three join stones. The floor ends. |
 
 Regenerate the JSON with `python3 Tools/build-foundation.py`. The old four-room slice remains as `sanctum`.

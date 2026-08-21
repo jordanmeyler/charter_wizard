@@ -30,6 +30,8 @@ namespace RuneMagic
         GameObject _linger;
         bool _hasFoundation;
         int _animFrame = -1;
+        MaterialId _telegraph = MaterialId.None;
+        int _telegraphCount;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -56,12 +58,82 @@ namespace RuneMagic
             Material != MaterialId.Water && Material != MaterialId.Lava &&
             Material != MaterialId.Void && !IsPlantish;
 
+        /// <summary>
+        /// Yield holding a vessel with no floor under it. It drowns.
+        /// Ice is how that water is asked to stand.
+        /// </summary>
+        public bool IsDeepWater =>
+            Material == MaterialId.Water &&
+            (Kind == TileKind.Pit || Kind == TileKind.Floor);
+
+        public bool IsSafeStand =>
+            (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
+            !IsDeepWater &&
+            Material != MaterialId.Lava;
+
         public bool CanRaiseBarrier =>
             Kind == TileKind.Floor || Kind == TileKind.Bridge;
+
+        MaterialId ShownMaterial => _telegraph != MaterialId.None ? _telegraph : Material;
+
+        public void BeginTelegraph(MaterialId material)
+        {
+            if (material == MaterialId.None)
+            {
+                return;
+            }
+
+            _telegraphCount++;
+            _telegraph = material;
+            if (material == MaterialId.Hearth || material == MaterialId.Lava || material == MaterialId.Ember)
+            {
+                Ignite(0.65f);
+            }
+
+            ApplyVisual();
+        }
+
+        public void EndTelegraph()
+        {
+            if (_telegraphCount <= 0)
+            {
+                return;
+            }
+
+            _telegraphCount--;
+            if (_telegraphCount > 0)
+            {
+                return;
+            }
+
+            _telegraph = MaterialId.None;
+            ApplyVisual();
+        }
 
         public void BecomeBridge()
         {
             BecomeWalkable(MaterialId.Stone);
+        }
+
+        public void BecomeWater()
+        {
+            IsConjured = false;
+            RaisedAs = RaisedForm.None;
+            Reshape(new TileDef(TileKind.Pit, MaterialId.Water));
+            Drench(1f);
+        }
+
+        public bool FreezeSolid()
+        {
+            if (!IsDeepWater)
+            {
+                return false;
+            }
+
+            BecomeWalkable(MaterialId.Ice, conjured: true);
+            Wet = Mathf.Min(Wet, 0.15f);
+            RefreshFx();
+            return true;
         }
 
         public void BecomeWalkable(MaterialId material, bool conjured = false)
@@ -277,8 +349,8 @@ namespace RuneMagic
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:
-                        _renderer.sprite = IsConjured && Material != MaterialId.Stone
-                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
+                        _renderer.sprite = _telegraph != MaterialId.None || (IsConjured && Material != MaterialId.Stone)
+                            ? SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
                             : SpriteFactory.Bridge();
                         _renderer.sortingOrder = 1;
                         break;
@@ -286,7 +358,7 @@ namespace RuneMagic
                         ApplyDoorSprite(open: false);
                         break;
                     default:
-                        _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame);
+                        _renderer.sprite = SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame);
                         _renderer.sortingOrder = 0;
                         break;
                 }
@@ -498,7 +570,7 @@ namespace RuneMagic
                 return;
             }
 
-            var live = SpriteFactory.Animates(Material) || Fire > 0.08f || Wet > 0.18f || Charge > 0.18f || _growth >= 1;
+            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Wet > 0.18f || Charge > 0.18f || _growth >= 1 || _telegraph != MaterialId.None;
             if (!live)
             {
                 return;
@@ -511,10 +583,10 @@ namespace RuneMagic
             }
 
             _animFrame = frame;
-            if (SpriteFactory.Animates(Material) &&
-                (Kind == TileKind.Floor || (Kind == TileKind.Bridge && IsConjured) || (Kind == TileKind.Pit && Material == MaterialId.Water)))
+            if (SpriteFactory.Animates(ShownMaterial) &&
+                (Kind == TileKind.Floor || (Kind == TileKind.Bridge && (_telegraph != MaterialId.None || IsConjured)) || (Kind == TileKind.Pit && Material == MaterialId.Water)))
             {
-                _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y, frame);
+                _renderer.sprite = SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, frame);
             }
 
             if (_fx != null && _fx.enabled)

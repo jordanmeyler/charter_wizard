@@ -83,7 +83,8 @@ namespace RuneMagic
         Shatter,
         Confuse,
         Freeze,
-        Snowstorm
+        Snowstorm,
+        IceWall
     }
 
     public readonly struct SpellRecipe

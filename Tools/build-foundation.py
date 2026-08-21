@@ -10,10 +10,11 @@ from pathlib import Path
 FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald"]
 ICE = FIRE + ["Thaw"]
 WATER = ["Douse", "WaterJet", "Rain", "Flood", "Smother"]
-GOLEM = WATER + ["Gale", "Quagmire", "Wall", "Pit", "Bridge", "IcePillar"]
+GOLEM = WATER + ["Gale", "Quagmire", "Wall", "IceWall", "Pit", "Bridge", "IcePillar"]
 PITS = [
     "EarthPillar",
     "Wall",
+    "IceWall",
     "Bridge",
     "FlamePillar",
     "IcePillar",
@@ -22,7 +23,7 @@ PITS = [
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["EarthPillar", "Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
+ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
 WIND = ["Gust", "Gale", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
 SPARK = [
@@ -138,12 +139,17 @@ def assert_walkable(data):
         if xy not in reach:
             raise SystemExit(f"cannot walk to {name} at {xy}")
 
+    def must_not(reach, name, xy):
+        if xy in reach:
+            raise SystemExit(f"can walk to {name} at {xy} — the obstacle is skippable")
+
     must(closed, "fire altar", world("fire-wing", rooms, 8, 7))
     must(closed, "fire cage face", world("fire-wing", rooms, 5, 7))
     must(closed, "water altar", world("water-wing", rooms, 3, 7))
     must(closed, "water curtain face", world("water-wing", rooms, 8, 7))
     must(closed, "earth altar", world("earth-wing", rooms, 7, 13))
-    must(closed, "earth stone approach", world("earth-wing", rooms, 7, 3))
+    must(closed, "earth pit lip", world("earth-wing", rooms, 7, 5))
+    must_not(closed, "earth stone", world("earth-wing", rooms, 7, 2))
     must(closed, "air altar", world("air-wing", rooms, 7, 12))
     must(closed, "air fog lip", world("air-wing", rooms, 7, 9))
     must(closed, "door I", world("hub", rooms, 23, 13))
@@ -165,9 +171,14 @@ def assert_walkable(data):
     if join in closed:
         raise SystemExit("Door II is already open — the aspect north wall should stay shut")
     must(open_reach, "join foyer", join)
-    must(open_reach, "grove key", world("grove-court", rooms, 12, 8))
-    must(open_reach, "grove east bank", world("grove-court", rooms, 10, 8))
+    must(open_reach, "grove east bank", world("grove-court", rooms, 14, 8))
+    must(open_reach, "grove plant lip", world("grove-court", rooms, 11, 8))
+    must(open_reach, "grove spark lip", world("grove-court", rooms, 13, 14))
+    must_not(open_reach, "grove key", world("grove-court", rooms, 6, 8))
+    must_not(open_reach, "grove stone", world("grove-court", rooms, 1, 8))
     must(open_reach, "cistern mouth", world("cistern", rooms, 3, 8))
+    must_not(open_reach, "flood key", world("cistern", rooms, 10, 8))
+    must_not(open_reach, "flood stone", world("cistern", rooms, 17, 7))
     must(open_reach, "spark altar", world("spark-cell", rooms, 10, 10))
     must(open_reach, "spark key", world("spark-cell", rooms, 4, 7))
     must(open_reach, "arena floor", world("arena", rooms, 8, 8))
@@ -187,9 +198,11 @@ def simulate(data):
                 grid[(x, y)] = "Wall" if edge else "Floor"
         for mark in spec.get("stamps") or []:
             kind = mark["kind"]
+            material = mark.get("material") or ""
             cells_xy = mark["cells"]
+            stored = "Pit" if kind == "Floor" and material == "Water" else kind
             for i in range(0, len(cells_xy), 2):
-                grid[(ox + cells_xy[i], oy + cells_xy[i + 1])] = kind
+                grid[(ox + cells_xy[i], oy + cells_xy[i + 1])] = stored
         exit_dir = (spec.get("exit") or "none").lower()
         if exit_dir != "none":
             mx, my = ox + w // 2, oy + h // 2
@@ -372,7 +385,6 @@ def main():
             floor="Stone",
             stamps=[
                 stamp("Wall", "Hearth", rect(9, 1, 9, 12)),
-                stamp("Pit", "Water", cells((2, 2), (3, 2), (2, 11), (3, 11))),
                 stamp("Floor", "Hearth", cells((3, 7), (4, 7))),
                 stamp("Floor", "Ember", cells((4, 3), (5, 3))),
                 stamp("Floor", "Moss", cells((2, 6), (2, 8), (4, 6), (4, 8))),
@@ -416,7 +428,7 @@ def main():
             wall="Stone",
             floor="Stone",
             stamps=[
-                stamp("Pit", "Void", cells((6, 2), (8, 2))),
+                stamp("Pit", "Void", rect(1, 3, 12, 4)),
                 stamp("Floor", "SaltCrust", cells((7, 13), (7, 2))),
             ],
             props=[
@@ -430,10 +442,10 @@ def main():
                     "formula": ["Earth"],
                     "keys": ARROWS,
                     "cover": [6, 10, 7, 10, 8, 10, 6, 9, 7, 9, 8, 9],
-                    "cells": rect(1, 1, 12, 10),
+                    "cells": rect(1, 5, 12, 10),
                     "sprite": "arrow-rack",
                     "dir": "south",
-                    "note": "Rest stands. The shots break. Walk around the body you raised.",
+                    "note": "Rest stands. The shots break. Then the last step asks for a hop, or a body of rest.",
                 },
                 {"type": "item", "x": 7, "y": 2, "item": "earth-stone"},
             ],
@@ -635,17 +647,19 @@ def main():
             height=16,
             wall="Stone",
             floor="Stone",
-            hint="Joins already stand. A door wants three stones. Extra keys wait for a later secret.",
+            hint="Joins already stand. Grow, burn, freeze. A door wants three stones.",
             stamps=[
                 stamp("Floor", "Vein", cells((6, 8), (7, 8))),
                 stamp("Floor", "Moss", cells((16, 8), (17, 8))),
-                stamp("Floor", "Water", cells((26, 8), (27, 8))),
+                stamp("Floor", "Damp", cells((26, 8), (27, 8))),
+                stamp("Floor", "Ice", cells((28, 8))),
                 stamp("Floor", "Plant", cells((16, 5), (17, 5))),
             ],
             props=[
                 {"type": "runes", "x": 6, "y": 8, "runes": ["Spark"], "dir": "right"},
                 {"type": "runes", "x": 16, "y": 8, "runes": ["Plant"], "dir": "right"},
                 {"type": "runes", "x": 26, "y": 8, "runes": ["Water"], "dir": "right"},
+                {"type": "runes", "x": 28, "y": 8, "runes": ["Ice"], "dir": "right"},
             ],
         ),
         room(
@@ -657,21 +671,27 @@ def main():
             wall="Stone",
             floor="Stone",
             stamps=[
-                stamp("Pit", "Void", rect(7, 2, 8, 13)),
-                stamp("Floor", "Plant", rect(5, 2, 6, 13)),
-                stamp("Floor", "Moss", rect(9, 2, 10, 13)),
-                stamp("Wall", "Timber", cells((7, 14), (8, 14))),
+                stamp("Floor", "Grove", cells((1, 7), (1, 8), (2, 7), (2, 8))),
                 stamp("Wall", "Stone", rect(3, 1, 3, 6)),
                 stamp("Wall", "Stone", rect(3, 9, 3, 14)),
                 stamp("Door", "Stone", cells((3, 7), (3, 8))),
-                stamp("Floor", "Grove", cells((1, 7), (1, 8), (2, 7), (2, 8))),
-                stamp("Pit", "Void", cells((14, 3), (15, 3), (14, 4), (15, 4))),
-                stamp("Floor", "Plant", cells((14, 10), (14, 6))),
+                stamp("Wall", "Timber", rect(4, 1, 4, 6)),
+                stamp("Wall", "Grove", cells((4, 7), (4, 8))),
+                stamp("Wall", "Plant", rect(4, 9, 4, 14)),
+                stamp("Floor", "Plant", rect(6, 1, 6, 14)),
+                stamp("Floor", "Moss", cells((6, 7), (6, 8))),
+                stamp("Pit", "Void", rect(7, 1, 10, 14)),
+                stamp("Floor", "Moss", rect(11, 1, 12, 14)),
+                stamp("Floor", "Plant", cells((11, 7), (12, 7), (11, 8), (12, 8))),
+                stamp("Floor", "Hearth", cells((14, 11), (15, 11))),
+                stamp("Floor", "Plant", cells((14, 8))),
+                stamp("Floor", "Damp", cells((14, 5), (15, 5))),
             ],
             props=[
-                {"type": "runes", "x": 14, "y": 10, "runes": ["Plant"], "dir": "left"},
-                {"type": "runes", "x": 14, "y": 6, "runes": ["Water"], "dir": "left"},
-                {"type": "item", "x": 12, "y": 8, "item": "grove-key"},
+                {"type": "runes", "x": 14, "y": 11, "runes": ["Fire"], "dir": "left"},
+                {"type": "runes", "x": 14, "y": 8, "runes": ["Plant"], "dir": "left"},
+                {"type": "runes", "x": 14, "y": 5, "runes": ["Water"], "dir": "left"},
+                {"type": "item", "x": 6, "y": 8, "item": "grove-key"},
                 {
                     "type": "gate",
                     "x": 3,
@@ -684,7 +704,6 @@ def main():
                     "note": "The vegetable body takes the key. A grove stone sits free.",
                 },
                 {"type": "item", "x": 1, "y": 8, "item": "grove-stone"},
-                {"type": "item", "x": 14, "y": 2, "item": "spare-grove-key"},
             ],
         ),
         room(
@@ -696,21 +715,21 @@ def main():
             wall="Stone",
             floor="Stone",
             stamps=[
-                stamp("Floor", "Water", rect(1, 10, 18, 13)),
-                stamp("Pit", "Void", rect(5, 6, 7, 8)),
-                stamp("Wall", "Stone", rect(4, 5, 8, 5)),
-                stamp("Wall", "Stone", rect(4, 9, 8, 9)),
-                stamp("Pit", "Void", rect(3, 1, 7, 3)),
+                stamp("Floor", "Damp", cells((3, 8), (4, 8))),
+                stamp("Floor", "SaltCrust", cells((3, 10), (4, 10))),
+                stamp("Floor", "Ice", cells((3, 6), (4, 6))),
+                stamp("Pit", "Water", rect(6, 1, 7, 14)),
                 stamp("Wall", "Stone", rect(14, 1, 14, 6)),
                 stamp("Wall", "Stone", rect(14, 9, 14, 14)),
                 stamp("Door", "Stone", cells((14, 7), (14, 8))),
                 stamp("Floor", "Damp", cells((17, 7), (16, 7))),
-                stamp("Floor", "Water", cells((3, 8), (4, 8))),
             ],
             props=[
                 {"type": "runes", "x": 3, "y": 8, "runes": ["Water"], "dir": "right"},
-                {"type": "runes", "x": 3, "y": 11, "runes": ["Salt"], "dir": "right"},
-                {"type": "item", "x": 11, "y": 7, "item": "flood-key"},
+                {"type": "runes", "x": 3, "y": 10, "runes": ["Salt"], "dir": "right"},
+                {"type": "runes", "x": 3, "y": 6, "runes": ["Earth"], "dir": "right"},
+                {"type": "runes", "x": 4, "y": 6, "runes": ["Ice"], "dir": "right"},
+                {"type": "item", "x": 10, "y": 8, "item": "flood-key"},
                 {
                     "type": "gate",
                     "x": 14,
@@ -723,13 +742,12 @@ def main():
                     "note": "Yield given a body takes the key. A flood stone sits free.",
                 },
                 {"type": "item", "x": 17, "y": 7, "item": "flood-stone"},
-                {"type": "item", "x": 5, "y": 2, "item": "spare-flood-key"},
             ],
         ),
         room(
             id="spark-cell",
             name="The Seed of Charge",
-            origin={"x": 4, "y": 100},
+            origin={"x": 10, "y": 100},
             width=20,
             height=14,
             wall="Stone",
@@ -741,8 +759,6 @@ def main():
                 stamp("Wall", "Stone", rect(15, 1, 15, 5)),
                 stamp("Wall", "Stone", rect(15, 8, 15, 12)),
                 stamp("Door", "Stone", cells((15, 6), (15, 7))),
-                stamp("Pit", "Void", cells((6, 2), (7, 2), (6, 3), (7, 3))),
-                stamp("Floor", "Vein", cells((5, 2))),
             ],
             props=[
                 {"type": "runes", "x": 10, "y": 10, "runes": ["Spark"], "dir": "left"},
@@ -772,7 +788,6 @@ def main():
                     "note": "The seed takes the key. A spark stone sits free.",
                 },
                 {"type": "item", "x": 17, "y": 7, "item": "spark-stone"},
-                {"type": "item", "x": 5, "y": 2, "item": "spare-spark-key"},
             ],
         ),
         room(
@@ -787,7 +802,7 @@ def main():
                 stamp("Floor", "Hearth", cells((16, 4), (17, 4))),
                 stamp("Floor", "Vein", cells((11, 8), (12, 8))),
                 stamp("Floor", "SaltCrust", cells((5, 4), (5, 11))),
-                stamp("Pit", "Void", cells((20, 2), (21, 2), (20, 3), (21, 3))),
+                stamp("Wall", "Stone", cells((9, 6), (9, 9), (14, 6), (14, 9))),
             ],
             props=[
                 {"type": "runes", "x": 16, "y": 4, "runes": ["Fire"], "dir": "left"},
@@ -870,7 +885,7 @@ def main():
                 stamp("Floor", "Crystal", rect(8, 3, 13, 6)),
                 stamp("Floor", "Vein", cells((10, 8))),
                 stamp("Floor", "Moss", cells((9, 8))),
-                stamp("Floor", "Water", cells((11, 8))),
+                stamp("Floor", "Damp", cells((11, 8))),
             ],
             props=[
                 {
@@ -905,7 +920,7 @@ def main():
             {"from": "spirit-sanctum", "to": "door-ii", "material": "Crystal"},
             {"from": "door-ii", "to": "join-foyer", "material": "Stone"},
             {"from": "grove-court", "to": "join-foyer", "material": "Moss"},
-            {"from": "join-foyer", "to": "cistern", "material": "Water"},
+            {"from": "join-foyer", "to": "cistern", "material": "Damp"},
             {"from": "grove-court", "to": "spark-cell", "material": "Vein"},
             {"from": "join-foyer", "to": "arena", "material": "Stone"},
             {"from": "join-foyer", "to": "door-iii", "material": "Crystal"},

@@ -1117,6 +1117,19 @@
     },
     {
       "number": 63,
+      "id": "IceWall",
+      "book": "Cross",
+      "name": "Ice-wall",
+      "want": "A body of ice asked to stand as more ice. A wall. It will thaw.",
+      "recipe": "Water · Salt · Earth · Salt · Water · Salt · Earth",
+      "via": "Ice · Salt · Ice",
+      "form": "Pillar",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "IceWall"
+    },
+    {
+      "number": 64,
       "id": "Freeze",
       "book": "Hold",
       "name": "Freeze",
@@ -1132,7 +1145,7 @@
       "statusSeconds": 5
     },
     {
-      "number": 64,
+      "number": 65,
       "id": "Snowstorm",
       "book": "Weather",
       "name": "Snowstorm",

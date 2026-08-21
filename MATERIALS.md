@@ -51,12 +51,12 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 
 ## Ready for later maps
 
-These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the fire-room ice cage, decorative water in the ember vault). The rest wait on later maps.
+These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the fire-room ice cage, the cistern channel). The rest wait on later maps.
 
 | Material | Signature | Manifestation | Note |
 | --- | --- | --- | --- |
-| **Ice** | Water · Salt · Earth · Ice | Ice | Hard water. Thaws. Not Death. |
-| **Water** | Water · Salt | Water | A pool — yield holding a vessel. **Walkable floor.** Water work fills a connected pit smaller than 4×4 and leaves this floor. |
+| **Ice** | Water · Salt · Earth · Ice | Ice | Hard water. Thaws. Not Death. Freeze a pool and you can walk it. |
+| **Water** | Water · Salt | Water | A pool — yield holding a vessel. **It drowns.** Water work fills a connected pit smaller than 4×4 with this water. Ice asks it to stand. |
 | **Mud** | Water · Earth · Mud | Mud | Soft ground |
 | **Sand** | Water · Earth · Mud · Air · Sand | Sand | Mud given breath until it dries |
 | **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight |
