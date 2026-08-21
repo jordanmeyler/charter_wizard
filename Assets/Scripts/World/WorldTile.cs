@@ -26,6 +26,7 @@ namespace RuneMagic
         SpriteRenderer _overlay;
         Collider2D _collider;
         GameObject _linger;
+        bool _hasFoundation;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -78,15 +79,14 @@ namespace RuneMagic
                 return false;
             }
 
-            var restored = Foundation;
-            if (restored.Kind == 0 && restored.Material == MaterialId.None)
-            {
-                restored = new TileDef(TileKind.Floor, MaterialId.Stone);
-            }
+            var restored = _hasFoundation
+                ? Foundation
+                : new TileDef(TileKind.Floor, MaterialId.Stone);
 
             IsConjured = false;
             RaisedAs = RaisedForm.None;
             Foundation = default;
+            _hasFoundation = false;
             ClearLinger();
             Reshape(restored);
             return true;
@@ -94,10 +94,13 @@ namespace RuneMagic
 
         void RememberFoundation()
         {
-            if (!IsConjured)
+            if (_hasFoundation)
             {
-                Foundation = Def;
+                return;
             }
+
+            Foundation = Def;
+            _hasFoundation = true;
         }
 
         void Reshape(TileDef def)

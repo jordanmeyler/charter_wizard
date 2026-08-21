@@ -405,7 +405,9 @@ namespace RuneMagic
             main.duration = loop ? 1f : 0.55f;
             main.startLifetime = Lifetime(look, shape, loop);
             main.startSpeed = Speed(look, shape);
-            main.startSize = Size(look, shape) * Mathf.Lerp(0.85f, 1.25f, Mathf.Clamp01(potency - 0.2f));
+            var scale = Mathf.Lerp(0.85f, 1.25f, Mathf.Clamp01(potency - 0.2f));
+            var size = Size(look, shape);
+            main.startSize = new ParticleSystem.MinMaxCurve(size.constantMin * scale, size.constantMax * scale);
             main.startColor = look.Core;
             main.gravityModifier = Gravity(look);
             main.simulationSpace = ParticleSystemSimulationSpace.World;

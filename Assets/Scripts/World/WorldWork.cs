@@ -508,7 +508,7 @@ namespace RuneMagic
                 ? Span(CoordOf(from), CoordOf(to))
                 : new List<Vector2Int> { CoordOf(to) };
             var caster = CoordOf(origin);
-            var form = NeedsSpan(spell) ? RaisedForm.Wall : RaisedForm.Pillar;
+            var form = IsSinglePillar(spell) ? RaisedForm.Pillar : RaisedForm.Wall;
             var crossesGap = false;
             for (var i = 0; i < cells.Count; i++)
             {

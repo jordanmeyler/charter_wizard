@@ -13,8 +13,23 @@ namespace RuneMagic
         public Vector2Int Origin { get; private set; }
         public int Radius { get; private set; }
 
+        static readonly List<VeilField> Live = new();
+
         readonly HashSet<Vector2Int> _cells = new();
         WorldGrid _grid;
+
+        void OnEnable()
+        {
+            if (!Live.Contains(this))
+            {
+                Live.Add(this);
+            }
+        }
+
+        void OnDisable()
+        {
+            Live.Remove(this);
+        }
 
         public static VeilField Lay(WorldGrid grid, VeilKind kind, Vector3 world, int radius = 2)
         {
@@ -48,10 +63,9 @@ namespace RuneMagic
 
             var origin = WorldWork.CoordOf(world);
             var cleared = 0;
-            var fields = grid.GetComponentsInChildren<VeilField>();
-            for (var i = 0; i < fields.Length; i++)
+            for (var i = Live.Count - 1; i >= 0; i--)
             {
-                var field = fields[i];
+                var field = Live[i];
                 if (field == null)
                 {
                     continue;
@@ -81,10 +95,9 @@ namespace RuneMagic
 
             var origin = WorldWork.CoordOf(world);
             var cleared = 0;
-            var fields = grid != null ? grid.GetComponentsInChildren<VeilField>() : System.Array.Empty<VeilField>();
-            for (var i = 0; i < fields.Length; i++)
+            for (var i = Live.Count - 1; i >= 0; i--)
             {
-                var field = fields[i];
+                var field = Live[i];
                 if (field == null || !field.Touches(origin, radius))
                 {
                     continue;
@@ -103,13 +116,12 @@ namespace RuneMagic
         public static bool Covering(Vector3 world, out VeilKind kind)
         {
             kind = VeilKind.None;
-            var fields = Object.FindObjectsByType<VeilField>(FindObjectsSortMode.None);
             var coord = WorldWork.CoordOf(world);
-            for (var i = 0; i < fields.Length; i++)
+            for (var i = 0; i < Live.Count; i++)
             {
-                if (fields[i] != null && fields[i].Covers(coord))
+                if (Live[i] != null && Live[i].Covers(coord))
                 {
-                    kind = fields[i].Kind;
+                    kind = Live[i].Kind;
                     return true;
                 }
             }
@@ -126,12 +138,11 @@ namespace RuneMagic
 
         static VeilField FindNear(WorldGrid grid, Vector2Int origin, int radius)
         {
-            var fields = grid.GetComponentsInChildren<VeilField>();
-            for (var i = 0; i < fields.Length; i++)
+            for (var i = 0; i < Live.Count; i++)
             {
-                if (fields[i] != null && fields[i].Touches(origin, radius))
+                if (Live[i] != null && Live[i]._grid == grid && Live[i].Touches(origin, radius))
                 {
-                    return fields[i];
+                    return Live[i];
                 }
             }
 
