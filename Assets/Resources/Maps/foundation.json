@@ -476,6 +476,7 @@
             "Earth"
           ],
           "keys": [
+            "EarthPillar",
             "Wall",
             "StonePillar",
             "FlamePillar",
@@ -1364,6 +1365,7 @@
           "displayName": "The standing gap",
           "formulaId": "body-gap",
           "keys": [
+            "EarthPillar",
             "Wall",
             "Bridge",
             "FlamePillar",

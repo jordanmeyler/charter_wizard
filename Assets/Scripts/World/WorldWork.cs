@@ -36,6 +36,7 @@ namespace RuneMagic
                 case SpellId.Wall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
+                case SpellId.EarthPillar:
                 case SpellId.Menhir:
                     return true;
                 default:

@@ -241,6 +241,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 52 | Yield sent. Water thrown. Hunger ends. | Douse | Water · Mercury | — | Shot | Neither |
 | 53 | A standing body given a mind and sent. They obey. | Command | Salt · Sulphur · Mercury | — | Remote | Restrain |
 | 54 | Breath sent. A simple wind. | Gust | Air · Mercury | — | Shot | Neither |
+| 55 | Rest given a body. A column of earth. | Earth-pillar | Earth · Salt | Stone | Pillar | Neither |
 
 No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
 
@@ -260,6 +261,6 @@ No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water
 
 ## 8. The sanctum slice
 
-The written chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
+The written chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
 
 **Charter Cast** wants the whole sentence, in the written order. Mercury · Fire is not fire. **Free Cast** may unscramble a valid bag of runes into a written recipe, and may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence — including one Free only had to reorder — is not filled toward a longer one. Free cannot be stored.

@@ -73,7 +73,8 @@ namespace RuneMagic
         TimeStop,
         Douse,
         Command,
-        Gust
+        Gust,
+        EarthPillar
     }
 
     public readonly struct SpellRecipe
@@ -133,7 +134,8 @@ namespace RuneMagic
             Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
             Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
-            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.Wall, "Wall", "Compressed. Catalog: Earth · Salt · Earth. Form is in the chain.");
+            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Rest given a body.");
+            Register(RuneId.Stone, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Stone already stood.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
             Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");

@@ -135,7 +135,8 @@ namespace RuneMagic
             E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Water · Earth · Dark · Life · Death · Sulphur · Salt", "Mud · Dark · Life · Death · Sulphur · Salt", "Spread", SpellOutcome.Restrain, "Free"),
             E(52, SpellBook.Weather, SpellId.Douse, "Yield sent. Water thrown. Hunger ends.", "Douse", "Water · Mercury", "", "Shot", SpellOutcome.Neither),
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. A simple wind.", "Gust", "Air · Mercury", "", "Shot", SpellOutcome.Neither)
+            E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. A simple wind.", "Gust", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
+            E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -215,6 +216,13 @@ namespace RuneMagic
             if (filled.Count < 2)
             {
                 broken.Add("Fire · Salt should clash between at least two fillable chains");
+            }
+
+            var earthSalt = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Salt });
+            var earthPillar = ChainBook.CollectExact(earthSalt, SpellShape.None);
+            if (earthPillar.Count == 0 || earthPillar[0].Spell != SpellId.EarthPillar)
+            {
+                broken.Add("Earth · Salt should be Earth-pillar");
             }
 
             var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Mercury });
@@ -320,9 +328,10 @@ namespace RuneMagic
             string via,
             string form,
             SpellOutcome outcome,
-            string gate = "")
+            string gate = "",
+            SpellId work = SpellId.None)
         {
-            return new CodexEntry(number, book, spell, want, name, recipe, via, form, outcome, gate);
+            return new CodexEntry(number, book, spell, want, name, recipe, via, form, outcome, gate, work);
         }
     }
 }
