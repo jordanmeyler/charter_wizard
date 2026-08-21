@@ -180,7 +180,8 @@ namespace RuneMagic
                 return true;
             }
 
-            director?.KillPlayer("A column of hunger finds you. The crystal calls you back.");
+            director?.KillPlayer(DeathCause.OfSpell(SpellId.FlamePillar,
+                "A column of hunger finds you."));
             return false;
         }
 

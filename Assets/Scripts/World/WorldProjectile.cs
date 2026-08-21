@@ -21,6 +21,7 @@ namespace RuneMagic
         SpriteRenderer _renderer;
         CombatActor _source;
         ShotAllegiance _allegiance = ShotAllegiance.Hostile;
+        RuneId[] _recipe = System.Array.Empty<RuneId>();
 
         public static WorldProjectile Spawn(
             Vector3 from,
@@ -44,6 +45,7 @@ namespace RuneMagic
             shot._kind = kind;
             shot._source = source;
             shot._allegiance = allegiance;
+            shot._recipe = source != null ? source.CastRecipe : System.Array.Empty<RuneId>();
             shot._velocity = direction * speed;
             var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             host.transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -195,10 +197,8 @@ namespace RuneMagic
                     return;
                 }
 
-                var reason = _kind == ProjectileKind.Arrow
-                    ? "An arrow finds you. The crystal calls you back."
-                    : "Hunger sent finds you. The crystal calls you back.";
-                FindFirstObjectByType<SanctumDirector>()?.KillPlayer(reason);
+                FindFirstObjectByType<SanctumDirector>()?.KillPlayer(
+                    DeathCause.OfKind(_kind, _recipe));
                 Destroy(gameObject);
                 return;
             }

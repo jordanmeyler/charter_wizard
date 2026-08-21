@@ -1398,6 +1398,26 @@
             "Sulphur"
           ],
           "dir": "right"
+        },
+        {
+          "type": "runes",
+          "x": 14,
+          "y": 9,
+          "runes": [
+            "Water"
+          ],
+          "dir": "up"
+        },
+        {
+          "type": "lesson",
+          "x": 10,
+          "y": 9,
+          "runes": [
+            "Water",
+            "Salt",
+            "Sulphur"
+          ],
+          "dir": "right"
         }
       ],
       "id": "aspect-foyer",
@@ -1620,7 +1640,7 @@
       "name": "The Gallery of Force",
       "origin": {
         "x": 31,
-        "y": 53
+        "y": 55
       },
       "width": 16,
       "height": 12,
@@ -1906,7 +1926,7 @@
       "name": "Gate of Aspects",
       "origin": {
         "x": 30,
-        "y": 68
+        "y": 70
       },
       "width": 18,
       "height": 10,
@@ -3287,7 +3307,8 @@
     {
       "from": "aspect-foyer",
       "to": "spirit-sanctum",
-      "material": "Vein"
+      "material": "Hearth",
+      "hazard": "fire"
     },
     {
       "from": "spirit-sanctum",

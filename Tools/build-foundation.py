@@ -192,6 +192,8 @@ def assert_walkable(data):
         raise SystemExit("Door I is already open — the hub north wall should stay shut")
 
     must(open_reach, "aspect foyer", foyer)
+    must(open_reach, "ward lesson", world("aspect-foyer", rooms, 10, 9))
+    must(open_reach, "flame hall lip", world("aspect-foyer", rooms, 13, 10))
     must(open_reach, "body altar", world("body-sanctum", rooms, 12, 6))
     must(open_reach, "body pit lip", world("body-sanctum", rooms, 8, 6))
     must(open_reach, "spirit altar", world("spirit-sanctum", rooms, 3, 3))
@@ -532,6 +534,8 @@ def main():
                 {"type": "runes", "x": 5, "y": 6, "runes": ["Salt"], "dir": "right"},
                 {"type": "runes", "x": 14, "y": 6, "runes": ["Mercury"], "dir": "right"},
                 {"type": "runes", "x": 23, "y": 6, "runes": ["Sulphur"], "dir": "right"},
+                {"type": "runes", "x": 14, "y": 9, "runes": ["Water"], "dir": "up"},
+                lesson(10, 9, ["Water", "Salt", "Sulphur"], "right"),
             ],
         ),
         room(
@@ -563,7 +567,7 @@ def main():
         room(
             id="spirit-sanctum",
             name="The Gallery of Force",
-            origin={"x": 31, "y": 53},
+            origin={"x": 31, "y": 55},
             width=16,
             height=12,
             wall="Stone",
@@ -644,7 +648,7 @@ def main():
         room(
             id="door-ii",
             name="Gate of Aspects",
-            origin={"x": 30, "y": 68},
+            origin={"x": 30, "y": 70},
             width=18,
             height=10,
             wall="Stone",
@@ -919,7 +923,7 @@ def main():
             {"from": "hub", "to": "aspect-foyer", "material": "Stone"},
             {"from": "body-sanctum", "to": "aspect-foyer", "material": "SaltCrust"},
             {"from": "aspect-foyer", "to": "mind-sanctum", "material": "Stone"},
-            {"from": "aspect-foyer", "to": "spirit-sanctum", "material": "Vein"},
+            {"from": "aspect-foyer", "to": "spirit-sanctum", "material": "Hearth", "hazard": "fire"},
             {"from": "spirit-sanctum", "to": "door-ii", "material": "Crystal"},
             {"from": "door-ii", "to": "join-foyer", "material": "Stone"},
             {"from": "grove-court", "to": "join-foyer", "material": "Moss"},

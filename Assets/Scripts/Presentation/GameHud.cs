@@ -156,6 +156,61 @@ namespace RuneMagic
             {
                 DrawKeepModal();
             }
+
+            DrawDeathNotice();
+        }
+
+        void DrawDeathNotice()
+        {
+            if (_director == null || !_director.DeathNoticeUp)
+            {
+                return;
+            }
+
+            var cause = _director.LastDeath;
+            var width = Mathf.Min(560f, Screen.width - 32f);
+            var height = cause.HasRunes ? 168f : 112f;
+            var panel = new Rect((Screen.width - width) * 0.5f, 214f, width, height);
+            var previous = GUI.color;
+            GUI.color = new Color(0.12f, 0.04f, 0.04f, 0.92f);
+            GUI.DrawTexture(panel, Texture2D.whiteTexture);
+            GUI.color = new Color(0.92f, 0.32f, 0.22f, 0.85f);
+            DrawFrame(panel, 2f);
+            GUI.color = previous;
+
+            var title = Label(20, FontStyle.Bold, new Color(1f, 0.78f, 0.52f));
+            title.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(panel.x + 16, panel.y + 10, panel.width - 32, 28),
+                cause.Banner, title);
+
+            var body = Label(15, FontStyle.Normal, new Color(0.94f, 0.88f, 0.8f));
+            body.alignment = TextAnchor.UpperCenter;
+            GUI.Label(new Rect(panel.x + 20, panel.y + 42, panel.width - 40, 40),
+                cause.Detail, body);
+
+            if (!cause.HasRunes)
+            {
+                return;
+            }
+
+            var runes = cause.Runes;
+            const float gap = 10f;
+            var mark = 44f;
+            var row = runes.Length * mark + (runes.Length - 1) * gap;
+            var start = panel.x + (panel.width - row) * 0.5f;
+            var y = panel.y + 92f;
+            for (var i = 0; i < runes.Length; i++)
+            {
+                DrawMiniMark(new Rect(start + i * (mark + gap), y, mark, mark), runes[i]);
+            }
+
+            if (GlyphView.IsDevelop)
+            {
+                var names = Label(13, FontStyle.Italic, new Color(0.86f, 0.78f, 0.58f));
+                names.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(new Rect(panel.x + 16, panel.y + 140, panel.width - 32, 20),
+                    WorkingNames.RunePhrase(runes), names);
+            }
         }
 
         void DrawWorldChrome()
