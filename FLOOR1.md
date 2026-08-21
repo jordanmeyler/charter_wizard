@@ -92,7 +92,7 @@ Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wa
 Walk in from the west. A labelled **Water** waits near the mouth. A **Fire Golem** slams anyone in reach — hop or Stoneskin survives the blow; Douse / Water-jet / Rain still unmake it. Plant and moss sit by the Water altar: water them and they grow. A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
 ### Earth · "The Arrow Gauntlet" — *raise walls, block, then the last step*
-Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. Walk around the cover. A **full-width pit** then cuts the last step to the stone — hop it, or stand a body in the hollow. The pit is the sequenced crossing, not a random hole.
+Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. **Pits on either side** keep the stone on that lane — there is no walk-around. The shots have to stop, or you take them.
 
 ### Air · "The Sundered Heights" — *gust, clear*
 Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is a **green fog** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
@@ -118,7 +118,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
 **Lesson:** Sulphur reaches the enemy’s *mind.* Taught by taking every other tool away.
-- **Signature — the stone men:** humanoid rock, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
+- **Signature — the stone men:** two humanoid rocks, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
 - **Multiple solutions:** **Rage** them, **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past.
 - Force fails on purpose. Mind is discovered as the way through.
 
@@ -173,7 +173,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `hub` | The Cross | Choice. Four labelled roots. Door I. |
 | `fire-wing` | The Frozen Hall | Fire against ice |
 | `water-wing` | The Ember Vault | Water against fire |
-| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots, then hop or span the last pit |
+| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots; side pits keep the stone on the lane |
 | `air-wing` | The Sundered Heights | Air as gust. Fog, not a wall. |
 | `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
