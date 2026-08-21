@@ -1399,6 +1399,19 @@ namespace RuneMagic
 
         public void FallInPit(Transform player)
         {
+            var wet = Underfoot != null && Underfoot.Material == MaterialId.Water;
+            KnockBack(player, wet
+                ? "You cannot swim. Freeze it, span it, dry it, or give breath a body and cross."
+                : "The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
+        }
+
+        public void KnockBack(Transform player, string message)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {
@@ -1406,10 +1419,10 @@ namespace RuneMagic
             }
 
             player.position = _safePoint;
-            var wet = Underfoot != null && Underfoot.Material == MaterialId.Water;
-            Log(wet
-                ? "You cannot swim. Freeze it, span it, dry it, or give breath a body and cross."
-                : "The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
+            if (!string.IsNullOrEmpty(message))
+            {
+                Log(message);
+            }
         }
 
         void CheckFinished()

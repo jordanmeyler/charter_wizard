@@ -41,6 +41,17 @@ namespace RuneMagic
             SpellId.ChainLightning, SpellId.StormCall, SpellId.Thunderclap
         };
 
+        public static readonly SpellId[] FogKeys =
+        {
+            SpellId.Gust, SpellId.Gale, SpellId.StormCall, SpellId.Flight
+        };
+
+        public static readonly SpellId[] ArrowKeys =
+        {
+            SpellId.Wall, SpellId.StonePillar, SpellId.FlamePillar, SpellId.IcePillar,
+            SpellId.VineRise, SpellId.Menhir, SpellId.Bridge
+        };
+
         public static SanctumBuild Build(MapFile map)
         {
             if (map == null || map.rooms == null || map.rooms.Length == 0)
@@ -203,6 +214,12 @@ namespace RuneMagic
                 case "gate":
                     BindLock(room, locks, SpawnGate(prop, world));
                     break;
+                case "fog":
+                    BindLock(room, locks, SpawnFog(prop, world, origin));
+                    break;
+                case "arrows":
+                    BindLock(room, locks, SpawnArrows(prop, world, grid, origin));
+                    break;
             }
         }
 
@@ -283,6 +300,40 @@ namespace RuneMagic
                 prop.note,
                 prop.sprite);
             return gate;
+        }
+
+        static RoomFog SpawnFog(MapProp prop, Vector3 world, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Fog"));
+            actor.transform.position = world;
+            var fog = actor.AddComponent<RoomFog>();
+            fog.Bind(
+                NameOf(prop, "Poison fog"),
+                IdOf(prop, "poison-fog"),
+                ParseKeys(prop.keys, FogKeys),
+                ParseRunes(prop.formula, RuneId.Air),
+                LocalCells(origin, prop.cells),
+                prop.sprite,
+                prop.note);
+            return fog;
+        }
+
+        static ArrowVolley SpawnArrows(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Arrows"));
+            actor.transform.position = world;
+            var volley = actor.AddComponent<ArrowVolley>();
+            volley.Bind(
+                NameOf(prop, "Arrow volley"),
+                IdOf(prop, "arrow-volley"),
+                ParseKeys(prop.keys, ArrowKeys),
+                ParseRunes(prop.formula, RuneId.Earth),
+                grid,
+                LocalCells(origin, prop.cover),
+                LocalCells(origin, prop.cells),
+                prop.sprite,
+                prop.note);
+            return volley;
         }
 
         static List<Vector2Int> LocalCells(Vector2Int origin, int[] cells)

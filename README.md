@@ -15,8 +15,8 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
 | **The Ember Vault** | Flame curtain (golem optional) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. |
-| **The Arrow Gauntlet** | Two-tile gap, then an arrow rack | Wall, any pillar, Bridge; Hop / Flight | Earth: block, cover, span. |
-| **The Sundered Heights** | Two-tile rift, then a poison veil | Hop / Flight / Wall; Gale | Air: leap, glide, gust. |
+| **The Arrow Gauntlet** | Arrow volley, then a pit either side of the stone | Wall or any pillar, then walk around | Earth: block, cover. |
+| **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Wall / pillar / Bridge (Hop if you already know Air) | Salt stands a body. |
 | **The Gallery of Force** | Warden | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. |
 | **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
@@ -24,7 +24,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
 
-Douse and Command are new ordinary sentences written for this floor. You cannot swim; water is a wall until you freeze it, span it, or boil it dry.
+Douse, Command, and Gust are new ordinary sentences written for this floor. You cannot swim; water is a wall until you freeze it, span it, or boil it dry.
 
 | Design rule | In this slice |
 | --- | --- |

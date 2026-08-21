@@ -36,7 +36,8 @@ namespace RuneMagic
                 case "ice-block": return IceBlock();
                 case "flame-curtain": return FlameCurtain();
                 case "arrow-rack": return ArrowRack();
-                case "poison-veil": return PoisonVeil();
+                case "poison-veil":
+                case "poison-fog": return PoisonVeil();
                 case "rope": return Rope();
                 case "socket-gate":
                 case "gate": return SocketGateSprite();
