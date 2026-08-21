@@ -342,9 +342,10 @@ namespace RuneMagic
                 var host = new GameObject("VeilCloud");
                 host.transform.SetParent(parent, false);
                 host.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-                var system = host.AddComponent<ParticleSystem>();
+                var system = CreateStoppedSystem(host);
                 TuneVeil(system, look, radius);
                 StyleRenderer(host, look, 14);
+                system.Play(true);
                 return host;
             }
             catch (System.Exception exception)
@@ -384,7 +385,7 @@ namespace RuneMagic
 
         static void AttachParticles(GameObject host, ElementLook look, SpellShape shape, float potency, bool loop)
         {
-            var system = host.AddComponent<ParticleSystem>();
+            var system = CreateStoppedSystem(host);
             TuneMain(system, look, shape, potency, loop);
             TuneEmission(system, look, shape, potency, loop);
             TuneShape(system, look, shape);
@@ -395,10 +396,25 @@ namespace RuneMagic
             {
                 system.Emit(BurstCount(look, shape, potency));
             }
+
+            system.Play(true);
+        }
+
+        static ParticleSystem CreateStoppedSystem(GameObject host)
+        {
+            var system = host.AddComponent<ParticleSystem>();
+            // Duration cannot be set while Unity is already playing the new system.
+            system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            return system;
         }
 
         static void TuneMain(ParticleSystem system, ElementLook look, SpellShape shape, float potency, bool loop)
         {
+            if (system.isPlaying || system.particleCount > 0)
+            {
+                system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+
             var main = system.main;
             main.loop = loop;
             main.playOnAwake = true;
