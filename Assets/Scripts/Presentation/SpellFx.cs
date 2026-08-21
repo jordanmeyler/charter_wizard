@@ -3,7 +3,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Visible cast: shot, pillar, spread, or remote, then the lock may resolve.
+    /// Visible cast: a particle body that flies, rises, wells, or lands,
+    /// with a light that matches the element. The lock may then resolve.
     /// Never throws — a failed effect still completes so the room can resolve.
     /// </summary>
     public sealed class SpellFx : MonoBehaviour
@@ -11,14 +12,16 @@ namespace RuneMagic
         Vector3 _from;
         Vector3 _to;
         Vector3 _mid;
-        RuneId _material;
         SpellShape _shape;
+        ElementLook _look;
         float _age;
         float _duration = 0.35f;
         float _potency = 1f;
         System.Action _done;
         SpriteRenderer _body;
+        SpriteRenderer _glow;
         bool _finished;
+        bool _impacted;
 
         public static void Play(
             Vector3 from,
@@ -27,13 +30,14 @@ namespace RuneMagic
             SpellShape shape,
             string caption,
             System.Action done,
-            float potency = 1f)
+            float potency = 1f,
+            SpellId spell = SpellId.None)
         {
             try
             {
-                var host = new GameObject("SpellFx");
+                var host = new GameObject(string.IsNullOrEmpty(caption) ? "SpellFx" : caption);
                 var fx = host.AddComponent<SpellFx>();
-                if (!fx.Begin(from, to, material, shape, done, potency))
+                if (!fx.Begin(from, to, material, shape, done, potency, spell))
                 {
                     Object.Destroy(host);
                     done?.Invoke();
@@ -50,6 +54,8 @@ namespace RuneMagic
         {
             try
             {
+                var look = ElementLook.Of(ElementFamily.Aether);
+                ElementFx.Burst(origin, look, SpellShape.Spread, 0.7f);
                 var flash = new GameObject("Fizzle");
                 flash.transform.position = origin;
                 var renderer = flash.AddComponent<SpriteRenderer>();
@@ -65,27 +71,37 @@ namespace RuneMagic
             done?.Invoke();
         }
 
-        bool Begin(Vector3 from, Vector3 to, RuneId material, SpellShape shape, System.Action done, float potency)
+        bool Begin(
+            Vector3 from,
+            Vector3 to,
+            RuneId material,
+            SpellShape shape,
+            System.Action done,
+            float potency,
+            SpellId spell)
         {
             _done = done;
             _potency = potency <= 0f ? 1f : potency;
             _from = from;
             _to = to;
             _mid = Vector3.Lerp(_from, _to, 0.45f) + new Vector3(0f, 0.35f, 0f);
-            _material = material;
             if (shape == SpellShape.Self)
             {
                 shape = SpellShape.Spread;
             }
 
             _shape = shape == SpellShape.None ? SpellShape.Shot : shape;
-            _duration = DurationFor(_shape, _from, _to);
+            _look = ElementLook.For(material == RuneId.None ? RuneId.Aether : material, spell);
+            _duration = DurationFor(_shape, _from, _to, _look.Family);
             transform.position = _shape == SpellShape.Spread ? _from : _from;
 
-            var color = RunePalette.Of(material == RuneId.None ? RuneId.Aether : material);
-            CreateSprite("Glow", SpriteFactory.Glow(color), 18, new Vector3(1.4f, 1.4f, 1f) * _potency);
-            _body = CreateSprite("Body", BodySprite(), 19, Vector3.one);
+            var color = _look.Core;
+            _glow = CreateSprite("Glow", SpriteFactory.Glow(_look.Glow), 18, new Vector3(1.8f, 1.8f, 1f) * _potency);
+            _glow.color = _look.Glow;
+            _body = CreateSprite("Body", BodySprite(), 19, BodyScale());
             _body.color = color;
+            ElementFx.Stream(transform, _look, _shape, _potency);
+
             return true;
         }
 
@@ -102,7 +118,31 @@ namespace RuneMagic
 
         Sprite BodySprite()
         {
-            var color = RunePalette.Of(_material == RuneId.None ? RuneId.Aether : _material);
+            var color = _look.Core;
+            switch (_look.Family)
+            {
+                case ElementFamily.Fire:
+                case ElementFamily.Lava:
+                    return SpriteFactory.Ember(color);
+                case ElementFamily.Water:
+                    return SpriteFactory.Droplet(color);
+                case ElementFamily.Ice:
+                    return SpriteFactory.Shard(color);
+                case ElementFamily.Earth:
+                    return SpriteFactory.Pebble(color);
+                case ElementFamily.Lightning:
+                case ElementFamily.Spark:
+                    return SpriteFactory.Arc(color);
+                case ElementFamily.Fog:
+                case ElementFamily.Poison:
+                case ElementFamily.Steam:
+                    return SpriteFactory.Wisp(color);
+                case ElementFamily.Plant:
+                    return SpriteFactory.Leaf(color);
+                default:
+                    break;
+            }
+
             switch (_shape)
             {
                 case SpellShape.Pillar:
@@ -116,6 +156,22 @@ namespace RuneMagic
             }
         }
 
+        Vector3 BodyScale()
+        {
+            switch (_look.Family)
+            {
+                case ElementFamily.Fog:
+                case ElementFamily.Poison:
+                    return new Vector3(1.6f, 1.1f, 1f);
+                case ElementFamily.Earth:
+                    return new Vector3(0.85f, 0.85f, 1f);
+                case ElementFamily.Lightning:
+                    return new Vector3(1.3f, 0.45f, 1f);
+                default:
+                    return Vector3.one;
+            }
+        }
+
         void Update()
         {
             if (_finished)
@@ -126,17 +182,18 @@ namespace RuneMagic
             _age += Time.unscaledDeltaTime;
             var t = Mathf.Clamp01(_age / Mathf.Max(0.05f, _duration));
             var ease = t * t * (3f - 2f * t);
+            PulseGlow(ease);
 
             switch (_shape)
             {
                 case SpellShape.Pillar:
                     transform.position = _to;
-                    transform.localScale = new Vector3(_potency, Mathf.Lerp(0.2f, 1.35f, ease) * _potency, 1f);
+                    transform.localScale = new Vector3(_potency, Mathf.Lerp(0.2f, 1.55f, ease) * _potency, 1f);
                     break;
                 case SpellShape.Spread:
                     transform.position = _from;
-                    transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.6f, ease) * _potency;
-                    FadeBody(1f - ease * 0.65f);
+                    transform.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.8f, ease) * _potency;
+                    FadeBody(1f - ease * 0.7f);
                     break;
                 case SpellShape.Remote:
                     if (ease < 0.28f)
@@ -168,7 +225,7 @@ namespace RuneMagic
                         transform.rotation = Quaternion.Euler(0f, 0f, angle);
                     }
 
-                    transform.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.15f, Mathf.Sin(ease * Mathf.PI)) * _potency;
+                    transform.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.2f, Mathf.Sin(ease * Mathf.PI)) * _potency;
                     break;
             }
 
@@ -178,6 +235,19 @@ namespace RuneMagic
             }
 
             Finish();
+        }
+
+        void PulseGlow(float ease)
+        {
+            if (_glow == null)
+            {
+                return;
+            }
+
+            var color = _look.Glow;
+            color.a = _look.Glow.a * (0.55f + Mathf.Sin((_age * 14f) + ease) * 0.25f);
+            _glow.color = color;
+            _glow.transform.localScale = Vector3.one * (1.6f + Mathf.Sin(_age * 9f) * 0.15f) * _potency;
         }
 
         void FadeBody(float alpha)
@@ -194,6 +264,20 @@ namespace RuneMagic
 
         Vector3 SampleArc(float t)
         {
+            if (_look.Family == ElementFamily.Lightning)
+            {
+                var straight = Vector3.Lerp(_from, _to, t);
+                var jag = Mathf.Sin(t * 27f) * 0.18f;
+                var side = Vector2.Perpendicular((Vector2)(_to - _from));
+                if (side.sqrMagnitude > 0.0001f)
+                {
+                    side.Normalize();
+                    straight += (Vector3)(side * jag);
+                }
+
+                return straight;
+            }
+
             var a = Vector3.Lerp(_from, _mid, t);
             var b = Vector3.Lerp(_mid, _to, t);
             return Vector3.Lerp(a, b, t);
@@ -209,14 +293,19 @@ namespace RuneMagic
             _finished = true;
             try
             {
-                var flash = new GameObject("Impact");
-                flash.transform.position = _shape == SpellShape.Spread ? _from : _to;
-                var renderer = flash.AddComponent<SpriteRenderer>();
-                renderer.sprite = SpriteFactory.Burst(RunePalette.Of(
-                    _material == RuneId.None ? RuneId.Aether : _material));
-                renderer.sortingOrder = 21;
-                flash.transform.localScale = Vector3.one * 1.4f * _potency;
-                Destroy(flash, 0.2f);
+                if (!_impacted)
+                {
+                    _impacted = true;
+                    var impact = _shape == SpellShape.Spread ? _from : _to;
+                    ElementFx.Burst(impact, _look, _shape, _potency);
+                    var flash = new GameObject("Impact");
+                    flash.transform.position = impact;
+                    var renderer = flash.AddComponent<SpriteRenderer>();
+                    renderer.sprite = SpriteFactory.Burst(_look.Core);
+                    renderer.sortingOrder = 21;
+                    flash.transform.localScale = Vector3.one * 1.4f * _potency;
+                    Destroy(flash, 0.28f);
+                }
             }
             catch (System.Exception)
             {
@@ -228,16 +317,21 @@ namespace RuneMagic
             Destroy(gameObject);
         }
 
-        static float DurationFor(SpellShape shape, Vector3 from, Vector3 to)
+        static float DurationFor(SpellShape shape, Vector3 from, Vector3 to, ElementFamily family)
         {
+            if (family == ElementFamily.Lightning)
+            {
+                return 0.22f;
+            }
+
             if (shape == SpellShape.Pillar || shape == SpellShape.Spread)
             {
-                return 0.42f;
+                return family == ElementFamily.Fog || family == ElementFamily.Poison ? 0.62f : 0.48f;
             }
 
             if (shape == SpellShape.Remote)
             {
-                return 0.5f;
+                return 0.52f;
             }
 
             var distance = Vector2.Distance(from, to);
@@ -246,7 +340,7 @@ namespace RuneMagic
                 return 0.35f;
             }
 
-            return Mathf.Clamp(0.22f + distance * 0.08f, 0.28f, 0.7f);
+            return Mathf.Clamp(0.24f + distance * 0.08f, 0.3f, 0.75f);
         }
     }
 }

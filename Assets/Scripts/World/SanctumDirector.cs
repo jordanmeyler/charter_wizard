@@ -633,12 +633,19 @@ namespace RuneMagic
 
             if (WorldWork.NeedsSpan(spell))
             {
-                return "Click the near end, then the far end. Across a pit it is a span; on the floor it is a barrier.";
+                return "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
             }
 
             if (WorldWork.IsPillar(spell))
             {
-                return "Click the ground. A column rises there. A hollow takes it and holds.";
+                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds.";
+            }
+
+            if (WorldWork.LaysVeil(spell))
+            {
+                return WorldWork.IsPoisonVeil(spell)
+                    ? "Click to confirm. A sick mist hangs until fire or breath tears it."
+                    : "Click to confirm. Fog hangs until breath, fire, or light tears it.";
             }
 
             return SpellFormations.Get(shape).Hint;
@@ -838,7 +845,7 @@ namespace RuneMagic
                 else
                 {
                     var fxFrom = spanFrom ?? origin;
-                    SpellFx.Play(fxFrom, aim, material, shape, caption, () => finished = true, potency);
+                    SpellFx.Play(fxFrom, aim, material, shape, caption, () => finished = true, potency, SpellCodex.WorkOf(spell));
                 }
             }
             catch (System.Exception exception)

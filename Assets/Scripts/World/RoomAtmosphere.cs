@@ -38,9 +38,16 @@ namespace RuneMagic
                 _camera = Camera.main;
             }
 
+            var wash = _background;
+            var adept = AdeptAvatar.Find();
+            if (adept != null && VeilField.Covering(adept.transform.position, out var veil))
+            {
+                wash = Color.Lerp(_background, VeilField.Wash(veil), 0.72f);
+            }
+
             if (_camera != null)
             {
-                _camera.backgroundColor = Color.Lerp(_camera.backgroundColor, _background, 1f - Mathf.Exp(-3.5f * Time.deltaTime));
+                _camera.backgroundColor = Color.Lerp(_camera.backgroundColor, wash, 1f - Mathf.Exp(-3.5f * Time.deltaTime));
             }
         }
 

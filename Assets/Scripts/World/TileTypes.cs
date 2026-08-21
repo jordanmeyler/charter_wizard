@@ -9,6 +9,18 @@ namespace RuneMagic
         Door
     }
 
+    /// <summary>
+    /// How a conjured body stands. Architectural tiles stay None.
+    /// A pillar is one column. A wall is masonry. A span is a walkable fill.
+    /// </summary>
+    public enum RaisedForm
+    {
+        None,
+        Wall,
+        Pillar,
+        Span
+    }
+
     public readonly struct TileDef
     {
         public TileDef(TileKind kind, MaterialId material)

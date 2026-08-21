@@ -324,6 +324,129 @@ namespace RuneMagic
             });
         }
 
+        public static Sprite Ember(Color color)
+        {
+            return Memo($"ember:{color}", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var core = Color.Lerp(color, Color.yellow, 0.45f);
+                canvas.SoftCircle(16, 14, 12, new Color(color.r, color.g, color.b, 0.55f));
+                canvas.FillCircle(16, 13, 7, color);
+                canvas.FillCircle(16, 14, 4, core);
+                canvas.FillCircle(16, 15, 2, Color.white);
+                canvas.SoftCircle(16, 22, 6, new Color(1f, 0.55f, 0.15f, 0.45f));
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite Droplet(Color color)
+        {
+            return Memo($"droplet:{color}", () =>
+            {
+                var canvas = new PixelCanvas(24, 32);
+                canvas.Clear(Clear);
+                var core = Color.Lerp(color, Color.white, 0.4f);
+                canvas.FillCircle(12, 12, 8, color);
+                canvas.FillCircle(12, 18, 6, color);
+                canvas.Fill(10, 8, 5, 10, color);
+                canvas.FillCircle(12, 22, 4, core);
+                canvas.Set(10, 20, Color.white);
+                canvas.Set(9, 19, Color.white);
+                return canvas.ToSprite(24);
+            });
+        }
+
+        public static Sprite Shard(Color color)
+        {
+            return Memo($"shard:{color}", () =>
+            {
+                var canvas = new PixelCanvas(24, 32);
+                canvas.Clear(Clear);
+                var rim = Color.Lerp(color, Color.white, 0.55f);
+                canvas.ThickLine(12, 2, 6, 28, color);
+                canvas.ThickLine(12, 2, 18, 28, color);
+                canvas.ThickLine(6, 28, 18, 28, rim);
+                canvas.ThickLine(12, 2, 12, 28, rim);
+                canvas.Set(12, 8, Color.white);
+                return canvas.ToSprite(22);
+            });
+        }
+
+        public static Sprite Pebble(Color color)
+        {
+            return Memo($"pebble:{color}", () =>
+            {
+                var canvas = new PixelCanvas(28);
+                canvas.Clear(Clear);
+                var dark = Color.Lerp(color, Color.black, 0.35f);
+                canvas.FillCircle(14, 14, 10, dark);
+                canvas.FillCircle(14, 15, 8, color);
+                canvas.FillCircle(11, 17, 3, Color.Lerp(color, Color.white, 0.25f));
+                canvas.Shade(16, 10, 6, 6, 0.2f);
+                return canvas.ToSprite(24);
+            });
+        }
+
+        public static Sprite Arc(Color color)
+        {
+            return Memo($"arc:{color}", () =>
+            {
+                var canvas = new PixelCanvas(48, 20);
+                canvas.Clear(Clear);
+                var core = Color.Lerp(color, Color.white, 0.7f);
+                canvas.ThickLine(2, 10, 14, 6, color);
+                canvas.ThickLine(14, 6, 22, 14, core);
+                canvas.ThickLine(22, 14, 34, 5, color);
+                canvas.ThickLine(34, 5, 46, 11, core);
+                canvas.Line(3, 10, 45, 10, new Color(1f, 1f, 1f, 0.55f));
+                return canvas.ToSprite(26);
+            });
+        }
+
+        public static Sprite Wisp(Color color)
+        {
+            return Memo($"wisp:{color}", () =>
+            {
+                var canvas = new PixelCanvas(40);
+                canvas.Clear(Clear);
+                var soft = color;
+                soft.a = 0.55f;
+                canvas.SoftCircle(16, 18, 12, soft);
+                canvas.SoftCircle(24, 22, 10, new Color(color.r, color.g, color.b, 0.4f));
+                canvas.SoftCircle(20, 14, 8, new Color(1f, 1f, 1f, 0.18f));
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite Leaf(Color color)
+        {
+            return Memo($"leaf:{color}", () =>
+            {
+                var canvas = new PixelCanvas(24, 32);
+                canvas.Clear(Clear);
+                var vein = Color.Lerp(color, Color.black, 0.35f);
+                canvas.FillCircle(12, 18, 8, color);
+                canvas.FillCircle(12, 12, 6, color);
+                canvas.Line(12, 6, 12, 26, vein);
+                canvas.Line(12, 16, 6, 20, vein);
+                canvas.Line(12, 16, 18, 20, vein);
+                canvas.Highlight(9, 20, 3, 2, 0.2f);
+                return canvas.ToSprite(22);
+            });
+        }
+
+        public static Sprite Column(MaterialId material)
+        {
+            return Column(material, 0, 0);
+        }
+
+        public static Sprite Column(MaterialId material, int x, int y)
+        {
+            var seed = Hash(x, y, (int)material + 41);
+            return Memo($"column:{material}:{seed}", () => PaintColumn(MaterialCatalog.Of(material), seed));
+        }
+
         public static Sprite TargetRing()
         {
             return Memo("target-ring", () =>
@@ -705,6 +828,33 @@ namespace RuneMagic
             var canvas = new PixelCanvas(32, 40);
             var rng = new HashRng(seed == 0 ? 3 : seed);
             var brick = material.WallTone;
+            switch (material.Paint)
+            {
+                case MaterialPaint.Ice:
+                    PaintIceWall(canvas, brick, rng);
+                    break;
+                case MaterialPaint.Hearth:
+                case MaterialPaint.Ember:
+                case MaterialPaint.Lava:
+                    PaintFlameWall(canvas, brick, rng);
+                    break;
+                case MaterialPaint.Grove:
+                case MaterialPaint.Plant:
+                case MaterialPaint.Moss:
+                    PaintVineWall(canvas, brick, rng);
+                    break;
+                default:
+                    PaintBrickWall(canvas, brick, rng);
+                    break;
+            }
+
+            canvas.DitherBand(0, 4, new Color(0f, 0f, 0f, 0.18f), 0.5f);
+            canvas.Noise(rng, new Color(0.05f, 0.04f, 0.04f, 0.35f), 8);
+            return canvas.ToSprite(32, new Vector2(0.5f, 0.4f));
+        }
+
+        static void PaintBrickWall(PixelCanvas canvas, Color brick, HashRng rng)
+        {
             var mortar = Color.Lerp(brick, new Color(0.08f, 0.07f, 0.08f), 0.72f);
             canvas.Clear(mortar);
             for (var row = 0; row < 6; row++)
@@ -723,9 +873,90 @@ namespace RuneMagic
 
             canvas.Fill(0, 34, 32, 6, Color.Lerp(brick, Color.white, 0.1f));
             canvas.Highlight(0, 36, 32, 2, 0.08f);
-            canvas.DitherBand(0, 4, new Color(0f, 0f, 0f, 0.18f), 0.5f);
-            canvas.Noise(rng, new Color(0.05f, 0.04f, 0.04f, 0.35f), 10);
-            return canvas.ToSprite(32, new Vector2(0.5f, 0.4f));
+        }
+
+        static void PaintIceWall(PixelCanvas canvas, Color ice, HashRng rng)
+        {
+            canvas.Clear(Color.Lerp(ice, new Color(0.2f, 0.3f, 0.4f), 0.45f));
+            for (var i = 0; i < 5; i++)
+            {
+                var x = 2 + i * 6 + rng.Range(-1, 2);
+                var h = rng.Range(16, 34);
+                canvas.FillRounded(x, 2, 5, h, 1, Color.Lerp(ice, Color.white, rng.Value() * 0.35f));
+                canvas.Highlight(x + 1, h - 4, 2, 6, 0.25f);
+            }
+
+            canvas.Fill(0, 0, 32, 5, Color.Lerp(ice, Color.white, 0.2f));
+            canvas.SoftCircle(10, 28, 6, new Color(1f, 1f, 1f, 0.2f));
+        }
+
+        static void PaintFlameWall(PixelCanvas canvas, Color brick, HashRng rng)
+        {
+            PaintBrickWall(canvas, Color.Lerp(brick, new Color(0.2f, 0.08f, 0.06f), 0.35f), rng);
+            for (var i = 0; i < 7; i++)
+            {
+                var x = rng.Range(4, 28);
+                var y = rng.Range(8, 30);
+                canvas.SoftCircle(x, y, rng.Range(2, 4), new Color(1f, 0.45f, 0.1f, 0.45f));
+            }
+
+            canvas.SoftCircle(16, 34, 10, new Color(1f, 0.4f, 0.08f, 0.4f));
+        }
+
+        static void PaintVineWall(PixelCanvas canvas, Color leaf, HashRng rng)
+        {
+            canvas.Clear(Color.Lerp(leaf, new Color(0.08f, 0.12f, 0.06f), 0.55f));
+            for (var i = 0; i < 8; i++)
+            {
+                var x = 3 + i * 4 + rng.Range(-1, 2);
+                canvas.Fill(x, 2, 3, 34, Color.Lerp(leaf, Color.black, rng.Value() * 0.25f));
+                canvas.FillCircle(x + 1, rng.Range(8, 30), 3, leaf);
+            }
+
+            canvas.Fill(0, 0, 32, 5, Color.Lerp(leaf, new Color(0.2f, 0.14f, 0.08f), 0.4f));
+        }
+
+        static Sprite PaintColumn(WorldMaterial material, int seed)
+        {
+            var canvas = new PixelCanvas(32, 64);
+            var rng = new HashRng(seed == 0 ? 11 : seed);
+            var tone = material.WallTone;
+            var shaft = Color.Lerp(tone, Color.white, 0.08f);
+            var dark = Color.Lerp(tone, Color.black, 0.35f);
+            canvas.Clear(Clear);
+            canvas.FillRounded(6, 2, 20, 6, 1, dark);
+            canvas.FillRounded(8, 6, 16, 44, 2, shaft);
+            canvas.Fill(10, 8, 3, 40, Color.Lerp(shaft, Color.white, 0.18f));
+            canvas.Fill(19, 8, 3, 40, dark);
+            canvas.FillRounded(5, 48, 22, 8, 2, Color.Lerp(tone, Color.white, 0.12f));
+            canvas.FillRounded(8, 54, 16, 6, 2, shaft);
+            switch (material.Paint)
+            {
+                case MaterialPaint.Ice:
+                    canvas.Highlight(11, 20, 2, 18, 0.35f);
+                    canvas.SoftCircle(16, 56, 8, new Color(0.8f, 0.95f, 1f, 0.4f));
+                    break;
+                case MaterialPaint.Hearth:
+                case MaterialPaint.Ember:
+                case MaterialPaint.Lava:
+                    canvas.Fill(12, 10, 8, 36, new Color(1f, 0.4f, 0.08f, 0.85f));
+                    canvas.SoftCircle(16, 52, 8, new Color(1f, 0.45f, 0.1f, 0.55f));
+                    break;
+                case MaterialPaint.Grove:
+                case MaterialPaint.Plant:
+                case MaterialPaint.Moss:
+                    canvas.Line(10, 10, 14, 48, new Color(0.16f, 0.32f, 0.1f));
+                    canvas.Line(20, 12, 16, 50, new Color(0.16f, 0.32f, 0.1f));
+                    canvas.FillCircle(11, 28, 3, tone);
+                    canvas.FillCircle(21, 36, 3, Color.Lerp(tone, Color.black, 0.2f));
+                    break;
+                default:
+                    canvas.Highlight(11, 14, 2, 28, 0.12f);
+                    canvas.Noise(rng, new Color(0.05f, 0.04f, 0.04f, 0.3f), 8);
+                    break;
+            }
+
+            return canvas.ToSprite(32, new Vector2(0.5f, 0.18f));
         }
 
         static void PaintCobble(PixelCanvas canvas, Color stone, HashRng rng)
