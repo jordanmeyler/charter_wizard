@@ -60,7 +60,8 @@ namespace RuneMagic
     /// stands (Spark, Plant, Ice) appears as itself so it can be drawn.
     /// The basics that compose it are strewn through the grid. Creature
     /// recipes stay as written — Life marks a living formula and is not
-    /// unfolded. The adept is mind, body, and soul.
+    /// unfolded. Every enemy carries that mark when the weave is
+    /// populated. The adept is mind, body, and soul.
     /// </summary>
     public static class RoomSentence
     {
@@ -267,8 +268,9 @@ namespace RuneMagic
                             sequence,
                             creature.DisplayName,
                             CreatureWash(creature),
-                            creature.Formula,
-                            WeaveKind.Lock);
+                            EncounterLock.WithLife(creature.Formula),
+                            WeaveKind.Lock,
+                            markLiving: true);
                     }
                     else
                     {
@@ -352,14 +354,15 @@ namespace RuneMagic
             RuneId wash,
             IReadOnlyList<RuneId> formula,
             WeaveKind kind,
-            bool atHead = false)
+            bool atHead = false,
+            bool markLiving = false)
         {
             if (formula == null || formula.Count == 0)
             {
                 return;
             }
 
-            var written = new List<RuneId>(formula.Count);
+            var written = new List<RuneId>(formula.Count + 1);
             var living = false;
             for (var i = 0; i < formula.Count; i++)
             {
@@ -373,6 +376,12 @@ namespace RuneMagic
                 {
                     living = true;
                 }
+            }
+
+            if (markLiving && !living)
+            {
+                written.Add(RuneId.Vita);
+                living = true;
             }
 
             if (written.Count == 0)

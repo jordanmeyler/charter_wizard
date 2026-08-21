@@ -257,7 +257,7 @@ namespace RuneMagic
             encounter.Bind(
                 NameOf(prop, "Ash Mite"),
                 IdOf(prop, "ash-mite"),
-                ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
+                ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt, RuneId.Vita),
                 ParseKeys(prop.keys, MiteKeys),
                 ensouled: prop.ensouled,
                 spriteId: prop.sprite,

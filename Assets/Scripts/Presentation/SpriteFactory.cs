@@ -298,44 +298,8 @@ namespace RuneMagic
 
         public static Sprite Adept()
         {
-            return Memo("adept-v3", () =>
-            {
-                var canvas = new PixelCanvas(64);
-                canvas.Clear(Clear);
-                var outline = new Color(0.16f, 0.08f, 0.22f);
-                var cloak = new Color(0.42f, 0.24f, 0.78f);
-                var fold = new Color(0.28f, 0.12f, 0.52f);
-                var hood = new Color(0.18f, 0.07f, 0.36f);
-                var lining = new Color(0.95f, 0.74f, 0.32f);
-                var skin = new Color(0.98f, 0.84f, 0.72f);
-                var staff = new Color(0.48f, 0.28f, 0.14f);
-                var gem = new Color(0.45f, 0.95f, 1f);
-
-                canvas.FillCircle(32, 16, 13, outline);
-                canvas.FillRounded(17, 12, 30, 32, 6, outline);
-                canvas.FillRounded(20, 14, 24, 28, 5, cloak);
-                canvas.Fill(22, 16, 6, 22, fold);
-                canvas.Fill(36, 18, 5, 18, Color.Lerp(cloak, Color.white, 0.08f));
-                canvas.FillRounded(23, 10, 18, 14, 6, hood);
-                canvas.FillCircle(32, 30, 10, hood);
-                canvas.FillCircle(32, 28, 5, skin);
-                canvas.Fill(30, 26, 4, 2, new Color(0.85f, 0.55f, 0.5f));
-                canvas.Set(30, 29, new Color(0.12f, 0.06f, 0.12f));
-                canvas.Set(34, 29, new Color(0.12f, 0.06f, 0.12f));
-                canvas.Fill(30, 25, 4, 1, new Color(0.55f, 0.2f, 0.28f));
-                canvas.FillRounded(14, 22, 10, 6, 2, lining);
-                canvas.FillRounded(40, 22, 10, 6, 2, lining);
-                canvas.Fill(48, 8, 4, 40, staff);
-                canvas.Highlight(49, 10, 1, 30, 0.18f);
-                canvas.SoftCircle(50, 50, 8, new Color(gem.r, gem.g, gem.b, 0.55f));
-                canvas.FillCircle(50, 50, 5, gem);
-                canvas.FillCircle(50, 50, 2, Color.white);
-                canvas.FillRounded(23, 8, 7, 12, 2, cloak);
-                canvas.FillRounded(34, 8, 7, 12, 2, cloak);
-                canvas.FillRounded(26, 6, 12, 5, 2, lining);
-                canvas.SoftCircle(32, 14, 10, new Color(0.7f, 0.45f, 1f, 0.18f));
-                return canvas.ToSprite(32);
-            });
+            var still = SpriteActors.Still("adept");
+            return still != null ? still : Square(new Color(0.28f, 0.12f, 0.48f));
         }
 
         public static Sprite Glow(Color color, int size = 64)

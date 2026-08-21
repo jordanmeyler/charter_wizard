@@ -288,7 +288,8 @@
           "formula": [
             "Water",
             "Salt",
-            "Earth"
+            "Earth",
+            "Life"
           ],
           "keys": [
             "Fireball",
@@ -517,7 +518,8 @@
           "formulaId": "fire-golem",
           "formula": [
             "Fire",
-            "Salt"
+            "Salt",
+            "Life"
           ],
           "keys": [
             "Douse",
@@ -1569,7 +1571,8 @@
           "formulaId": "spirit-warden",
           "formula": [
             "Earth",
-            "Salt"
+            "Salt",
+            "Life"
           ],
           "keys": [
             "Fireball",
@@ -1748,7 +1751,8 @@
           "formulaId": "stone-man",
           "formula": [
             "Earth",
-            "Salt"
+            "Salt",
+            "Life"
           ],
           "keys": [
             "Rage",
@@ -1768,7 +1772,8 @@
           "formulaId": "stone-man",
           "formula": [
             "Earth",
-            "Salt"
+            "Salt",
+            "Life"
           ],
           "keys": [
             "Rage",
@@ -1788,7 +1793,8 @@
           "formulaId": "stone-man",
           "formula": [
             "Earth",
-            "Salt"
+            "Salt",
+            "Life"
           ],
           "keys": [
             "Rage",
