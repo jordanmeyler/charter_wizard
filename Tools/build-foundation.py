@@ -12,6 +12,7 @@ ICE = FIRE + ["Thaw"]
 WATER = ["Douse", "WaterJet", "Rain", "Flood", "Smother"]
 GOLEM = WATER + ["Gale", "Quagmire", "Wall", "Pit", "Bridge", "IcePillar"]
 PITS = [
+    "EarthPillar",
     "Wall",
     "Bridge",
     "FlamePillar",
@@ -21,7 +22,7 @@ PITS = [
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
+ARROWS = ["EarthPillar", "Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
 WIND = ["Gust", "Gale", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
 ATTACK = [

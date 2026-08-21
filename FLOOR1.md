@@ -24,7 +24,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
 | An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Hurled stone) |
-| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt · Earth** (Wall), **Water · Salt · Earth** (Ice-pillar) |
+| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Salt · Earth** (Ice-pillar) |
 | A mind reached | Sulphur turns the work toward a mind | **Fire · Sulphur · Mercury** (Rage), **Water · Sulphur · Mercury** (Lull), **Salt · Sulphur · Mercury** (Command) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
@@ -34,6 +34,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 52 | **Douse** | Water · Mercury | Parallel to Fireball. Yield sent. The first water verb. |
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
 | 54 | **Gust** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
+| 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
 
 ---
 
@@ -73,7 +74,7 @@ Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wa
 Walk in from the west. A labelled **Water** waits near the mouth. A Fire Golem stands off the path (optional). A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
 ### Earth · "The Arrow Gauntlet" — *raise walls, block, walk around*
-Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** owns the floor beyond. Raise a wall or a pillar on the lane so the shots break, then walk around the cover to the Earth stone. A single pit sits on either side of the stone.
+Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** owns the floor beyond. **Earth · Salt** raises an earth pillar on the tile you click; the shots break on it. Then walk around the cover to the Earth stone. A single pit sits on either side of the stone. Wall (`Earth · Salt · Earth`) still works if they write the longer sentence.
 
 ### Air · "The Sundered Heights" — *gust, clear*
 Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is a **green fog** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
@@ -89,7 +90,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
-- **Signature:** a gap that must be built against (Wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air.
+- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough.
 - **Stone:** on the far ledge.
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"

@@ -934,6 +934,19 @@
       "outcome": "Neither",
       "gate": "",
       "work": "Gust"
+    },
+    {
+      "number": 55,
+      "id": "EarthPillar",
+      "book": "Cross",
+      "name": "Earth-pillar",
+      "want": "Rest given a body. A column of earth.",
+      "recipe": "Earth · Salt",
+      "via": "Stone",
+      "form": "Pillar",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "StonePillar"
     }
   ]
 }
