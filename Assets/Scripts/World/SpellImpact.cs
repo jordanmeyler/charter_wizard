@@ -52,7 +52,7 @@ namespace RuneMagic
             if (verb.Target == SpellTarget.Area || shape == SpellShape.Spread)
             {
                 var center = shape == SpellShape.Spread ? origin : aim;
-                CollectLocks(locks, center, radius, hits);
+                CollectLocks(locks, center, radius, hits, verb);
                 ApplyHosts(hits, origin, verb, notes);
                 var self = AdeptAvatar.Find();
                 if (self != null && Vector2.Distance(self.transform.position, center) <= radius && verb.Status != StatusId.None)
@@ -68,7 +68,7 @@ namespace RuneMagic
                 return new SpellImpactResult(First(notes), hits);
             }
 
-            var single = Nearest(locks, aim, Mathf.Max(radius, 1.55f));
+            var single = Nearest(locks, aim, Mathf.Max(radius, 1.55f), verb);
             if (single != null)
             {
                 hits.Add(single);
@@ -79,7 +79,12 @@ namespace RuneMagic
             return new SpellImpactResult(First(notes), hits);
         }
 
-        static void CollectLocks(IReadOnlyList<ISpellLock> locks, Vector3 center, float radius, List<ISpellLock> hits)
+        static void CollectLocks(
+            IReadOnlyList<ISpellLock> locks,
+            Vector3 center,
+            float radius,
+            List<ISpellLock> hits,
+            SpellVerb verb = default)
         {
             if (locks == null)
             {
@@ -90,6 +95,7 @@ namespace RuneMagic
             {
                 var encounter = locks[i];
                 if (encounter is MonoBehaviour body && body != null && !encounter.Resolved &&
+                    CanTake(encounter, verb) &&
                     Vector2.Distance(center, encounter.WorldPosition) <= radius)
                 {
                     hits.Add(encounter);
@@ -97,7 +103,7 @@ namespace RuneMagic
             }
         }
 
-        static ISpellLock Nearest(IReadOnlyList<ISpellLock> locks, Vector3 point, float radius)
+        static ISpellLock Nearest(IReadOnlyList<ISpellLock> locks, Vector3 point, float radius, SpellVerb verb = default)
         {
             ISpellLock best = null;
             var bestDistance = radius;
@@ -109,7 +115,7 @@ namespace RuneMagic
             for (var i = 0; i < locks.Count; i++)
             {
                 var encounter = locks[i];
-                if (encounter is not MonoBehaviour body || body == null || encounter.Resolved)
+                if (encounter is not MonoBehaviour body || body == null || encounter.Resolved || !CanTake(encounter, verb))
                 {
                     continue;
                 }
@@ -123,6 +129,16 @@ namespace RuneMagic
             }
 
             return best;
+        }
+
+        static bool CanTake(ISpellLock encounter, SpellVerb verb)
+        {
+            if (!StatusSpec.IsMindAilment(verb.Status))
+            {
+                return true;
+            }
+
+            return encounter is MonoBehaviour body && body != null && StatusHost.On(body) != null;
         }
 
         static void ApplyHosts(List<ISpellLock> hits, Vector3 from, SpellVerb verb, List<string> notes)

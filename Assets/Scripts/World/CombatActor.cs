@@ -9,19 +9,30 @@ namespace RuneMagic
         Wizard
     }
 
+    public enum ShotAllegiance
+    {
+        Hostile,
+        Allied,
+        Wild
+    }
+
     /// <summary>
     /// A lock that can strike back. Golems slam. Wizards write a sentence
     /// and send it. A beginner fireball takes two seconds.
+    /// Mind ailments rewrite who they hunt, and whether they stand still.
     /// </summary>
     public sealed class CombatActor : MonoBehaviour
     {
         public CombatKind Kind { get; private set; }
         public float CastSeconds { get; private set; } = 2f;
         public Vector2 Facing { get; private set; } = Vector2.left;
+        public bool AlliedWithAdept => _status != null && _status.Has(StatusId.Charmed);
 
         ISpellLock _lock;
         StatusHost _status;
         WorldGrid _grid;
+        Collider2D _hit;
+        bool _baseTrigger;
         float _windup;
         bool _casting;
         Vector2 _committed;
@@ -30,7 +41,15 @@ namespace RuneMagic
         TextMesh _castChip;
         float _reach = 1.2f;
         float _sight = 8.2f;
+        float _walk = 2.6f;
         Vector3 _restScale = Vector3.one;
+        Vector3 _idleOrigin;
+        float _phase;
+        float _wanderUntil;
+        Vector2 _wanderDir = Vector2.left;
+        float _confusedUntil;
+        Transform _confusedMark;
+        SanctumDirector _director;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid)
         {
@@ -40,8 +59,11 @@ namespace RuneMagic
             _lock = GetComponent<ISpellLock>();
             _status = GetComponent<StatusHost>();
             _sprite = GetComponent<SpriteRenderer>();
+            _hit = GetComponent<Collider2D>();
+            _baseTrigger = _hit != null && _hit.isTrigger;
             _anim = GetComponent<SpriteAnim>() ?? SpriteAnim.On(gameObject, _sprite);
             _restScale = transform.localScale;
+            _idleOrigin = transform.position;
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
                 new Color(1f, 0.72f, 0.28f), 14);
             if (_castChip != null)
@@ -49,70 +71,249 @@ namespace RuneMagic
                 _castChip.characterSize = 0.05f;
             }
 
-            if (kind == CombatKind.Golem)
+            if (kind == CombatKind.Golem || kind == CombatKind.None)
             {
                 _reach = 1.25f;
-                CastSeconds = Mathf.Max(0.7f, castSeconds <= 2.01f ? 0.85f : castSeconds);
+                if (kind == CombatKind.Golem || castSeconds <= 2.01f)
+                {
+                    CastSeconds = Mathf.Max(0.7f, castSeconds <= 2.01f ? 0.85f : castSeconds);
+                }
             }
         }
 
         void Update()
         {
-            if (Kind == CombatKind.None || _lock == null || _lock.Resolved || AdeptAvatar.WorldHeld)
+            if (Kind == CombatKind.None && _status == null)
+            {
+                return;
+            }
+
+            if (_lock == null || _lock.Resolved || AdeptAvatar.WorldHeld)
             {
                 ClearCastChip();
                 return;
             }
 
+            SyncPassage();
             if (_status != null && _status.BlocksAction)
             {
-                _casting = false;
-                _windup = 0f;
-                transform.localScale = _restScale;
-                ClearCastChip();
+                CancelWindup();
+                ShowMindChip();
+                return;
+            }
+
+            var mind = _status != null ? _status.MindAilment : StatusId.None;
+            if (mind == StatusId.None && Kind == CombatKind.None)
+            {
+                TickIdle();
                 return;
             }
 
             var player = AdeptAvatar.Find();
-            if (player == null)
+            if (mind == StatusId.Frightened)
             {
+                Flee(player);
                 return;
             }
 
-            var toPlayer = (Vector2)(player.transform.position - transform.position);
-            var distance = toPlayer.magnitude;
+            var mark = PickMark(mind, player);
+            if (mark == null)
+            {
+                if (mind == StatusId.Charmed)
+                {
+                    Follow(player);
+                    return;
+                }
+
+                if (mind == StatusId.Confused)
+                {
+                    Wander();
+                    return;
+                }
+
+                if (mind == StatusId.Raging)
+                {
+                    TickSelfTurn();
+                    return;
+                }
+
+                if (player == null)
+                {
+                    return;
+                }
+
+                DriveToward(player.transform, player, false);
+                return;
+            }
+
+            DriveToward(mark, player, mind != StatusId.None);
+        }
+
+        void TickIdle()
+        {
+            CancelWindup();
+            _phase += Time.deltaTime;
+            transform.position = _idleOrigin + new Vector3(Mathf.Sin(_phase * 0.7f) * 0.2f, Mathf.Cos(_phase * 0.45f) * 0.12f, 0f);
+        }
+
+        void DriveToward(Transform mark, AdeptAvatar player, bool chase)
+        {
+            var toMark = (Vector2)(mark.position - transform.position);
+            var distance = toMark.magnitude;
             if (distance > 0.05f)
             {
-                Facing = toPlayer.normalized;
-                if (_sprite != null && Mathf.Abs(Facing.x) > 0.12f)
+                Face(toMark);
+            }
+
+            if (Kind == CombatKind.Wizard)
+            {
+                TickWizard(mark, toMark, distance);
+                return;
+            }
+
+            TickMelee(mark, player, distance, chase);
+        }
+
+        Transform PickMark(StatusId mind, AdeptAvatar player)
+        {
+            switch (mind)
+            {
+                case StatusId.Charmed:
+                    return NearestLock(includeCharmed: false);
+                case StatusId.Raging:
+                    return NearestCreature(player, preferLocks: true);
+                case StatusId.Confused:
+                    return ConfusedMark(player);
+                default:
+                    return player != null ? player.transform : null;
+            }
+        }
+
+        Transform ConfusedMark(AdeptAvatar player)
+        {
+            if (Time.time >= _confusedUntil || _confusedMark == null || !MarkAlive(_confusedMark))
+            {
+                _confusedUntil = Time.time + Random.Range(1.1f, 2.2f);
+                _confusedMark = RandomMark(player);
+                _wanderDir = Random.insideUnitCircle.normalized;
+                if (_wanderDir.sqrMagnitude < 0.01f)
                 {
-                    _sprite.flipX = Facing.x > 0f;
+                    _wanderDir = Vector2.right;
                 }
             }
 
-            if (Kind == CombatKind.Golem)
-            {
-                TickGolem(player, distance);
-                return;
-            }
-
-            TickWizard(player, toPlayer, distance);
+            return _confusedMark;
         }
 
-        void TickGolem(AdeptAvatar player, float distance)
+        Transform RandomMark(AdeptAvatar player)
+        {
+            var roll = Random.value;
+            if (roll < 0.35f)
+            {
+                return null;
+            }
+
+            if (roll < 0.6f && player != null)
+            {
+                return player.transform;
+            }
+
+            return NearestLock(includeCharmed: true);
+        }
+
+        Transform NearestCreature(AdeptAvatar player, bool preferLocks)
+        {
+            var other = NearestLock(includeCharmed: true);
+            if (preferLocks && other != null)
+            {
+                if (player == null)
+                {
+                    return other;
+                }
+
+                var toLock = Vector2.Distance(transform.position, other.position);
+                var toPlayer = Vector2.Distance(transform.position, player.transform.position);
+                return toLock <= toPlayer + 0.85f ? other : player.transform;
+            }
+
+            if (other == null)
+            {
+                return player != null ? player.transform : null;
+            }
+
+            if (player == null)
+            {
+                return other;
+            }
+
+            var lockDistance = Vector2.Distance(transform.position, other.position);
+            var playerDistance = Vector2.Distance(transform.position, player.transform.position);
+            return lockDistance < playerDistance ? other : player.transform;
+        }
+
+        Transform NearestLock(bool includeCharmed)
+        {
+            EncounterLock best = null;
+            var bestDistance = _sight;
+            var found = FindObjectsByType<EncounterLock>(FindObjectsSortMode.None);
+            for (var i = 0; i < found.Length; i++)
+            {
+                var other = found[i];
+                if (other == null || other.Resolved || other.gameObject == gameObject)
+                {
+                    continue;
+                }
+
+                if (!includeCharmed)
+                {
+                    var host = StatusHost.On(other);
+                    if (host != null && host.Has(StatusId.Charmed))
+                    {
+                        continue;
+                    }
+                }
+
+                var distance = Vector2.Distance(transform.position, other.transform.position);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = other;
+                }
+            }
+
+            return best != null ? best.transform : null;
+        }
+
+        static bool MarkAlive(Transform mark)
+        {
+            if (mark == null)
+            {
+                return false;
+            }
+
+            var encounter = mark.GetComponent<EncounterLock>();
+            return encounter == null || !encounter.Resolved;
+        }
+
+        void TickMelee(Transform mark, AdeptAvatar player, float distance, bool chase)
         {
             if (distance > _reach + 0.15f)
             {
                 _windup = 0f;
                 transform.localScale = _restScale;
-                _anim?.Play("fire-golem", 5f);
-                ClearCastChip();
+                if (chase)
+                {
+                    StepToward(mark.position);
+                }
+
+                _anim?.Play(IdleClip(), 5f);
+                ShowMindChip();
                 return;
             }
 
             _windup += Time.deltaTime;
-            ShowCast("slam…");
-            _anim?.Play("fire-golem-slam", 6f);
+            ShowCast(MindVerb());
+            _anim?.Play(Kind == CombatKind.Golem ? "fire-golem-slam" : IdleClip(), 6f);
             var wind = Mathf.Clamp01(_windup / CastSeconds);
             transform.localScale = new Vector3(_restScale.x * (1f + wind * 0.12f), _restScale.y * (1f - wind * 0.12f), 1f);
             if (_windup < CastSeconds)
@@ -122,25 +323,28 @@ namespace RuneMagic
 
             _windup = 0f;
             transform.localScale = _restScale;
-            _anim?.Play("fire-golem", 5f);
+            _anim?.Play(IdleClip(), 5f);
             ClearCastChip();
-            if (player.IsAirborne)
-            {
-                FindFirstObjectByType<SanctumDirector>()?.Log("The slam passes under you.");
-                return;
-            }
-
-            var host = StatusHost.On(player);
-            if (host != null && host.Fends(Essence.Physical))
-            {
-                FindFirstObjectByType<SanctumDirector>()?.Log($"{host.FendingName(Essence.Physical)} takes the blow.");
-                return;
-            }
-
-            FindFirstObjectByType<SanctumDirector>()?.KillPlayer("The golem's rest finds you. The crystal calls you back.");
+            LandBlow(mark, player);
         }
 
-        void TickWizard(AdeptAvatar player, Vector2 toPlayer, float distance)
+        void TickSelfTurn()
+        {
+            _windup += Time.deltaTime;
+            ShowCast("turns…");
+            var wind = Mathf.Clamp01(_windup / CastSeconds);
+            transform.localScale = new Vector3(_restScale.x * (1f + wind * 0.12f), _restScale.y * (1f - wind * 0.12f), 1f);
+            if (_windup < CastSeconds)
+            {
+                return;
+            }
+
+            _windup = 0f;
+            transform.localScale = _restScale;
+            Director()?.TurnLock(_lock);
+        }
+
+        void TickWizard(Transform mark, Vector2 toMark, float distance)
         {
             if (!_casting)
             {
@@ -151,12 +355,12 @@ namespace RuneMagic
 
                 _casting = true;
                 _windup = 0f;
-                _committed = toPlayer.sqrMagnitude > 0.01f ? toPlayer.normalized : Facing;
+                _committed = toMark.sqrMagnitude > 0.01f ? toMark.normalized : Facing;
             }
 
             _windup += Time.deltaTime;
             var left = Mathf.Max(0f, CastSeconds - _windup);
-            ShowCast($"casting… {left:0.0}");
+            ShowCast($"{MindVerb()} {left:0.0}");
             _anim?.Play("warden-cast", 5f);
             if (_windup < CastSeconds)
             {
@@ -168,7 +372,259 @@ namespace RuneMagic
             _anim?.Play("warden", 4f);
             ClearCastChip();
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, ProjectileKind.Fireball, _grid, 6.4f);
+            WorldProjectile.Spawn(origin, _committed, ProjectileKind.Fireball, _grid, 6.4f, this, ShotOf());
+        }
+
+        void LandBlow(Transform mark, AdeptAvatar player)
+        {
+            if (mark == null)
+            {
+                return;
+            }
+
+            if (player != null && mark == player.transform)
+            {
+                if (AlliedWithAdept)
+                {
+                    return;
+                }
+
+                if (player.IsAirborne)
+                {
+                    Director()?.Log("The slam passes under you.");
+                    return;
+                }
+
+                var host = StatusHost.On(player);
+                if (host != null && host.Fends(Essence.Physical))
+                {
+                    Director()?.Log($"{host.FendingName(Essence.Physical)} takes the blow.");
+                    return;
+                }
+
+                var who = _lock != null ? _lock.DisplayName : "The blow";
+                Director()?.KillPlayer($"{who} finds you. The crystal calls you back.");
+                return;
+            }
+
+            var encounter = mark.GetComponent<EncounterLock>();
+            if (encounter != null && !encounter.Resolved)
+            {
+                Director()?.Log($"{_lock.DisplayName} turns on {encounter.DisplayName}.");
+                Director()?.TurnLock(encounter);
+            }
+        }
+
+        void Follow(AdeptAvatar player)
+        {
+            CancelWindup();
+            if (player == null)
+            {
+                ShowMindChip();
+                return;
+            }
+
+            var toPlayer = (Vector2)(player.transform.position - transform.position);
+            var distance = toPlayer.magnitude;
+            if (distance > 1.7f)
+            {
+                Face(toPlayer);
+                StepToward(player.transform.position);
+            }
+            else if (distance < 1.05f && toPlayer.sqrMagnitude > 0.01f)
+            {
+                Face(-toPlayer);
+                StepToward(transform.position - (Vector3)toPlayer.normalized);
+            }
+
+            ShowMindChip();
+        }
+
+        void Flee(AdeptAvatar player)
+        {
+            CancelWindup();
+            if (player == null)
+            {
+                ShowMindChip();
+                return;
+            }
+
+            var away = (Vector2)(transform.position - player.transform.position);
+            if (away.sqrMagnitude < 0.01f)
+            {
+                away = Vector2.right;
+            }
+
+            Face(away);
+            StepToward(transform.position + (Vector3)away.normalized, _walk + 0.8f);
+            ShowCast("flees…");
+        }
+
+        void Wander()
+        {
+            CancelWindup();
+            if (Time.time >= _wanderUntil || _wanderDir.sqrMagnitude < 0.01f)
+            {
+                _wanderUntil = Time.time + Random.Range(0.7f, 1.6f);
+                _wanderDir = Random.insideUnitCircle.normalized;
+                if (_wanderDir.sqrMagnitude < 0.01f)
+                {
+                    _wanderDir = Vector2.left;
+                }
+            }
+
+            Face(_wanderDir);
+            if (!StepToward(transform.position + (Vector3)_wanderDir))
+            {
+                _wanderUntil = 0f;
+            }
+
+            ShowMindChip();
+        }
+
+        bool StepToward(Vector3 world, float speed = 0f)
+        {
+            if (_status != null && _status.BlocksMove)
+            {
+                return false;
+            }
+
+            var delta = (Vector2)(world - transform.position);
+            if (delta.sqrMagnitude < 0.0004f)
+            {
+                return true;
+            }
+
+            var step = delta.normalized * (speed > 0f ? speed : _walk) * Time.deltaTime;
+            var next = (Vector2)transform.position + step;
+            if (Blocked(next))
+            {
+                return false;
+            }
+
+            transform.position = next;
+            _idleOrigin = transform.position;
+            return true;
+        }
+
+        bool Blocked(Vector2 point)
+        {
+            if (_grid == null)
+            {
+                return false;
+            }
+
+            var tile = _grid.TileAtWorld(point);
+            return tile != null && tile.Def.BlocksMovement;
+        }
+
+        void Face(Vector2 direction)
+        {
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            Facing = direction.normalized;
+            if (_sprite != null && Mathf.Abs(Facing.x) > 0.12f)
+            {
+                _sprite.flipX = Facing.x > 0f;
+            }
+        }
+
+        void SyncPassage()
+        {
+            if (_hit == null)
+            {
+                return;
+            }
+
+            _hit.isTrigger = _baseTrigger || (_status != null && _status.YieldsPassage);
+        }
+
+        void CancelWindup()
+        {
+            _casting = false;
+            _windup = 0f;
+            transform.localScale = _restScale;
+            ClearCastChip();
+        }
+
+        ShotAllegiance ShotOf()
+        {
+            if (_status == null)
+            {
+                return ShotAllegiance.Hostile;
+            }
+
+            if (_status.Has(StatusId.Charmed))
+            {
+                return ShotAllegiance.Allied;
+            }
+
+            if (_status.Has(StatusId.Raging) || _status.Has(StatusId.Confused))
+            {
+                return ShotAllegiance.Wild;
+            }
+
+            return ShotAllegiance.Hostile;
+        }
+
+        string MindVerb()
+        {
+            if (_status == null)
+            {
+                return Kind == CombatKind.Wizard ? "casting…" : "slam…";
+            }
+
+            if (_status.Has(StatusId.Raging))
+            {
+                return "raging…";
+            }
+
+            if (_status.Has(StatusId.Charmed))
+            {
+                return Kind == CombatKind.Wizard ? "serves…" : "guards…";
+            }
+
+            if (_status.Has(StatusId.Confused))
+            {
+                return "confused…";
+            }
+
+            return Kind == CombatKind.Wizard ? "casting…" : "slam…";
+        }
+
+        void ShowMindChip()
+        {
+            var mind = _status != null ? _status.MindAilment : StatusId.None;
+            if (mind == StatusId.None)
+            {
+                ClearCastChip();
+                return;
+            }
+
+            ShowCast(StatusSpec.Of(mind).Name);
+        }
+
+        string IdleClip()
+        {
+            if (Kind == CombatKind.Golem)
+            {
+                return "fire-golem";
+            }
+
+            if (Kind == CombatKind.Wizard)
+            {
+                return "warden";
+            }
+
+            return gameObject.name.ToLowerInvariant().Contains("stone") ? "stone-man" : "ash-mite";
+        }
+
+        SanctumDirector Director()
+        {
+            return _director != null ? _director : _director = FindFirstObjectByType<SanctumDirector>();
         }
 
         void ShowCast(string text)

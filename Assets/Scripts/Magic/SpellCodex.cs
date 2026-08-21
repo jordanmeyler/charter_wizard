@@ -142,7 +142,8 @@ namespace RuneMagic
             E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Rest thrown breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt · Earth", "Lava · Salt · Earth", "Pillar", SpellOutcome.Kill),
-            E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither)
+            E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
+            E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain)
         };
 
         public static IReadOnlyList<CodexEntry> All

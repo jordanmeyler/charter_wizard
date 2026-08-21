@@ -249,6 +249,28 @@ namespace RuneMagic
                 return;
             }
 
+            if (PlayerBlocksAction())
+            {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return)
+                    || Input.GetMouseButtonDown(0))
+                {
+                    if (Mode == PlayMode.Aiming)
+                    {
+                        CancelAim();
+                    }
+                    else if (Mode == PlayMode.Charter)
+                    {
+                        CloseCharter();
+                    }
+                    else
+                    {
+                        Log("A held mind will not write.");
+                    }
+                }
+
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (Mode == PlayMode.Aiming)
@@ -1271,7 +1293,19 @@ namespace RuneMagic
                             for (var i = 0; i < impact.Locks.Count; i++)
                             {
                                 var hit = impact.Locks[i];
-                                if (!LockAlive(hit) || !Accepts(hit, outcome.Spell))
+                                if (!LockAlive(hit))
+                                {
+                                    continue;
+                                }
+
+                                if (SpellVerb.HoldsMind(outcome.Spell))
+                                {
+                                    Grimoire.LearnInterpretation(hit.FormulaId);
+                                    workNote = FirstNote(impactNote, workNote);
+                                    continue;
+                                }
+
+                                if (!Accepts(hit, outcome.Spell))
                                 {
                                     continue;
                                 }
@@ -1288,7 +1322,7 @@ namespace RuneMagic
                                 workNote = FirstNote(flavor, workNote);
                             }
                         }
-                        else if (outcome.Resolved && LockAlive(target))
+                        else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                         {
                             Grimoire.LearnInterpretation(target.FormulaId);
                             var flavor = target.Resolve(outcome.Spell);
@@ -1302,7 +1336,7 @@ namespace RuneMagic
                             workNote = FirstNote(flavor, workNote);
                         }
                     }
-                    else if (outcome.Resolved && LockAlive(target))
+                    else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                     {
                         Grimoire.LearnInterpretation(target.FormulaId);
                         var flavor = target.Resolve(outcome.Spell);
@@ -1706,7 +1740,7 @@ namespace RuneMagic
 
         public void TurnLock(ISpellLock encounter)
         {
-            if (!LockAlive(encounter) || Busy)
+            if (!LockAlive(encounter))
             {
                 return;
             }
@@ -1807,6 +1841,12 @@ namespace RuneMagic
             var player = PlayerTransform();
             var host = StatusHost.On(player);
             return host != null ? host.Summary() : string.Empty;
+        }
+
+        bool PlayerBlocksAction()
+        {
+            var host = StatusHost.On(PlayerTransform());
+            return host != null && host.BlocksAction;
         }
 
         static bool Accepts(ISpellLock encounter, SpellId spell)
