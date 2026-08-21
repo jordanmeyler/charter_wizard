@@ -93,6 +93,8 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 A join is not a modifier. It is a **new rune** with its own concept. Once it exists (you mixed it, or the room already holds it), later chains can start from it.
 
+Most joins are elements meeting elements (**Steam · Metal → Acid**). Some also take an operator: **Water · Salt · Earth → Ice** is yield plus Body, asked to rest. The Grimoire lists every written birth, split that way.
+
 ### First joins — two roots
 
 | Wrought | Born from | Concept | What you see |
@@ -130,6 +132,16 @@ A join is not a modifier. It is a **new rune** with its own concept. Once it exi
 | **Ash** | Fire · Plant | What hunger leaves of a vegetable body. | Grey dust. Not grave-work |
 | **Wind** | Air · Mercury | Breath going. | A push |
 | **Current** | Water · Mercury | Yield going. | A flow |
+| **Metal** | Lava · Earth | Hungry earth given more rest, then stilled. | Hard. The spark’s road |
+| **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
+| **Glacier** | Ice · Stone | Ice given Stone. | Ice that will not thaw easily |
+| **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
+| **Inferno** | Fire · Fire · Salt | A fire-body taught to travel and keep eating. | Spreading hunger |
+| **Plasma** | Inferno · Spark | Inferno joined to Spark. | Reserved |
+| **Vine** | Grove · Mercury | Waking plant sent. | Climbing green |
+| **Forest** | Plant · Life | The vegetable body waking as a mass. | Trees as one body |
+| **Blizzard** | Wind · Snow | Wind driving Snow. | Hard-water weather |
+| **Sandstorm** | Wind · Dust | Wind driving Dust. | A grit gale |
 
 ### Death-wrought (Free / arcane only)
 

@@ -421,8 +421,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. All written chains. Click a name to cast it if those runes are in view. Kept workings are marked.",
-                "The book of workings. Click a page to send it if those marks are in view. Kept pages are marked."));
+                "The Grimoire. Written chains, and every join — Acid is Steam · Metal, Ice is Water · Salt · Earth. Click a name to string it if those runes are in view. Kept workings are marked.",
+                "The book of workings and joins. Click a page to send it if those marks are in view. Kept pages are marked."));
         }
 
         public void CloseGrimoire()
@@ -825,6 +825,44 @@ namespace RuneMagic
             }
 
             return SpellFormations.Get(shape).Hint;
+        }
+
+        public void LoadBirth(RuneId rune)
+        {
+            if (!ChainBook.TryBirth(rune, out var sources) || sources.Count == 0)
+            {
+                Log("That join is not written.");
+                return;
+            }
+
+            if (Mode == PlayMode.Grimoire)
+            {
+                CloseGrimoire();
+            }
+
+            if (Mode != PlayMode.Charter)
+            {
+                OpenCharter();
+            }
+
+            Composer.Load(sources);
+            var name = RuneCatalog.NameOf(rune);
+            var recipe = ChainBook.BirthNameText(rune);
+            var extras = ChainBook.ExtraRoles(sources);
+            var extra = extras.Length == 0
+                ? string.Empty
+                : $"  ({extras})";
+            if (FieldOffers(sources))
+            {
+                Log(GlyphView.Speak(
+                    $"{name} is {recipe}{extra}. The sentence is strung.",
+                    "The join is strung."));
+                return;
+            }
+
+            Log(GlyphView.Speak(
+                $"{name} is {recipe}{extra}, but those runes are not all in this view. Walk until they speak.",
+                "The join is strung, but those marks are not all in this view."));
         }
 
         public void LoadCodex(int number)

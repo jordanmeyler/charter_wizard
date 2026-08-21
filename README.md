@@ -33,7 +33,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
 | Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. The Grimoire lists them all; click a name to string it. |
-| Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
+| Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Salt · Earth (Body, not Death). The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
 ## Open and play
@@ -59,7 +59,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it. Arrows move the selection. Esc or I closes.
-- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell. Click a name to cast it if those runes are in view. Workings you **Keep** from Recent casts are highlighted (the catalog name stays).
+- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and every wrought join. Click a spell to cast it, or a join (Acid, Ice…) to string how it is born, if those runes are in view. Workings you **Keep** from Recent casts are highlighted (the catalog name stays).
 - **Recent casts** (top-right): **Cast** again if the marks are in view; **Keep** names a working and marks it in the Grimoire.
 - **K** or **Yield** sends you back to the spawn crystal and drops pillars, walls, and hanging work you stood in this room. Stones and keys stay in the pack.
 - **Backspace** / **C** unmake the last rune
