@@ -224,7 +224,21 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 ---
 
-## 6. Why this split
+## 6. Higher workings (51+)
+
+Longer because more happened. These sit above the ordinary book and the reserved grave list. They still use the eleven — they just ask more of them at once.
+
+Time-stop is not soul-work. Mercury (spirit / going / the adept’s soul) is not in the sentence. Light is not in it. The story is yield and rest (the world as it is) withheld, the living marked so they stay themselves, the grave taking the motion of instants, the mind reached so thought cannot hurry, then Salt standing that stopped moment around your feet.
+
+| # | What you see | Spell | Chain | From a join | Form | Does | Gate |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Death · Sulphur · Salt | Mud · Dark · Life · Death · Sulphur · Salt | Spread | Restrain | Free |
+
+No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
+
+---
+
+## 7. Why this split
 
 **Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Hop and the short Flight are breath given a body (Air · Salt · Air, Air · Mercury · Salt) and do not need Life. Call without Life is a statue.
 
@@ -236,8 +250,8 @@ Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with 
 
 ---
 
-## 7. The sanctum slice
+## 8. The sanctum slice
 
-The fifty chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
+The written chains resolve in play. Joins fold (Fire · Air is Spark). Open the Grimoire and click a name to string that chain for testing. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work.
 
 **Charter Cast** wants the whole sentence, in the written order. Mercury · Fire is not fire. **Free Cast** may unscramble a valid bag of runes into a written recipe, and may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence — including one Free only had to reorder — is not filled toward a longer one. Free cannot be stored.

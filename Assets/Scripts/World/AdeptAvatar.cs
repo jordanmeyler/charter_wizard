@@ -18,11 +18,13 @@ namespace RuneMagic
         };
 
         float _airborneUntil;
+        float _stillUntil;
         SpriteRenderer _sprite;
         Color _baseColor = Color.white;
         Vector3 _restScale = Vector3.one;
 
         public bool IsAirborne => Time.time < _airborneUntil;
+        public static bool WorldHeld { get; private set; }
 
         public static AdeptAvatar Find()
         {
@@ -44,6 +46,16 @@ namespace RuneMagic
             _airborneUntil = Mathf.Max(_airborneUntil, Time.time + seconds);
         }
 
+        public void HoldWorld(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _stillUntil = Mathf.Max(_stillUntil, Time.time + seconds);
+        }
+
         void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();
@@ -54,12 +66,24 @@ namespace RuneMagic
             }
         }
 
+        void OnDisable()
+        {
+            WorldHeld = false;
+        }
+
         void Update()
         {
-            var bob = 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
+            WorldHeld = Time.time < _stillUntil;
+            var bob = WorldHeld ? 1f : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
             transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             if (_sprite == null)
             {
+                return;
+            }
+
+            if (WorldHeld)
+            {
+                _sprite.color = Color.Lerp(_baseColor, new Color(0.42f, 0.28f, 0.62f, 0.92f), 0.6f);
                 return;
             }
 

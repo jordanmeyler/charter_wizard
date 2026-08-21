@@ -337,7 +337,7 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Grimoire;
-            Log("The Grimoire. All fifty written chains. Click a name to string it.");
+            Log("The Grimoire. All written chains. Click a name to string it.");
         }
 
         public void CloseGrimoire()
@@ -624,6 +624,11 @@ namespace RuneMagic
             if (WorldWork.IsFlight(spell))
             {
                 return "Click to keep the breath on you. Pits will not take you while it lasts.";
+            }
+
+            if (WorldWork.IsTimeStop(spell))
+            {
+                return "Click to confirm. The instant stands around you. Motion leaves the living.";
             }
 
             if (WorldWork.NeedsSpan(spell))
@@ -938,6 +943,12 @@ namespace RuneMagic
             if (WorldWork.IsFlight(spell) && adept != null)
             {
                 adept.KeepAirborne(WorldWork.FlightSeconds);
+                yield break;
+            }
+
+            if (WorldWork.IsTimeStop(spell) && adept != null)
+            {
+                adept.HoldWorld(WorldWork.TimeStopSeconds);
                 yield break;
             }
 

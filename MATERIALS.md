@@ -86,4 +86,4 @@ Oil, gas, bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grav
 
 `WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style. Later you can hang collision, spread rules, and reaction tags on the same class without changing how rooms are stamped.
 
-The Grimoire and pause ledger list this catalog next to the fifty spells.
+The Grimoire and pause ledger list this catalog next to the written spells.

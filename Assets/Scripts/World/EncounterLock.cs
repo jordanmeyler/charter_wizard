@@ -54,7 +54,7 @@ namespace RuneMagic
 
         void Update()
         {
-            if (Resolved)
+            if (Resolved || AdeptAvatar.WorldHeld)
             {
                 return;
             }

@@ -485,7 +485,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. Esc closes.",
+                $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. 51: Time-stop. Esc closes.",
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);

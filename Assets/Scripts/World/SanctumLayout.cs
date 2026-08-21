@@ -30,7 +30,8 @@ namespace RuneMagic
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
             SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
             SpellId.ChainLightning, SpellId.Thunderclap, SpellId.StormCall, SpellId.LavaFlood,
-            SpellId.IceSpear, SpellId.Rage, SpellId.Blight, SpellId.Unmake, SpellId.LastBreath
+            SpellId.IceSpear, SpellId.Rage, SpellId.Blight, SpellId.Unmake, SpellId.LastBreath,
+            SpellId.TimeStop
         };
 
         static readonly SpellId[] TorchKeys =
