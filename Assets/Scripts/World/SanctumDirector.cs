@@ -810,7 +810,8 @@ namespace RuneMagic
                 return;
             }
 
-            if (TryCastPrepared(entry.RecipeRunes, entry.ViaRunes, CastingStance.Charter))
+            var stance = entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
+            if (TryCastPrepared(entry.RecipeRunes, entry.ViaRunes, stance))
             {
                 return;
             }
