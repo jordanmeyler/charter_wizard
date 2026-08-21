@@ -133,6 +133,35 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// A watered plant can climb one adjacent hollow. The new body
+        /// is plant, then grove, and can keep crossing a gap.
+        /// </summary>
+        public bool SpreadPlant(WorldTile from)
+        {
+            if (from == null || !from.IsPlantish || from.Growth < 1)
+            {
+                return false;
+            }
+
+            var neighbors = Neighbors(from.Coord);
+            for (var i = 0; i < neighbors.Count; i++)
+            {
+                var other = neighbors[i];
+                if (other.Kind != TileKind.Pit)
+                {
+                    continue;
+                }
+
+                other.BecomeWalkable(from.Growth >= 2 ? MaterialId.Grove : MaterialId.Plant);
+                other.Drench(0.55f);
+                other.Grow(1);
+                return true;
+            }
+
+            return false;
+        }
+
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);
     }
 }

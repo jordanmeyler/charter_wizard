@@ -39,7 +39,8 @@ namespace RuneMagic
             bool blocking = false,
             string grantItem = null,
             string attack = null,
-            float castSeconds = 0f)
+            float castSeconds = 0f,
+            RuneId[] castRecipe = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
@@ -76,7 +77,7 @@ namespace RuneMagic
             if (kind != CombatKind.None)
             {
                 var combat = gameObject.AddComponent<CombatActor>();
-                combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>());
+                combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
             }
         }
 
@@ -119,6 +120,9 @@ namespace RuneMagic
                     return CombatKind.Golem;
                 case "wizard":
                     return CombatKind.Wizard;
+                case "archer":
+                case "ranged":
+                    return CombatKind.Archer;
             }
 
             switch ((formulaId ?? string.Empty).ToLowerInvariant())

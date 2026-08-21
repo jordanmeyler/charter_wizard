@@ -6,7 +6,8 @@ namespace RuneMagic
     {
         None,
         Golem,
-        Wizard
+        Wizard,
+        Archer
     }
 
     /// <summary>
@@ -28,11 +29,12 @@ namespace RuneMagic
         SpriteRenderer _sprite;
         SpriteAnim _anim;
         TextMesh _castChip;
+        RuneId[] _castRecipe = System.Array.Empty<RuneId>();
         float _reach = 1.2f;
         float _sight = 8.2f;
         Vector3 _restScale = Vector3.one;
 
-        public void Bind(CombatKind kind, float castSeconds, WorldGrid grid)
+        public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
             Kind = kind;
             CastSeconds = Mathf.Max(0.35f, castSeconds);
@@ -42,6 +44,7 @@ namespace RuneMagic
             _sprite = GetComponent<SpriteRenderer>();
             _anim = GetComponent<SpriteAnim>() ?? SpriteAnim.On(gameObject, _sprite);
             _restScale = transform.localScale;
+            _castRecipe = RecipeOf(kind, castRecipe);
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
                 new Color(1f, 0.72f, 0.28f), 14);
             if (_castChip != null)
@@ -53,6 +56,29 @@ namespace RuneMagic
             {
                 _reach = 1.25f;
                 CastSeconds = Mathf.Max(0.7f, castSeconds <= 2.01f ? 0.85f : castSeconds);
+            }
+
+            if (kind == CombatKind.Archer)
+            {
+                CastSeconds = Mathf.Max(0.45f, castSeconds <= 2.01f ? 1.15f : castSeconds);
+            }
+        }
+
+        static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
+        {
+            if (written != null && written.Length > 0)
+            {
+                return written;
+            }
+
+            switch (kind)
+            {
+                case CombatKind.Wizard:
+                    return new[] { RuneId.Fire, RuneId.Mercury };
+                case CombatKind.Archer:
+                    return new[] { RuneId.Earth, RuneId.Mercury };
+                default:
+                    return System.Array.Empty<RuneId>();
             }
         }
 
@@ -96,7 +122,8 @@ namespace RuneMagic
                 return;
             }
 
-            TickWizard(player, toPlayer, distance);
+            TickCaster(player, toPlayer, distance,
+                Kind == CombatKind.Archer ? ProjectileKind.Arrow : ProjectileKind.Fireball);
         }
 
         void TickGolem(AdeptAvatar player, float distance)
@@ -140,7 +167,7 @@ namespace RuneMagic
             FindFirstObjectByType<SanctumDirector>()?.KillPlayer("The golem's rest finds you. The crystal calls you back.");
         }
 
-        void TickWizard(AdeptAvatar player, Vector2 toPlayer, float distance)
+        void TickCaster(AdeptAvatar player, Vector2 toPlayer, float distance, ProjectileKind shot)
         {
             if (!_casting)
             {
@@ -156,8 +183,9 @@ namespace RuneMagic
 
             _windup += Time.deltaTime;
             var left = Mathf.Max(0f, CastSeconds - _windup);
-            ShowCast($"casting… {left:0.0}");
-            _anim?.Play("warden-cast", 5f);
+            ShowCast(_castRecipe.Length > 0 ? string.Empty : $"casting… {left:0.0}");
+            ShowRunes();
+            _anim?.Play(Kind == CombatKind.Archer ? "warden" : "warden-cast", 5f);
             if (_windup < CastSeconds)
             {
                 return;
@@ -168,7 +196,7 @@ namespace RuneMagic
             _anim?.Play("warden", 4f);
             ClearCastChip();
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, ProjectileKind.Fireball, _grid, 6.4f);
+            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Arrow ? 7.4f : 6.4f);
         }
 
         void ShowCast(string text)
@@ -179,12 +207,25 @@ namespace RuneMagic
             }
         }
 
+        void ShowRunes()
+        {
+            if (_castRecipe == null || _castRecipe.Length == 0)
+            {
+                CastSign.Hide(transform);
+                return;
+            }
+
+            CastSign.Show(transform, _castRecipe, new Vector3(0f, 1.95f, 0f));
+        }
+
         void ClearCastChip()
         {
             if (_castChip != null)
             {
                 _castChip.text = string.Empty;
             }
+
+            CastSign.Hide(transform);
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
+  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, key-grove, key-flood, key-spark, key-spare, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
   "sprites": [],
   "items": [
     {
@@ -91,6 +91,78 @@
       "sprite": "stone-mind",
       "note": "Sulphur, seated. The Gate of Aspects wants a mind.",
       "look": "Sulphur, seated. The wildcard that turns a work toward a mind. The Gate of Aspects has a socket that is not for force."
+    },
+    {
+      "id": "grove-key",
+      "name": "Grove key",
+      "kind": "key",
+      "sprite": "key-grove",
+      "note": "A key that remembers a vegetable body. A door in the thicket wants it.",
+      "look": "Green-dark, and still a little wet. A standing plant was asked to become a key. The thicket door is cut for this."
+    },
+    {
+      "id": "grove-stone",
+      "name": "Grove stone",
+      "kind": "key",
+      "sprite": "stone-grove",
+      "note": "A stone that remembers a living plant. The Gate of Joins has a socket for it.",
+      "look": "Yield and rest given a vegetable body, then marked living. The Gate of Joins will seat it."
+    },
+    {
+      "id": "flood-key",
+      "name": "Flood key",
+      "kind": "key",
+      "sprite": "key-flood",
+      "note": "A key that remembers a stood pool. A door in the cistern wants it.",
+      "look": "Cold and sure of its shape. Yield given a body. The cistern door will drink it."
+    },
+    {
+      "id": "flood-stone",
+      "name": "Flood stone",
+      "kind": "key",
+      "sprite": "stone-flood",
+      "note": "A stone that remembers water given a floor. The Gate of Joins has a socket for it.",
+      "look": "Water · Salt, seated. A hollow that learned to hold. The Gate of Joins wants this weight."
+    },
+    {
+      "id": "spark-key",
+      "name": "Spark key",
+      "kind": "key",
+      "sprite": "key-spark",
+      "note": "A key that remembers hunger given breath. A door in the charge cell wants it.",
+      "look": "It stings the palm. Fire and air already met in it. The charge door is waiting."
+    },
+    {
+      "id": "spark-stone",
+      "name": "Spark stone",
+      "kind": "key",
+      "sprite": "stone-spark",
+      "note": "A stone that remembers a seed of charge. The Gate of Joins has a socket for it.",
+      "look": "Hunger given breath, trapped in a body just long enough to be a key. The Gate of Joins has a socket that hums."
+    },
+    {
+      "id": "spare-grove-key",
+      "name": "Spare grove key",
+      "kind": "key",
+      "sprite": "key-spare",
+      "note": "An extra key from a path that was not the door. Keep it. A later secret will want extras.",
+      "look": "The same cut as the grove key, but the metal is older. Someone hopped this way before you. A later lock will remember extras."
+    },
+    {
+      "id": "spare-flood-key",
+      "name": "Spare flood key",
+      "kind": "key",
+      "sprite": "key-spare",
+      "note": "An extra key from a hop over a door. Keep it for a later secret.",
+      "look": "Brass that still smells of the cistern. The intended door was not the only way. A later secret will want extras."
+    },
+    {
+      "id": "spare-spark-key",
+      "name": "Spare spark key",
+      "kind": "key",
+      "sprite": "key-spare",
+      "note": "An extra key from a leap past the charge door. Keep it for a later secret.",
+      "look": "It ticks against the others. Breath and hunger, taken the long way. A later secret will want extras."
     }
   ]
 }

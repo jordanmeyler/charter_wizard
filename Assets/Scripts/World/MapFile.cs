@@ -63,6 +63,7 @@ namespace RuneMagic
         public bool ensouled;
         public string attack;
         public float castSeconds;
+        public string[] cast;
     }
 
     [Serializable]
