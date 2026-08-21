@@ -25,8 +25,6 @@ PITS = [
 ARROWS = ["EarthPillar", "Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
 WIND = ["Gust", "Gale", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
-GROVE = ["Sprout", "Vine", "VineRise", "Rain", "Flood", "Douse", "WaterJet", "Hop", "Flight"]
-BURN = ["Fireball", "FlamePillar", "Ignite", "Melt", "SunLance", "LiveFloor"]
 SPARK = [
     "LightningBolt",
     "LiveFloor",
