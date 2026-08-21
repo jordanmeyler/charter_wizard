@@ -300,7 +300,7 @@ namespace RuneMagic
                     RuneId.Earth, RuneId.Salt, RuneId.Stone, RuneId.Water, RuneId.Crystal),
 
                 new WorldMaterial(MaterialId.Obsidian, "obsidian",
-                    "Hungry earth quenched and given a body.",
+                    "Hungry earth quenched and given a body. Melt, Shatter, and hunger's thaw will not take it.",
                     RuneId.Obsidian, MaterialPaint.Obsidian,
                     new Color(0.08f, 0.06f, 0.1f), new Color(0.1f, 0.08f, 0.12f), false,
                     RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Water, RuneId.Salt, RuneId.Obsidian),

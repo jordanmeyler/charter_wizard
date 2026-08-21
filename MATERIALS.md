@@ -64,7 +64,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Steam** | Fire · Water · Steam | Steam | Violent hot veil |
 | **Glass** | Sand · Flame · Earth · Glass | Glass | Grains, hunger, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
-| **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched |
+| **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched. Melt, Shatter, and hunger's thaw will not take it |
 | **Grove** | Water · Earth · Salt · Plant · Life · Grove | Grove | Living plant as a mass |
 | **Plant** | Water · Earth · Salt · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |

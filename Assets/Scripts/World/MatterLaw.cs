@@ -79,6 +79,12 @@ namespace RuneMagic
                     return MaterialId.Damp;
                 case MaterialId.Glass:
                     return MaterialId.Sand;
+                case MaterialId.Stone:
+                case MaterialId.SaltCrust:
+                case MaterialId.Scoured:
+                case MaterialId.Damp:
+                case MaterialId.Metal:
+                    return MaterialId.Scoured;
                 default:
                     return MaterialId.None;
             }
@@ -86,12 +92,58 @@ namespace RuneMagic
 
         public static bool CanMelt(MaterialId material, Heat heat)
         {
+            if (ResistsMagic(material))
+            {
+                return false;
+            }
+
             var need = MeltHeat(material);
             return need != Heat.None && heat >= need;
         }
 
-        public static bool Melts(SpellId spell, MaterialId material) =>
-            CanMelt(material, HeatOf(spell));
+        /// <summary>
+        /// Melt is a stood fire-body sent into a thing. It bores stone
+        /// and steel, including room masonry. Fireball still only thaws ice.
+        /// </summary>
+        public static bool IsMeltWork(SpellId spell) =>
+            spell == SpellId.Melt;
+
+        public static bool IsBoreable(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Stone:
+                case MaterialId.SaltCrust:
+                case MaterialId.Scoured:
+                case MaterialId.Damp:
+                case MaterialId.Metal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Quenched lava. It will not take Melt, Shatter, hunger's thaw,
+        /// or water eating rest. Use it when a wall must stay a wall.
+        /// </summary>
+        public static bool ResistsMagic(MaterialId material) =>
+            material == MaterialId.Obsidian;
+
+        public static bool Melts(SpellId spell, MaterialId material)
+        {
+            if (ResistsMagic(material))
+            {
+                return false;
+            }
+
+            if (CanMelt(material, HeatOf(spell)))
+            {
+                return true;
+            }
+
+            return IsMeltWork(spell) && IsBoreable(material);
+        }
 
         public static MaterialId MatterOf(IReadOnlyList<RuneId> formula)
         {
@@ -107,6 +159,11 @@ namespace RuneMagic
             for (var i = 0; i < formula.Count; i++)
             {
                 var rune = formula[i];
+                if (rune == RuneId.Obsidian)
+                {
+                    return MaterialId.Obsidian;
+                }
+
                 if (rune == RuneId.Glacier)
                 {
                     return MaterialId.Glacier;
@@ -115,6 +172,16 @@ namespace RuneMagic
                 if (rune == RuneId.Glass)
                 {
                     return MaterialId.Glass;
+                }
+
+                if (rune == RuneId.Metal)
+                {
+                    return MaterialId.Metal;
+                }
+
+                if (rune == RuneId.Stone)
+                {
+                    return MaterialId.Stone;
                 }
 
                 if (rune == RuneId.Ice || rune == RuneId.Snow)
@@ -131,6 +198,11 @@ namespace RuneMagic
             if (hasWater && hasSalt && hasEarth)
             {
                 return hasStone ? MaterialId.Glacier : MaterialId.Ice;
+            }
+
+            if (hasEarth && hasSalt)
+            {
+                return MaterialId.Stone;
             }
 
             return MaterialId.None;
@@ -158,6 +230,18 @@ namespace RuneMagic
                 case "glass":
                     material = MaterialId.Glass;
                     return true;
+                case "stone":
+                case "rock":
+                    material = MaterialId.Stone;
+                    return true;
+                case "metal":
+                case "steel":
+                case "iron":
+                    material = MaterialId.Metal;
+                    return true;
+                case "obsidian":
+                    material = MaterialId.Obsidian;
+                    return true;
                 default:
                     return false;
             }
@@ -173,9 +257,23 @@ namespace RuneMagic
                     return "Witchfire remembers the grains. The glass forgets it was liquid.";
                 case MaterialId.Snow:
                     return "Hunger finds the snow. It remembers yield.";
+                case MaterialId.Metal:
+                    return "The stood fire-body finds the iron. Steel remembers it was liquid.";
+                case MaterialId.Stone:
+                case MaterialId.SaltCrust:
+                case MaterialId.Scoured:
+                case MaterialId.Damp:
+                    return "The stood fire-body finds the stone. Rest remembers it was liquid.";
                 default:
                     return "Hunger finds the ice. It remembers yield.";
             }
+        }
+
+        public static string ResistNote(MaterialId material)
+        {
+            return material == MaterialId.Obsidian
+                ? "The black glass will not take the work. Obsidian was already quenched."
+                : "This will not take the work.";
         }
 
         public static void Audit(List<string> broken)
@@ -222,6 +320,18 @@ namespace RuneMagic
                 || !Melts(SpellId.Witchfire, MaterialId.Glass))
             {
                 broken.Add("Witchfire must melt ice, glacier, and glass");
+            }
+
+            if (!Melts(SpellId.Melt, MaterialId.Stone)
+                || !Melts(SpellId.Melt, MaterialId.Metal)
+                || Melts(SpellId.Fireball, MaterialId.Stone)
+                || Melts(SpellId.Witchfire, MaterialId.Stone)
+                || Melts(SpellId.Melt, MaterialId.Obsidian)
+                || Melts(SpellId.Fireball, MaterialId.Obsidian)
+                || !ResistsMagic(MaterialId.Obsidian)
+                || ResistsMagic(MaterialId.Stone))
+            {
+                broken.Add("Melt must bore stone and steel; fireball must not; obsidian must refuse the work");
             }
 
             if (!WorldWork.IsFireWork(SpellId.Fireball)

@@ -381,7 +381,8 @@ namespace RuneMagic
             {
                 return WorldWork.IsShatterWork(spell)
                     || WorldWork.IsBoulderWork(spell)
-                    || WorldWork.IsWaterWork(spell);
+                    || WorldWork.IsWaterWork(spell)
+                    || MatterLaw.IsMeltWork(spell);
             }
 
             return ElementalLaw.Beats(MatterOf(spell), matter);
@@ -433,6 +434,7 @@ namespace RuneMagic
             var burned = 0;
             var melted = 0;
             var meltMatter = MaterialId.None;
+            var resisted = MaterialId.None;
             for (var i = 0; i < sweep.Cells.Count; i++)
             {
                 var tile = grid.Get(sweep.Cells[i]);
@@ -446,6 +448,15 @@ namespace RuneMagic
                 var acid = tile.Material == MaterialId.Acid;
                 var burning = tile.IsBurning;
                 var before = tile.Material;
+                if (MatterLaw.ResistsMagic(before)
+                    && (MatterLaw.IsMeltWork(sweep.Spell)
+                        || WorldWork.IsShatterWork(sweep.Spell)
+                        || WorldWork.IsBoulderWork(sweep.Spell)
+                        || WorldWork.IsFireWork(sweep.Spell)
+                        || WorldWork.IsWaterWork(sweep.Spell)))
+                {
+                    resisted = before;
+                }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
                     tile.Ignite(0.85f);
@@ -513,6 +524,11 @@ namespace RuneMagic
             if (melted > 0)
             {
                 return MatterLaw.MeltNote(meltMatter);
+            }
+
+            if (resisted != MaterialId.None)
+            {
+                return MatterLaw.ResistNote(resisted);
             }
 
             if (burned > 0)
