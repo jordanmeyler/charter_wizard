@@ -86,7 +86,9 @@ namespace RuneMagic
         Snowstorm,
         IceWall,
         Push,
-        LightningStrike
+        LightningStrike,
+        Charm,
+        Swamp
     }
 
     public readonly struct SpellRecipe
@@ -172,8 +174,10 @@ namespace RuneMagic
             Register(RuneId.Steam, RuneId.Mercury, SpellShape.Shot, SpellId.Scald, "Scald", "Violent Fire+Water in motion.");
             Register(RuneId.Dust, RuneId.Mercury, SpellShape.Shot, SpellId.ScatterDust, "Scatter-dust", "Violent Air+Earth in motion.");
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
+            Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Water · Earth · Mercury · Salt. A watery swamp from the feet.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "Living plant standing as a column.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");
+            Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 
             Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt · Earth. Hungry earth given a body and asked to rest.");
             Register(RuneId.Stone, RuneId.Mercury, SpellShape.Remote, SpellId.Shatter, "Shatter", "Compressed. Catalog: Earth · Salt · Earth · Air · Mercury. A stood wall given breath and sent. Matter comes apart.");

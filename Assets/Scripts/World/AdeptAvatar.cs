@@ -17,8 +17,11 @@ namespace RuneMagic
             RuneId.Mercury
         };
 
+        public const float FlameKillSeconds = 8f;
+
         float _airborneUntil;
         float _stillUntil;
+        float _flameStand;
         SpriteRenderer _sprite;
         SpriteRenderer _glow;
         SpriteAnim _anim;
@@ -71,8 +74,21 @@ namespace RuneMagic
         {
             _airborneUntil = 0f;
             _stillUntil = 0f;
+            _flameStand = 0f;
             _casting = false;
             WorldHeld = false;
+        }
+
+        public bool TickFlame(bool inFire, bool warded)
+        {
+            if (!inFire || warded)
+            {
+                _flameStand = 0f;
+                return false;
+            }
+
+            _flameStand += Time.deltaTime;
+            return _flameStand >= FlameKillSeconds;
         }
 
         void Awake()

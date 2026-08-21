@@ -17,8 +17,8 @@ namespace RuneMagic
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
             SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
             SpellId.ChainLightning, SpellId.Thunderclap, SpellId.StormCall, SpellId.LavaFlood,
-            SpellId.IceSpear, SpellId.Rage, SpellId.Lull, SpellId.Command, SpellId.Confuse, SpellId.Terror,
-            SpellId.Blight, SpellId.Unmake, SpellId.LastBreath,
+            SpellId.IceSpear, SpellId.Rage, SpellId.Lull, SpellId.Command, SpellId.Charm, SpellId.Confuse, SpellId.Terror,
+            SpellId.Swamp, SpellId.Blight, SpellId.Unmake, SpellId.LastBreath,
             SpellId.TimeStop
         };
 
@@ -213,6 +213,9 @@ namespace RuneMagic
                         }
                     }
 
+                    break;
+                case "lesson":
+                    PlaceLesson(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));
                     break;
                 case "charm":
                     charm = new GameObject("FreeCharm");
@@ -598,6 +601,23 @@ namespace RuneMagic
 
         static string NameOf(MapProp prop, string fallback) =>
             string.IsNullOrEmpty(prop.displayName) ? fallback : prop.displayName;
+
+        static void PlaceLesson(Vector3 origin, RuneId[] runes, Vector3 dir)
+        {
+            if (runes == null || runes.Length == 0)
+            {
+                return;
+            }
+
+            var step = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.right;
+            for (var i = 0; i < runes.Length; i++)
+            {
+                if (runes[i] != RuneId.None)
+                {
+                    RuneStele.Raise(origin + step * i, runes[i]);
+                }
+            }
+        }
 
         static string IdOf(MapProp prop, string fallback) =>
             string.IsNullOrEmpty(prop.formulaId) ? fallback : prop.formulaId;

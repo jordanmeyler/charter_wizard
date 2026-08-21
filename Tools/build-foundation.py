@@ -9,8 +9,32 @@ from pathlib import Path
 
 FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald"]
 ICE = FIRE + ["Thaw"]
-WATER = ["Douse", "WaterJet", "Rain", "Flood", "Smother"]
-GOLEM = WATER + ["Gale", "Quagmire", "Wall", "IceWall", "Pit", "Bridge", "IcePillar"]
+WATER = [
+    "Douse",
+    "WaterJet",
+    "Rain",
+    "Flood",
+    "Smother",
+    "Scald",
+    "Swamp",
+    "IcePillar",
+    "IceSpear",
+    "IceWall",
+    "Freeze",
+    "Snowfall",
+    "Snowstorm",
+]
+EARTH = [
+    "HurledStone",
+    "EarthPillar",
+    "Wall",
+    "Quagmire",
+    "Pit",
+    "Shatter",
+    "GraveDust",
+    "StonePillar",
+]
+GOLEM = WATER + EARTH + ["LightningBolt", "ChainLightning", "LavaFlood", "LavaPillar", "Melt"]
 PITS = [
     "EarthPillar",
     "Wall",
@@ -25,7 +49,7 @@ PITS = [
 ]
 ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
 WIND = ["Gust", "Gale", "Push", "StormCall", "Flight"]
-MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
+MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",
     "LightningStrike",
@@ -70,6 +94,10 @@ def rect(x0, y0, x1, y1):
 
 def stamp(kind, material, coords):
     return {"kind": kind, "material": material, "cells": coords}
+
+
+def lesson(x, y, runes, dir="right"):
+    return {"type": "lesson", "x": int(x), "y": int(y), "runes": list(runes), "dir": dir}
 
 
 def room(**kwargs):
@@ -179,13 +207,11 @@ def assert_walkable(data):
     must(open_reach, "grove east bank", world("grove-court", rooms, 14, 8))
     must(open_reach, "grove plant lip", world("grove-court", rooms, 11, 8))
     must(open_reach, "grove spark lip", world("grove-court", rooms, 13, 14))
-    must_not(open_reach, "grove key", world("grove-court", rooms, 6, 8))
-    must_not(open_reach, "grove stone", world("grove-court", rooms, 1, 8))
+    must_not(open_reach, "grove stone", world("grove-court", rooms, 6, 8))
     must(open_reach, "cistern mouth", world("cistern", rooms, 3, 8))
-    must_not(open_reach, "flood key", world("cistern", rooms, 10, 8))
-    must_not(open_reach, "flood stone", world("cistern", rooms, 17, 7))
+    must_not(open_reach, "flood stone", world("cistern", rooms, 10, 8))
     must(open_reach, "spark altar", world("spark-cell", rooms, 10, 10))
-    must(open_reach, "spark key", world("spark-cell", rooms, 4, 7))
+    must_not(open_reach, "spark stone", world("spark-cell", rooms, 16, 7))
     must(open_reach, "arena floor", world("arena", rooms, 8, 8))
     must(open_reach, "door III", world("door-iii", rooms, 10, 5))
 
@@ -354,6 +380,7 @@ def main():
             ],
             props=[
                 {"type": "runes", "x": 8, "y": 7, "runes": ["Fire"], "dir": "left"},
+                lesson(7, 4, ["Fire", "Mercury"], "up"),
                 {
                     "type": "mite",
                     "x": 3,
@@ -397,6 +424,7 @@ def main():
             ],
             props=[
                 {"type": "runes", "x": 3, "y": 7, "runes": ["Water"], "dir": "right"},
+                lesson(5, 9, ["Water", "Mercury"], "right"),
                 {
                     "type": "barrier",
                     "x": 9,
@@ -439,6 +467,7 @@ def main():
             ],
             props=[
                 {"type": "runes", "x": 7, "y": 13, "runes": ["Earth"], "dir": "up"},
+                lesson(4, 13, ["Earth", "Salt"], "right"),
                 {
                     "type": "arrows",
                     "x": 7,
@@ -470,6 +499,7 @@ def main():
             ],
             props=[
                 {"type": "runes", "x": 7, "y": 12, "runes": ["Air"], "dir": "up"},
+                lesson(4, 12, ["Air", "Mercury"], "right"),
                 {
                     "type": "fog",
                     "x": 7,
@@ -518,6 +548,7 @@ def main():
             ],
             props=[
                 {"type": "runes", "x": 12, "y": 6, "runes": ["Salt"], "dir": "left"},
+                lesson(10, 3, ["Earth", "Salt"], "right"),
                 {
                     "type": "chasm",
                     "x": 6,
@@ -544,6 +575,7 @@ def main():
             props=[
                 {"type": "runes", "x": 3, "y": 3, "runes": ["Mercury"], "dir": "right"},
                 {"type": "runes", "x": 4, "y": 8, "runes": ["Fire"], "dir": "right"},
+                lesson(12, 3, ["Fire", "Mercury"], "left"),
                 {
                     "type": "mite",
                     "x": 8,
@@ -583,6 +615,7 @@ def main():
                 {"type": "runes", "x": 3, "y": 9, "runes": ["Mercury"], "dir": "right"},
                 {"type": "runes", "x": 5, "y": 3, "runes": ["Fire"], "dir": "right"},
                 {"type": "runes", "x": 5, "y": 9, "runes": ["Water"], "dir": "right"},
+                lesson(3, 2, ["Life", "Sulphur", "Mercury"], "right"),
                 {
                     "type": "mite",
                     "x": 8,
@@ -669,7 +702,7 @@ def main():
                 stamp("Floor", "Grove", cells((1, 7), (1, 8), (2, 7), (2, 8))),
                 stamp("Wall", "Stone", rect(3, 1, 3, 6)),
                 stamp("Wall", "Stone", rect(3, 9, 3, 14)),
-                stamp("Door", "Stone", cells((3, 7), (3, 8))),
+                stamp("Floor", "Stone", cells((3, 7), (3, 8))),
                 stamp("Wall", "Timber", rect(4, 1, 4, 6)),
                 stamp("Wall", "Grove", cells((4, 7), (4, 8))),
                 stamp("Wall", "Plant", rect(4, 9, 4, 14)),
@@ -686,19 +719,8 @@ def main():
                 {"type": "runes", "x": 14, "y": 11, "runes": ["Fire"], "dir": "left"},
                 {"type": "runes", "x": 14, "y": 8, "runes": ["Plant"], "dir": "left"},
                 {"type": "runes", "x": 14, "y": 5, "runes": ["Water"], "dir": "left"},
-                {"type": "item", "x": 6, "y": 8, "item": "grove-key"},
-                {
-                    "type": "gate",
-                    "x": 3,
-                    "y": 8,
-                    "displayName": "Thicket door",
-                    "formulaId": "grove-door",
-                    "requires": ["grove-key"],
-                    "cells": [3, 7, 3, 8],
-                    "sprite": "socket-gate",
-                    "note": "The vegetable body takes the key. A grove stone sits free.",
-                },
-                {"type": "item", "x": 1, "y": 8, "item": "grove-stone"},
+                lesson(14, 3, ["Water", "Earth", "Salt", "Life"], "left"),
+                {"type": "item", "x": 6, "y": 8, "item": "grove-stone"},
             ],
         ),
         room(
@@ -714,29 +736,15 @@ def main():
                 stamp("Floor", "SaltCrust", cells((3, 10), (4, 10))),
                 stamp("Floor", "Ice", cells((3, 6), (4, 6))),
                 stamp("Pit", "Water", rect(6, 1, 7, 14)),
-                stamp("Wall", "Stone", rect(14, 1, 14, 6)),
-                stamp("Wall", "Stone", rect(14, 9, 14, 14)),
-                stamp("Door", "Stone", cells((14, 7), (14, 8))),
-                stamp("Floor", "Damp", cells((17, 7), (16, 7))),
+                stamp("Floor", "Damp", cells((10, 8), (16, 7), (17, 7))),
             ],
             props=[
                 {"type": "runes", "x": 3, "y": 8, "runes": ["Water"], "dir": "right"},
                 {"type": "runes", "x": 3, "y": 10, "runes": ["Salt"], "dir": "right"},
                 {"type": "runes", "x": 3, "y": 6, "runes": ["Earth"], "dir": "right"},
                 {"type": "runes", "x": 4, "y": 6, "runes": ["Ice"], "dir": "right"},
-                {"type": "item", "x": 10, "y": 8, "item": "flood-key"},
-                {
-                    "type": "gate",
-                    "x": 14,
-                    "y": 7,
-                    "displayName": "Cistern door",
-                    "formulaId": "cistern-door",
-                    "requires": ["flood-key"],
-                    "cells": [14, 7, 14, 8],
-                    "sprite": "socket-gate",
-                    "note": "Yield given a body takes the key. A flood stone sits free.",
-                },
-                {"type": "item", "x": 17, "y": 7, "item": "flood-stone"},
+                lesson(2, 10, ["Water", "Salt", "Earth"], "up"),
+                {"type": "item", "x": 10, "y": 8, "item": "flood-stone"},
             ],
         ),
         room(
@@ -751,14 +759,13 @@ def main():
                 stamp("Floor", "Metal", rect(7, 5, 11, 9)),
                 stamp("Floor", "Hearth", cells((3, 3), (4, 3))),
                 stamp("Floor", "Scoured", cells((3, 10), (4, 10))),
-                stamp("Wall", "Stone", rect(15, 1, 15, 5)),
-                stamp("Wall", "Stone", rect(15, 8, 15, 12)),
-                stamp("Door", "Stone", cells((15, 6), (15, 7))),
+                stamp("Wall", "Metal", rect(13, 1, 13, 12)),
             ],
             props=[
                 {"type": "runes", "x": 10, "y": 10, "runes": ["Spark"], "dir": "left"},
                 {"type": "runes", "x": 3, "y": 3, "runes": ["Fire"], "dir": "right"},
                 {"type": "runes", "x": 3, "y": 10, "runes": ["Air"], "dir": "right"},
+                lesson(3, 6, ["Fire", "Air", "Spark"], "up"),
                 {
                     "type": "rod",
                     "x": 9,
@@ -770,19 +777,20 @@ def main():
                     "sprite": "rod",
                     "note": "The seed already stands. Send it, or write hunger then breath.",
                 },
-                {"type": "item", "x": 4, "y": 7, "item": "spark-key"},
                 {
-                    "type": "gate",
-                    "x": 15,
-                    "y": 6,
-                    "displayName": "Charge door",
-                    "formulaId": "spark-door",
-                    "requires": ["spark-key"],
-                    "cells": [15, 6, 15, 7],
-                    "sprite": "socket-gate",
-                    "note": "The seed takes the key. A spark stone sits free.",
+                    "type": "barrier",
+                    "x": 13,
+                    "y": 7,
+                    "displayName": "Charge veil",
+                    "formulaId": "charge-veil",
+                    "formula": ["Fire", "Air", "Spark"],
+                    "keys": SPARK,
+                    "cells": rect(13, 1, 13, 12),
+                    "clearMaterial": "Vein",
+                    "sprite": "charge-curtain",
+                    "note": "Hunger given breath, then sent. The veil forgets how to sting.",
                 },
-                {"type": "item", "x": 17, "y": 7, "item": "spark-stone"},
+                {"type": "item", "x": 16, "y": 7, "item": "spark-stone"},
             ],
         ),
         room(

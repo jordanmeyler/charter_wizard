@@ -1,5 +1,5 @@
 {
-  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, key-grove, key-flood, key-spark, key-spare, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
+  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, charge-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
   "sprites": [],
   "items": [
     {
@@ -42,7 +42,7 @@
     {
       "id": "fire-stone",
       "name": "Fire stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-fire",
       "note": "Hunger that will not rest.",
       "look": "hunger that will not rest."
@@ -50,7 +50,7 @@
     {
       "id": "water-stone",
       "name": "Water stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-water",
       "note": "Yield, that which becomes what holds it.",
       "look": "yield, that which becomes what holds it."
@@ -58,7 +58,7 @@
     {
       "id": "earth-stone",
       "name": "Earth stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-earth",
       "note": "Rest, that which remains.",
       "look": "rest, that which remains."
@@ -66,7 +66,7 @@
     {
       "id": "air-stone",
       "name": "Air stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-air",
       "note": "Breath, that which will not stay.",
       "look": "breath, that which will not stay."
@@ -74,7 +74,7 @@
     {
       "id": "body-stone",
       "name": "Body stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-body",
       "note": "Material given form, salt of the earth.",
       "look": "material given form, salt of the earth."
@@ -82,7 +82,7 @@
     {
       "id": "spirit-stone",
       "name": "Spirit stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-spirit",
       "note": "The spirit is motion.",
       "look": "the spirit is motion."
@@ -90,80 +90,80 @@
     {
       "id": "mind-stone",
       "name": "Mind stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-mind",
-      "note": "Thought that turns the work.",
-      "look": "thought that turns the work — the wildcard."
+      "note": "Thought that turns the work. Life · Sulphur · Mercury is Charm.",
+      "look": "thought that turns the work — the wildcard. Charm reaches a living mind."
     },
     {
       "id": "grove-key",
-      "name": "Grove key",
-      "kind": "key",
-      "sprite": "key-grove",
+      "name": "Grove artifact",
+      "kind": "artifact",
+      "sprite": "stone-grove",
       "note": "Yield and rest asked to live.",
       "look": "yield and rest asked to live."
     },
     {
       "id": "grove-stone",
       "name": "Grove stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-grove",
       "note": "Yield and rest asked to live.",
       "look": "yield and rest asked to live."
     },
     {
       "id": "flood-key",
-      "name": "Flood key",
-      "kind": "key",
-      "sprite": "key-flood",
+      "name": "Flood artifact",
+      "kind": "artifact",
+      "sprite": "stone-flood",
       "note": "Yield given a floor.",
       "look": "yield given a floor."
     },
     {
       "id": "flood-stone",
       "name": "Flood stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-flood",
       "note": "Yield given a floor.",
       "look": "yield given a floor."
     },
     {
       "id": "spark-key",
-      "name": "Spark key",
-      "kind": "key",
-      "sprite": "key-spark",
+      "name": "Spark artifact",
+      "kind": "artifact",
+      "sprite": "stone-spark",
       "note": "Fire from the sky.",
       "look": "fire from the sky."
     },
     {
       "id": "spark-stone",
       "name": "Spark stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-spark",
       "note": "Fire from the sky.",
       "look": "fire from the sky."
     },
     {
       "id": "spare-grove-key",
-      "name": "Spare grove key",
-      "kind": "key",
-      "sprite": "key-spare",
+      "name": "Spare grove artifact",
+      "kind": "artifact",
+      "sprite": "stone-grove",
       "note": "Yield and rest asked to live. A spare.",
       "look": "yield and rest asked to live. A spare from another path."
     },
     {
       "id": "spare-flood-key",
-      "name": "Spare flood key",
-      "kind": "key",
-      "sprite": "key-spare",
+      "name": "Spare flood artifact",
+      "kind": "artifact",
+      "sprite": "stone-flood",
       "note": "Yield given a floor. A spare.",
       "look": "yield given a floor. A spare from another path."
     },
     {
       "id": "spare-spark-key",
-      "name": "Spare spark key",
-      "kind": "key",
-      "sprite": "key-spare",
+      "name": "Spare spark artifact",
+      "kind": "artifact",
+      "sprite": "stone-spark",
       "note": "Fire from the sky. A spare.",
       "look": "fire from the sky. A spare from another path."
     }

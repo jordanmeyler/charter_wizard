@@ -53,7 +53,7 @@ namespace RuneMagic
                 case RuneId.Forest: return new Color(0.08f, 0.38f, 0.16f);
                 case RuneId.Blight: return new Color(0.54f, 0.5f, 0.08f);
                 case RuneId.Ash: return new Color(0.5f, 0.48f, 0.46f);
-                case RuneId.Flame: return new Color(1f, 0.54f, 0.06f);
+                case RuneId.Flame: return new Color(0.78f, 0.42f, 1f);
                 case RuneId.Grove: return new Color(0.18f, 0.58f, 0.26f);
                 case RuneId.Wind: return new Color(0.68f, 0.96f, 0.86f);
                 case RuneId.Current: return new Color(0.06f, 0.62f, 0.92f);

@@ -12,10 +12,10 @@ The hub carves **body, spirit, and mind** into the floor around the crystal (Sal
 
 - **Teach by doing, never by telling.** The room poses a question; the element is the answer; the *click* of realizing it is the lesson.
 - **Read before cast.** Labelled altars write the rune into the world and into the Charter weave.
-- **Open rooms, closed stones.** The four elemental rooms stand open off the hub. You walk in, see the labelled altar, see a small obstacle, and use that element’s spells to reach the key. Walls never seal the doorway.
+- **Open rooms, closed stones.** The four elemental rooms stand open off the hub. You walk in, see the labelled altar, see a small obstacle, and use that element’s spells to reach the stone. Walls never seal the doorway. Columns beside the obstacle show the intended sentence.
 - **Multiple solutions everywhere.** The *intended* path teaches the new element; alternatives (using elements already held) reward experimentation.
-- **Doors gate on possession, not sequence.** Stones are keys. Progress = collecting them and opening doors, never stats.
-- **Casting is knowledge; stones are only keys.** The rune-field is always present. Anyone who knows how can cast an element anywhere.
+- **Doors gate on possession, not sequence.** Stones and artifacts seat a concept. Progress = collecting them and opening doors, never stats.
+- **Casting is knowledge; stones only remember.** The rune-field is always present. Anyone who knows how can cast an element anywhere.
 
 ---
 
@@ -27,7 +27,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 | --- | --- | --- |
 | An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Hurled stone) |
 | An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Salt · Earth** (Ice-pillar) |
-| A mind reached | Sulphur turns the work toward a mind | **Fire · Sulphur · Mercury** (Rage), **Water · Sulphur · Mercury** (Lull), **Salt · Sulphur · Mercury** (Command) |
+| A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
 
@@ -49,6 +49,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
 | 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
+| 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
+| 69 | **Swamp** | Water · Earth · Mercury · Salt | A watery swamp from your feet. Yield meeting rest, going, then stood. |
 
 ---
 
@@ -121,7 +123,8 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
 **Lesson:** Sulphur reaches the enemy’s *mind.* Taught by taking every other tool away.
 - **Signature — the stone men:** two humanoid rocks, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
-- **Multiple solutions:** **Rage** them, **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past.
+- **Intended:** **Charm** (`Life · Sulphur · Mercury`). Columns write that sentence. Charmed bodies fetch nearby artifacts and fight anything you have already marked — the same hold later grave-work will use.
+- **Multiple solutions:** **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past, **Rage** them.
 - Force fails on purpose. Mind is discovered as the way through.
 
 ### Door II · Gate of Aspects
@@ -137,13 +140,13 @@ The aspects taught *how a sentence stands or goes.* This stage is more open: key
 Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off it. The north hall leads to Door III.
 
 ### Grove Court · "The Living Thicket" — *grow, then burn*
-A **four-tile pit** splits the room wall-to-wall — too wide to hop. Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove key** waits on the west bank. A **living thicket** (timber, grove, plant) then seals the west door; a stone firebreak keeps the burn from eating the banks. **Fire the thicket** and it becomes ash. The west door wants the key and hides the **grove stone**. Both verbs are the lesson.
+A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Earth · Salt · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
 
 ### Cistern · "The Cistern" — *water drowns; ice is a floor*
-A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. The room labels Water, Salt, Earth, and Ice so **Ice-pillar** (`Water · Salt · Earth`), **Ice-wall**, or **Ice-spear** can ask that water to stand. Walk the ice. Hop still clears a short channel. The **flood key** sits past the water. The east door wants it and hides the **flood stone**.
+A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Water · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
 
 ### Spark Cell · "The Seed of Charge" — *the join as a rune*
-Vein and metal already hold Spark. The Charter shows **Spark** as its own mark; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air if you know and the room has no seed. A **live rod** waits in the plate. The **spark key** is in the open; the east door hides the **spark stone**.
+Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air · Mercury. A **charge veil** holds the **spark stone**. Lightning unmakes the veil. The live rod still waits in the plate.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
 Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
@@ -160,7 +163,8 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **Halls punch both walls.** A corridor that only opened the destination used to leave the hub looking open and the wing sealed. Both shared walls open; Door tiles stay shut until their gate resolves.
 - **Free vs Charter:** this floor stays element-neutral on stance. Both actions work; Free is never the required key.
 - **No plaques that instruct.** Altars pair a mark with a picture. Locks have names. The situation is the tutorial. Body, spirit, and mind are carved around the crystal.
-- **The pack holds the stones.** I opens it. Click a stone to look — each one hints at how the rune works (hunger, yield, rest, breath; salt of the earth; the spirit is motion; fire from the sky). The info box says `You see` that same look when you mouse over the stone in the world.
+- **The pack holds the stones.** I opens it. Click a stone to look — each one hints at how the rune works (hunger, yield, rest, breath; salt of the earth; the spirit is motion; fire from the sky). They are artifacts, not metal keys. The info box says `You see` that same look when you mouse over the stone in the world.
+- **Columns teach the sentence.** A row of pillars shows the intended spell. Ice, spark, and plant rooms all work this way.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
 - **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
 - **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits and drowning water use the last safe floor. A better death system waits.
@@ -183,9 +187,9 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |
 | `door-ii` | Gate of Aspects | Three aspect stones. Opens section 3. |
 | `join-foyer` | The Wrought Cross | Spark, Plant, Water labelled. Open courts. |
-| `grove-court` | The Living Thicket | Grow a four-tile gap, then burn the thicket. Key → door → grove stone. |
-| `cistern` | The Cistern | Water drowns. Ice freezes it. Key → door → flood stone. |
-| `spark-cell` | The Seed of Charge | Spark as a rune. Key → door → spark stone. |
+| `grove-court` | The Living Thicket | Columns write Sprout. Grow a four-tile gap. Grove stone on the far bank. |
+| `cistern` | The Cistern | Columns write Ice-pillar. Water drowns. Ice freezes it. Flood stone past the water. |
+| `spark-cell` | The Seed of Charge | Columns write Fire · Air · Spark. Lightning drops the charge veil. Spark stone behind it. |
 | `arena` | The Mixed Court | Melee and ranged. Casters show their marks. Wall the ember adept and the floor hungers, then a flame-pillar stands. |
 | `door-iii` | Gate of Joins | Three join stones. The floor ends. |
 

@@ -71,6 +71,8 @@ namespace RuneMagic
                     return Cache(key, Frames(3, PaintCharm));
                 case "flame-curtain":
                     return Cache(key, Frames(4, PaintFlameCurtain));
+                case "charge-curtain":
+                    return Cache(key, Frames(4, PaintChargeCurtain));
                 case "poison-veil":
                 case "poison-fog":
                     return Cache(key, Frames(4, PaintPoisonVeil));
@@ -476,16 +478,39 @@ namespace RuneMagic
             });
         }
 
+        static Sprite PaintChargeCurtain(int frame)
+        {
+            return Memo($"actor-charge-v1:{frame}", () =>
+            {
+                var canvas = new PixelCanvas(32, 52);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 28, 16, new Color(0.4f, 0.7f, 1f, 0.38f));
+                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.12f, 0.16f, 0.22f));
+                var bolt = new Color(0.65f, 0.86f, 1f);
+                var core = new Color(1f, 0.95f, 0.55f);
+                var lift = frame % 4;
+                canvas.FillCircle(10, 22 + (lift == 0 ? 1 : 0), 6, bolt);
+                canvas.FillCircle(16, 28 + (lift == 1 ? 2 : 0), 7, bolt);
+                canvas.FillCircle(22, 24 + (lift == 2 ? 1 : 0), 6, bolt);
+                canvas.ThickLine(12, 18 + lift, 18, 30, core);
+                canvas.ThickLine(18, 30, 14, 38 + (lift & 1), core);
+                canvas.ThickLine(20, 20, 16, 34 + lift, core);
+                canvas.FillCircle(16, 38 + (lift == 3 ? 1 : 0), 3, core);
+                canvas.Outline(new Color(0.12f, 0.22f, 0.4f));
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.18f));
+            });
+        }
+
         static Sprite PaintFlameCurtain(int frame)
         {
             return Memo($"actor-curtain-v1:{frame}", () =>
             {
                 var canvas = new PixelCanvas(32, 52);
                 canvas.Clear(Clear);
-                canvas.SoftCircle(16, 28, 16, new Color(1f, 0.32f, 0.04f, 0.36f));
-                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.22f, 0.1f, 0.06f));
-                var ember = new Color(0.95f, 0.36f, 0.06f);
-                var gold = new Color(1f, 0.78f, 0.2f);
+                canvas.SoftCircle(16, 28, 16, new Color(0.58f, 0.2f, 0.92f, 0.38f));
+                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.16f, 0.06f, 0.22f));
+                var ember = new Color(0.7f, 0.3f, 1f);
+                var gold = new Color(0.9f, 0.58f, 1f);
                 var lift = frame % 4;
                 canvas.FillCircle(10, 22 + (lift == 0 ? 1 : 0), 7, ember);
                 canvas.FillCircle(16, 28 + (lift == 1 ? 2 : 0), 8, ember);
@@ -493,8 +518,8 @@ namespace RuneMagic
                 canvas.FillCircle(16, 34 + lift, 6, gold);
                 canvas.FillCircle(12, 30 + (lift & 1), 4, gold);
                 canvas.FillCircle(20, 32 + ((lift + 1) & 1), 4, gold);
-                canvas.FillCircle(16, 40 + (lift == 3 ? 1 : 0), 3, new Color(1f, 0.95f, 0.7f));
-                canvas.Outline(new Color(0.28f, 0.08f, 0.02f));
+                canvas.FillCircle(16, 40 + (lift == 3 ? 1 : 0), 3, new Color(0.96f, 0.86f, 1f));
+                canvas.Outline(new Color(0.22f, 0.06f, 0.32f));
                 return canvas.ToSprite(32, new Vector2(0.5f, 0.18f));
             });
         }

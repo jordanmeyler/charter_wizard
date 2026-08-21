@@ -62,7 +62,7 @@ namespace RuneMagic
             var art = string.IsNullOrEmpty(spriteId) ? "torch" : spriteId;
             _renderer.sprite = SpriteFactory.Named(art);
             _renderer.sortingOrder = 6;
-            SpriteAnim.On(gameObject, _renderer).Play(art, art.Contains("flame") || art.Contains("poison") ? 8f : 4f);
+            SpriteAnim.On(gameObject, _renderer).Play(art, art.Contains("flame") || art.Contains("poison") || art.Contains("charge") ? 8f : 4f);
             var tint = _formula.Length > 0 ? RunePalette.Of(_formula[0]) : new Color(0.85f, 0.7f, 0.4f);
             FixtureGlow.Attach(transform, new Color(tint.r, tint.g, tint.b, 0.55f), 1.5f, 0.12f);
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 0.9f, 0f), tint);

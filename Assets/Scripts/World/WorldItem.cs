@@ -4,10 +4,12 @@ namespace RuneMagic
 {
     /// <summary>
     /// A pickup from the item catalog. Walking into it teaches a recipe.
+    /// Charmed bodies can carry a nearby prize to the adept.
     /// </summary>
     public sealed class WorldItem : MonoBehaviour, ILookable
     {
         public bool Collected { get; private set; }
+        public bool Available => !Collected && _carrier == null;
         public CatalogItem Item => _item;
         public Vector3 WorldPosition => transform.position;
         public float LookRadius => 0.55f;
@@ -18,6 +20,8 @@ namespace RuneMagic
         Grimoire _grimoire;
         AdeptPack _pack;
         System.Action<string> _log;
+        Transform _carrier;
+        Collider2D _hit;
 
         public static GameObject Spawn(Vector3 position, CatalogItem item)
         {
@@ -40,9 +44,9 @@ namespace RuneMagic
             SpriteAnim.On(gameObject, renderer).Play(spriteId, 4f);
             PropBob.Attach(transform, 0.08f, 1.4f);
             FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
-            var hit = gameObject.AddComponent<CircleCollider2D>();
-            hit.isTrigger = true;
-            hit.radius = 0.4f;
+            _hit = gameObject.AddComponent<CircleCollider2D>();
+            _hit.isTrigger = true;
+            _hit.radius = 0.4f;
             WorldLabel.Attach(transform, _item != null ? _item.name : "Item", new Vector3(0f, 0.7f, 0f),
                 new Color(1f, 0.72f, 0.3f));
             Lookables.Register(this);
@@ -53,14 +57,62 @@ namespace RuneMagic
             Lookables.Unregister(this);
         }
 
+        public bool TryCarry(Transform carrier)
+        {
+            if (!Available || carrier == null)
+            {
+                return false;
+            }
+
+            _carrier = carrier;
+            if (_hit != null)
+            {
+                _hit.enabled = false;
+            }
+
+            return true;
+        }
+
+        public bool DeliverTo(AdeptAvatar adept)
+        {
+            if (Collected || adept == null)
+            {
+                return false;
+            }
+
+            CollectInto();
+            return true;
+        }
+
+        void Update()
+        {
+            if (_carrier == null || Collected)
+            {
+                return;
+            }
+
+            transform.position = _carrier.position + Vector3.up * 0.55f;
+        }
+
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (Collected || !AdeptAvatar.IsAdept(other) || _item == null)
+            if (!Available || !AdeptAvatar.IsAdept(other) || _item == null)
+            {
+                return;
+            }
+
+            CollectInto();
+        }
+
+        void CollectInto()
+        {
+            if (Collected || _item == null)
             {
                 return;
             }
 
             Collected = true;
+            _carrier = null;
             var carried = AdeptPack.CanCarry(_item) && _pack != null && _pack.Take(_item);
 
             if (!string.IsNullOrEmpty(_item.teachesSpell) && SpellCodex.TryGet(SpellRegistry.Parse(_item.teachesSpell), out var entry))
@@ -85,6 +137,7 @@ namespace RuneMagic
             {
                 _log?.Invoke($"{_item.name} unspools. A recipe is borrowed.");
             }
+
             Destroy(gameObject);
         }
     }

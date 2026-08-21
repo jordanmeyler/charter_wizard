@@ -100,7 +100,7 @@ namespace RuneMagic
             E(16, SpellBook.Weather, SpellId.WaterJet, "Yield learns breath so it can leave the vessel, then is sent.", "Water-jet", "Water · Air · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(17, SpellBook.Hold, SpellId.Flood, "Yield going, more yield, given a body. They bog.", "Flood", "Water · Mercury · Water · Salt", "Current · Water · Salt", "Spread", SpellOutcome.Restrain),
             E(18, SpellBook.Cross, SpellId.IcePillar, "Yield given a body and asked to rest. Hard water. It will thaw.", "Ice-pillar", "Water · Salt · Earth", "Ice", "Pillar", SpellOutcome.Restrain),
-            E(19, SpellBook.Hold, SpellId.IceSpear, "Hard water going — not stood as a pillar.", "Ice-spear", "Water · Earth · Mercury", "", "Shot", SpellOutcome.Restrain),
+            E(19, SpellBook.Hold, SpellId.IceSpear, "That hard water-body is sent.", "Ice-spear", "Water · Salt · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
             E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Salt · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
             E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Salt · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
             E(22, SpellBook.End, SpellId.HurledStone, "Rest asked to go. Earth flies.", "Hurled stone", "Earth · Mercury", "", "Shot", SpellOutcome.Kill),
@@ -148,7 +148,9 @@ namespace RuneMagic
             E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
             E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain),
             E(66, SpellBook.Weather, SpellId.Push, "Breath given a body and sent. Wind that pushes the person.", "Push", "Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
-            E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill)
+            E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
+            E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
+            E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain)
         };
 
         public static IReadOnlyList<CodexEntry> All

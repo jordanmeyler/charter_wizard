@@ -78,10 +78,14 @@ namespace RuneMagic
             switch (rune)
             {
                 case RuneId.Fire:
-                    Triangle(canvas, c, 7, 7, 40, 41, 40, ink, true);
+                    Triangle(canvas, c, 6, 6, 41, 42, 41, ink, true);
                     Triangle(canvas, c, 16, 14, 34, 34, 34, ink, false);
-                    canvas.ThickLine(c, 7, c, 14, ink);
-                    canvas.ThickLine(18, 40, 30, 40, ink);
+                    canvas.ThickLine(c, 6, c, 14, ink);
+                    canvas.ThickLine(16, 41, 32, 41, ink);
+                    canvas.ThickLine(14, 28, 20, 18, ink);
+                    canvas.ThickLine(20, 18, 26, 26, ink);
+                    canvas.ThickLine(26, 26, 30, 16, ink);
+                    canvas.FillCircle(c, 22, 2, ink);
                     break;
                 case RuneId.Air:
                     Triangle(canvas, c, 7, 8, 39, 40, 39, ink, false);
@@ -98,10 +102,14 @@ namespace RuneMagic
                     canvas.ThickLine(36, 10, 40, 10, ink);
                     break;
                 case RuneId.Water:
-                    Triangle(canvas, c, 41, 7, 8, 41, 8, ink, true);
+                    Triangle(canvas, c, 41, 6, 8, 42, 8, ink, true);
                     Triangle(canvas, c, 32, 14, 16, 34, 16, ink, false);
                     canvas.ThickLine(c, 41, c, 34, ink);
-                    canvas.ThickLine(16, 12, 32, 12, ink);
+                    canvas.ThickLine(14, 12, 34, 12, ink);
+                    canvas.ThickLine(12, 22, 20, 18, ink);
+                    canvas.ThickLine(20, 18, 28, 24, ink);
+                    canvas.ThickLine(28, 24, 36, 20, ink);
+                    canvas.Circle(c, 28, 3, ink);
                     break;
                 case RuneId.Salt:
                     canvas.Circle(c, c, 14, ink);
@@ -126,13 +134,14 @@ namespace RuneMagic
                     canvas.ThickLine(15, 36, 33, 36, ink);
                     break;
                 case RuneId.Vita:
-                    canvas.Circle(c, 30, 10, ink);
-                    canvas.Circle(c, 30, 5, ink);
-                    canvas.ThickLine(c, 20, c, 5, ink);
-                    canvas.ThickLine(c, 10, 12, 17, ink);
-                    canvas.ThickLine(c, 10, 36, 17, ink);
-                    canvas.ThickLine(12, 17, 16, 17, ink);
-                    canvas.ThickLine(32, 17, 36, 17, ink);
+                    canvas.Circle(c, 16, 9, ink);
+                    canvas.Circle(c, 16, 4, ink);
+                    canvas.ThickLine(c, 25, c, 42, ink);
+                    canvas.ThickLine(14, 32, 34, 32, ink);
+                    canvas.ThickLine(14, 32, 14, 36, ink);
+                    canvas.ThickLine(34, 32, 34, 36, ink);
+                    canvas.ThickLine(c, 7, c, 3, ink);
+                    canvas.FillCircle(c, 16, 2, ink);
                     break;
                 case RuneId.Mors:
                     canvas.Circle(c, 16, 10, ink);
