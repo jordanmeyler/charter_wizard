@@ -141,6 +141,7 @@ namespace RuneMagic
                 case SpellId.Scald:
                 case SpellId.Spring:
                 case SpellId.Douse:
+                case SpellId.Swamp:
                     return true;
                 default:
                     return false;
@@ -555,6 +556,15 @@ namespace RuneMagic
                 }
             }
 
+            if (spell == SpellId.Swamp)
+            {
+                var slicked = SlickMud(grid, cells);
+                if (slicked > 0)
+                {
+                    notes.Add("Yield meeting rest. A watery swamp stands from your feet.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -607,6 +617,26 @@ namespace RuneMagic
             }
 
             return filled;
+        }
+
+        public static int SlickMud(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.SlickMud())
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
         }
 
         public static int FreezeWaterAlong(WorldGrid grid, List<Vector2Int> cells)
@@ -701,6 +731,7 @@ namespace RuneMagic
                 case SpellId.Blight:
                 case SpellId.GraveDust:
                 case SpellId.Flood:
+                case SpellId.Swamp:
                 case SpellId.LiveFloor:
                 case SpellId.Quagmire:
                 case SpellId.Sprout:
@@ -737,7 +768,7 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
-                || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
+                || spell == SpellId.Swamp || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
             }

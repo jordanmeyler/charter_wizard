@@ -122,7 +122,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
-| **Flame** | Fire · Salt | Hunger given a body. Standing fire. | A torch, a column, a hearth |
+| **Flame** | Fire · Salt | Hunger given a body. Worked fire, not wild hunger. | A violet standing flame — a hearth, a column, a curtain |
 | **Ice** | Water · Salt · Earth | Yield given a body and asked to rest. Hard water. | Solid water that will thaw |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
 | **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life |
@@ -265,10 +265,14 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 63 | A body of ice asked to stand as more ice. Click start and stop. Across a pit it is a span; on the floor it is a barrier. It will thaw. | Ice-wall | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice · Salt · Ice | Pillar | Restrain |
 | 64 | Hard water held as a condition. They freeze. | Freeze | Water · Salt · Earth · Sulphur | Ice · Sulphur | Remote | Restrain |
 | 65 | The veil given ice’s story, then driven. They freeze. | Snowstorm | Air · Water · Salt · Earth · Air · Mercury | Snow · Air · Mercury | Remote | Restrain |
+| 66 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
+| 67 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
+
+Fire is raw hunger (orange). **Flame** is Fire · Salt — hunger given a body. Worked fire shows violet, so a flame-pillar and a flame curtain read as magic flame, not a campfire.
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 
-Wards and mind ailments (Lull, Terror, Rage, Command, Confuse) are **held**. They last until you use that rune again — the ward’s element, or Sulphur for a mind. A fizzle shows the hold breaking. Ignite, poison, and frozen do not need that hold. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
+Wards and mind ailments (Lull, Terror, Rage, Command, Charm, Confuse) are **held**. They last until you use that rune again — the ward’s element, or Sulphur for a mind. A fizzle shows the hold breaking. Ignite, poison, and frozen do not need that hold. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
 
 No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
 
@@ -290,6 +294,6 @@ A finished spell also names **who it touches** and **what condition it leaves**.
 
 ## 8. The sanctum slice
 
-The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Ice-wall is Ice · Salt · Ice (Water · Salt · Earth · Salt · Water · Salt · Earth). Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
+The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands). Ice-pillar is Water · Salt · Earth. Ice-wall is Ice · Salt · Ice (Water · Salt · Earth · Salt · Water · Salt · Earth). Hop is Air · Salt · Air (Self). Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Charm is Life · Sulphur · Mercury — they fetch, and they fight what you have marked. Swamp is Water · Earth · Mercury · Salt (Spread). Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
 
 **Charter Cast** wants the whole sentence, in the written order. Mercury · Fire is not fire. **Free Cast** may unscramble a valid bag of runes into a written recipe, and may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence — including one Free only had to reorder — is not filled toward a longer one. Free cannot be stored.

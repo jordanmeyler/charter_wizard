@@ -212,6 +212,11 @@ namespace RuneMagic
                 return $"{DisplayName} turns on itself. The mind was the lock.";
             }
 
+            if (spell == SpellId.Charm || spell == SpellId.Command)
+            {
+                return $"{DisplayName} yields. They will fetch, and they will fight what you mark.";
+            }
+
             if (spell == SpellId.Terror || spell == SpellId.Jolt)
             {
                 return $"{DisplayName} cannot hold a thought. They leave the aisle.";

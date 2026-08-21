@@ -280,6 +280,16 @@
           "dir": "left"
         },
         {
+          "type": "lesson",
+          "x": 7,
+          "y": 4,
+          "runes": [
+            "Fire",
+            "Mercury"
+          ],
+          "dir": "up"
+        },
+        {
           "type": "mite",
           "x": 3,
           "y": 3,
@@ -451,6 +461,16 @@
           "dir": "right"
         },
         {
+          "type": "lesson",
+          "x": 5,
+          "y": 9,
+          "runes": [
+            "Water",
+            "Mercury"
+          ],
+          "dir": "right"
+        },
+        {
           "type": "barrier",
           "x": 9,
           "y": 7,
@@ -464,7 +484,15 @@
             "WaterJet",
             "Rain",
             "Flood",
-            "Smother"
+            "Smother",
+            "Scald",
+            "Swamp",
+            "IcePillar",
+            "IceSpear",
+            "IceWall",
+            "Freeze",
+            "Snowfall",
+            "Snowstorm"
           ],
           "cells": [
             9,
@@ -513,13 +541,27 @@
             "Rain",
             "Flood",
             "Smother",
-            "Gale",
-            "Quagmire",
-            "Wall",
+            "Scald",
+            "Swamp",
+            "IcePillar",
+            "IceSpear",
             "IceWall",
+            "Freeze",
+            "Snowfall",
+            "Snowstorm",
+            "HurledStone",
+            "EarthPillar",
+            "Wall",
+            "Quagmire",
             "Pit",
-            "Bridge",
-            "IcePillar"
+            "Shatter",
+            "GraveDust",
+            "StonePillar",
+            "LightningBolt",
+            "ChainLightning",
+            "LavaFlood",
+            "LavaPillar",
+            "Melt"
           ],
           "sprite": "fire-golem",
           "attack": "golem"
@@ -619,6 +661,16 @@
             "Earth"
           ],
           "dir": "up"
+        },
+        {
+          "type": "lesson",
+          "x": 4,
+          "y": 13,
+          "runes": [
+            "Earth",
+            "Salt"
+          ],
+          "dir": "right"
         },
         {
           "type": "arrows",
@@ -1045,6 +1097,16 @@
           "dir": "up"
         },
         {
+          "type": "lesson",
+          "x": 4,
+          "y": 12,
+          "runes": [
+            "Air",
+            "Mercury"
+          ],
+          "dir": "right"
+        },
+        {
           "type": "fog",
           "x": 7,
           "y": 5,
@@ -1419,6 +1481,16 @@
           "dir": "left"
         },
         {
+          "type": "lesson",
+          "x": 10,
+          "y": 3,
+          "runes": [
+            "Earth",
+            "Salt"
+          ],
+          "dir": "right"
+        },
+        {
           "type": "chasm",
           "x": 6,
           "y": 6,
@@ -1501,6 +1573,16 @@
           "dir": "right"
         },
         {
+          "type": "lesson",
+          "x": 12,
+          "y": 3,
+          "runes": [
+            "Fire",
+            "Mercury"
+          ],
+          "dir": "left"
+        },
+        {
           "type": "mite",
           "x": 8,
           "y": 6,
@@ -1513,7 +1595,6 @@
           ],
           "keys": [
             "Fireball",
-            "FlamePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -1682,6 +1763,17 @@
           "dir": "right"
         },
         {
+          "type": "lesson",
+          "x": 3,
+          "y": 2,
+          "runes": [
+            "Life",
+            "Sulphur",
+            "Mercury"
+          ],
+          "dir": "right"
+        },
+        {
           "type": "mite",
           "x": 8,
           "y": 6,
@@ -1693,10 +1785,11 @@
             "Life"
           ],
           "keys": [
+            "Charm",
+            "Command",
             "Rage",
             "Lull",
             "Terror",
-            "Command",
             "Jolt"
           ],
           "sprite": "stone-man",
@@ -1714,10 +1807,11 @@
             "Life"
           ],
           "keys": [
+            "Charm",
+            "Command",
             "Rage",
             "Lull",
             "Terror",
-            "Command",
             "Jolt"
           ],
           "sprite": "stone-man",
@@ -1735,10 +1829,11 @@
             "Life"
           ],
           "keys": [
+            "Charm",
+            "Command",
             "Rage",
             "Lull",
             "Terror",
-            "Command",
             "Jolt"
           ],
           "sprite": "stone-man",
@@ -1993,7 +2088,7 @@
           ]
         },
         {
-          "kind": "Door",
+          "kind": "Floor",
           "material": "Stone",
           "cells": [
             3,
@@ -2344,32 +2439,20 @@
           "dir": "left"
         },
         {
+          "type": "lesson",
+          "x": 14,
+          "y": 3,
+          "runes": [
+            "Water",
+            "Earth",
+            "Salt",
+            "Life"
+          ],
+          "dir": "left"
+        },
+        {
           "type": "item",
           "x": 6,
-          "y": 8,
-          "item": "grove-key"
-        },
-        {
-          "type": "gate",
-          "x": 3,
-          "y": 8,
-          "displayName": "Thicket door",
-          "formulaId": "grove-door",
-          "requires": [
-            "grove-key"
-          ],
-          "cells": [
-            3,
-            7,
-            3,
-            8
-          ],
-          "sprite": "socket-gate",
-          "note": "The vegetable body takes the key. A grove stone sits free."
-        },
-        {
-          "type": "item",
-          "x": 1,
           "y": 8,
           "item": "grove-stone"
         }
@@ -2481,58 +2564,14 @@
           ]
         },
         {
-          "kind": "Wall",
-          "material": "Stone",
-          "cells": [
-            14,
-            1,
-            14,
-            2,
-            14,
-            3,
-            14,
-            4,
-            14,
-            5,
-            14,
-            6
-          ]
-        },
-        {
-          "kind": "Wall",
-          "material": "Stone",
-          "cells": [
-            14,
-            9,
-            14,
-            10,
-            14,
-            11,
-            14,
-            12,
-            14,
-            13,
-            14,
-            14
-          ]
-        },
-        {
-          "kind": "Door",
-          "material": "Stone",
-          "cells": [
-            14,
-            7,
-            14,
-            8
-          ]
-        },
-        {
           "kind": "Floor",
           "material": "Damp",
           "cells": [
-            17,
-            7,
+            10,
+            8,
             16,
+            7,
+            17,
             7
           ]
         }
@@ -2575,33 +2614,20 @@
           "dir": "right"
         },
         {
+          "type": "lesson",
+          "x": 2,
+          "y": 10,
+          "runes": [
+            "Water",
+            "Salt",
+            "Earth"
+          ],
+          "dir": "up"
+        },
+        {
           "type": "item",
           "x": 10,
           "y": 8,
-          "item": "flood-key"
-        },
-        {
-          "type": "gate",
-          "x": 14,
-          "y": 7,
-          "displayName": "Cistern door",
-          "formulaId": "cistern-door",
-          "requires": [
-            "flood-key"
-          ],
-          "cells": [
-            14,
-            7,
-            14,
-            8
-          ],
-          "sprite": "socket-gate",
-          "note": "Yield given a body takes the key. A flood stone sits free."
-        },
-        {
-          "type": "item",
-          "x": 17,
-          "y": 7,
           "item": "flood-stone"
         }
       ],
@@ -2697,44 +2723,32 @@
         },
         {
           "kind": "Wall",
-          "material": "Stone",
+          "material": "Metal",
           "cells": [
-            15,
+            13,
             1,
-            15,
+            13,
             2,
-            15,
+            13,
             3,
-            15,
+            13,
             4,
-            15,
-            5
-          ]
-        },
-        {
-          "kind": "Wall",
-          "material": "Stone",
-          "cells": [
-            15,
-            8,
-            15,
-            9,
-            15,
-            10,
-            15,
-            11,
-            15,
-            12
-          ]
-        },
-        {
-          "kind": "Door",
-          "material": "Stone",
-          "cells": [
-            15,
+            13,
+            5,
+            13,
             6,
-            15,
-            7
+            13,
+            7,
+            13,
+            8,
+            13,
+            9,
+            13,
+            10,
+            13,
+            11,
+            13,
+            12
           ]
         }
       ],
@@ -2767,6 +2781,17 @@
           "dir": "right"
         },
         {
+          "type": "lesson",
+          "x": 3,
+          "y": 6,
+          "runes": [
+            "Fire",
+            "Air",
+            "Spark"
+          ],
+          "dir": "up"
+        },
+        {
           "type": "rod",
           "x": 9,
           "y": 7,
@@ -2790,32 +2815,59 @@
           "note": "The seed already stands. Send it, or write hunger then breath."
         },
         {
-          "type": "item",
-          "x": 4,
+          "type": "barrier",
+          "x": 13,
           "y": 7,
-          "item": "spark-key"
-        },
-        {
-          "type": "gate",
-          "x": 15,
-          "y": 6,
-          "displayName": "Charge door",
-          "formulaId": "spark-door",
-          "requires": [
-            "spark-key"
+          "displayName": "Charge veil",
+          "formulaId": "charge-veil",
+          "formula": [
+            "Fire",
+            "Air",
+            "Spark"
+          ],
+          "keys": [
+            "LightningBolt",
+            "LiveFloor",
+            "Jolt",
+            "BrilliantArc",
+            "Blackout",
+            "ChainLightning",
+            "StormCall",
+            "Thunderclap"
           ],
           "cells": [
-            15,
+            13,
+            1,
+            13,
+            2,
+            13,
+            3,
+            13,
+            4,
+            13,
+            5,
+            13,
             6,
-            15,
-            7
+            13,
+            7,
+            13,
+            8,
+            13,
+            9,
+            13,
+            10,
+            13,
+            11,
+            13,
+            12
           ],
-          "sprite": "socket-gate",
-          "note": "The seed takes the key. A spark stone sits free."
+          "clearMaterial": "Vein",
+          "sprite": "charge-curtain",
+          "note": "Hunger given breath, then sent. The veil forgets how to sting."
         },
         {
           "type": "item",
-          "x": 17,
+          "x": 16,
           "y": 7,
           "item": "spark-stone"
         }
@@ -2914,13 +2966,27 @@
             "Rain",
             "Flood",
             "Smother",
-            "Gale",
-            "Quagmire",
-            "Wall",
+            "Scald",
+            "Swamp",
+            "IcePillar",
+            "IceSpear",
             "IceWall",
+            "Freeze",
+            "Snowfall",
+            "Snowstorm",
+            "HurledStone",
+            "EarthPillar",
+            "Wall",
+            "Quagmire",
             "Pit",
-            "Bridge",
-            "IcePillar"
+            "Shatter",
+            "GraveDust",
+            "StonePillar",
+            "LightningBolt",
+            "ChainLightning",
+            "LavaFlood",
+            "LavaPillar",
+            "Melt"
           ],
           "sprite": "fire-golem",
           "attack": "golem"
@@ -2941,13 +3007,27 @@
             "Rain",
             "Flood",
             "Smother",
-            "Gale",
-            "Quagmire",
-            "Wall",
+            "Scald",
+            "Swamp",
+            "IcePillar",
+            "IceSpear",
             "IceWall",
+            "Freeze",
+            "Snowfall",
+            "Snowstorm",
+            "HurledStone",
+            "EarthPillar",
+            "Wall",
+            "Quagmire",
             "Pit",
-            "Bridge",
-            "IcePillar"
+            "Shatter",
+            "GraveDust",
+            "StonePillar",
+            "LightningBolt",
+            "ChainLightning",
+            "LavaFlood",
+            "LavaPillar",
+            "Melt"
           ],
           "sprite": "fire-golem",
           "attack": "golem"
@@ -2965,7 +3045,6 @@
           ],
           "keys": [
             "Fireball",
-            "FlamePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -2998,7 +3077,6 @@
           ],
           "keys": [
             "Fireball",
-            "FlamePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -3038,7 +3116,6 @@
           ],
           "keys": [
             "Fireball",
-            "FlamePillar",
             "Douse",
             "WaterJet",
             "HurledStone",

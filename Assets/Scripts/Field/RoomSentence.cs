@@ -90,6 +90,7 @@ namespace RuneMagic
             var spokenLocks = new HashSet<int>();
             var spokenStrings = new HashSet<int>();
             var scatter = new List<WeaveGlyph>(16);
+            var live = new HashSet<RuneId>();
 
             for (var row = 0; row <= y1 - y0; row++)
             {
@@ -110,11 +111,12 @@ namespace RuneMagic
                         breathable = true;
                     }
 
-                    AppendTile(sequence, tile, scatter, ref lastMaterial, ref lastWasTear);
+                    AppendTile(sequence, tile, scatter, live, ref lastMaterial, ref lastWasTear);
                     AppendHere(sequence, locks, strings, extras, x, y, spokenLocks, spokenStrings);
                 }
             }
 
+            EnsureLiveRunes(scatter, live);
             ScatterComposing(sequence, scatter, FieldView.Key(view));
 
             if (breathable)
@@ -147,10 +149,112 @@ namespace RuneMagic
             sequence.Insert(0, new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
         }
 
+        static void CollectLive(WorldTile tile, HashSet<RuneId> live)
+        {
+            if (tile == null || live == null)
+            {
+                return;
+            }
+
+            if (tile.Element != RuneId.None)
+            {
+                live.Add(tile.Element);
+            }
+
+            var emission = tile.Emission;
+            if (emission != null)
+            {
+                for (var i = 0; i < emission.Count; i++)
+                {
+                    if (emission[i] != RuneId.None)
+                    {
+                        live.Add(emission[i]);
+                    }
+                }
+            }
+
+            if (tile.Fire > 0.05f)
+            {
+                live.Add(RuneId.Fire);
+            }
+
+            if (tile.Wet > 0.2f)
+            {
+                live.Add(RuneId.Water);
+            }
+
+            if (tile.Charge > 0.2f)
+            {
+                live.Add(RuneId.Spark);
+                live.Add(RuneId.Fire);
+                live.Add(RuneId.Air);
+            }
+
+            if (tile.Growth > 0 || tile.IsPlantish)
+            {
+                live.Add(RuneId.Plant);
+                live.Add(RuneId.Vita);
+            }
+
+            switch (tile.Material)
+            {
+                case MaterialId.Ice:
+                case MaterialId.Snow:
+                case MaterialId.Glacier:
+                    live.Add(RuneId.Ice);
+                    live.Add(RuneId.Water);
+                    live.Add(RuneId.Salt);
+                    live.Add(RuneId.Earth);
+                    break;
+                case MaterialId.Water:
+                    live.Add(RuneId.Water);
+                    break;
+                case MaterialId.Hearth:
+                case MaterialId.Ember:
+                    live.Add(RuneId.Fire);
+                    live.Add(RuneId.Flame);
+                    break;
+                case MaterialId.Lava:
+                    live.Add(RuneId.Lava);
+                    live.Add(RuneId.Fire);
+                    live.Add(RuneId.Earth);
+                    break;
+                case MaterialId.Vein:
+                case MaterialId.Metal:
+                    live.Add(RuneId.Spark);
+                    live.Add(RuneId.Fire);
+                    live.Add(RuneId.Air);
+                    break;
+            }
+        }
+
+        static void EnsureLiveRunes(List<WeaveGlyph> scatter, HashSet<RuneId> live)
+        {
+            if (scatter == null || live == null || live.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var rune in live)
+            {
+                if (rune == RuneId.None)
+                {
+                    continue;
+                }
+
+                scatter.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Material));
+                if (ChainBook.IsWrought(rune))
+                {
+                    CollectComposing(scatter, rune, MaterialId.None);
+                }
+            }
+        }
+
         static void AppendTile(
             List<WeaveGlyph> sequence,
             WorldTile tile,
             List<WeaveGlyph> scatter,
+            HashSet<RuneId> live,
             ref MaterialId lastMaterial,
             ref bool lastWasTear)
         {
@@ -172,6 +276,7 @@ namespace RuneMagic
             }
 
             lastWasTear = false;
+            CollectLive(tile, live);
             var material = tile.Material;
             if (material == MaterialId.None || material == lastMaterial)
             {

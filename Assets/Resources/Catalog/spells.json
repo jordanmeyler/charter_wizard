@@ -1160,6 +1160,39 @@
       "radius": 3.2,
       "status": "Frozen",
       "statusSeconds": 5
+    },
+    {
+      "number": 66,
+      "id": "Charm",
+      "book": "Mind",
+      "name": "Charm",
+      "want": "A living mind is reached and sent. They fetch, and they fight what you have marked.",
+      "recipe": "Life · Sulphur · Mercury",
+      "via": "",
+      "form": "Remote",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Charm",
+      "target": "Single",
+      "status": "Charmed",
+      "statusSeconds": 12
+    },
+    {
+      "number": 67,
+      "id": "Swamp",
+      "book": "Hold",
+      "name": "Swamp",
+      "want": "Yield meeting rest, going, given a body around your feet. A watery swamp.",
+      "recipe": "Water · Earth · Mercury · Salt",
+      "via": "Mud · Mercury · Salt",
+      "form": "Spread",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Swamp",
+      "target": "Area",
+      "radius": 2.8,
+      "status": "Soaked",
+      "statusSeconds": 6
     }
   ]
 }

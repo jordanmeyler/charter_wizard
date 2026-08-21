@@ -78,6 +78,7 @@ namespace RuneMagic
         CodexEntry _pendingFree;
         bool _pendingFromHeld;
         Vector3? _spanStart;
+        readonly HashSet<int> _hunted = new();
 
         public void Begin(SanctumBuild build)
         {
@@ -181,19 +182,29 @@ namespace RuneMagic
             if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 var host = StatusHost.On(player);
-                if (Underfoot.Fire > 0.35f)
+                var inFire = Underfoot.Fire > 0.35f;
+                if (inFire)
                 {
                     host?.Apply(StatusId.Burning, 2.4f);
-                    if (Underfoot.Fire > 0.85f && (host == null || !host.Fends(Essence.Fire)))
+                    var warded = host != null && host.Fends(Essence.Fire);
+                    if (adept != null && adept.TickFlame(true, warded))
                     {
-                        KillPlayer("The floor is hunger. The crystal calls you back.");
+                        KillPlayer("The floor is hunger. Eight breaths, then the crystal calls you back.");
                     }
+                }
+                else
+                {
+                    adept?.TickFlame(false, false);
                 }
 
                 if (Underfoot.Material == MaterialId.Lava && (host == null || !host.Fends(Essence.Fire)))
                 {
                     KillPlayer("Hungry earth. The crystal calls you back.");
                 }
+            }
+            else
+            {
+                adept?.TickFlame(false, false);
             }
 
             FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
@@ -1402,6 +1413,11 @@ namespace RuneMagic
                                     continue;
                                 }
 
+                                if (!SpellVerb.HoldsMind(outcome.Spell))
+                                {
+                                    MarkHunted(hit);
+                                }
+
                                 if (SpellVerb.HoldsMind(outcome.Spell))
                                 {
                                     Grimoire.LearnInterpretation(hit.FormulaId);
@@ -1414,6 +1430,7 @@ namespace RuneMagic
                                     continue;
                                 }
 
+                                ForgetHunted(hit);
                                 Grimoire.LearnInterpretation(hit.FormulaId);
                                 var flavor = hit.Resolve(outcome.Spell);
                                 OpenDoorFor(hit);
@@ -1428,6 +1445,8 @@ namespace RuneMagic
                         }
                         else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                         {
+                            MarkHunted(target);
+                            ForgetHunted(target);
                             Grimoire.LearnInterpretation(target.FormulaId);
                             var flavor = target.Resolve(outcome.Spell);
                             OpenDoorFor(target);
@@ -1842,6 +1861,67 @@ namespace RuneMagic
                 : new Color(1f, 0.86f, 0.35f, 0.95f);
         }
 
+        public void MarkHunted(ISpellLock encounter)
+        {
+            if (encounter is not MonoBehaviour body || body == null)
+            {
+                return;
+            }
+
+            _hunted.Add(body.GetInstanceID());
+        }
+
+        public void ForgetHunted(ISpellLock encounter)
+        {
+            if (encounter is MonoBehaviour body && body != null)
+            {
+                _hunted.Remove(body.GetInstanceID());
+            }
+        }
+
+        public bool IsHunted(ISpellLock encounter)
+        {
+            return encounter is MonoBehaviour body && body != null && _hunted.Contains(body.GetInstanceID());
+        }
+
+        public EncounterLock NearestHunted(Vector3 from, Component except = null)
+        {
+            EncounterLock best = null;
+            var bestDistance = 9f;
+            if (_locks == null)
+            {
+                return null;
+            }
+
+            for (var i = 0; i < _locks.Length; i++)
+            {
+                if (_locks[i] is not EncounterLock other || !LockAlive(other) || !IsHunted(other))
+                {
+                    continue;
+                }
+
+                if (except != null && other.gameObject == except.gameObject)
+                {
+                    continue;
+                }
+
+                var host = StatusHost.On(other);
+                if (host != null && host.Has(StatusId.Charmed))
+                {
+                    continue;
+                }
+
+                var distance = Vector2.Distance(from, other.transform.position);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = other;
+                }
+            }
+
+            return best;
+        }
+
         public void TurnLock(ISpellLock encounter)
         {
             if (!LockAlive(encounter))
@@ -1849,6 +1929,7 @@ namespace RuneMagic
                 return;
             }
 
+            ForgetHunted(encounter);
             Grimoire.LearnInterpretation(encounter.FormulaId);
             var flavor = encounter.Resolve(SpellId.None);
             OpenDoorFor(encounter);
@@ -1869,6 +1950,7 @@ namespace RuneMagic
                 return;
             }
 
+            ForgetHunted(encounter);
             Grimoire.LearnInterpretation(encounter.FormulaId);
             encounter.Resolve(SpellId.None);
             OpenDoorFor(encounter);
@@ -1919,7 +2001,7 @@ namespace RuneMagic
         public void YieldSelf()
         {
             KillPlayer(GlyphView.Speak(
-                "You yield. Pillars, walls, and hanging work in this room fall. Stones and keys stay with you.",
+                "You yield. Pillars, walls, and hanging work in this room fall. Stones and artifacts stay with you.",
                 "You yield. The work you stood in this room forgets itself. What you carry stays."));
         }
 

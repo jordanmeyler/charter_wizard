@@ -133,8 +133,8 @@ Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projec
 
 - **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice.
 - **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free) a medium that makes one specific spell reliable.
-- **Keys** — open a specific gate; most gates have another solution, so keys usually *ease* rather than hard-lock.
-- **The pack** — stones, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Doors still gate on possession, not on using a key from a menu.
+- **Stones / artifacts** — seat a concept in a gate; most gates have another solution, so they usually *ease* rather than hard-lock. They also name the idea (hunger, yield, ice, spark).
+- **The pack** — stones, artifacts, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Doors still gate on possession, not on using an item from a menu.
 - **The Primordial gate** — access to Primordial is *only* opened by acquiring an item or performing a deed.
 
 Free magic is **item-intertwined** (lacking understanding, it leans on mediums/foci — the source of off-focus reliability). Free magic and its items **reveal their runes** — a core learning mechanic. Acquisition is **non-linear**: varied difficulty, some main-quest (skippable), some needed regardless of route.
@@ -200,7 +200,8 @@ Marquee reactions (each a puzzle key):
 - **Water · Salt · Earth → Ice** — hard water that thaws, and **a walkable freeze over a pool**. Ice-pillar, Ice-wall, Ice-spear, and Snowfall freeze water tiles. Fire / Thaw remember yield. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
-- **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice. Fire eats vine. Room masonry is not a spell-body. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and keys stay in the pack.
+- **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice. Fire eats vine. Room masonry is not a spell-body. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and artifacts stay in the pack.
+- **Standing in hunger.** A burning floor kills in **eight seconds** unless you wear a water ward or put the fire out. Fire-golems die to any water work and to earth work; they only shrug off base fire and wind.
 - **Fog and poison mist linger** as hanging veils. Gale or fire tears them. Light lifts fog, not poison.
 
 Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
@@ -240,7 +241,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. Wards and mind ailments are held by focus.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Charm. **67** Swamp. Wards and mind ailments are held by focus. Charmed bodies fetch nearby artifacts and fight what you have marked.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

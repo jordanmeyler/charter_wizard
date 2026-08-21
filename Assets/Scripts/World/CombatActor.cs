@@ -61,6 +61,7 @@ namespace RuneMagic
         Transform _confusedMark;
         SanctumDirector _director;
         bool _pillarReply;
+        WorldItem _carried;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
@@ -151,15 +152,15 @@ namespace RuneMagic
                 return;
             }
 
+            if (mind == StatusId.Charmed)
+            {
+                TickCharm(player);
+                return;
+            }
+
             var mark = PickMark(mind, player);
             if (mark == null)
             {
-                if (mind == StatusId.Charmed)
-                {
-                    Follow(player);
-                    return;
-                }
-
                 if (mind == StatusId.Confused)
                 {
                     Wander();
@@ -207,6 +208,83 @@ namespace RuneMagic
             }
 
             TickMelee(mark, player, distance, chase);
+        }
+
+        void TickCharm(AdeptAvatar player)
+        {
+            if (_carried != null && (_carried.Collected || _carried == null))
+            {
+                _carried = null;
+            }
+
+            if (_carried != null)
+            {
+                Follow(player);
+                if (player != null && Vector2.Distance(transform.position, player.transform.position) < 1.55f)
+                {
+                    var name = _carried.Item != null ? _carried.Item.name : "the prize";
+                    if (_carried.DeliverTo(player))
+                    {
+                        Director()?.Log($"{(_lock != null ? _lock.DisplayName : "They")} lay {name} at your feet.");
+                    }
+
+                    _carried = null;
+                }
+
+                return;
+            }
+
+            var prize = NearestItem();
+            if (prize != null)
+            {
+                var distance = Vector2.Distance(transform.position, prize.transform.position);
+                if (distance <= 0.72f)
+                {
+                    if (prize.TryCarry(transform))
+                    {
+                        _carried = prize;
+                        ShowCast("fetches…");
+                    }
+
+                    return;
+                }
+
+                DriveToward(prize.transform, player, true);
+                return;
+            }
+
+            var hunted = Director()?.NearestHunted(transform.position, this);
+            if (hunted != null)
+            {
+                DriveToward(hunted.transform, player, true);
+                return;
+            }
+
+            Follow(player);
+        }
+
+        WorldItem NearestItem()
+        {
+            WorldItem best = null;
+            var bestDistance = _sight;
+            var found = FindObjectsByType<WorldItem>(FindObjectsSortMode.None);
+            for (var i = 0; i < found.Length; i++)
+            {
+                var item = found[i];
+                if (item == null || !item.Available)
+                {
+                    continue;
+                }
+
+                var distance = Vector2.Distance(transform.position, item.transform.position);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = item;
+                }
+            }
+
+            return best;
         }
 
         Transform PickMark(StatusId mind, AdeptAvatar player)
@@ -719,7 +797,12 @@ namespace RuneMagic
 
             if (_status.Has(StatusId.Charmed))
             {
-                return ranged ? "serves…" : "guards…";
+                if (_carried != null)
+                {
+                    return "brings…";
+                }
+
+                return ranged ? "serves…" : "fetches…";
             }
 
             if (_status.Has(StatusId.Confused))

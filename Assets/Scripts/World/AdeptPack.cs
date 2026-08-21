@@ -46,6 +46,10 @@ namespace RuneMagic
             {
                 case "key":
                     return "Key";
+                case "artifact":
+                    return "Artifact";
+                case "stone":
+                    return "Stone";
                 case "charm":
                     return "Charm";
                 case "ward":

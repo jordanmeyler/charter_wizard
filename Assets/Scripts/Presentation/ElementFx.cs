@@ -6,6 +6,7 @@ namespace RuneMagic
     {
         Aether,
         Fire,
+        Flame,
         Water,
         Ice,
         Earth,
@@ -87,10 +88,17 @@ namespace RuneMagic
                 return ElementFamily.Fog;
             }
 
+            if (spell == SpellId.FlamePillar || spell == SpellId.Melt || spell == SpellId.Flameward
+                || spell == SpellId.Ignite)
+            {
+                return ElementFamily.Flame;
+            }
+
             switch (material)
             {
-                case RuneId.Fire:
                 case RuneId.Flame:
+                    return ElementFamily.Flame;
+                case RuneId.Fire:
                 case RuneId.Ember:
                 case RuneId.Inferno:
                     return ElementFamily.Fire;
@@ -155,6 +163,12 @@ namespace RuneMagic
                         new Color(1f, 0.42f, 0.08f, 0.85f),
                         new Color(0.28f, 0.12f, 0.08f, 0.45f),
                         true, true, 1.35f);
+                case ElementFamily.Flame:
+                    return new ElementLook(family,
+                        new Color(0.78f, 0.42f, 1f),
+                        new Color(0.55f, 0.22f, 0.95f, 0.88f),
+                        new Color(0.28f, 0.1f, 0.42f, 0.5f),
+                        true, true, 1.25f);
                 case ElementFamily.Water:
                     return new ElementLook(family,
                         new Color(0.35f, 0.7f, 1f),

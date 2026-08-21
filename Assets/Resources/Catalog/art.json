@@ -1,5 +1,5 @@
 {
-  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, key-grove, key-flood, key-spark, key-spare, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
+  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, charge-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
   "sprites": [],
   "items": [
     {
@@ -9,8 +9,8 @@
       "sprite": "charm",
       "teachesSpell": "Fireball",
       "teachesFormula": "ash-mite",
-      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others.",
-      "look": "An orange twist of Free work. It still smells of the recipe it gave you: Fire · Mercury — hunger sent. The mite was burning matter. You borrowed a key; later you will compose others."
+      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a working; later you will compose others.",
+      "look": "An orange twist of Free work. It still smells of the recipe it gave you: Fire · Mercury — hunger sent. The mite was burning matter. You borrowed a working; later you will compose others."
     },
     {
       "id": "ash-mite",
@@ -39,39 +39,39 @@
     {
       "id": "fire-stone",
       "name": "Fire stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-fire",
       "note": "A stone that remembers hunger. The Gate of Elements has a socket for it.",
-      "look": "Warm even at rest. Hunger sleeps in it, waiting to be seated. The Gate of Elements has a socket this size."
+      "look": "Warm even at rest. Hunger sleeps in it — Fire, the will to consume. The Gate of Elements has a socket this size."
     },
     {
       "id": "water-stone",
       "name": "Water stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-water",
       "note": "A stone that remembers yield. The Gate of Elements has a socket for it.",
-      "look": "It takes the heat of your hand and keeps none of it. Yield, seated. The Gate of Elements will drink it."
+      "look": "It takes the heat of your hand and keeps none of it. Yield, seated. Water thrown ends hunger."
     },
     {
       "id": "earth-stone",
       "name": "Earth stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-earth",
       "note": "A stone that remembers rest. The Gate of Elements has a socket for it.",
-      "look": "Heavier than it looks. Rest that will not be hurried. A socket on the Gate of Elements is cut for this weight."
+      "look": "Heavier than it looks. Rest that will not be hurried. Earth · Salt stands a body."
     },
     {
       "id": "air-stone",
       "name": "Air stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-air",
       "note": "A stone that remembers breath. The Gate of Elements has a socket for it.",
-      "look": "Almost not there. Breath that will not stay, trapped in a body just long enough to be a key."
+      "look": "Almost not there. Breath that will not stay, seated just long enough to be sent. Air · Mercury is a gust."
     },
     {
       "id": "body-stone",
       "name": "Body stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-body",
       "note": "Salt, seated. The Gate of Aspects wants a standing body.",
       "look": "Salt, seated. A standing body — the kind that makes a wall stay a wall. The Gate of Aspects wants this."
@@ -79,7 +79,7 @@
     {
       "id": "spirit-stone",
       "name": "Spirit stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-spirit",
       "note": "Mercury, seated. The Gate of Aspects wants a thing that goes.",
       "look": "Mercury, seated. A path opening, a thing that goes. Hold it and you remember that a send is not a wall."
@@ -87,82 +87,82 @@
     {
       "id": "mind-stone",
       "name": "Mind stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-mind",
       "note": "Sulphur, seated. The Gate of Aspects wants a mind.",
-      "look": "Sulphur, seated. The wildcard that turns a work toward a mind. The Gate of Aspects has a socket that is not for force."
+      "look": "Sulphur, seated. The wildcard that turns a work toward a mind. Life · Sulphur · Mercury is Charm — they fetch, and they fight what you mark."
     },
     {
       "id": "grove-key",
-      "name": "Grove key",
-      "kind": "key",
-      "sprite": "key-grove",
-      "note": "A key that remembers a vegetable body. A door in the thicket wants it.",
-      "look": "Green-dark, and still a little wet. A standing plant was asked to become a key. The thicket door is cut for this."
+      "name": "Grove artifact",
+      "kind": "artifact",
+      "sprite": "stone-grove",
+      "note": "A vegetable body, seated. Yield, rest, a standing plant, then Life.",
+      "look": "Green-dark, and still a little wet. Water · Earth · Salt · Life — a plant asked to wake. The thicket remembers this."
     },
     {
       "id": "grove-stone",
       "name": "Grove stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-grove",
       "note": "A stone that remembers a living plant. The Gate of Joins has a socket for it.",
-      "look": "Yield and rest given a vegetable body, then marked living. The Gate of Joins will seat it."
+      "look": "Yield and rest given a vegetable body, then marked living. Water the plants. The Gate of Joins will seat it."
     },
     {
       "id": "flood-key",
-      "name": "Flood key",
-      "kind": "key",
-      "sprite": "key-flood",
-      "note": "A key that remembers a stood pool. A door in the cistern wants it.",
-      "look": "Cold and sure of its shape. Yield given a body. The cistern door will drink it."
+      "name": "Flood artifact",
+      "kind": "artifact",
+      "sprite": "stone-flood",
+      "note": "Hard water, seated. Yield given a body and asked to rest.",
+      "look": "Cold and sure of its shape. Water · Salt · Earth — ice. A pool that learned to hold."
     },
     {
       "id": "flood-stone",
       "name": "Flood stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-flood",
       "note": "A stone that remembers water given a floor. The Gate of Joins has a socket for it.",
-      "look": "Water · Salt, seated. A hollow that learned to hold. The Gate of Joins wants this weight."
+      "look": "Water · Salt · Earth, seated. Ice is how a drowning channel becomes a path."
     },
     {
       "id": "spark-key",
-      "name": "Spark key",
-      "kind": "key",
-      "sprite": "key-spark",
-      "note": "A key that remembers hunger given breath. A door in the charge cell wants it.",
-      "look": "It stings the palm. Fire and air already met in it. The charge door is waiting."
+      "name": "Spark artifact",
+      "kind": "artifact",
+      "sprite": "stone-spark",
+      "note": "Hunger given breath, seated. A seed of charge.",
+      "look": "It stings the palm. Fire · Air is Spark. Spark · Mercury sends the bolt."
     },
     {
       "id": "spark-stone",
       "name": "Spark stone",
-      "kind": "key",
+      "kind": "stone",
       "sprite": "stone-spark",
       "note": "A stone that remembers a seed of charge. The Gate of Joins has a socket for it.",
-      "look": "Hunger given breath, trapped in a body just long enough to be a key. The Gate of Joins has a socket that hums."
+      "look": "Hunger given breath. Fire · Air · Mercury is the bolt. The Gate of Joins has a socket that hums."
     },
     {
       "id": "spare-grove-key",
-      "name": "Spare grove key",
-      "kind": "key",
-      "sprite": "key-spare",
-      "note": "An extra key from a path that was not the door. Keep it. A later secret will want extras.",
-      "look": "The same cut as the grove key, but the metal is older. Someone hopped this way before you. A later lock will remember extras."
+      "name": "Spare grove artifact",
+      "kind": "artifact",
+      "sprite": "stone-grove",
+      "note": "An extra vegetable body from a path that was not the door.",
+      "look": "The same green as the grove stone, older. Someone grew this way before you."
     },
     {
       "id": "spare-flood-key",
-      "name": "Spare flood key",
-      "kind": "key",
-      "sprite": "key-spare",
-      "note": "An extra key from a hop over a door. Keep it for a later secret.",
-      "look": "Brass that still smells of the cistern. The intended door was not the only way. A later secret will want extras."
+      "name": "Spare flood artifact",
+      "kind": "artifact",
+      "sprite": "stone-flood",
+      "note": "An extra hard-water body from a hop over a door.",
+      "look": "Cold brass that still smells of the cistern. Ice was not the only crossing."
     },
     {
       "id": "spare-spark-key",
-      "name": "Spare spark key",
-      "kind": "key",
-      "sprite": "key-spare",
-      "note": "An extra key from a leap past the charge door. Keep it for a later secret.",
-      "look": "It ticks against the others. Breath and hunger, taken the long way. A later secret will want extras."
+      "name": "Spare spark artifact",
+      "kind": "artifact",
+      "sprite": "stone-spark",
+      "note": "An extra seed of charge from a leap past the cell.",
+      "look": "It ticks against the others. Breath and hunger, taken the long way."
     }
   ]
 }

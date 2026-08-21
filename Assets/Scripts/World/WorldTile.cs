@@ -123,6 +123,32 @@ namespace RuneMagic
             Drench(1f);
         }
 
+        /// <summary>
+        /// A watery swamp: yield meeting rest on a walkable floor.
+        /// Deep water stays water. Pits stay pits until filled.
+        /// </summary>
+        public bool SlickMud()
+        {
+            Drench(1f);
+            if (Kind != TileKind.Floor && Kind != TileKind.Bridge)
+            {
+                return false;
+            }
+
+            if (IsDeepWater || Material == MaterialId.Lava || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            if (Material == MaterialId.Mud)
+            {
+                return true;
+            }
+
+            Reshape(new TileDef(Kind, MaterialId.Mud));
+            return true;
+        }
+
         public bool FreezeSolid()
         {
             if (!IsDeepWater)

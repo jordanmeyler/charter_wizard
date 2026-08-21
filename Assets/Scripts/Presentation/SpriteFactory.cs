@@ -41,6 +41,7 @@ namespace RuneMagic
                 case "charm": return Charm();
                 case "ice-block": return IceBlock();
                 case "flame-curtain": return FlameCurtain();
+                case "charge-curtain": return ChargeCurtain();
                 case "arrow-rack": return ArrowRack();
                 case "poison-veil":
                 case "poison-fog": return PoisonVeil();
@@ -647,24 +648,45 @@ namespace RuneMagic
             });
         }
 
+        public static Sprite ChargeCurtain()
+        {
+            return Memo("charge-curtain", () =>
+            {
+                var canvas = new PixelCanvas(32, 48);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 28, 16, new Color(0.45f, 0.75f, 1f, 0.4f));
+                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.12f, 0.16f, 0.22f));
+                var bolt = new Color(0.7f, 0.88f, 1f);
+                var core = new Color(1f, 0.95f, 0.55f);
+                canvas.FillCircle(10, 22, 6, bolt);
+                canvas.FillCircle(16, 28, 7, bolt);
+                canvas.FillCircle(22, 24, 6, bolt);
+                canvas.ThickLine(12, 18, 18, 30, core);
+                canvas.ThickLine(18, 30, 14, 36, core);
+                canvas.ThickLine(20, 20, 16, 34, core);
+                canvas.FillCircle(16, 36, 3, core);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.2f));
+            });
+        }
+
         public static Sprite FlameCurtain()
         {
             return Memo("flame-curtain", () =>
             {
                 var canvas = new PixelCanvas(32, 48);
                 canvas.Clear(Clear);
-                canvas.SoftCircle(16, 28, 16, new Color(1f, 0.35f, 0.05f, 0.4f));
-                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.22f, 0.1f, 0.06f));
-                var ember = new Color(0.95f, 0.38f, 0.06f);
-                var gold = new Color(1f, 0.78f, 0.2f);
+                canvas.SoftCircle(16, 28, 16, new Color(0.62f, 0.22f, 0.95f, 0.42f));
+                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.16f, 0.06f, 0.22f));
+                var ember = new Color(0.72f, 0.32f, 1f);
+                var gold = new Color(0.92f, 0.62f, 1f);
                 canvas.FillCircle(10, 22, 7, ember);
                 canvas.FillCircle(16, 28, 8, ember);
                 canvas.FillCircle(22, 24, 7, ember);
                 canvas.FillCircle(16, 34, 6, gold);
                 canvas.FillCircle(12, 30, 4, gold);
                 canvas.FillCircle(20, 32, 4, gold);
-                canvas.FillCircle(16, 38, 3, new Color(1f, 0.95f, 0.7f));
-                canvas.FillCircle(10, 26, 2, new Color(1f, 0.95f, 0.7f));
+                canvas.FillCircle(16, 38, 3, new Color(0.96f, 0.86f, 1f));
+                canvas.FillCircle(10, 26, 2, new Color(0.96f, 0.86f, 1f));
                 return canvas.ToSprite(32, new Vector2(0.5f, 0.2f));
             });
         }
