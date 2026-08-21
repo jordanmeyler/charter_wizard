@@ -81,7 +81,9 @@ namespace RuneMagic
         Windward,
         LavaPillar,
         Shatter,
-        Confuse
+        Confuse,
+        Freeze,
+        Snowstorm
     }
 
     public readonly struct SpellRecipe
@@ -129,6 +131,9 @@ namespace RuneMagic
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
             Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Yield given a body and asked to rest. Hard water. No Death.");
+            Register(RuneId.Ice, RuneId.Sulphur, SpellShape.Remote, SpellId.Freeze, "Freeze", "Hard water held as a condition. They freeze.");
+            Register(RuneId.Snow, RuneId.Air, SpellShape.Remote, SpellId.Snowstorm, "Snowstorm", "The veil given ice’s story, then driven. They freeze.");
+            Register(RuneId.Blizzard, RuneId.Mercury, SpellShape.Remote, SpellId.Snowstorm, "Snowstorm", "Wind driving Snow, sent.");
             Register(RuneId.Water, RuneId.Sulphur, SpellShape.Self, SpellId.Watershield, "Water ward", "Compressed. Catalog: Water · Salt · Sulphur. Yield given a body, then the mind holds it on you.");
             Register(RuneId.Water, RuneId.Sulphur, SpellShape.Remote, SpellId.Lull, "Lull", "Mind of water. Sleep, placed elsewhere.");
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");

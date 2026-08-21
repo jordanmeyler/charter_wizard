@@ -47,6 +47,7 @@ namespace RuneMagic
             Add(RuneId.Cloud, RuneId.Earth, RuneId.Rain, BlendKind.Stable, "The hanging veil drawn down. Cloud · Earth → Rain.");
             Add(RuneId.Cloud, RuneId.Water, RuneId.Rain, BlendKind.Stable, "The hanging veil yields more. Cloud · Water → Rain.");
             Add(RuneId.Cloud, RuneId.Ice, RuneId.Snow, BlendKind.Stable, "The hanging veil given ice’s story. Cloud · Ice → Snow.");
+            Add(RuneId.Wind, RuneId.Snow, RuneId.Blizzard, BlendKind.Violent, "Wind driving Snow. Wind · Snow → Blizzard.");
             Add(RuneId.Lava, RuneId.Water, RuneId.Obsidian, BlendKind.Violent, "Hungry earth quenched. Lava · Water → Obsidian.");
             Add(RuneId.Lava, RuneId.Earth, RuneId.Metal, BlendKind.Stable, "Hungry earth given more rest. Lava · Earth → Metal.");
             Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud given breath until it dries. Mud · Air → Sand.");

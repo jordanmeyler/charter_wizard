@@ -89,10 +89,14 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Stunned, 2.6f, TileVerb.Charge);
                 case SpellId.IceSpear:
                 case SpellId.IcePillar:
-                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 3.4f, TileVerb.Freeze);
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Freeze);
+                case SpellId.Freeze:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.Snowfall:
                 case SpellId.GraveIce:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Frozen, 3.8f, TileVerb.Freeze);
+                case SpellId.Snowstorm:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.Douse:
                 case SpellId.WaterJet:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Soaked, 5f, TileVerb.Wet);
@@ -137,8 +141,9 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.TimeStop:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2f, TileVerb.None);
-                case SpellId.GraveDust:
                 case SpellId.Blight:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);
+                case SpellId.GraveDust:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Hop:
                 case SpellId.Flight:

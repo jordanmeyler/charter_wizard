@@ -143,7 +143,9 @@ namespace RuneMagic
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt · Earth", "Lava · Salt · Earth", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
-            E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain)
+            E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
+            E(63, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
+            E(64, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -273,6 +275,54 @@ namespace RuneMagic
             if (ChainBook.CollectFillable(salt, SpellShape.None, 0).Count != 0)
             {
                 broken.Add("A zero fill budget must not complete a missing rune");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse))
+            {
+                broken.Add("Douse must drop a water ward — both use Water");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
+            {
+                broken.Add("Fireball must not drop a water ward");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
+            {
+                broken.Add("Fireball must drop a flame ward — both use Fire");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Rage))
+            {
+                broken.Add("Rage must drop sleep — both are Sulphur");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Sleeping, SpellId.Fireball))
+            {
+                broken.Add("Fireball must not drop sleep");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Burning, SpellId.Douse))
+            {
+                broken.Add("Burning is elemental and does not need focus");
+            }
+
+            if (SpellVerb.Of(SpellId.IceSpear).Status == StatusId.Frozen
+                || SpellVerb.Of(SpellId.IcePillar).Status == StatusId.Frozen)
+            {
+                broken.Add("Ice-spear and ice-pillar must not freeze a living body");
+            }
+
+            if (SpellVerb.Of(SpellId.Snowfall).Status != StatusId.Frozen
+                || SpellVerb.Of(SpellId.Freeze).Status != StatusId.Frozen
+                || SpellVerb.Of(SpellId.Snowstorm).Status != StatusId.Frozen)
+            {
+                broken.Add("Snowfall, Freeze, and Snowstorm must freeze");
+            }
+
+            if (SpellVerb.Of(SpellId.Blight).Status != StatusId.Poisoned)
+            {
+                broken.Add("Blight must poison");
             }
         }
 

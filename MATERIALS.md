@@ -70,6 +70,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud · Earth · Rain | Rain | The veil drawn down |
 | **Snow** | Air · Water · Cloud · Ice · Snow | Snow | The veil given ice’s story |
+| **Blizzard** | Air · Water · Cloud · Ice · Snow · Wind · Blizzard | Blizzard | Wind driving Snow |
 | **Glacier** | Water · Salt · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
 | **Damp stone** | Water · Earth | Water | Wet rest, not yet mud |

@@ -61,6 +61,7 @@ namespace RuneMagic
             SetBirth(RuneId.Glass, RuneId.Sand, RuneId.Flame, RuneId.Earth);
             SetBirth(RuneId.Blight, RuneId.Grove, RuneId.Mors);
             SetBirth(RuneId.Snow, RuneId.Cloud, RuneId.Ice);
+            SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
             SetBirth(RuneId.Vine, RuneId.Grove, RuneId.Mercury);
             SetBirth(RuneId.Metal, RuneId.Lava, RuneId.Earth);
             SetBirth(RuneId.Crystal, RuneId.Stone, RuneId.Water);

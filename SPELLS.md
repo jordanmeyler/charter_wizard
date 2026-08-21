@@ -116,6 +116,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Rain** | Cloud · Earth | The hanging veil drawn down. | Wet from above |
 | **Fog** | Cloud · Dark | The hanging veil withheld from sight. | The room is lost |
 | **Snow** | Cloud · Ice | The hanging veil given ice’s story. | Soft hard-water falling |
+| **Blizzard** | Wind · Snow | Wind driving Snow. | A driven freeze |
 
 ### Bodies and vegetable matter (no Death)
 
@@ -180,8 +181,8 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Mercury | — | Shot | Restrain / Neither |
 | 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Spread | Restrain |
 | 18 | Yield given a body and asked to rest. Hard water, standing. It will thaw. | Ice-pillar | Water · Salt · Earth | Ice | Pillar | Restrain / Neither |
-| 19 | Hard water going — not stood as a pillar, so no Salt. | Ice-spear | Water · Earth · Mercury | — | Shot | Restrain |
-| 20 | The veil is given ice’s story and sent softly. They slow. | Snowfall | Air · Water · Salt · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
+| 19 | Hard water going — not stood as a pillar, so no Salt. It does not freeze a living body. | Ice-spear | Water · Earth · Mercury | — | Shot | Restrain |
+| 20 | The veil is given ice’s story and sent softly. They freeze. | Snowfall | Air · Water · Salt · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
 | 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Salt · Earth · Fire | Ice · Fire | Remote | Neither |
 | 22 | Rest asked to go. Earth flies. | Hurled stone | Earth · Mercury | — | Shot | Kill / Neither |
 | 23 | A body of rest asked to rest as more rest. Click start and stop. Across a pit it is a span; on the floor it is a barrier. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
@@ -260,8 +261,13 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 59 | Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks. | Wind ward | Air · Salt · Sulphur | — | Self | Neither |
 | 60 | Hungry earth given a body and asked to rest. It stands. Yield cools it to rock. | Lava-pillar | Fire · Earth · Salt · Earth | Lava · Salt · Earth | Pillar | Kill |
 | 61 | A stood wall given breath and sent. Matter comes apart. | Shatter | Earth · Salt · Earth · Air · Mercury | Stone · Earth · Air · Mercury | Remote | Neither |
+| 62 | Breath turned by Sulphur, into a mind. They lose the thread. | Confuse | Air · Sulphur · Mercury | — | Remote | Restrain |
+| 63 | Hard water held as a condition. They freeze. | Freeze | Water · Salt · Earth · Sulphur | Ice · Sulphur | Remote | Restrain |
+| 64 | The veil given ice’s story, then driven. They freeze. | Snowstorm | Air · Water · Salt · Earth · Air · Mercury | Snow · Air · Mercury | Remote | Restrain |
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
+
+Wards and mind ailments (Lull, Terror, Rage, Command, Confuse) are **held**. They last until you use that rune again — the ward’s element, or Sulphur for a mind. A fizzle shows the hold breaking. Ignite, poison, and frozen do not need that hold. Ice-spear and ice-pillar make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
 
 No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
 

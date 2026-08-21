@@ -11,11 +11,27 @@ namespace RuneMagic
     {
         public CreatureNature Nature { get; private set; } = CreatureNature.Flesh;
         public IReadOnlyList<StatusInstance> Active => _effects;
+        public System.Action<StatusId> OnFatal;
+
+        static readonly List<StatusHost> Live = new();
 
         readonly List<StatusInstance> _effects = new();
         TextMesh _chip;
         SpriteRenderer _sprite;
         Color _baseColor = Color.white;
+
+        void OnEnable()
+        {
+            if (!Live.Contains(this))
+            {
+                Live.Add(this);
+            }
+        }
+
+        void OnDisable()
+        {
+            Live.Remove(this);
+        }
 
         public void Bind(CreatureNature nature, Vector3 chipOffset)
         {
@@ -189,58 +205,99 @@ namespace RuneMagic
             return string.Join(" · ", parts);
         }
 
-        public string Apply(StatusId id, float seconds)
+        public string Apply(StatusId id, float seconds, Component caster = null)
         {
-            if (id == StatusId.None || seconds <= 0f)
+            if (id == StatusId.None)
             {
                 return string.Empty;
             }
 
-            var incoming = StatusSpec.Of(id).Element;
-            if (!ElementalLaw.IsWard(id) && incoming != Essence.None && incoming != Essence.Mind)
+            var spec = StatusSpec.Of(id);
+            if (!spec.NeedsFocus && seconds <= 0f)
+            {
+                return string.Empty;
+            }
+
+            var incoming = spec.Element;
+            if (!spec.IsWard && incoming != Essence.None && incoming != Essence.Mind)
             {
                 var ward = FendingName(incoming);
                 if (!string.IsNullOrEmpty(ward))
                 {
-                    return $"A {ward} turns {StatusSpec.Of(id).Name}.";
+                    return $"A {ward} turns {spec.Name}.";
                 }
             }
 
             var scale = Affinity(id);
             if (scale <= 0f)
             {
-                return $"{name} will not take {StatusSpec.Of(id).Name}.";
+                return $"{name} will not take {spec.Name}.";
             }
 
-            var held = scale * seconds;
+            var held = spec.NeedsFocus ? float.PositiveInfinity : scale * seconds;
             if (id == StatusId.Burning || id == StatusId.Stunned || id == StatusId.Frozen)
             {
-                _effects.RemoveAll(effect => effect.Id == StatusId.Sleeping);
+                Drop(StatusId.Sleeping, false);
             }
 
-            if (ElementalLaw.IsWard(id))
+            if (spec.IsWard)
             {
-                _effects.RemoveAll(effect => ElementalLaw.IsWard(effect.Id) && effect.Id != id);
+                DropWhere(effect => effect.Spec.IsWard && effect.Id != id, true);
             }
 
             if (StatusSpec.IsMindAilment(id))
             {
-                _effects.RemoveAll(effect => StatusSpec.IsMindAilment(effect.Id) && effect.Id != id);
+                DropWhere(effect => StatusSpec.IsMindAilment(effect.Id) && effect.Id != id, true);
             }
 
             for (var i = 0; i < _effects.Count; i++)
             {
                 if (_effects[i].Id == id)
                 {
-                    _effects[i].Remaining = Mathf.Max(_effects[i].Remaining, held);
+                    _effects[i].Remaining = spec.NeedsFocus
+                        ? float.PositiveInfinity
+                        : Mathf.Max(_effects[i].Remaining, held);
+                    _effects[i].Caster = caster ?? _effects[i].Caster;
                     RefreshChip();
-                    return $"{name} is {StatusSpec.Of(id).Name}.";
+                    return $"{name} is {spec.Name}.";
                 }
             }
 
-            _effects.Add(new StatusInstance(id, held));
+            _effects.Add(new StatusInstance(id, held, caster));
             RefreshChip();
-            return $"{name} is {StatusSpec.Of(id).Name}.";
+            return $"{name} is {spec.Name}.";
+        }
+
+        public static int ReleaseAll(Component caster, IReadOnlyList<RuneId> used, StatusId keep)
+        {
+            var broken = 0;
+            for (var i = Live.Count - 1; i >= 0; i--)
+            {
+                if (Live[i] != null)
+                {
+                    broken += Live[i].ReleaseFocus(caster, used, keep);
+                }
+            }
+
+            return broken;
+        }
+
+        public int ReleaseFocus(Component caster, IReadOnlyList<RuneId> used, StatusId keep)
+        {
+            return DropWhere(effect =>
+            {
+                if (!effect.Held || (keep != StatusId.None && effect.Id == keep))
+                {
+                    return false;
+                }
+
+                if (caster != null && effect.Caster != null && effect.Caster != caster)
+                {
+                    return false;
+                }
+
+                return FocusLaw.Contains(used, effect.Spec.FocusRune);
+            }, true);
         }
 
         public void Clear()
@@ -255,14 +312,65 @@ namespace RuneMagic
 
         public void Clear(StatusId id)
         {
-            _effects.RemoveAll(effect => effect.Id == id);
+            Drop(id, false);
+        }
+
+        int Drop(StatusId id, bool fizzle)
+        {
+            return DropWhere(effect => effect.Id == id, fizzle);
+        }
+
+        int DropWhere(System.Predicate<StatusInstance> match, bool fizzle)
+        {
+            var removed = 0;
+            StatusSpec shown = default;
+            for (var i = _effects.Count - 1; i >= 0; i--)
+            {
+                if (!match(_effects[i]))
+                {
+                    continue;
+                }
+
+                shown = _effects[i].Spec;
+                _effects.RemoveAt(i);
+                removed++;
+            }
+
+            if (removed == 0)
+            {
+                return 0;
+            }
+
+            if (fizzle)
+            {
+                PlayFizzle(shown);
+            }
+
             RefreshChip();
+            return removed;
+        }
+
+        void PlayFizzle(StatusSpec spec)
+        {
+            SpellFx.PlayFizzle(transform.position, null);
+            var director = FindFirstObjectByType<SanctumDirector>();
+            if (director == null || spec.Id == StatusId.None)
+            {
+                return;
+            }
+
+            director.Log(spec.IsWard
+                ? $"The {spec.Name} loses its hold. That rune was asked to do other work."
+                : $"{name}'s {spec.Name} lifts. The mind turned to another sentence.");
         }
 
         float Affinity(StatusId id)
         {
-            // Mind ailments land on every nature for the demo.
-            // Later a ward or a nature can return 0 here and shrug them off.
+            if (id == StatusId.Poisoned)
+            {
+                return Nature == CreatureNature.Flesh || Nature == CreatureNature.Mind ? 1f : 0f;
+            }
+
             switch (Nature)
             {
                 case CreatureNature.Fire:
@@ -315,21 +423,52 @@ namespace RuneMagic
 
         void Update()
         {
-            if (AdeptAvatar.WorldHeld || _effects.Count == 0)
+            if (AdeptAvatar.WorldHeld)
+            {
+                return;
+            }
+
+            TickPoisonVeil();
+            if (_effects.Count == 0)
             {
                 return;
             }
 
             for (var i = _effects.Count - 1; i >= 0; i--)
             {
-                _effects[i].Remaining -= Time.deltaTime;
-                if (_effects[i].Remaining <= 0f)
+                if (_effects[i].Held)
                 {
-                    _effects.RemoveAt(i);
+                    continue;
+                }
+
+                _effects[i].Remaining -= Time.deltaTime;
+                if (_effects[i].Remaining > 0f)
+                {
+                    continue;
+                }
+
+                var id = _effects[i].Id;
+                _effects.RemoveAt(i);
+                if (id == StatusId.Poisoned)
+                {
+                    OnFatal?.Invoke(id);
                 }
             }
 
             RefreshChip();
+        }
+
+        void TickPoisonVeil()
+        {
+            if (AdeptAvatar.IsAdept(this) || Has(StatusId.Poisoned))
+            {
+                return;
+            }
+
+            if (VeilField.Covering(transform.position, out var kind) && kind == VeilKind.Poison)
+            {
+                Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
+            }
         }
 
         void RefreshChip()
