@@ -44,7 +44,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 
 ### Controls
 
-You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock; it turns cyan while you aim.
+You only move and cast. The adept is an abstract violet robe — no face, only the garment and a withheld glow in the cowl. A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
