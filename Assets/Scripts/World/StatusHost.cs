@@ -465,6 +465,11 @@ namespace RuneMagic
                 return;
             }
 
+            if (Nature != CreatureNature.Flesh && Nature != CreatureNature.Mind)
+            {
+                return;
+            }
+
             if (VeilField.Covering(transform.position, out var kind) && kind == VeilKind.Poison)
             {
                 Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
