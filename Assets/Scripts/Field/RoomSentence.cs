@@ -57,11 +57,12 @@ namespace RuneMagic
 
     /// <summary>
     /// Walks what is on screen as a weave. A wrought join that already
-    /// stands (Spark, Plant, Ice) appears as itself so it can be drawn.
-    /// The basics that compose it are strewn through the grid. Creature
-    /// recipes stay as written — Life marks a living formula and is not
-    /// unfolded. Every enemy carries that mark when the weave is
-    /// populated. The adept is mind, body, and soul.
+    /// stands (Spark, Plant, Ice) appears as itself so it can be drawn —
+    /// tiles, steles, and creature formulas alike. The runes that make
+    /// that element are then placed somewhere in the grid, not glued to
+    /// the join. Creature recipes stay as written — Life marks a living
+    /// formula and is not unfolded. Every enemy carries that mark when
+    /// the weave is populated. The adept is mind, body, and soul.
     /// </summary>
     public static class RoomSentence
     {
@@ -89,7 +90,6 @@ namespace RuneMagic
             var breathable = false;
             var spokenLocks = new HashSet<int>();
             var spokenStrings = new HashSet<int>();
-            var scatter = new List<WeaveGlyph>(16);
 
             for (var row = 0; row <= y1 - y0; row++)
             {
@@ -110,12 +110,10 @@ namespace RuneMagic
                         breathable = true;
                     }
 
-                    AppendTile(sequence, tile, scatter, ref lastMaterial, ref lastWasTear);
+                    AppendTile(sequence, tile, ref lastMaterial, ref lastWasTear);
                     AppendHere(sequence, locks, strings, extras, x, y, spokenLocks, spokenStrings);
                 }
             }
-
-            ScatterComposing(sequence, scatter, FieldView.Key(view));
 
             if (breathable)
             {
@@ -131,6 +129,7 @@ namespace RuneMagic
                 WeaveKind.Ambient,
                 atHead: true);
 
+            EnsureComposing(sequence, FieldView.Key(view));
             return sequence;
         }
 
@@ -150,7 +149,6 @@ namespace RuneMagic
         static void AppendTile(
             List<WeaveGlyph> sequence,
             WorldTile tile,
-            List<WeaveGlyph> scatter,
             ref MaterialId lastMaterial,
             ref bool lastWasTear)
         {
@@ -184,7 +182,6 @@ namespace RuneMagic
             {
                 sequence.Add(new WeaveGlyph(
                     def.Manifestation, def.Manifestation, material, WeaveKind.Material, 0, 0, 1));
-                CollectComposing(scatter, def.Manifestation, material);
                 return;
             }
 
@@ -198,37 +195,152 @@ namespace RuneMagic
             }
         }
 
-        static void CollectComposing(List<WeaveGlyph> scatter, RuneId wrought, MaterialId material)
+        /// <summary>
+        /// Every wrought mark on the weave also needs the runes that
+        /// make it. Those parts land on group boundaries somewhere in
+        /// the sentence — not forced beside the join, and never inside
+        /// a creature chunk.
+        /// </summary>
+        static void EnsureComposing(List<WeaveGlyph> sequence, int seed)
         {
-            if (scatter == null)
+            if (sequence == null || sequence.Count == 0)
             {
                 return;
             }
 
-            var recipe = new List<RuneId>(8);
-            ChainBook.ExpandRecipe(wrought, recipe);
-            for (var i = 0; i < recipe.Count; i++)
+            var shown = new HashSet<RuneId>();
+            var pending = new HashSet<RuneId>();
+            var missing = new List<RuneId>(8);
+            var queue = new Queue<RuneId>();
+
+            for (var i = 0; i < sequence.Count; i++)
             {
-                if (recipe[i] != RuneId.None && recipe[i] != wrought)
+                NoteShown(sequence[i].Shown, shown, queue);
+            }
+
+            while (queue.Count > 0)
+            {
+                var wrought = queue.Dequeue();
+                if (!ChainBook.TryBirth(wrought, out var parts))
                 {
-                    scatter.Add(new WeaveGlyph(recipe[i], material, WeaveKind.Material));
+                    continue;
+                }
+
+                for (var i = 0; i < parts.Count; i++)
+                {
+                    var part = parts[i];
+                    if (part == RuneId.None || part == wrought)
+                    {
+                        continue;
+                    }
+
+                    if (shown.Contains(part) || !pending.Add(part))
+                    {
+                        continue;
+                    }
+
+                    missing.Add(part);
+                    NoteShown(part, shown, queue);
                 }
             }
-        }
 
-        static void ScatterComposing(List<WeaveGlyph> sequence, List<WeaveGlyph> extras, int seed)
-        {
-            if (sequence == null || extras == null || extras.Count == 0)
+            if (missing.Count == 0)
             {
                 return;
             }
 
             var rng = new System.Random(seed == int.MinValue ? 1 : seed);
-            for (var i = 0; i < extras.Count; i++)
+            for (var i = 0; i < missing.Count; i++)
             {
-                var at = rng.Next(0, sequence.Count + 1);
-                sequence.Insert(at, extras[i]);
+                var part = missing[i];
+                var at = PickSlot(sequence, part, rng);
+                sequence.Insert(at, new WeaveGlyph(part, MaterialId.None, WeaveKind.Material));
             }
+        }
+
+        static void NoteShown(RuneId rune, HashSet<RuneId> shown, Queue<RuneId> queue)
+        {
+            if (rune == RuneId.None || !shown.Add(rune))
+            {
+                return;
+            }
+
+            if (ChainBook.IsWrought(rune))
+            {
+                queue.Enqueue(rune);
+            }
+        }
+
+        static int PickSlot(List<WeaveGlyph> sequence, RuneId part, System.Random rng)
+        {
+            var away = new List<int>(sequence.Count + 1);
+            var any = new List<int>(sequence.Count + 1);
+            for (var i = 0; i <= sequence.Count; i++)
+            {
+                if (!IsGroupBoundary(sequence, i))
+                {
+                    continue;
+                }
+
+                any.Add(i);
+                if (!TouchesMaker(sequence, i, part))
+                {
+                    away.Add(i);
+                }
+            }
+
+            var slots = away.Count > 0 ? away : any;
+            if (slots.Count == 0)
+            {
+                return sequence.Count;
+            }
+
+            return slots[rng.Next(slots.Count)];
+        }
+
+        static bool IsGroupBoundary(List<WeaveGlyph> sequence, int insertAt)
+        {
+            if (insertAt <= 0 || insertAt >= sequence.Count)
+            {
+                return true;
+            }
+
+            var before = sequence[insertAt - 1];
+            var after = sequence[insertAt];
+            if (before.GroupId == 0 || after.GroupId == 0)
+            {
+                return true;
+            }
+
+            return before.GroupId != after.GroupId;
+        }
+
+        static bool TouchesMaker(List<WeaveGlyph> sequence, int insertAt, RuneId part)
+        {
+            return MakesPart(sequence, insertAt - 1, part) || MakesPart(sequence, insertAt, part);
+        }
+
+        static bool MakesPart(List<WeaveGlyph> sequence, int index, RuneId part)
+        {
+            if (index < 0 || index >= sequence.Count)
+            {
+                return false;
+            }
+
+            if (!ChainBook.TryBirth(sequence[index].Shown, out var parts))
+            {
+                return false;
+            }
+
+            for (var i = 0; i < parts.Count; i++)
+            {
+                if (parts[i] == part)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static void AppendHere(
@@ -435,19 +547,6 @@ namespace RuneMagic
 
         static void AppendRune(List<WeaveGlyph> sequence, RuneId rune, MaterialId material, WeaveKind kind)
         {
-            var recipe = new List<RuneId>(8);
-            ChainBook.ExpandRecipe(rune, recipe);
-            if (recipe.Count > 1)
-            {
-                var id = NextGroup++;
-                for (var i = 0; i < recipe.Count; i++)
-                {
-                    sequence.Add(new WeaveGlyph(recipe[i], rune, material, kind, id, i, recipe.Count));
-                }
-
-                return;
-            }
-
             sequence.Add(new WeaveGlyph(rune, material, kind));
         }
 
