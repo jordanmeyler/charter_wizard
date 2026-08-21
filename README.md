@@ -37,7 +37,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
-| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. The Grimoire lists them all; click a name to string it. |
+| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
 | Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Salt · Earth (Body, not Death). The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
@@ -57,7 +57,7 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 - **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
 - **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
 - The **top-left** panel is a running info box: the room, what you are looking at (`You see …`), statuses, and the last line of play. Mouse-over or the current target fills the look line. Workings are named by the runes you wrote, or by a name you saved for that same composition (Spark is not Fire · Air).
-- The **top-right** panel lists the last ten attempted casts. A **green circle** is a successful Charter working; a **purple circle** is successful Free magic; ✕ fizzled. Charter shows the marks. Free blocks them.
+- The **top-right** panel lists the last twenty-five attempted casts, with **Recent** and **Grimoire** tabs. A **green circle** is a successful Charter working; a **purple circle** is successful Free magic; ✕ fizzled. Charter shows the marks. Free blocks them.
 - In the Charter: **click wall runes** or weave cells to string them (up to 8). In Play the wall is only what you have kept. In Develop the eleven are named and listed. Only runes **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
@@ -65,8 +65,8 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it — each look is a hint at how that rune works. Arrows move the selection. Esc or I closes.
-- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and every wrought join. Click a spell to cast it, or a join (Acid, Ice…) to string how it is born, if those runes are in view. Workings you **Keep** from Recent casts are highlighted; the world still speaks the runes you wrote, or the name you gave that writing.
-- **Recent casts** (top-right): the **play** mark casts again if those runes are in view; **+** opens a naming modal (the game pauses and keyboard controls lock) that shows the rune combo and keeps that exact writing. The saved name is used only for the same composition. Esc cancels.
+- **Grimoire** (top-right tab, or the bottom-bar book / **Esc** / **G**) is the player's book in Play: only workings you **Keep** from Recent. Click one to cast it if those runes are in view. **Develop** (F1) shows the full written catalog and every wrought join. The world still speaks the runes you wrote, or the name you gave that writing.
+- **Recent casts** (top-right): the last twenty-five attempts. The **play** mark casts again if those runes are in view; **+** opens a naming modal (the game pauses and keyboard controls lock) that shows the rune combo and keeps that exact writing in the Grimoire. The saved name is used only for the same composition. Esc cancels.
 - **K** or **Yield** sends you back to the spawn crystal and drops pillars, walls, and hanging work you stood in this room. Stones and artifacts stay in the pack.
 - **Backspace** / **C** unmake the last rune
 

@@ -5,9 +5,15 @@ namespace RuneMagic
 {
     public sealed class GameHud : MonoBehaviour
     {
+        enum LedgerPage
+        {
+            Recent,
+            Grimoire
+        }
+
         public const float BarHeight = 96f;
         public const float LedgerWidth = 400f;
-        public const float LedgerMaxHeight = 380f;
+        public const float LedgerMaxHeight = 460f;
         static readonly Color CharterSuccess = new(0.28f, 0.82f, 0.42f);
         static readonly Color FreeSuccess = new(0.72f, 0.36f, 0.92f);
         static Texture2D _castIcon;
@@ -17,6 +23,8 @@ namespace RuneMagic
         Vector2 _pauseScroll;
         Vector2 _packScroll;
         Vector2 _ledgerScroll;
+        Vector2 _bookScroll;
+        LedgerPage _ledgerPage;
         static Rect _ledgerGui;
         static GameHud _instance;
         int _namingLedger = -1;
@@ -192,50 +200,167 @@ namespace RuneMagic
 
         void DrawCastLedger()
         {
-            var entries = _director.Ledger.Recent;
             const float pad = 12f;
             const float row = 36f;
-            var inner = Mathf.Max(row, entries.Count * row);
-            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f);
-            if (entries.Count == 0)
-            {
-                height = 64f;
-            }
+            const float header = 58f;
+            const int visibleRows = 12;
+            var count = _ledgerPage == LedgerPage.Recent
+                ? _director.Ledger.Recent.Count
+                : BookRowCount();
+            var inner = Mathf.Max(row, count * row);
+            var height = count == 0
+                ? header + 48f
+                : Mathf.Min(LedgerMaxHeight, header + Mathf.Min(inner, visibleRows * row) + 10f);
 
             var panel = new Rect(Screen.width - LedgerWidth - pad, pad, LedgerWidth, height);
             _ledgerGui = panel;
             DrawPanel(panel.x, panel.y, panel.width, panel.height);
+            DrawLedgerTabs(panel);
 
-            var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
-            GUI.Label(new Rect(panel.x + 12, panel.y + 6, 140, 22), "Recent casts", heading);
-            DrawSprite(new Rect(panel.x + 156, panel.y + 10, 12, 12),
-                SpriteFactory.Circle(CharterSuccess, 24), Color.white);
             DrawSprite(new Rect(panel.x + 212, panel.y + 10, 12, 12),
+                SpriteFactory.Circle(CharterSuccess, 24), Color.white);
+            DrawSprite(new Rect(panel.x + 268, panel.y + 10, 12, 12),
                 SpriteFactory.Circle(FreeSuccess, 24), Color.white);
             var key = Label(11, FontStyle.Normal, new Color(0.7f, 0.72f, 0.8f));
-            GUI.Label(new Rect(panel.x + 170, panel.y + 8, 42, 16), "Charter", key);
-            GUI.Label(new Rect(panel.x + 226, panel.y + 8, 36, 16), "Free", key);
+            GUI.Label(new Rect(panel.x + 226, panel.y + 8, 42, 16), "Charter", key);
+            GUI.Label(new Rect(panel.x + 282, panel.y + 8, 36, 16), "Free", key);
 
+            var view = new Rect(panel.x + 8, panel.y + header - 4, panel.width - 16, height - header);
+            if (_ledgerPage == LedgerPage.Recent)
+            {
+                DrawRecentPage(view, row, inner);
+            }
+            else
+            {
+                DrawGrimoirePage(view, row, inner);
+            }
+        }
+
+        void DrawLedgerTabs(Rect panel)
+        {
+            const float tabW = 88f;
+            const float tabH = 24f;
+            var recent = new Rect(panel.x + 8, panel.y + 6, tabW, tabH);
+            var book = new Rect(panel.x + 8 + tabW + 6, panel.y + 6, tabW, tabH);
+            if (DrawTab(recent, "Recent", _ledgerPage == LedgerPage.Recent))
+            {
+                _ledgerPage = LedgerPage.Recent;
+            }
+
+            if (DrawTab(book, "Grimoire", _ledgerPage == LedgerPage.Grimoire))
+            {
+                _ledgerPage = LedgerPage.Grimoire;
+            }
+        }
+
+        void DrawRecentPage(Rect view, float row, float inner)
+        {
+            var entries = _director.Ledger.Recent;
             if (entries.Count == 0)
             {
                 var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
-                GUI.Label(new Rect(panel.x + 12, panel.y + 30, panel.width - 24, 24),
+                GUI.Label(new Rect(view.x + 4, view.y + 2, view.width - 8, 24),
                     "Nothing attempted yet.", muted);
                 return;
             }
 
-            var viewH = height - 38;
-            var view = new Rect(panel.x + 8, panel.y + 30, panel.width - 16, viewH);
             _ledgerScroll = GUI.BeginScrollView(view, _ledgerScroll, new Rect(0, 0, view.width - 18, inner));
             for (var i = 0; i < entries.Count; i++)
             {
-                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), entries[i], i);
+                var index = i;
+                var attempt = entries[i];
+                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), attempt,
+                    () => _director.CastRecent(index),
+                    () => BeginNaming(index, attempt));
             }
 
             GUI.EndScrollView();
         }
 
-        void DrawCastRow(Rect rect, CastAttempt attempt, int index)
+        void DrawGrimoirePage(Rect view, float row, float inner)
+        {
+            if (GlyphView.IsDevelop)
+            {
+                DrawDevelopBookPage(view, row, inner);
+                return;
+            }
+
+            var kept = _director.Grimoire.KeptWorkings;
+            if (kept.Count == 0)
+            {
+                var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+                GUI.Label(new Rect(view.x + 4, view.y + 2, view.width - 8, 44),
+                    "Nothing kept yet. Name a working from Recent to write it here.", muted);
+                return;
+            }
+
+            _bookScroll = GUI.BeginScrollView(view, _bookScroll, new Rect(0, 0, view.width - 18, inner));
+            for (var i = 0; i < kept.Count; i++)
+            {
+                var index = i;
+                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), FromKept(kept[i]),
+                    () => _director.CastKept(index), null, showRunes: true);
+            }
+
+            GUI.EndScrollView();
+        }
+
+        void DrawDevelopBookPage(Rect view, float row, float inner)
+        {
+            var catalog = SpellCodex.All;
+            _bookScroll = GUI.BeginScrollView(view, _bookScroll, new Rect(0, 0, view.width - 18, inner));
+            for (var i = 0; i < catalog.Count; i++)
+            {
+                var entry = catalog[i];
+                var number = entry.Number;
+                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), FromCodex(entry),
+                    () => _director.LoadCodex(number), null, showRunes: true);
+            }
+
+            GUI.EndScrollView();
+        }
+
+        int BookRowCount() =>
+            GlyphView.IsDevelop ? SpellCodex.All.Count : _director.Grimoire.KeptWorkings.Count;
+
+        static CastAttempt FromKept(KeptWorking kept) =>
+            new(kept.Stance, kept.Runes, true, kept.Spell, kept.GivenName, saved: true);
+
+        CastAttempt FromCodex(CodexEntry entry)
+        {
+            var runes = ToRuneArray(entry.RecipeRunes);
+            var stance = entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
+            return new CastAttempt(stance, runes, true, entry.Spell, entry.Name,
+                saved: _director.Grimoire.Keeps(entry.Spell));
+        }
+
+        static RuneId[] ToRuneArray(IReadOnlyList<RuneId> runes)
+        {
+            if (runes == null || runes.Count == 0)
+            {
+                return System.Array.Empty<RuneId>();
+            }
+
+            if (runes is RuneId[] array)
+            {
+                return array;
+            }
+
+            var copy = new RuneId[runes.Count];
+            for (var i = 0; i < runes.Count; i++)
+            {
+                copy[i] = runes[i];
+            }
+
+            return copy;
+        }
+
+        void DrawCastRow(
+            Rect rect,
+            CastAttempt attempt,
+            System.Action onCast,
+            System.Action onKeep,
+            bool showRunes = false)
         {
             var previous = GUI.color;
             GUI.color = attempt.Saved
@@ -247,8 +372,12 @@ namespace RuneMagic
             DrawVerdict(new Rect(rect.x + 4, rect.y + 6, 22, 22), attempt);
 
             const float icon = 28f;
-            var keepRect = new Rect(rect.xMax - icon - 4, rect.y + 3, icon, rect.height - 6);
-            var castRect = new Rect(keepRect.x - icon - 4, rect.y + 3, icon, rect.height - 6);
+            var keepRect = onKeep != null
+                ? new Rect(rect.xMax - icon - 4, rect.y + 3, icon, rect.height - 6)
+                : default;
+            var castRect = new Rect(
+                (onKeep != null ? keepRect.x : rect.xMax) - icon - 4,
+                rect.y + 3, icon, rect.height - 6);
             var named = !string.IsNullOrEmpty(attempt.GivenName);
             var labelWidth = named ? 70f : 0f;
             if (named)
@@ -264,6 +393,7 @@ namespace RuneMagic
             var room = castRect.x - labelWidth - (rect.x + 32) - 12f;
             var mark = Mathf.Clamp(Mathf.Floor((room - (count - 1) * 3f) / count), 14f, 22f);
             var start = rect.x + 32;
+            var hide = !showRunes && attempt.HideRunes;
             if (runes == null || runes.Length == 0)
             {
                 DrawBlockedMark(new Rect(start, rect.y + (rect.height - mark) * 0.5f, mark, mark));
@@ -273,7 +403,7 @@ namespace RuneMagic
                 for (var i = 0; i < runes.Length; i++)
                 {
                     var slot = new Rect(start + i * (mark + 3), rect.y + (rect.height - mark) * 0.5f, mark, mark);
-                    if (attempt.HideRunes)
+                    if (hide)
                     {
                         DrawBlockedMark(slot);
                     }
@@ -287,14 +417,14 @@ namespace RuneMagic
             var canSend = attempt.Worked && attempt.Runes != null && attempt.Runes.Length > 0;
             if (DrawIconAction(castRect, CastIcon(), canSend, new Color(0.22f, 0.32f, 0.42f)))
             {
-                _director.CastRecent(index);
+                onCast?.Invoke();
             }
 
-            if (DrawIconAction(keepRect, PlusIcon(),
+            if (onKeep != null && DrawIconAction(keepRect, PlusIcon(),
                     attempt.Worked && attempt.Spell != SpellId.None,
                     attempt.Saved ? new Color(0.42f, 0.32f, 0.14f) : new Color(0.28f, 0.24f, 0.18f)))
             {
-                BeginNaming(index, attempt);
+                onKeep();
             }
         }
 
@@ -1029,24 +1159,59 @@ namespace RuneMagic
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             var title = Label(28, FontStyle.Bold, Color.white);
             var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
+            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
 
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
                     $"{_director.Attunement.Notes()}   ·   Click a spell to cast it, or a join to string how it is born, if those runes are in view. Kept workings are highlighted. Esc closes.",
-                    "The written book. Click a page to send it, or a join to string how it is born, if those marks are in view. Esc closes."),
+                    "Your book. Workings you have kept, and marks you remember. Click a page to send it if those marks are in view. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
-            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
-            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
-            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+            if (GlyphView.IsPlay)
+            {
+                DrawPlayGrimoire(view, heading, muted);
+                return;
+            }
+
             var innerHeight = CodexHeight() + 120f;
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawKeptMarksInline(0f);
             y = DrawCodex(y, heading, row, muted, loadable: true);
             y = DrawWroughtLedger(y, heading, row, muted, loadable: true);
             y = DrawMaterialsLedger(y, heading, row, muted);
+            GUI.EndScrollView();
+        }
+
+        void DrawPlayGrimoire(Rect view, GUIStyle heading, GUIStyle muted)
+        {
+            var kept = _director.Grimoire.KeptWorkings;
+            var innerHeight = 80f + _director.Memory.Kept.Count * 56f + Mathf.Max(1, kept.Count) * 40f;
+            _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
+            var y = DrawKeptMarksInline(0f);
+            y += 8f;
+            GUI.Label(new Rect(0, y, 700, 22), "Kept workings", heading);
+            y += 26f;
+            if (kept.Count == 0)
+            {
+                GUI.Label(new Rect(0, y, 900, 22),
+                    "Nothing kept yet. Name a working from Recent casts to write it here.", muted);
+                GUI.EndScrollView();
+                return;
+            }
+
+            const float rowH = 38f;
+            for (var i = 0; i < kept.Count; i++)
+            {
+                var index = i;
+                DrawCastRow(new Rect(0, y, Mathf.Min(720f, view.width - 40f), rowH - 2), FromKept(kept[i]),
+                    () => _director.CastKept(index), null, showRunes: true);
+                y += rowH;
+            }
+
             GUI.EndScrollView();
         }
 
@@ -1448,6 +1613,22 @@ namespace RuneMagic
             var label = Label(12, FontStyle.Normal, new Color(0.45f, 0.48f, 0.55f));
             label.alignment = TextAnchor.MiddleCenter;
             GUI.Label(rect, caption, label);
+        }
+
+        static bool DrawTab(Rect rect, string text, bool selected)
+        {
+            var bg = GUI.backgroundColor;
+            GUI.backgroundColor = selected
+                ? new Color(0.55f, 0.42f, 0.18f)
+                : new Color(0.16f, 0.15f, 0.2f);
+            var style = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold
+            };
+            var clicked = GUI.Button(rect, text, style);
+            GUI.backgroundColor = bg;
+            return clicked;
         }
 
         static bool DrawAction(Rect rect, string text, bool enabled, Color color)
