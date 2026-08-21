@@ -131,6 +131,11 @@ namespace RuneMagic
                 {
                     case TileVerb.Ignite:
                         tile.Ignite(0.85f);
+                        if (tile.MeltWith(spell))
+                        {
+                            changed++;
+                        }
+
                         changed++;
                         break;
                     case TileVerb.Douse:

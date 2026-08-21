@@ -161,7 +161,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Lumen, RuneFamily.PrimordialDivine, "Light", "Lu", "Shown. The veil is lifted."),
                 new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn."),
 
-                new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Hunger given a body. Fire · Salt."),
+                new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Witchfire. Fire of the mind, made fire. Fire · Sulphur · Fire."),
                 new RuneDef(RuneId.Grove, RuneFamily.Material, "Grove", "Gv", "The vegetable body marked living. Plant · Life."),
                 new RuneDef(RuneId.Wind, RuneFamily.Material, "Wind", "Wn", "Breath going. Air · Mercury."),
                 new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),

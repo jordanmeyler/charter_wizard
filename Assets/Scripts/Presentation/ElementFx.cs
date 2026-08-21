@@ -94,8 +94,7 @@ namespace RuneMagic
                 return ElementFamily.Fog;
             }
 
-            if (spell == SpellId.FlamePillar || spell == SpellId.Melt || spell == SpellId.Flameward
-                || spell == SpellId.Ignite)
+            if (spell == SpellId.Witchfire)
             {
                 return ElementFamily.Flame;
             }

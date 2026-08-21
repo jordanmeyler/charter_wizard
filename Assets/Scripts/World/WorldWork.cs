@@ -99,22 +99,8 @@ namespace RuneMagic
             return IsPillar(spell) || spell == SpellId.Bridge || spell == SpellId.ObsidianPath;
         }
 
-        public static bool DriesWater(SpellId spell)
-        {
-            switch (spell)
-            {
-                case SpellId.Fireball:
-                case SpellId.FlamePillar:
-                case SpellId.Melt:
-                case SpellId.Ignite:
-                case SpellId.SunLance:
-                case SpellId.Scald:
-                case SpellId.Thaw:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+        public static bool DriesWater(SpellId spell) =>
+            MatterLaw.HeatOf(spell) >= Heat.Fire;
 
         public static bool FreezesWater(SpellId spell)
         {
@@ -192,23 +178,8 @@ namespace RuneMagic
             }
         }
 
-        public static bool IsFireWork(SpellId spell)
-        {
-            switch (spell)
-            {
-                case SpellId.Fireball:
-                case SpellId.FlamePillar:
-                case SpellId.Ignite:
-                case SpellId.SunLance:
-                case SpellId.LavaFlood:
-                case SpellId.LavaPillar:
-                case SpellId.LiveFloor:
-                case SpellId.Melt:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+        public static bool IsFireWork(SpellId spell) =>
+            MatterLaw.HeatOf(spell) >= Heat.Fire;
 
         public static bool IsAirWork(SpellId spell)
         {
@@ -338,8 +309,9 @@ namespace RuneMagic
 
         /// <summary>
         /// A stood body only yields to an opposed element. Water melts a
-        /// basic earth wall. Fire thaws ice. Water ends a flame. Fire eats vine.
-        /// A boulder or Shatter breaks rock. Room masonry is not a spell-body.
+        /// basic earth wall. Heat thaws ice — witchfire takes glacier.
+        /// Water ends a flame. Fire eats vine. A boulder or Shatter breaks
+        /// rock. Room ice still melts; other masonry is not a spell-body.
         /// </summary>
         public static bool Unmakes(SpellId spell, WorldTile tile)
         {
@@ -354,7 +326,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if ((IsFireWork(spell) || spell == SpellId.Thaw) && IsIceBody(material))
+            if (IsIceBody(material) && MatterLaw.Melts(spell, material))
             {
                 return true;
             }
@@ -366,11 +338,6 @@ namespace RuneMagic
             }
 
             if (IsFireWork(spell) && IsPlantBody(material))
-            {
-                return true;
-            }
-
-            if (spell == SpellId.Thaw && IsIceBody(material))
             {
                 return true;
             }
@@ -410,9 +377,9 @@ namespace RuneMagic
                     : "Water melts the earth wall. Rest yields.";
             }
 
-            if (IsIceBody(tile.Material))
+            if (IsIceBody(tile.Material) || tile.Material == MaterialId.Glass)
             {
-                return "Hunger finds the ice. It remembers yield.";
+                return MatterLaw.MeltNote(tile.Material);
             }
 
             if (IsFlameBody(tile.Material))
@@ -869,6 +836,21 @@ namespace RuneMagic
             for (var i = 0; i < cells.Count; i++)
             {
                 var tile = grid.Get(cells[i]);
+                if (tile != null && MatterLaw.Melts(spell, tile.Material))
+                {
+                    var before = tile.Material;
+                    if (tile.MeltWith(spell))
+                    {
+                        if (string.IsNullOrEmpty(note))
+                        {
+                            note = MatterLaw.MeltNote(before);
+                        }
+
+                        undone++;
+                        continue;
+                    }
+                }
+
                 if (!Unmakes(spell, tile))
                 {
                     continue;

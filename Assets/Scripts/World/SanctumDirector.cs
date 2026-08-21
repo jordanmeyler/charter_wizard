@@ -2199,6 +2199,11 @@ namespace RuneMagic
 
         static bool Accepts(ISpellLock encounter, SpellId spell)
         {
+            if (encounter is BarrierLock barrier && barrier.YieldsTo(spell))
+            {
+                return true;
+            }
+
             if (encounter?.AcceptedKeys == null)
             {
                 return false;

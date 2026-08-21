@@ -24,6 +24,7 @@ namespace RuneMagic
         WorldGrid _grid;
         Vector2Int[] _cells;
         RuneId[] _formula;
+        MaterialId _matter;
         string _grant;
         string _clearMaterial;
         string _resolvedNote;
@@ -49,6 +50,7 @@ namespace RuneMagic
             _grant = grant;
             _clearMaterial = clearMaterial;
             _resolvedNote = resolvedNote;
+            _matter = MatterLaw.MatterOf(formula);
             _cells = cells != null ? new Vector2Int[cells.Count] : System.Array.Empty<Vector2Int>();
             if (cells != null)
             {
@@ -95,6 +97,13 @@ namespace RuneMagic
 
         public bool OccupiesCell(Vector2Int cell) =>
             CellVolume.Occupies(_cells, cell, transform.position);
+
+        /// <summary>
+        /// An ice cage yields to any heat that can melt ice, not only
+        /// the spells named on the lock.
+        /// </summary>
+        public bool YieldsTo(SpellId spell) =>
+            MatterLaw.Melts(spell, _matter);
 
         public string FormulaText()
         {

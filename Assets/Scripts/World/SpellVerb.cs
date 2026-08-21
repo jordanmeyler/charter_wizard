@@ -77,6 +77,7 @@ namespace RuneMagic
                 case SpellId.LavaPillar:
                 case SpellId.Ignite:
                 case SpellId.Melt:
+                case SpellId.Witchfire:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Burning, 5f, TileVerb.Ignite);
                 case SpellId.LiveFloor:
                 case SpellId.LavaFlood:

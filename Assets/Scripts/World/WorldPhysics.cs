@@ -369,7 +369,7 @@ namespace RuneMagic
 
             if (matter == Essence.Water)
             {
-                return WorldWork.IsFireWork(spell) || spell == SpellId.Thaw || spell == SpellId.Melt || spell == SpellId.Ignite;
+                return MatterLaw.HeatOf(spell) >= Heat.Fire;
             }
 
             if (matter == Essence.Fire)
@@ -431,6 +431,8 @@ namespace RuneMagic
             var poison = 0;
             var scoured = 0;
             var burned = 0;
+            var melted = 0;
+            var meltMatter = MaterialId.None;
             for (var i = 0; i < sweep.Cells.Count; i++)
             {
                 var tile = grid.Get(sweep.Cells[i]);
@@ -443,6 +445,7 @@ namespace RuneMagic
                 var hadMiasma = tile.HasMiasma;
                 var acid = tile.Material == MaterialId.Acid;
                 var burning = tile.IsBurning;
+                var before = tile.Material;
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
                     tile.Ignite(0.85f);
@@ -451,6 +454,15 @@ namespace RuneMagic
                 if (WorldWork.IsWaterWork(sweep.Spell))
                 {
                     tile.Drench(1f);
+                }
+
+                if (tile.MeltWith(sweep.Spell))
+                {
+                    melted++;
+                    if (meltMatter == MaterialId.None)
+                    {
+                        meltMatter = before;
+                    }
                 }
 
                 if (tile.Vent(sweep.Spell))
@@ -496,6 +508,11 @@ namespace RuneMagic
                 return WorldWork.IsAirWork(sweep.Spell)
                     ? "Breath dries the slick. The poison water forgets the tile."
                     : "Hunger drinks the slick. The poison water is gone.";
+            }
+
+            if (melted > 0)
+            {
+                return MatterLaw.MeltNote(meltMatter);
             }
 
             if (burned > 0)
@@ -619,6 +636,8 @@ namespace RuneMagic
             {
                 broken.Add("Fog must cloak tiles and Blight must foul them");
             }
+
+            MatterLaw.Audit(broken);
         }
 
         static List<Vector2Int> CellsAlong(WorldGrid grid, Vector3 from, Vector3 to, float width)

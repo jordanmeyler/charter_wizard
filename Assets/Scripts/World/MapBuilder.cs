@@ -25,7 +25,7 @@ namespace RuneMagic
         public static readonly SpellId[] TorchKeys =
         {
             SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother,
-            SpellId.Ignite, SpellId.Melt
+            SpellId.Ignite, SpellId.Melt, SpellId.Witchfire
         };
 
         public static readonly SpellId[] PitKeys =
@@ -45,7 +45,7 @@ namespace RuneMagic
         public static readonly SpellId[] FogKeys =
         {
             SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight,
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.Ignite, SpellId.Melt, SpellId.SunLance,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.Ignite, SpellId.Melt, SpellId.Witchfire, SpellId.SunLance,
             SpellId.DayWake, SpellId.BrilliantArc
         };
 

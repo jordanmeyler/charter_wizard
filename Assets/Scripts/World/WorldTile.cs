@@ -346,6 +346,39 @@ namespace RuneMagic
             return changed;
         }
 
+        /// <summary>
+        /// Heat finds this cell. Ice always yields to fire. Witchfire
+        /// takes glacier and glass. A stood body falls back to what was under it.
+        /// </summary>
+        public bool MeltWith(SpellId spell)
+        {
+            if (Kind == TileKind.Door || !MatterLaw.Melts(spell, Material))
+            {
+                return false;
+            }
+
+            if (IsConjured)
+            {
+                return RestoreFoundation();
+            }
+
+            var leftover = MatterLaw.MeltsTo(Material);
+            if (leftover == MaterialId.None)
+            {
+                leftover = MaterialId.Damp;
+            }
+
+            Wet = Mathf.Max(Wet, 0.55f);
+            if (Fire > 0.05f)
+            {
+                Fire = Mathf.Max(0f, Fire - 0.15f);
+            }
+
+            var kind = Kind == TileKind.Wall ? TileKind.Floor : Kind;
+            Reshape(new TileDef(kind, leftover));
+            return true;
+        }
+
         public void Grow(int steps)
         {
             if (!IsPlantish || steps <= 0)

@@ -200,9 +200,9 @@ namespace RuneMagic
 
                 new WorldMaterial(MaterialId.Hearth, "hearthstone",
                     "Hunger given a body and asked to stay in stone.",
-                    RuneId.Flame, MaterialPaint.Hearth,
+                    RuneId.Fire, MaterialPaint.Hearth,
                     new Color(0.42f, 0.22f, 0.16f), new Color(0.36f, 0.2f, 0.16f), false,
-                    RuneId.Fire, RuneId.Salt, RuneId.Earth, RuneId.Flame),
+                    RuneId.Fire, RuneId.Salt, RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Ember, "ember bed",
                     "Hunger after the motion has gone. Ash that still wants.",
@@ -330,7 +330,7 @@ namespace RuneMagic
                     RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Ice, RuneId.Snow),
 
                 new WorldMaterial(MaterialId.Glacier, "glacier",
-                    "Ice given Stone. Still water that will not thaw easily.",
+                    "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
                     RuneId.Glacier, MaterialPaint.Glacier,
                     new Color(0.7f, 0.82f, 0.88f), new Color(0.48f, 0.58f, 0.66f), false,
                     RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),

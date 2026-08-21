@@ -83,6 +83,12 @@ namespace RuneMagic
                 return false;
             }
 
+            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material)
+                && MatterLaw.Melts(spell, material))
+            {
+                return true;
+            }
+
             var matter = Matter != Essence.None ? Matter : Essence.Physical;
             return WorldPhysics.UnmakesMatter(spell, matter);
         }
@@ -98,6 +104,11 @@ namespace RuneMagic
             _carrier = null;
             var name = _item != null && !string.IsNullOrEmpty(_item.name) ? _item.name : "The stood thing";
             Destroy(gameObject);
+            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material))
+            {
+                return MatterLaw.MeltNote(material);
+            }
+
             return Matter == Essence.Water
                 ? $"{name} remembers yield. Hunger takes it."
                 : Matter == Essence.Air || Matter == Essence.Poison

@@ -112,7 +112,8 @@
       "rune": "Flame",
       "sources": [
         "Fire",
-        "Salt"
+        "Sulphur",
+        "Fire"
       ]
     },
     {
@@ -284,7 +285,7 @@
       "name": "Flame-pillar",
       "want": "Hunger given a body and asked to rest. It stands.",
       "recipe": "Fire · Salt · Earth",
-      "via": "Flame · Earth",
+      "via": "",
       "form": "Pillar",
       "outcome": "Kill",
       "gate": "",
@@ -297,7 +298,7 @@
       "name": "Melt",
       "want": "A stood fire-body sent into a thing. Salt keeps it from flying.",
       "recipe": "Fire · Salt · Mercury",
-      "via": "Flame · Mercury",
+      "via": "",
       "form": "Remote",
       "outcome": "Neither",
       "gate": "",
@@ -1223,6 +1224,22 @@
       "radius": 2.8,
       "status": "Soaked",
       "statusSeconds": 6
+    },
+    {
+      "number": 70,
+      "id": "Witchfire",
+      "book": "End",
+      "name": "Witchfire",
+      "want": "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.",
+      "recipe": "Fire · Sulphur · Fire · Mercury",
+      "via": "Flame · Mercury",
+      "form": "Remote",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "Witchfire",
+      "target": "Single",
+      "status": "Burning",
+      "statusSeconds": 5
     }
   ]
 }

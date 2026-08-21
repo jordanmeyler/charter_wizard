@@ -308,6 +308,7 @@
             "Ignite",
             "SunLance",
             "Scald",
+            "Witchfire",
             "Thaw"
           ],
           "sprite": "ice-thing"
@@ -330,6 +331,7 @@
             "Ignite",
             "SunLance",
             "Scald",
+            "Witchfire",
             "Thaw"
           ],
           "cells": [
@@ -1131,6 +1133,7 @@
             "FlamePillar",
             "Ignite",
             "Melt",
+            "Witchfire",
             "SunLance",
             "DayWake",
             "BrilliantArc"

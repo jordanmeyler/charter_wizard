@@ -7,7 +7,7 @@ import json
 from collections import deque
 from pathlib import Path
 
-FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald"]
+FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald", "Witchfire"]
 ICE = FIRE + ["Thaw"]
 WATER = [
     "Douse",
@@ -58,6 +58,7 @@ WIND = [
     "FlamePillar",
     "Ignite",
     "Melt",
+    "Witchfire",
     "SunLance",
     "DayWake",
     "BrilliantArc",

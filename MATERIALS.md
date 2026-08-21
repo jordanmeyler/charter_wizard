@@ -40,7 +40,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Ember** | Fire · Ash · Ember | Ember | Ash Court bed |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Earth · Salt · Plant | Plant | Wick Chapel, chapel hall |
-| **Hearthstone** | Fire · Salt · Earth · Flame | Flame | Chapel / Storm Cell hearths |
+| **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
 | **Moss** | Water · Earth · Salt · Plant · Life · Grove | Grove | Chapel corners |
 | **Void** | — (tear) | — | The Drop pits |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
@@ -71,7 +71,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Rain** | Air · Water · Cloud · Earth · Rain | Rain | The veil drawn down |
 | **Snow** | Air · Water · Cloud · Ice · Snow | Snow | The veil given ice’s story |
 | **Blizzard** | Air · Water · Cloud · Ice · Snow · Wind · Blizzard | Blizzard | Wind driving Snow |
-| **Glacier** | Water · Salt · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone |
+| **Glacier** | Water · Salt · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
 | **Damp stone** | Water · Earth | Water | Wet rest, not yet mud |
 

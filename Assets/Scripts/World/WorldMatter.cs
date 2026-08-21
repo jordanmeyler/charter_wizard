@@ -53,7 +53,10 @@ namespace RuneMagic
                 case "water":
                 case "ice":
                 case "snow":
+                case "glacier":
                     return Essence.Water;
+                case "glass":
+                    return Essence.Earth;
                 case "earth":
                 case "stone":
                 case "rock":
