@@ -237,10 +237,14 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
-                "The wall is the eleven — only what is on screen can be drawn. Order is the sentence. You are mind · body · soul. A living creature writes its own recipe (Life stays Life). Hover to hold still.",
+                GlyphView.Speak(
+                    "The wall is the eleven — only what is on screen can be drawn. Order is the sentence. You are mind · body · soul. A living creature writes its own recipe (Life stays Life). Hover to hold still.",
+                    "The wall holds only marks you keep. Draw from the weave. Right-click a mark to remember it. Hover to hold still."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
-                "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire",
+                GlyphView.Speak(
+                    "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire   ·   F1 Play",
+                    "F / Enter Charter Cast   ·   X Free Cast   ·   R Store   ·   Right-click keep   ·   Space close   ·   F1 Develop"),
                 hint);
 
             var wallBottom = DrawRuneWall();
@@ -257,6 +261,15 @@ namespace RuneMagic
             const float gap = 8f;
             var columns = Mathf.Max(1, Mathf.FloorToInt((Screen.width - 56f) / (size + gap)));
             var rows = 1;
+            if (runes.Count == 0)
+            {
+                var hint = Label(14, FontStyle.Italic, new Color(0.72f, 0.74f, 0.8f));
+                GUI.Label(new Rect(left, top, Screen.width - 56f, size),
+                    "The wall is empty. Right-click a mark in the weave to keep it here.",
+                    hint);
+                return top + size;
+            }
+
             for (var i = 0; i < runes.Count; i++)
             {
                 var col = i % columns;
@@ -394,7 +407,9 @@ namespace RuneMagic
                 bounds.width + pad * 2f,
                 bounds.height + banner + pad);
 
-            var wash = Color.Lerp(RunePalette.Of(glyph.Rune), new Color(0.06f, 0.05f, 0.04f), 0.18f);
+            var wash = GlyphView.IsPlay
+                ? GlyphView.JoinWash
+                : Color.Lerp(RunePalette.Of(glyph.Rune), new Color(0.06f, 0.05f, 0.04f), 0.18f);
             wash.a = 0.92f;
             var previous = GUI.color;
             GUI.color = wash;
@@ -408,6 +423,11 @@ namespace RuneMagic
             GUI.DrawTexture(new Rect(slab.x + 4f, bounds.y - 2f, slab.width - 8f, 2f), Texture2D.whiteTexture);
             GUI.DrawTexture(new Rect(slab.x + 8f, slab.yMax - 6f, slab.width - 16f, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
+
+            if (GlyphView.IsPlay)
+            {
+                return;
+            }
 
             var caption = !string.IsNullOrEmpty(glyph.GroupTitle)
                 ? glyph.GroupTitle
@@ -487,7 +507,7 @@ namespace RuneMagic
                 _director.ClearDraft();
             }
 
-            var held = _director.Held.Occupied ? _director.Held.Name : "empty";
+            var held = GlyphView.HeldName(_director.Held);
             var body = Label(13, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
             GUI.Label(new Rect(588, y + 2, 280, 38),
                 $"Held: {held}\nCharter only. Free cannot be stored.", body);
@@ -511,26 +531,38 @@ namespace RuneMagic
             var slot = new Rect(16, y + 12, 280, BarHeight - 24);
             DrawHeldSlot(slot);
 
-            GUI.Label(new Rect(312, y + 14, 420, 24), "Stored spell", title);
+            GUI.Label(new Rect(312, y + 14, 300, 24), "Stored spell", title);
             if (_director.Held.Occupied)
             {
-                GUI.Label(new Rect(312, y + 40, 440, 40),
-                    $"{_director.Held.Name}  ·  Charter\nClick the slot or press F, then aim. The chain already wrote the form.",
+                GUI.Label(new Rect(312, y + 40, 300, 40),
+                    GlyphView.Speak(
+                        $"{_director.Held.Name}  ·  Charter\nClick the slot or press F, then aim.",
+                        "A held working. Click the slot or press F, then aim."),
                     body);
             }
             else
             {
-                GUI.Label(new Rect(312, y + 40, 440, 40),
-                    "Empty. Store is a Charter benefit. Free is wild and cannot be held.",
+                GUI.Label(new Rect(312, y + 40, 300, 40),
+                    "Empty. Store is a Charter benefit. Free cannot be held.",
                     body);
             }
 
-            GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 1140f), 64),
-                "WASD move · Space Charter · F Charter Cast · X Free · R Store · I Pack · Esc / G Grimoire",
+            GUI.Label(new Rect(620, y + 16, Mathf.Max(120f, Screen.width - 1200f), 64),
+                "WASD · Space Charter · F Cast · X Free · R Store · I Pack · F1 " +
+                (GlyphView.IsDevelop ? "Play" : "Develop"),
                 hint);
 
             var packOpen = _director.Mode == PlayMode.Inventory;
             var grimOpen = _director.Mode == PlayMode.Grimoire;
+            if (DrawAction(new Rect(Screen.width - 508, y + 22, 128, 52),
+                    GlyphView.IsDevelop ? "Develop" : "Play", true,
+                    GlyphView.IsDevelop
+                        ? new Color(0.42f, 0.28f, 0.16f)
+                        : new Color(0.18f, 0.22f, 0.3f)))
+            {
+                _director.ToggleSight();
+            }
+
             if (DrawAction(new Rect(Screen.width - 368, y + 22, 168, 52),
                     packOpen ? "Close pack" : "Pack", true,
                     packOpen ? new Color(0.42f, 0.32f, 0.16f) : new Color(0.28f, 0.26f, 0.2f)))
@@ -568,8 +600,12 @@ namespace RuneMagic
 
             var title = Label(18, FontStyle.Bold, new Color(0.95f, 0.86f, 0.52f));
             var body = Label(13, FontStyle.Normal, new Color(0.84f, 0.86f, 0.92f));
-            GUI.Label(new Rect(16, y + 8, 720, 22),
-                $"Aim  ·  {_director.PendingPreview}  ·  {_director.PendingStance}", title);
+            var aimTitle = GlyphView.IsDevelop
+                ? $"Aim  ·  {_director.PendingPreview}  ·  {_director.PendingStance}"
+                : _director.ChosenShape == SpellShape.None
+                    ? "Aim  ·  the sentence did not hold"
+                    : "Aim  ·  a working";
+            GUI.Label(new Rect(16, y + 8, 720, 22), aimTitle, title);
 
             var shape = _director.ChosenShape;
             if (shape == SpellShape.None)
@@ -606,9 +642,16 @@ namespace RuneMagic
             GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 3f), Texture2D.whiteTexture);
             GUI.color = previous;
 
-            var name = Label(20, FontStyle.Bold, occupied ? Color.white : new Color(0.55f, 0.58f, 0.66f));
-            name.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(rect, occupied ? _director.Held.Name : "No spell stored", name);
+            if (occupied && GlyphView.IsPlay)
+            {
+                DrawHeldMarks(rect, _director.Held.Composition);
+            }
+            else
+            {
+                var name = Label(20, FontStyle.Bold, occupied ? Color.white : new Color(0.55f, 0.58f, 0.66f));
+                name.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(rect, occupied ? _director.Held.Name : "No spell stored", name);
+            }
 
             if (GUI.Button(rect, GUIContent.none, GUIStyle.none) && occupied && !_director.Busy)
             {
@@ -621,16 +664,25 @@ namespace RuneMagic
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             var title = Label(28, FontStyle.Bold, Color.white);
             var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
-            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
-            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
-            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
 
-            GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
+            GUI.Label(new Rect(40, 20, 800, 34),
+                GlyphView.IsDevelop ? "Grimoire" : "Kept marks", title);
             GUI.Label(new Rect(40, 56, 980, 22),
-                $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. 51: Time-stop. Esc closes.",
+                GlyphView.Speak(
+                    $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. 51: Time-stop. Esc closes.",
+                    "Only marks you have kept. The written book is a Develop ledger. F1 toggles. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
+            if (GlyphView.IsPlay)
+            {
+                DrawKeptMarks(view);
+                return;
+            }
+
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
+            var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
             var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawCodex(0f, heading, row, muted, loadable: true);
@@ -651,7 +703,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
             GUI.Label(new Rect(40, 62, 980, 22),
-                "Developer ledger. Written spells, world materials, and joins. Esc resumes.",
+                "Developer ledger. Written spells, world materials, and joins. F1 toggles Play sight. Esc resumes.",
                 subtitle);
 
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
@@ -756,16 +808,23 @@ namespace RuneMagic
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false, RuneId chunk = RuneId.None)
         {
+            var play = GlyphView.IsPlay;
             var wrought = !oneSpace && ChainBook.IsWrought(rune);
             var inChunk = chunk != RuneId.None;
-            var fill = inChunk
-                ? PaneOn(RunePalette.Of(chunk))
-                : Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
-            fill.a = inChunk ? 0.28f : available ? 0.92f : 0.35f;
+            var fill = play
+                ? (available ? GlyphView.Slate : new Color(0.1f, 0.1f, 0.12f, 0.4f))
+                : inChunk
+                    ? PaneOn(RunePalette.Of(chunk))
+                    : Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
+            if (!play)
+            {
+                fill.a = inChunk ? 0.28f : available ? 0.92f : 0.35f;
+            }
+
             var previous = GUI.color;
             GUI.color = fill;
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            if (!inChunk)
+            if (!inChunk || play)
             {
                 GUI.color = new Color(1f, 1f, 1f, available ? 0.35f : 0.08f);
                 GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
@@ -773,32 +832,111 @@ namespace RuneMagic
 
             GUI.color = previous;
 
-            if (wrought && available)
+            if (_director.Memory.Knows(rune))
+            {
+                DrawKeptPin(rect);
+            }
+
+            if (wrought && available && !play)
             {
                 DrawWroughtMark(rect);
             }
 
-            var ink = inChunk ? InkOn(RunePalette.Of(chunk)) : available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
-            var birth = wrought ? ChainBook.BirthText(rune) : string.Empty;
-            var main = !string.IsNullOrEmpty(birth) ? birth : RuneCatalog.GlyphOf(rune);
-            var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, ink);
-            glyph.alignment = TextAnchor.MiddleCenter;
-            glyph.wordWrap = true;
-            var captionInk = inChunk
-                ? new Color(ink.r, ink.g, ink.b, 0.82f)
-                : available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f);
-            var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, captionInk);
-            name.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(new Rect(rect.x + 3, rect.y + 6, rect.width - 6, rect.height * 0.5f),
-                main, glyph);
-            var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
-            GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.52f, rect.width, rect.height * 0.4f),
-                caption, name);
+            if (play)
+            {
+                var ink = available ? GlyphView.Ink : GlyphView.DimInk;
+                RuneMark.DrawGui(rect, rune, ink);
+            }
+            else
+            {
+                var ink = inChunk ? InkOn(RunePalette.Of(chunk)) : available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
+                var birth = wrought ? ChainBook.BirthText(rune) : string.Empty;
+                var main = !string.IsNullOrEmpty(birth) ? birth : RuneCatalog.GlyphOf(rune);
+                var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, ink);
+                glyph.alignment = TextAnchor.MiddleCenter;
+                glyph.wordWrap = true;
+                var captionInk = inChunk
+                    ? new Color(ink.r, ink.g, ink.b, 0.82f)
+                    : available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f);
+                var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, captionInk);
+                name.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(new Rect(rect.x + 3, rect.y + 6, rect.width - 6, rect.height * 0.5f),
+                    main, glyph);
+                var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
+                GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.52f, rect.width, rect.height * 0.4f),
+                    caption, name);
+            }
+
+            var ev = Event.current;
+            if (ev != null && rect.Contains(ev.mousePosition) && ev.type == EventType.MouseDown)
+            {
+                if (ev.button == 1 || (ev.button == 0 && ev.shift))
+                {
+                    ev.Use();
+                    _director.RememberRune(rune);
+                    return;
+                }
+            }
 
             if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
             {
                 onClick?.Invoke();
             }
+        }
+
+        void DrawKeptMarks(Rect view)
+        {
+            var kept = _director.Memory.Kept;
+            if (kept.Count == 0)
+            {
+                var muted = Label(16, FontStyle.Italic, new Color(0.72f, 0.74f, 0.82f));
+                GUI.Label(new Rect(view.x + 12, view.y + 12, view.width - 24, 80),
+                    "Nothing is kept yet. Open the Charter and right-click a mark in the weave to remember it.",
+                    muted);
+                return;
+            }
+
+            const float size = 72f;
+            const float gap = 12f;
+            var columns = Mathf.Max(1, Mathf.FloorToInt((view.width - 24f) / (size + gap)));
+            for (var i = 0; i < kept.Count; i++)
+            {
+                var col = i % columns;
+                var row = i / columns;
+                var rect = new Rect(view.x + 12 + col * (size + gap), view.y + 12 + row * (size + gap), size, size);
+                var rune = kept[i];
+                DrawRuneCard(rect, rune, () =>
+                {
+                    _director.CloseGrimoire();
+                    _director.OpenCharter();
+                    _director.AddRune(rune);
+                }, true);
+            }
+        }
+
+        void DrawHeldMarks(Rect rect, Composition composition)
+        {
+            var sequence = composition.Sequence;
+            if (sequence == null || sequence.Length == 0)
+            {
+                return;
+            }
+
+            var slot = Mathf.Min(36f, (rect.width - 16f) / sequence.Length);
+            var start = rect.x + (rect.width - slot * sequence.Length) * 0.5f;
+            var y = rect.y + (rect.height - slot) * 0.5f;
+            for (var i = 0; i < sequence.Length; i++)
+            {
+                RuneMark.DrawGui(new Rect(start + i * slot, y, slot, slot), sequence[i], GlyphView.Ink);
+            }
+        }
+
+        static void DrawKeptPin(Rect rect)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.95f, 0.82f, 0.4f, 0.95f);
+            GUI.DrawTexture(new Rect(rect.xMax - 10f, rect.y + 4f, 6f, 6f), Texture2D.whiteTexture);
+            GUI.color = previous;
         }
 
         static void DrawWroughtMark(Rect rect)
@@ -868,6 +1006,11 @@ namespace RuneMagic
         string RoomLine()
         {
             var room = _director.CurrentRoom != null ? _director.CurrentRoom.Name : "Sanctum";
+            if (GlyphView.IsPlay)
+            {
+                return room;
+            }
+
             var tile = _director.Underfoot != null ? _director.Underfoot.Def.DisplayName : "empty air";
             return $"{room}   ·   underfoot: {tile}";
         }
@@ -881,9 +1024,20 @@ namespace RuneMagic
         string TargetAndLog()
         {
             var target = _director.CurrentTarget;
-            var lockLine = target == null
-                ? "Space opens the Charter. You can only draw runes that are on the screen."
-                : $"{target.DisplayName}  {{{target.FormulaText()}}}";
+            string lockLine;
+            if (target == null)
+            {
+                lockLine = "Space opens the Charter. You can only draw runes that are on the screen.";
+            }
+            else if (GlyphView.IsPlay)
+            {
+                lockLine = target.DisplayName;
+            }
+            else
+            {
+                lockLine = $"{target.DisplayName}  {{{target.FormulaText()}}}";
+            }
+
             return $"{lockLine}\n{_director.LastLog}";
         }
 

@@ -8,7 +8,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basi
 
 **The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk into each, read the labelled altar, use that element’s spells on the obstacle, and take the stone. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
 
-Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: the eleven writeable runes, and a sideways-scrolling weave of everything on screen. Enemies and terrain are both locks.
+Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: a wall of marks you have remembered, and a sideways-scrolling weave of everything on screen. **Play** sight shows only the marks; **Develop** (F1) shows names and the written book. Enemies and terrain are both locks.
 
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
@@ -47,16 +47,18 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
-- **Space** opens the Charter — a wall of the eleven, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
+- **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
-- In the Charter: **click wall runes** or weave cells to string them (up to 8). The wall is the eleven basic runes, but only those **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. A living creature on screen writes its recipe as written (the ash mite is Fire · Salt · Life). Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
+- **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
+- **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
+- In the Charter: **click wall runes** or weave cells to string them (up to 8). In Play the wall is only what you have kept. In Develop the eleven are named and listed. Only runes **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it. Arrows move the selection. Esc or I closes.
-- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
+- **Grimoire** on the bottom bar (or **Esc** / **G**): in Play, marks you have kept; in Develop, every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
 
 Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. Each work is particles and light of its element — fire is embers, water is droplets, lightning is a jagged arc. Fog and poison mist hang until another element tears them. Walls and pillars stay as masonry or a column; water melts a basic earth wall. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
@@ -109,6 +111,9 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Scripts/Field/RuneStringSource.cs` | Ordered world-sentences in the field |
 | `Assets/Scripts/World/TileTypes.cs` | New tile kinds |
 | `Assets/Scripts/Magic/RuneCatalog.cs` | New rune names, families, meanings |
+| `Assets/Scripts/Magic/GlyphView.cs` | Play vs Develop sight (F1) |
+| `Assets/Scripts/Magic/RuneMemory.cs` | Remembered wall marks; later keep-conditions by rune depth |
+| `Assets/Scripts/Presentation/RuneMark.cs` | Abstract Play-mode marks |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Resources/Catalog/spells.json` | Master recipes and joins (what the game actually casts) |
 | `Assets/Resources/Catalog/art.json` | Custom sprites and items |
