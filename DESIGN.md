@@ -213,6 +213,8 @@ The player **moves and casts**. Perception is a stance, not a tile overlay. The 
 
 World altars do not teach by writing FIRE. They put the **mark beside a picture** of the thing — flame, water, rock, gale; a standing body, an opening path, a mind. Play hides the name. Develop still writes it.
 
+A **recent-cast strip** (last ten) sits on the Charter and the world. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down.
+
 **Two sights, toggled in play (F1 or the bar):**
 
 | | **Play** | **Develop** |

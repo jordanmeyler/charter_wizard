@@ -47,10 +47,11 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
-- **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
+- **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
 - **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
 - **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
+- The **top-right** panel lists the last ten attempted casts. ○ held together; ✕ fizzled. Charter shows the marks. Free blocks them.
 - In the Charter: **click wall runes** or weave cells to string them (up to 8). In Play the wall is only what you have kept. In Develop the eleven are named and listed. Only runes **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.

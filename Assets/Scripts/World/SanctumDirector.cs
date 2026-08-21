@@ -18,6 +18,7 @@ namespace RuneMagic
         public SpellComposer Composer { get; } = new();
         public Grimoire Grimoire { get; } = new();
         public RuneMemory Memory { get; } = new();
+        public CastLedger Ledger { get; } = new();
         public ISpellLock CurrentTarget { get; private set; }
         public RoomInfo CurrentRoom { get; private set; }
         public WorldTile Underfoot { get; private set; }
@@ -708,6 +709,7 @@ namespace RuneMagic
             {
                 if (!_resolver.TryChooseFree(composition, Attunement, out var pick))
                 {
+                    Ledger.Record(composition, CastingStance.Free, false, SpellId.None);
                     Log($"Free finds no spell that {CastResolver.FillWords(Attunement.FillBudget)} would complete.");
                     return;
                 }
@@ -1037,6 +1039,7 @@ namespace RuneMagic
                 Debug.LogWarning("Cast failed: " + exception.Message);
                 Log("The spell fizzled. Try again — the lock still holds.");
                 setupFailed = true;
+                Ledger.Record(composition, stance, false, SpellId.None);
             }
 
             if (!setupFailed)
@@ -1123,6 +1126,8 @@ namespace RuneMagic
                         workNote = FirstNote(flavor, workNote);
                     }
 
+                    var worked = !outcome.Fizzled && outcome.Spell != SpellId.None;
+                    Ledger.Record(composition, stance, worked, outcome.Spell);
                     Log(GlyphView.IsDevelop
                         ? FirstNote(workNote, impactNote, outcome.Log)
                         : FirstNote(workNote, GlyphView.WorkLog(outcome)));
@@ -1132,6 +1137,7 @@ namespace RuneMagic
                 {
                     Debug.LogWarning("Cast failed: " + exception.Message);
                     Log("The spell fizzled. Try again — the lock still holds.");
+                    Ledger.Record(composition, stance, false, outcome.Spell);
                 }
             }
 
