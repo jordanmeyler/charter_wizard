@@ -5,7 +5,7 @@ namespace RuneMagic
 {
     /// <summary>
     /// Shots down a lane. A stood body — wall or pillar — stops them.
-    /// Then the adept walks around the cover to the stone.
+    /// Side pits keep the stone on that lane, so the shots have to break first.
     /// </summary>
     public sealed class ArrowVolley : MonoBehaviour, ISpellLock, IRuneSource
     {

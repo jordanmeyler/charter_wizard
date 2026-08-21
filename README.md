@@ -15,11 +15,11 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
 | **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
-| **The Arrow Gauntlet** | Real arrow shots, then a full-width pit before the stone | Earth-pillar (`Earth · Salt`) or Wall, then hop or span the last step | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
+| **The Arrow Gauntlet** | Real arrow shots down a lane, pits on either side | Earth-pillar (`Earth · Salt`) or Wall | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. No walk-around. |
 | **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
-| **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
+| **The Silent Court** | Two stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket, a key-door | Water the plants across the gap, then fire the thicket; grove key opens the west door | Grow, then burn. Hop cannot clear the gap. |
 | **The Cistern** | A drowning channel, a key-door | Ice-pillar / Ice-wall / Ice-spear freezes the water; hop still clears a short channel | Water drowns. Ice is a floor. |
