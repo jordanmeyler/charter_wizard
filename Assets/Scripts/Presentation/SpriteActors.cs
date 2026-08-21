@@ -145,69 +145,74 @@ namespace RuneMagic
 
         static Sprite PaintAdept(int frame, AdeptPose pose)
         {
-            return Memo($"actor-adept-v1:{pose}:{frame}", () =>
+            return Memo($"actor-adept-v2:{pose}:{frame}", () =>
             {
                 var canvas = new PixelCanvas(64);
                 canvas.Clear(Clear);
-                var cloak = new Color(0.4f, 0.2f, 0.78f);
-                var fold = new Color(0.24f, 0.1f, 0.48f);
-                var hood = new Color(0.16f, 0.06f, 0.34f);
-                var lining = new Color(0.94f, 0.72f, 0.3f);
-                var skin = new Color(0.97f, 0.82f, 0.7f);
-                var staff = new Color(0.46f, 0.26f, 0.12f);
-                var boot = new Color(0.2f, 0.1f, 0.16f);
-                var gem = new Color(0.42f, 0.95f, 1f);
+                var night = new Color(0.07f, 0.03f, 0.12f);
+                var robe = new Color(0.36f, 0.16f, 0.64f);
+                var fold = new Color(0.18f, 0.07f, 0.36f);
+                var sheen = Color.Lerp(robe, Color.white, 0.14f);
+                var gold = new Color(0.88f, 0.7f, 0.28f);
+                var cowl = new Color(0.02f, 0.01f, 0.05f);
+                var aether = new Color(0.66f, 0.44f, 1f);
 
-                var bob = pose == AdeptPose.Hop ? 6 : pose == AdeptPose.Walk ? (frame & 1) : (frame == 1 || frame == 2 ? 1 : 0);
-                var sway = pose == AdeptPose.Walk
-                    ? (frame == 0 || frame == 1 ? -2 : 2)
-                    : pose == AdeptPose.Idle ? (frame < 2 ? -1 : 1) : 0;
-                var stride = pose == AdeptPose.Walk ? (frame % 2 == 0 ? 2 : -2) : 0;
-                var staffLift = pose == AdeptPose.Cast ? 8 : pose == AdeptPose.Hop ? 4 : pose == AdeptPose.Walk ? (frame & 1) * 2 : 0;
-                var gemGlow = pose == AdeptPose.Cast || pose == AdeptPose.Hop || frame == 1 || frame == 2;
+                var lift = pose == AdeptPose.Hop ? 7
+                    : pose == AdeptPose.Walk ? (frame & 1)
+                    : frame == 1 || frame == 2 ? 1 : 0;
+                var lean = pose == AdeptPose.Walk ? (frame < 2 ? -3 : 3)
+                    : pose == AdeptPose.Idle ? (frame < 2 ? -1 : 1)
+                    : pose == AdeptPose.Cast ? 1
+                    : 0;
+                var flare = pose == AdeptPose.Hop ? 6
+                    : pose == AdeptPose.Walk ? 3
+                    : pose == AdeptPose.Cast ? 2
+                    : frame == 1 || frame == 2 ? 1 : 0;
+                var voidGlow = pose == AdeptPose.Cast ? 0.5f
+                    : pose == AdeptPose.Hop ? 0.32f
+                    : 0.16f + (frame & 1) * 0.05f;
 
-                canvas.GroundShadow(31, 10, pose == AdeptPose.Hop ? 7 : 10, 4);
-                canvas.FillRounded(20 + sway / 2, 12 + bob, 22, 26, 6, fold);
-                canvas.FillRounded(22 + sway / 2, 14 + bob, 18, 22, 5, cloak);
-                canvas.Fill(24 + sway / 2, 16 + bob, 5, 16, fold);
-                canvas.Fill(35 + sway / 2, 17 + bob, 4, 14, Color.Lerp(cloak, Color.white, 0.1f));
-                canvas.FillRounded(18 + sway, 20 + bob, 9, 6, 2, lining);
-                canvas.FillRounded(36 + sway, 20 + bob, 9, 6, 2, lining);
+                canvas.GroundShadow(32, 8, pose == AdeptPose.Hop ? 6 : 11 + flare / 2, 3);
 
-                var leftFoot = pose == AdeptPose.Hop ? 16 + bob : 10 + bob - stride;
-                var rightFoot = pose == AdeptPose.Hop ? 16 + bob : 10 + bob + stride;
-                canvas.FillRounded(23, leftFoot, 6, 6, 2, boot);
-                canvas.FillRounded(34, rightFoot, 6, 6, 2, boot);
-                canvas.FillRounded(24, leftFoot + 1, 4, 2, 1, lining);
-                canvas.FillRounded(35, rightFoot + 1, 4, 2, 1, lining);
+                var cx = 32 + lean;
+                var y = 10 + lift;
 
-                canvas.FillRounded(24, 30 + bob, 16, 12, 6, hood);
-                canvas.FillCircle(32, 36 + bob, 9, hood);
-                canvas.FillCircle(32, 34 + bob, 5, skin);
-                canvas.Fill(30, 32 + bob, 4, 2, new Color(0.82f, 0.5f, 0.48f));
-                canvas.Set(30, 35 + bob, new Color(0.12f, 0.06f, 0.14f));
-                canvas.Set(34, 35 + bob, new Color(0.12f, 0.06f, 0.14f));
-                canvas.Fill(30, 31 + bob, 4, 1, new Color(0.55f, 0.22f, 0.3f));
-                canvas.FillRounded(26, 38 + bob, 12, 5, 2, hood);
+                canvas.FillEllipse(cx, y + 3, 17 + flare, 7, night);
+                canvas.FillEllipse(cx, y + 5, 16 + flare, 6, fold);
+                canvas.FillEllipse(cx, y + 7, 15 + flare, 6, robe);
+                canvas.FillRounded(cx - 12, y + 8, 24, 22, 8, fold);
+                canvas.FillRounded(cx - 10, y + 10, 20, 20, 7, robe);
+                canvas.Fill(cx - 6, y + 12, 3, 16, fold);
+                canvas.Fill(cx + 3, y + 13, 2, 14, sheen);
+                canvas.Fill(cx - 14 - flare / 2, y + 2, 28 + flare, 2, new Color(gold.r, gold.g, gold.b, 0.82f));
 
-                var staffX = pose == AdeptPose.Cast ? 44 : 47;
-                var staffY = 8 + bob + staffLift;
-                canvas.Fill(staffX, staffY, 4, 38, staff);
-                canvas.Highlight(staffX + 1, staffY + 2, 1, 28, 0.2f);
-                canvas.FillRounded(staffX - 2, staffY + 32, 8, 5, 1, lining);
-                var gx = staffX + 2;
-                var gy = staffY + 38;
-                canvas.SoftCircle(gx, gy, gemGlow ? 9 : 7, new Color(gem.r, gem.g, gem.b, gemGlow ? 0.7f : 0.4f));
-                canvas.FillCircle(gx, gy, 5, gem);
-                canvas.FillCircle(gx, gy, 2, Color.white);
-                if (pose == AdeptPose.Cast)
+                if (pose == AdeptPose.Walk)
                 {
-                    canvas.SoftCircle(32, 28 + bob, 14, new Color(0.72f, 0.45f, 1f, 0.22f));
+                    canvas.FillEllipse(cx - lean * 2, y + 4, 9, 3, fold);
                 }
 
-                canvas.SoftCircle(32, 16 + bob, 11, new Color(0.7f, 0.45f, 1f, 0.16f));
-                canvas.Outline(Ink);
-                return canvas.ToSprite(32, new Vector2(0.5f, 0.28f));
+                if (pose == AdeptPose.Cast)
+                {
+                    canvas.FillEllipse(cx - 15, y + 22, 7, 5, fold);
+                    canvas.FillEllipse(cx + 15, y + 24, 7, 5, robe);
+                    canvas.SoftCircle(cx, y + 22, 16, new Color(aether.r, aether.g, aether.b, 0.22f));
+                }
+                else
+                {
+                    canvas.FillEllipse(cx - 13, y + 18, 6, 4, fold);
+                    canvas.FillEllipse(cx + 12, y + 17, 5, 3, Color.Lerp(robe, Color.black, 0.18f));
+                }
+
+                canvas.FillEllipse(cx, y + 32, 11, 10, night);
+                canvas.FillEllipse(cx, y + 33, 10, 9, fold);
+                canvas.FillEllipse(cx, y + 31, pose == AdeptPose.Cast ? 7 : 6, 6, cowl);
+                canvas.SoftCircle(cx, y + 31, pose == AdeptPose.Cast ? 8 : 5,
+                    new Color(aether.r, aether.g, aether.b, voidGlow));
+                canvas.Fill(cx - 6, y + 26, 12, 1, new Color(gold.r, gold.g, gold.b, 0.7f));
+
+                canvas.SoftEllipse(cx, y + 14, 13, 11, new Color(0.55f, 0.3f, 0.9f, 0.16f));
+                canvas.Outline(night);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.22f));
             });
         }
 
