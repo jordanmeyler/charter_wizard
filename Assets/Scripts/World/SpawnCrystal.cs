@@ -5,8 +5,13 @@ namespace RuneMagic
     /// <summary>
     /// The first standing body. Death sends the adept back here.
     /// </summary>
-    public sealed class SpawnCrystal : MonoBehaviour
+    public sealed class SpawnCrystal : MonoBehaviour, ILookable
     {
+        public Vector3 WorldPosition => transform.position;
+        public float LookRadius => 0.7f;
+        public bool CanLook => true;
+        public string LookText => Sight.OfCrystal();
+
         public static SpawnCrystal Spawn(Vector3 world)
         {
             var host = new GameObject("SpawnCrystal");
@@ -25,6 +30,12 @@ namespace RuneMagic
             FixtureGlow.Attach(transform, new Color(0.72f, 0.55f, 1f, 0.7f), 1.8f, 0.18f);
             WorldLabel.Attach(transform, "Anchor", new Vector3(0f, 0.95f, 0f),
                 new Color(0.86f, 0.78f, 1f));
+            Lookables.Register(this);
+        }
+
+        void OnDisable()
+        {
+            Lookables.Unregister(this);
         }
 
         void Update()

@@ -5,9 +5,14 @@ namespace RuneMagic
     /// <summary>
     /// Free-magic items reveal their rune composition. Borrowing teaches the recipe.
     /// </summary>
-    public sealed class FreeCharm : MonoBehaviour
+    public sealed class FreeCharm : MonoBehaviour, ILookable
     {
         public bool Collected { get; private set; }
+        public Vector3 WorldPosition => transform.position;
+        public float LookRadius => 0.55f;
+        public bool CanLook => !Collected;
+        public string LookText =>
+            CatalogBook.TryItem("free-charm", out var item) ? Sight.OfItem(item) : "hunger given a path.";
 
         Grimoire _grimoire;
         System.Action<string> _log;
@@ -36,6 +41,12 @@ namespace RuneMagic
 
             WorldLabel.Attach(transform, "Free charm", new Vector3(0f, 0.7f, 0f),
                 new Color(1f, 0.72f, 0.3f));
+            Lookables.Register(this);
+        }
+
+        void OnDisable()
+        {
+            Lookables.Unregister(this);
         }
 
         void OnTriggerEnter2D(Collider2D other)
@@ -48,7 +59,7 @@ namespace RuneMagic
             Collected = true;
             _grimoire.LearnRecipe(RuneId.Fire, RuneId.Mercury, SpellShape.Shot);
             _grimoire.LearnInterpretation("ash-mite");
-            _log?.Invoke("The charm unspools. Fire · Mercury — fire that flies. The mite is burning matter. You borrowed a key; later you will compose others.");
+            _log?.Invoke("The charm unspools. Hunger given a path — Fire · Mercury.");
             Destroy(gameObject);
         }
     }

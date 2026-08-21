@@ -14,13 +14,19 @@ namespace RuneMagic
 
         public IReadOnlyList<CastAttempt> Recent => _entries;
 
-        public void Record(Composition composition, CastingStance stance, bool worked, SpellId spell)
+        public void Record(
+            Composition composition,
+            CastingStance stance,
+            bool worked,
+            SpellId spell,
+            string givenName = "",
+            bool saved = false)
         {
             var source = composition.Sequence;
             var runes = source != null && source.Length > 0
                 ? (RuneId[])source.Clone()
                 : System.Array.Empty<RuneId>();
-            _entries.Insert(0, new CastAttempt(stance, runes, worked, spell));
+            _entries.Insert(0, new CastAttempt(stance, runes, worked, spell, givenName ?? string.Empty, saved));
             while (_entries.Count > Cap)
             {
                 _entries.RemoveAt(_entries.Count - 1);

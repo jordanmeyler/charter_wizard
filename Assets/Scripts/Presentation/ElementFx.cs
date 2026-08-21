@@ -73,6 +73,12 @@ namespace RuneMagic
                 return Of(ElementFamily.Fog);
             }
 
+            if (spell == SpellId.LightningBolt || spell == SpellId.LightningStrike
+                || spell == SpellId.BrilliantArc || spell == SpellId.ChainLightning)
+            {
+                return Of(ElementFamily.Lightning);
+            }
+
             return Of(FamilyOf(material, spell));
         }
 

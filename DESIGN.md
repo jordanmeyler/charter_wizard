@@ -103,7 +103,7 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight. Wards. |
 
-Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air) is Self: click a landing and leap a few tiles, including over a pit. **Push** (Air · Salt · Mercury) is Shot: breath given a body and sent, so the wind moves them. **Lightning strike** (Fire · Air · Salt · Air · Mercury) falls from the sky. A lightning bolt will not travel through a wall. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 
@@ -134,7 +134,8 @@ Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projec
 - **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice.
 - **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free) a medium that makes one specific spell reliable.
 - **Stones / artifacts** — seat a concept in a gate; most gates have another solution, so they usually *ease* rather than hard-lock. They also name the idea (hunger, yield, ice, spark).
-- **The pack** — stones, artifacts, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Doors still gate on possession, not on using an item from a menu.
+- **The pack** — stones, artifacts, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Each look is a short hint at the rune (the spirit is motion; salt of the earth; fire from the sky). Doors still gate on possession, not on using an item from a menu.
+- **The info box** — the Rune Magic panel is a running look: mouse-over or the current target, then `You see` and the description. Workings are spoken as the runes that were written, or as a name the player saved for that exact composition. Spark and Fire · Air are different writings of the same join.
 - **The Primordial gate** — access to Primordial is *only* opened by acquiring an item or performing a deed.
 
 Free magic is **item-intertwined** (lacking understanding, it leans on mediums/foci — the source of off-focus reliability). Free magic and its items **reveal their runes** — a core learning mechanic. Acquisition is **non-linear**: varied difficulty, some main-quest (skippable), some needed regardless of route.
@@ -241,7 +242,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Charm. **67** Swamp. Wards and mind ailments are held by focus. Charmed bodies fetch nearby artifacts and fight what you have marked.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Push. **67** Lightning strike. **68** Charm. **69** Swamp. Wards and mind ailments are held by focus. Charmed bodies fetch nearby artifacts and fight what you have marked.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

@@ -40,6 +40,7 @@ namespace RuneMagic
 
         public WorldTile Underfoot { get; private set; }
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
+        public string SightLine { get; private set; } = "You see the room. Space opens the Charter.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
         public AdeptPack Pack { get; } = new();
@@ -131,6 +132,7 @@ namespace RuneMagic
         {
             TrackPlayer();
             CurrentTarget = Mode == PlayMode.Aiming ? ResolveAimFocus() : ResolveFocus();
+            UpdateSight();
             UpdateTargetRing();
             UpdateAimGhost();
             HandleInput();
@@ -206,6 +208,17 @@ namespace RuneMagic
             {
                 adept?.TickFlame(false, false);
             }
+
+            if (Underfoot != null && WorldWork.BurnsOccupants(Underfoot) && (adept == null || !adept.IsAirborne))
+            {
+                var host = StatusHost.On(player);
+                if (host == null || !host.Fends(Essence.Fire))
+                {
+                    KillPlayer("A standing flame finds you. The crystal calls you back.");
+                }
+            }
+
+            BurnLocksOnPillars();
 
             FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
         }
@@ -712,7 +725,7 @@ namespace RuneMagic
             }
 
             var composition = Composer.Snapshot();
-            var name = _resolver.PreviewName(composition);
+            var name = CallWorking(composition);
             var overwritten = Held.Occupied;
             Held = new StoredSpell(composition, CastingStance.Charter, name);
             Composer.Clear();
@@ -836,31 +849,33 @@ namespace RuneMagic
             {
                 if (!_resolver.TryChooseFree(composition, Attunement, out var pick))
                 {
-                    Ledger.Record(composition, CastingStance.Free, false, SpellId.None);
+                    RecordWorking(composition, CastingStance.Free, false, SpellId.None);
                     Log($"Free finds no spell that {CastResolver.FillWords(Attunement.FillBudget)} would complete.");
                     return;
                 }
 
-                LockAim(pick.Shape, AimPreview(pick.Name, pick.Shape), pick.Spell, pick);
+                var call = CallWorking(composition);
+                LockAim(pick.Shape, AimPreview(call, pick.Shape), pick.Spell, pick);
                 var clash = ChainBook.CollectForFree(composition, SpellShape.None, Attunement.FillBudget).Count > 1
                     ? " Attunement chose this sentence, including how it lands."
                     : string.Empty;
                 Log(GlyphView.Speak(
-                    $"{pick.Name} is {SpellFormations.NameOf(pick.Shape)} — the chain writes the form.{clash} {AimHint} Esc cancels.",
+                    $"{call} is {SpellFormations.NameOf(pick.Shape)} — the chain writes the form.{clash} {AimHint} Esc cancels.",
                     $"The chain writes how it lands.{clash} {AimHint} Esc cancels."));
                 return;
             }
 
             if (ChainBook.TryMatch(composition, SpellShape.None, out var written))
             {
-                LockAim(written.Shape, AimPreview(written.Name, written.Shape), written.Spell);
+                var call = CallWorking(composition);
+                LockAim(written.Shape, AimPreview(call, written.Shape), written.Spell);
                 Log(GlyphView.Speak(
-                    $"{written.Name} is {SpellFormations.NameOf(written.Shape)} — the chain writes the form. {AimHint} Esc cancels.",
+                    $"{call} is {SpellFormations.NameOf(written.Shape)} — the chain writes the form. {AimHint} Esc cancels.",
                     $"The chain writes how it lands. {AimHint} Esc cancels."));
                 return;
             }
 
-            PendingPreview = _resolver.PreviewName(composition);
+            PendingPreview = CallWorking(composition);
             AimHint = "The chain did not write a form. Click the world to fizzle, or Esc to keep the string.";
             Mode = PlayMode.Aiming;
             Log("Those runes are not a written sentence. The form is in the chain, not a later choice. Click to fizzle, or Esc to keep the string.");
@@ -904,9 +919,19 @@ namespace RuneMagic
                     : "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
             }
 
+            if (WorldWork.IsSkyStrike(spell))
+            {
+                return "Click where it should fall. A spark given form comes from the sky. Walls will not hide them.";
+            }
+
+            if (WorldWork.IsPush(spell) && spell == SpellId.Push)
+            {
+                return "Click through a person. Breath given a body finds them, and they go.";
+            }
+
             if (WorldWork.IsPillar(spell))
             {
-                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds.";
+                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds. Standing fire unmakes flesh.";
             }
 
             if (WorldWork.LaysVeil(spell))
@@ -983,8 +1008,9 @@ namespace RuneMagic
             }
 
             var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
+            var call = CallWorking(entry.RecipeRunes);
             Log(GlyphView.Speak(
-                $"{entry.Name} is strung, but those runes are not all in this view. Walk until they speak, then Charter Cast.{gate}",
+                $"{call} is strung, but those runes are not all in this view. Walk until they speak, then Charter Cast.{gate}",
                 "A sentence is strung, but those marks are not all in this view."));
         }
 
@@ -1022,12 +1048,16 @@ namespace RuneMagic
 
             var attempt = Ledger.Recent[index];
             Grimoire.Keep(attempt.Spell);
-            var label = string.IsNullOrWhiteSpace(attempt.GivenName)
-                ? (SpellCodex.TryGet(attempt.Spell, out var named) ? named.Name : "that working")
-                : attempt.GivenName;
+            Grimoire.Names.Remember(attempt.Runes, attempt.GivenName);
+            var label = CallWorking(attempt.Runes);
+            if (Held.Occupied && WorkingNames.SameComposition(Held.Composition.Sequence, attempt.Runes))
+            {
+                Held = new StoredSpell(Held.Composition, Held.Stance, label);
+            }
+
             Log(GlyphView.Speak(
-                $"{label} is kept. The book still writes the catalog name; the page is marked.",
-                "The working is kept. The book marks the page."));
+                $"{label} is kept for that same writing. Spark is not Fire · Air — only this composition carries the name.",
+                "The working is kept. The name holds for that same writing."));
         }
 
         bool TryCastPrepared(IReadOnlyList<RuneId> runes, IReadOnlyList<RuneId> via, CastingStance stance)
@@ -1161,7 +1191,7 @@ namespace RuneMagic
 
         public string DraftPreview()
         {
-            return Composer.IsEmpty ? "empty string" : _resolver.PreviewName(Composer.Snapshot());
+            return Composer.IsEmpty ? "empty string" : CallWorking(Composer.Snapshot());
         }
 
         public void ToggleSight()
@@ -1257,12 +1287,12 @@ namespace RuneMagic
             var player = PlayerTransform();
             if (player != null && Vector2.Distance(player.position, clicked.WorldPosition) > 3.6f)
             {
-                Log($"Walk closer to the {clicked.DisplayName} to read it, or Store a form and aim from here.");
+                Log($"Walk closer to look, or Store a form and aim from here. {Sight.YouSee(Sight.OfLock(clicked))}");
                 return;
             }
 
             OpenCharter();
-            Log($"{clicked.DisplayName} is a lock. String a key, then Charter Cast, Store, or Free Cast.");
+            Log($"{Sight.YouSee(Sight.OfLock(clicked))} String a key, then Charter Cast, Store, or Free Cast.");
         }
 
         void Release(
@@ -1324,7 +1354,9 @@ namespace RuneMagic
                 }
 
                 aim = AimPoint(spell, shape, origin, requested, potency);
-                target = ResolveCastLock(shape, origin, requested, potency) ?? target;
+                target = ResolveCastLock(shape, origin, aim, potency, spell)
+                    ?? ResolveCastLock(shape, origin, requested, potency, spell)
+                    ?? target;
                 if (WorldWork.IsHop(SpellCodex.WorkOf(spell)))
                 {
                     target = FindLockNear(aim, 1.8f) ?? FindLockNear(origin, 2.4f) ?? target;
@@ -1332,11 +1364,9 @@ namespace RuneMagic
 
                 var caption = GlyphView.IsPlay
                     ? string.Empty
-                    : outcome.Spell != SpellId.None && SpellCodex.TryGet(outcome.Spell, out var named)
-                        ? named.Name
-                        : outcome.Spell != SpellId.None
-                            ? _resolver.PreviewName(composition, shape)
-                            : "unformed surge";
+                    : outcome.Spell != SpellId.None
+                        ? CallWorking(composition)
+                        : "unformed surge";
 
                 var material = outcome.Material;
                 if (material == RuneId.None)
@@ -1359,7 +1389,7 @@ namespace RuneMagic
                 Debug.LogWarning("Cast failed: " + exception.Message);
                 Log("The spell fizzled. Try again — the lock still holds.");
                 setupFailed = true;
-                Ledger.Record(composition, stance, false, SpellId.None);
+                RecordWorking(composition, stance, false, SpellId.None);
             }
 
             if (!setupFailed)
@@ -1458,6 +1488,12 @@ namespace RuneMagic
                             CurrentTarget = null;
                             workNote = FirstNote(flavor, workNote);
                         }
+
+                        if (WorldWork.IsPush(work))
+                        {
+                            var shoved = ShoveHits(impact.Locks, target, origin);
+                            workNote = FirstNote(shoved, workNote);
+                        }
                     }
                     else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                     {
@@ -1474,7 +1510,7 @@ namespace RuneMagic
                     }
 
                     var worked = !outcome.Fizzled && outcome.Spell != SpellId.None;
-                    Ledger.Record(composition, stance, worked, outcome.Spell);
+                    RecordWorking(composition, stance, worked, outcome.Spell);
                     Log(GlyphView.IsDevelop
                         ? FirstNote(workNote, impactNote, outcome.Log)
                         : FirstNote(workNote, GlyphView.WorkLog(outcome)));
@@ -1484,7 +1520,7 @@ namespace RuneMagic
                 {
                     Debug.LogWarning("Cast failed: " + exception.Message);
                     Log("The spell fizzled. Try again — the lock still holds.");
-                    Ledger.Record(composition, stance, false, outcome.Spell);
+                    RecordWorking(composition, stance, false, outcome.Spell);
                 }
             }
 
@@ -1517,7 +1553,13 @@ namespace RuneMagic
                 return SpellFormations.ClampPoint(SpellShape.Remote, origin, requested, potency);
             }
 
-            return SpellFormations.ClampPoint(shape, origin, requested, potency);
+            var point = SpellFormations.ClampPoint(shape, origin, requested, potency);
+            if (WorldWork.StopsOnWalls(spell))
+            {
+                return WorldWork.ClampShot(Grid, origin, point);
+            }
+
+            return point;
         }
 
         System.Collections.IEnumerator CarryCaster(SpellId spell, Vector3 origin, Vector3 requested)
@@ -1597,34 +1639,54 @@ namespace RuneMagic
             }
 
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
-            return ResolveCastLock(shape, CasterPosition(), mouse);
+            return ResolveCastLock(shape, CasterPosition(), mouse, 1f, PendingSpell);
         }
 
-        ISpellLock ResolveCastLock(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        ISpellLock ResolveCastLock(
+            SpellShape shape,
+            Vector3 origin,
+            Vector3 requested,
+            float potency = 1f,
+            SpellId spell = SpellId.None)
         {
             var clicked = FindLockNear(requested, 1.85f);
-            if (clicked != null)
+            if (clicked != null && !ShotBlocked(spell, origin, clicked.WorldPosition))
             {
                 return clicked;
             }
 
-            var aimed = LockAtAim(shape, origin, requested, potency);
+            var aimed = LockAtAim(shape, origin, requested, potency, spell);
             if (aimed != null)
             {
                 return aimed;
             }
 
-            return LockAlive(_focus) ? _focus : null;
+            if (LockAlive(_focus) && !ShotBlocked(spell, origin, _focus.WorldPosition))
+            {
+                return _focus;
+            }
+
+            return null;
         }
 
-        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        bool ShotBlocked(SpellId spell, Vector3 from, Vector3 to)
+        {
+            return WorldWork.StopsOnWalls(spell) && WorldWork.HasWallBetween(Grid, from, to);
+        }
+
+        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f, SpellId spell = SpellId.None)
         {
             var scale = potency <= 0f ? 1f : potency;
             var point = SpellFormations.ClampPoint(shape, origin, requested, scale);
+            if (WorldWork.StopsOnWalls(spell))
+            {
+                point = WorldWork.ClampShot(Grid, origin, point);
+            }
+
             var radius = SpellFormations.Get(shape).LockRadius * scale;
             if (shape == SpellShape.Shot)
             {
-                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f));
+                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f), spell);
             }
 
             if (shape == SpellShape.Spread || shape == SpellShape.Self)
@@ -1635,7 +1697,7 @@ namespace RuneMagic
             return FindLockNear(point, radius);
         }
 
-        ISpellLock FindLockAlong(Vector3 from, Vector3 to, float radius)
+        ISpellLock FindLockAlong(Vector3 from, Vector3 to, float radius, SpellId spell = SpellId.None)
         {
             ISpellLock best = null;
             var bestAlong = float.MaxValue;
@@ -1659,6 +1721,11 @@ namespace RuneMagic
                 var t = lengthSq < 0.0001f ? 0f : Mathf.Clamp01(Vector2.Dot(point - a, span) / lengthSq);
                 var closest = a + span * t;
                 if (Vector2.Distance(point, closest) > radius)
+                {
+                    continue;
+                }
+
+                if (ShotBlocked(spell, from, encounter.WorldPosition))
                 {
                     continue;
                 }
@@ -1922,6 +1989,92 @@ namespace RuneMagic
             return best;
         }
 
+        string ShoveHits(IReadOnlyList<ISpellLock> hits, ISpellLock fallback, Vector3 origin)
+        {
+            var pushed = 0;
+            if (hits != null)
+            {
+                for (var i = 0; i < hits.Count; i++)
+                {
+                    if (ShoveLock(hits[i], origin))
+                    {
+                        pushed++;
+                    }
+                }
+            }
+
+            if (pushed == 0 && ShoveLock(fallback, origin))
+            {
+                pushed++;
+            }
+
+            if (pushed == 0)
+            {
+                return string.Empty;
+            }
+
+            return pushed == 1
+                ? "Breath given a body finds them. They go."
+                : "The wind takes them. They go.";
+        }
+
+        bool ShoveLock(ISpellLock encounter, Vector3 origin)
+        {
+            if (!LockAlive(encounter) || encounter is not MonoBehaviour body || body == null)
+            {
+                return false;
+            }
+
+            var land = WorldWork.PushLanding(Grid, origin, encounter.WorldPosition);
+            if (Vector2.Distance(land, encounter.WorldPosition) < 0.2f)
+            {
+                return false;
+            }
+
+            var combat = body.GetComponent<CombatActor>();
+            if (combat != null)
+            {
+                combat.PlaceAt(land);
+            }
+            else
+            {
+                body.transform.position = land;
+            }
+
+            return true;
+        }
+
+        void BurnLocksOnPillars()
+        {
+            if (_locks == null || Grid == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _locks.Length; i++)
+            {
+                var encounter = _locks[i];
+                if (!LockAlive(encounter) || encounter is not MonoBehaviour body || body == null)
+                {
+                    continue;
+                }
+
+                var tile = Grid.TileAtWorld(encounter.WorldPosition);
+                if (!WorldWork.BurnsOccupants(tile))
+                {
+                    continue;
+                }
+
+                var host = StatusHost.On(body);
+                host?.Apply(StatusId.Burning, 3f);
+                if (Accepts(encounter, SpellId.FlamePillar) || Accepts(encounter, SpellId.LavaPillar))
+                {
+                    UnmakeLock(encounter, $"{encounter.DisplayName} cannot stand in the flame. They fall.");
+                    return;
+                }
+            }
+        }
+
         public void TurnLock(ISpellLock encounter)
         {
             if (!LockAlive(encounter))
@@ -2135,6 +2288,55 @@ namespace RuneMagic
         public void Log(string message)
         {
             LastLog = message;
+        }
+
+        public string CallWorking(Composition composition) => Grimoire.Names.Call(composition);
+
+        public string CallWorking(IReadOnlyList<RuneId> runes) => Grimoire.Names.Call(runes);
+
+        void RecordWorking(Composition composition, CastingStance stance, bool worked, SpellId spell)
+        {
+            var given = Grimoire.Names.SavedOrEmpty(composition.Sequence);
+            Ledger.Record(composition, stance, worked, spell, given, saved: !string.IsNullOrEmpty(given));
+        }
+
+        void UpdateSight()
+        {
+            if (!GameHud.PointerOverChrome(Mode) && TryMouseWorld(out var world))
+            {
+                var lookable = Lookables.Nearest(world);
+                if (lookable != null)
+                {
+                    SightLine = Sight.YouSee(lookable.LookText);
+                    return;
+                }
+
+                var hovered = FindLockNear(world, 0.9f);
+                if (hovered != null)
+                {
+                    SightLine = Sight.YouSee(Sight.OfLock(hovered));
+                    return;
+                }
+
+                if (Grid != null)
+                {
+                    var tile = Grid.TileAtWorld(world);
+                    if (tile != null)
+                    {
+                        SightLine = Sight.YouSee(Sight.OfTile(tile));
+                        return;
+                    }
+                }
+            }
+
+            if (LockAlive(CurrentTarget))
+            {
+                SightLine = Sight.YouSee(Sight.OfLock(CurrentTarget));
+                return;
+            }
+
+            var room = CurrentRoom != null ? CurrentRoom.Name : "the sanctum";
+            SightLine = Sight.YouSee(room + ".");
         }
 
         void TryWeaveFromPointer()

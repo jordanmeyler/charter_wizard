@@ -48,10 +48,11 @@ PITS = [
     "HurledStone",
 ]
 ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
-WIND = ["Gust", "Gale", "StormCall", "Flight"]
+WIND = ["Gust", "Gale", "Push", "StormCall", "Flight"]
 MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",
+    "LightningStrike",
     "LiveFloor",
     "Jolt",
     "BrilliantArc",
@@ -62,10 +63,12 @@ SPARK = [
 ]
 ATTACK = [
     "Fireball",
+    "FlamePillar",
     "Douse",
     "WaterJet",
     "HurledStone",
     "LightningBolt",
+    "LightningStrike",
     "IceSpear",
     "Gale",
     "Gust",
@@ -176,8 +179,10 @@ def assert_walkable(data):
     must(closed, "water altar", world("water-wing", rooms, 3, 7))
     must(closed, "water curtain face", world("water-wing", rooms, 8, 7))
     must(closed, "earth altar", world("earth-wing", rooms, 7, 13))
-    must(closed, "earth pit lip", world("earth-wing", rooms, 7, 5))
-    must_not(closed, "earth stone", world("earth-wing", rooms, 7, 2))
+    must(closed, "earth lane", world("earth-wing", rooms, 7, 5))
+    must(closed, "earth stone", world("earth-wing", rooms, 7, 2))
+    must_not(closed, "earth left bypass", world("earth-wing", rooms, 3, 6))
+    must_not(closed, "earth right bypass", world("earth-wing", rooms, 10, 6))
     must(closed, "air altar", world("air-wing", rooms, 7, 12))
     must(closed, "air fog lip", world("air-wing", rooms, 7, 9))
     must(closed, "door I", world("hub", rooms, 23, 13))
@@ -456,7 +461,8 @@ def main():
             wall="Stone",
             floor="Stone",
             stamps=[
-                stamp("Pit", "Void", rect(1, 3, 12, 4)),
+                stamp("Pit", "Void", rect(1, 3, 6, 10)),
+                stamp("Pit", "Void", rect(8, 3, 12, 10)),
                 stamp("Floor", "SaltCrust", cells((7, 13), (7, 2))),
             ],
             props=[
@@ -470,11 +476,11 @@ def main():
                     "formulaId": "arrow-volley",
                     "formula": ["Earth"],
                     "keys": ARROWS,
-                    "cover": [6, 10, 7, 10, 8, 10, 6, 9, 7, 9, 8, 9],
-                    "cells": rect(1, 5, 12, 10),
+                    "cover": [7, 10, 7, 9],
+                    "cells": rect(7, 2, 7, 10),
                     "sprite": "arrow-rack",
                     "dir": "south",
-                    "note": "Rest stands. The shots break. Then the last step asks for a hop, or a body of rest.",
+                    "note": "Rest stands. The shots break. The lane is the only floor that reaches the stone.",
                 },
                 {"type": "item", "x": 7, "y": 2, "item": "earth-stone"},
             ],
@@ -624,17 +630,6 @@ def main():
                 {
                     "type": "mite",
                     "x": 10,
-                    "y": 6,
-                    "displayName": "Stone man",
-                    "formulaId": "stone-man",
-                    "formula": ["Earth", "Salt", "Life"],
-                    "keys": MIND,
-                    "sprite": "stone-man",
-                    "blocking": True,
-                },
-                {
-                    "type": "mite",
-                    "x": 12,
                     "y": 6,
                     "displayName": "Stone man",
                     "formulaId": "stone-man",

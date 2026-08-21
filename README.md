@@ -15,11 +15,11 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
 | **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
-| **The Arrow Gauntlet** | Real arrow shots, then a full-width pit before the stone | Earth-pillar (`Earth · Salt`) or Wall, then hop or span the last step | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
+| **The Arrow Gauntlet** | Real arrow shots down a lane, pits on either side | Earth-pillar (`Earth · Salt`) or Wall | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. No walk-around. |
 | **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
-| **The Silent Court** | Stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
+| **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Water the plants across the gap (columns write Sprout); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |
 | **The Cistern** | A drowning channel | Ice-pillar / Ice-wall / Ice-spear freezes the water; columns write Water · Salt · Earth | Water drowns. Ice is a floor. |
@@ -56,6 +56,7 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 - **Click a cell in the weave** to draw that rune (only in the Charter).
 - **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
 - **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
+- The **top-left** panel is a running info box: the room, what you are looking at (`You see …`), statuses, and the last line of play. Mouse-over or the current target fills the look line. Workings are named by the runes you wrote, or by a name you saved for that same composition (Spark is not Fire · Air).
 - The **top-right** panel lists the last ten attempted casts. A **green circle** is a successful Charter working; a **purple circle** is successful Free magic; ✕ fizzled. Charter shows the marks. Free blocks them.
 - In the Charter: **click wall runes** or weave cells to string them (up to 8). In Play the wall is only what you have kept. In Develop the eleven are named and listed. Only runes **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
@@ -63,9 +64,9 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
-- **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it. Arrows move the selection. Esc or I closes.
-- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and every wrought join. Click a spell to cast it, or a join (Acid, Ice…) to string how it is born, if those runes are in view. Workings you **Keep** from Recent casts are highlighted (the catalog name stays).
-- **Recent casts** (top-right): the **play** mark casts again if those runes are in view; **+** opens a naming modal (the game pauses and keyboard controls lock) that shows the rune combo and keeps the working in the Grimoire. Esc cancels.
+- **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it — each look is a hint at how that rune works. Arrows move the selection. Esc or I closes.
+- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and every wrought join. Click a spell to cast it, or a join (Acid, Ice…) to string how it is born, if those runes are in view. Workings you **Keep** from Recent casts are highlighted; the world still speaks the runes you wrote, or the name you gave that writing.
+- **Recent casts** (top-right): the **play** mark casts again if those runes are in view; **+** opens a naming modal (the game pauses and keyboard controls lock) that shows the rune combo and keeps that exact writing. The saved name is used only for the same composition. Esc cancels.
 - **K** or **Yield** sends you back to the spawn crystal and drops pillars, walls, and hanging work you stood in this room. Stones and artifacts stay in the pack.
 - **Backspace** / **C** unmake the last rune
 

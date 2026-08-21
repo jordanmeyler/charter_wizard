@@ -327,43 +327,24 @@ namespace RuneMagic
             return true;
         }
 
-        public string PreviewName(Composition composition, SpellShape shape = SpellShape.None)
+        public string PreviewName(Composition composition, SpellShape shape = SpellShape.None) =>
+            PreviewName(composition, null, shape);
+
+        public string PreviewName(Composition composition, WorkingNames names, SpellShape shape = SpellShape.None)
         {
-            var chain = ChainBook.Preview(composition, shape);
-            if (!string.IsNullOrEmpty(chain))
-            {
-                return chain;
-            }
-
-            if (!composition.TryFoldMaterials(out var material, out _))
-            {
-                return composition.Sequence != null && composition.Sequence.Length > 0
-                    ? "unjoined string"
-                    : "empty string";
-            }
-
-            if (material == RuneId.None && !RuneCatalog.IsFormAspect(composition.Aspect))
+            if (composition.Sequence == null || composition.Sequence.Length == 0)
             {
                 return "empty string";
             }
 
-            if (material == RuneId.None)
-            {
-                return $"{RuneCatalog.NameOf(composition.Aspect)} waits on a material";
-            }
+            return names != null ? names.Call(composition.Sequence) : WorkingNames.RunePhrase(composition.Sequence);
+        }
 
-            if (!RuneCatalog.IsFormAspect(composition.Aspect))
-            {
-                return $"{RuneCatalog.NameOf(material)} is a clause, waiting";
-            }
-
-            if (shape != SpellShape.None &&
-                SpellGrammar.TryGet(material, composition.Aspect, shape, out var named))
-            {
-                return named.Name;
-            }
-
-            return SpellGrammar.FormulaText(material, composition.Aspect, shape);
+        static string CallWorking(Grimoire grimoire, Composition composition)
+        {
+            return grimoire != null
+                ? grimoire.Names.Call(composition.Sequence)
+                : WorkingNames.RunePhrase(composition.Sequence);
         }
 
         static RuneId FirstMaterial(CodexEntry entry)
@@ -407,42 +388,43 @@ namespace RuneMagic
                     "Charter does not know that sentence. The string fizzles.");
             }
 
-            return ResolveCharter(prepared, shape, acceptedKeys, grimoire);
+            return ResolveCharter(composition, prepared, shape, acceptedKeys, grimoire);
         }
 
-        CastOutcome ResolveCharter(PreparedSpell prepared, SpellShape shape, SpellId[] acceptedKeys, Grimoire grimoire)
+        CastOutcome ResolveCharter(
+            Composition composition,
+            PreparedSpell prepared,
+            SpellShape shape,
+            SpellId[] acceptedKeys,
+            Grimoire grimoire)
         {
+            var call = CallWorking(grimoire, composition);
             if (!prepared.IsFormed)
             {
                 var reason = !SpellFormations.MakesSense(prepared.Material, prepared.Aspect, shape)
-                    ? $"{SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, shape)} has no natural form. The string fizzles."
-                    : $"{SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, shape)} looks as if it should work. It does not. No Charter form is written. The string fizzles.";
+                    ? $"{call} has no natural form. The string fizzles."
+                    : $"{call} looks as if it should work. It does not. No Charter form is written. The string fizzles.";
                 return Fail(false, true, 0f, SpellId.None, shape, prepared.Material, prepared.Aspect, reason);
             }
 
             if (prepared.FreeOnly)
             {
                 return Fail(false, true, 0f, SpellId.None, shape, prepared.Material, prepared.Aspect,
-                    $"{prepared.Name} is Death-work the Charter will not write. Cast it Free.");
+                    $"{call} is Death-work the Charter will not write. Cast it Free.");
             }
 
             grimoire.LearnRecipe(prepared.Material, prepared.Aspect, prepared.Shape);
-            var name = !string.IsNullOrEmpty(prepared.Name)
-                ? prepared.Name
-                : SpellGrammar.TryGet(prepared.Material, prepared.Aspect, prepared.Shape, out var recipe)
-                    ? recipe.Name
-                    : SpellGrammar.FormulaText(prepared.Material, prepared.Aspect, prepared.Shape);
 
             if (IsKey(prepared.Spell, acceptedKeys))
             {
                 return new CastOutcome(true, true, false, false, 0f, prepared.Spell, prepared.Shape,
                     prepared.Material, prepared.Aspect,
-                    $"{name} turns the lock. The encounter is resolved.");
+                    $"{call} turns the lock. The encounter is resolved.");
             }
 
             return new CastOutcome(false, true, false, false, 0f, prepared.Spell, prepared.Shape,
                 prepared.Material, prepared.Aspect,
-                $"{name} holds together — Charter overpowers, it does not dispel — but this lock does not accept that key.");
+                $"{call} holds together — Charter overpowers, it does not dispel — but this lock does not accept that key.");
         }
 
         CastOutcome ResolveFree(
@@ -471,17 +453,18 @@ namespace RuneMagic
                 fills = 0;
             }
 
+            var call = CallWorking(grimoire, composition);
             var clash = pool.Count > 1
-                ? $" {pool.Count} chains fit; attunement drew {pick.Name}."
+                ? $" {pool.Count} chains fit; attunement chose among them."
                 : string.Empty;
             var scrambled = ChainBook.IsScrambled(composition, pick);
             var fillNote = scrambled
-                ? $"Free unscrambles the runes and the chain becomes {pick.Name}.{clash} "
+                ? $"Free unscrambles the runes and the chain becomes {call}.{clash} "
                 : fills == 0
                     ? $"Free takes the finished sentence.{clash} "
                     : fills == 1
-                        ? $"Free fills a rune and the chain becomes {pick.Name}.{clash} "
-                        : $"Free fills {fills} runes and the chain becomes {pick.Name}.{clash} ";
+                        ? $"Free fills a rune and the chain becomes {call}.{clash} "
+                        : $"Free fills {fills} runes and the chain becomes {call}.{clash} ";
 
             var material = FirstMaterial(pick);
             var potency = attunement.Potency(pick);
@@ -491,13 +474,13 @@ namespace RuneMagic
             {
                 return new CastOutcome(true, true, false, false, 0.08f, pick.Spell, pick.Shape,
                     material, LastAspect(pick),
-                    fillNote + $"{pick.Name} tears the lock open. Free is a shortcut, not the required key.",
+                    fillNote + $"{call} tears the lock open. Free is a shortcut, not the required key.",
                     potency, fills);
             }
 
             return new CastOutcome(false, true, false, false, 0.06f, pick.Spell, pick.Shape,
                 material, LastAspect(pick),
-                fillNote + $"{pick.Name} lands, wild and larger, but this lock does not accept that key.",
+                fillNote + $"{call} lands, wild and larger, but this lock does not accept that key.",
                 potency, fills);
         }
 

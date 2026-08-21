@@ -35,8 +35,6 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | --- | --- | --- | --- |
 | 52 | **Douse** | Water · Mercury | Parallel to Fireball. Yield sent. The first water verb. |
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
-| 66 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
-| 67 | **Swamp** | Water · Earth · Mercury · Salt | A watery swamp from your feet. Yield meeting rest, going, then stood. |
 | 54 | **Gust** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 | 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
 | 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Arrows and slams break. Hunger sent still finds you. |
@@ -49,6 +47,10 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
 | 64 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
 | 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
+| 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
+| 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
+| 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
+| 69 | **Swamp** | Water · Earth · Mercury · Salt | A watery swamp from your feet. Yield meeting rest, going, then stood. |
 
 ---
 
@@ -94,7 +96,7 @@ Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wa
 Walk in from the west. A labelled **Water** waits near the mouth. A **Fire Golem** slams anyone in reach — hop or Stoneskin survives the blow; Douse / Water-jet / Rain still unmake it. Plant and moss sit by the Water altar: water them and they grow. A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
 ### Earth · "The Arrow Gauntlet" — *raise walls, block, then the last step*
-Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. Walk around the cover. A **full-width pit** then cuts the last step to the stone — hop it, or stand a body in the hollow. The pit is the sequenced crossing, not a random hole.
+Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. **Pits on either side** keep the stone on that lane — there is no walk-around. The shots have to stop, or you take them.
 
 ### Air · "The Sundered Heights" — *gust, clear*
 Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is a **green fog** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
@@ -115,12 +117,12 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Ice-spear, Gust, Gale…). Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Gust, Gale…). A flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
 **Lesson:** Sulphur reaches the enemy’s *mind.* Taught by taking every other tool away.
-- **Signature — the stone men:** humanoid rock, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
+- **Signature — the stone men:** two humanoid rocks, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
 - **Intended:** **Charm** (`Life · Sulphur · Mercury`). Columns write that sentence. Charmed bodies fetch nearby artifacts and fight anything you have already marked — the same hold later grave-work will use.
 - **Multiple solutions:** **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past, **Rage** them.
 - Force fails on purpose. Mind is discovered as the way through.
@@ -161,7 +163,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **Halls punch both walls.** A corridor that only opened the destination used to leave the hub looking open and the wing sealed. Both shared walls open; Door tiles stay shut until their gate resolves.
 - **Free vs Charter:** this floor stays element-neutral on stance. Both actions work; Free is never the required key.
 - **No plaques that instruct.** Altars pair a mark with a picture. Locks have names. The situation is the tutorial. Body, spirit, and mind are carved around the crystal.
-- **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it. They are artifacts, not metal keys.
+- **The pack holds the stones.** I opens it. Click a stone to look — each one hints at how the rune works (hunger, yield, rest, breath; salt of the earth; the spirit is motion; fire from the sky). They are artifacts, not metal keys. The info box says `You see` that same look when you mouse over the stone in the world.
 - **Columns teach the sentence.** A row of pillars shows the intended spell. Ice, spark, and plant rooms all work this way.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
 - **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
@@ -177,7 +179,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `hub` | The Cross | Choice. Four labelled roots. Door I. |
 | `fire-wing` | The Frozen Hall | Fire against ice |
 | `water-wing` | The Ember Vault | Water against fire |
-| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots, then hop or span the last pit |
+| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots; side pits keep the stone on the lane |
 | `air-wing` | The Sundered Heights | Air as gust. Fog, not a wall. |
 | `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
