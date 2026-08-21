@@ -21,6 +21,7 @@ namespace RuneMagic
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             renderer.sprite = SpriteFactory.Named("spawn-crystal");
             renderer.sortingOrder = 6;
+            SpriteAnim.On(gameObject, renderer).Play("spawn-crystal", 5f);
             FixtureGlow.Attach(transform, new Color(0.72f, 0.55f, 1f, 0.7f), 1.8f, 0.18f);
             WorldLabel.Attach(transform, "Anchor", new Vector3(0f, 0.95f, 0f),
                 new Color(0.86f, 0.78f, 1f));

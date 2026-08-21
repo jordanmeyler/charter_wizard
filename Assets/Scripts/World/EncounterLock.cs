@@ -49,8 +49,12 @@ namespace RuneMagic
             _grant = grantItem;
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId);
+            var art = string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId;
+            _renderer.sprite = SpriteFactory.Named(art);
             _renderer.sortingOrder = 12;
+            var anim = SpriteAnim.On(gameObject, _renderer);
+            anim.FreezeWhenWorldHeld = true;
+            anim.Play(art, FpsFor(art));
             FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
 
             var body = gameObject.AddComponent<Rigidbody2D>();
@@ -91,6 +95,18 @@ namespace RuneMagic
                     return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
                 default:
                     return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
+            }
+        }
+
+        static float FpsFor(string spriteId)
+        {
+            switch ((spriteId ?? string.Empty).ToLowerInvariant())
+            {
+                case "fire-golem": return 5f;
+                case "stone-man": return 2.5f;
+                case "warden": return 4f;
+                case "ice-thing": return 6f;
+                default: return 7f;
             }
         }
 

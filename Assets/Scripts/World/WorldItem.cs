@@ -32,6 +32,8 @@ namespace RuneMagic
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             renderer.sprite = SpriteFactory.Named(spriteId);
             renderer.sortingOrder = 5;
+            SpriteAnim.On(gameObject, renderer).Play(spriteId, 4f);
+            PropBob.Attach(transform, 0.08f, 1.4f);
             FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
             var hit = gameObject.AddComponent<CircleCollider2D>();
             hit.isTrigger = true;

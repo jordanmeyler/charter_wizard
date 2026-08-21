@@ -39,6 +39,7 @@ namespace RuneMagic
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.Named(_spriteId);
             _renderer.sortingOrder = 5;
+            SpriteAnim.On(gameObject, _renderer).Play(_spriteId, 4f);
             FixtureGlow.Attach(transform, new Color(0.55f, 0.75f, 1f, 0.4f), 1.4f, 0.1f);
             _label = WorldLabel.Attach(transform, "Storm rod", new Vector3(0f, 1.15f, 0f),
                 new Color(0.75f, 0.88f, 1f));
@@ -59,6 +60,7 @@ namespace RuneMagic
         {
             Resolved = true;
             _renderer.sprite = SpriteFactory.Named(_spriteLit);
+            SpriteAnim.On(gameObject, _renderer).Play(_spriteLit, 12f);
             if (_label != null)
             {
                 _label.text = "Live bolt";

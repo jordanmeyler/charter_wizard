@@ -41,6 +41,10 @@ namespace RuneMagic
                 ? SpriteFactory.Named("arrow-shot")
                 : SpriteFactory.Named("fireball-shot");
             shot._renderer.sortingOrder = 18;
+            if (kind == ProjectileKind.Fireball)
+            {
+                SpriteAnim.On(host, shot._renderer).Play("fireball-shot", 10f);
+            }
             var body = host.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;
             body.bodyType = RigidbodyType2D.Kinematic;

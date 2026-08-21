@@ -39,6 +39,7 @@ namespace RuneMagic
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.Named(_spriteId);
             _renderer.sortingOrder = 5;
+            SpriteAnim.On(gameObject, _renderer).Play(_spriteId, 4f);
             FixtureGlow.Attach(transform, new Color(0.95f, 0.45f, 0.12f, 0.35f), 1.3f, 0.08f);
             _label = WorldLabel.Attach(transform, "Unlit torch", new Vector3(0f, 1.05f, 0f),
                 new Color(0.95f, 0.72f, 0.4f));
@@ -59,6 +60,7 @@ namespace RuneMagic
         {
             Resolved = true;
             _renderer.sprite = SpriteFactory.Named(_spriteLit);
+            SpriteAnim.On(gameObject, _renderer).Play(_spriteLit, 10f);
             if (_label != null)
             {
                 _label.text = "Lit torch";

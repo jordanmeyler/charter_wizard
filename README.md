@@ -79,7 +79,7 @@ You do not place rooms in `Main.unity`. Maps are JSON. Floor 1 is `Assets/Resour
 
 A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`, `item`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
 
-Tiles are still painted in code (`SpriteFactory`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. You can replace or add sprites yourself — see Catalog below.
+Tiles are still painted in code (`SpriteFactory` / `SpriteActors`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Water, lava, ice, and ember tiles ripple. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. You can still replace or add sprites yourself — see Catalog below. A custom still in `art.json` overrides the generated clip.
 
 ## Catalog — recipes, sprites, items
 

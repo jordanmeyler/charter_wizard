@@ -16,7 +16,7 @@ namespace RuneMagic
         void Bind(string text)
         {
             var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Plaque();
+            renderer.sprite = SpriteFactory.Named("plaque");
             renderer.sortingOrder = 2;
             WorldLabel.Attach(transform, text, new Vector3(0f, 0.55f, 0f),
                 new Color(0.92f, 0.86f, 0.72f), 12);

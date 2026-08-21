@@ -902,8 +902,12 @@ namespace RuneMagic
         static void DrawPanel(float x, float y, float width, float height)
         {
             var color = GUI.color;
-            GUI.color = new Color(0.05f, 0.06f, 0.1f, 0.82f);
+            GUI.color = new Color(0.05f, 0.045f, 0.07f, 0.88f);
             GUI.DrawTexture(new Rect(x, y, width, height), Texture2D.whiteTexture);
+            GUI.color = new Color(0.92f, 0.74f, 0.32f, 0.55f);
+            DrawFrame(new Rect(x, y, width, height), 2f);
+            GUI.color = new Color(1f, 0.92f, 0.7f, 0.12f);
+            GUI.DrawTexture(new Rect(x + 3, y + 2, width - 6, 2f), Texture2D.whiteTexture);
             GUI.color = color;
         }
 

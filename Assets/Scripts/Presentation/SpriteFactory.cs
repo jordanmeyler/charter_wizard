@@ -21,6 +21,12 @@ namespace RuneMagic
                 return custom;
             }
 
+            var painted = SpriteActors.Still(id);
+            if (painted != null)
+            {
+                return painted;
+            }
+
             switch (id.Trim().ToLowerInvariant())
             {
                 case "adept": return Adept();
@@ -68,6 +74,25 @@ namespace RuneMagic
                 default: return Square(new Color(0.45f, 0.4f, 0.48f));
             }
         }
+
+        public static Sprite[] Clip(string id)
+        {
+            var clip = SpriteActors.Clip(id);
+            if (clip != null && clip.Length > 0)
+            {
+                return clip;
+            }
+
+            return new[] { Named(id) };
+        }
+
+        public static bool HasClip(string id)
+        {
+            var clip = SpriteActors.Clip(id);
+            return clip != null && clip.Length > 1;
+        }
+
+        public static Sprite MemoPublic(string key, System.Func<Sprite> build) => Memo(key, build);
 
         public static Sprite Circle(Color color, int size = 48)
         {
@@ -122,10 +147,28 @@ namespace RuneMagic
             return Floor(material, 0, 0);
         }
 
-        public static Sprite Floor(MaterialId material, int x, int y)
+        public static Sprite Floor(MaterialId material, int x, int y, int frame = 0)
         {
             var seed = Hash(x, y, (int)material);
-            return Memo($"floor:{material}:{seed}", () => PaintFloor(MaterialCatalog.Of(material), seed));
+            var wave = Animates(material) ? frame & 3 : 0;
+            return Memo($"floor:{material}:{seed}:{wave}", () => PaintFloor(MaterialCatalog.Of(material), seed, wave));
+        }
+
+        public static bool Animates(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Water:
+                case MaterialId.Lava:
+                case MaterialId.Ember:
+                case MaterialId.Ice:
+                case MaterialId.Steam:
+                case MaterialId.Cloud:
+                case MaterialId.Rain:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static Sprite Wall(RuneId element) => Wall(MaterialCatalog.FromElement(element));
@@ -964,7 +1007,7 @@ namespace RuneMagic
             });
         }
 
-        static Sprite PaintFloor(WorldMaterial material, int seed)
+        static Sprite PaintFloor(WorldMaterial material, int seed, int frame = 0)
         {
             var canvas = new PixelCanvas(32);
             var tone = material.FloorTone;
@@ -988,7 +1031,7 @@ namespace RuneMagic
                     PaintCobble(canvas, tone, rng);
                     canvas.Noise(rng, new Color(0.95f, 0.42f, 0.12f, 0.85f), 14);
                     PaintVein(canvas, new Color(0.85f, 0.22f, 0.08f, 0.65f), rng);
-                    canvas.SoftCircle(rng.Range(6, 26), rng.Range(6, 26), 5, new Color(1f, 0.35f, 0.05f, 0.22f));
+                    canvas.SoftCircle(8 + (frame * 3) % 16, 10 + (frame * 5) % 14, 5 + (frame & 1), new Color(1f, 0.35f, 0.05f, 0.22f + frame * 0.04f));
                     break;
                 case MaterialPaint.Damp:
                     PaintCobble(canvas, tone, rng);
@@ -1034,8 +1077,8 @@ namespace RuneMagic
                     break;
                 case MaterialPaint.Ice:
                     PaintCobble(canvas, tone, rng);
-                    canvas.Line(4, 8, 26, 6, new Color(1f, 1f, 1f, 0.45f));
-                    canvas.Line(6, 20, 28, 18, new Color(0.85f, 0.95f, 1f, 0.35f));
+                    canvas.Line(4 + frame, 8, 26 + frame, 6, new Color(1f, 1f, 1f, 0.4f + frame * 0.04f));
+                    canvas.Line(6, 20 - frame, 28, 18 - frame, new Color(0.85f, 0.95f, 1f, 0.35f));
                     canvas.Noise(rng, new Color(1f, 1f, 1f, 0.55f), 10);
                     canvas.Highlight(2, 22, 12, 2, 0.18f);
                     break;
@@ -1053,13 +1096,14 @@ namespace RuneMagic
                     PaintCobble(canvas, Color.Lerp(tone, Color.black, 0.45f), rng);
                     PaintVein(canvas, new Color(1f, 0.45f, 0.08f, 0.85f), rng);
                     canvas.Noise(rng, new Color(1f, 0.7f, 0.15f, 0.8f), 12);
-                    canvas.SoftCircle(rng.Range(8, 24), rng.Range(8, 24), 6, new Color(1f, 0.4f, 0.05f, 0.35f));
+                    canvas.SoftCircle(10 + frame * 4, 12 + frame * 3, 6, new Color(1f, 0.4f, 0.05f, 0.28f + frame * 0.05f));
+                    canvas.SoftCircle(20 - frame * 2, 22 - frame, 5, new Color(1f, 0.55f, 0.1f, 0.22f));
                     break;
                 case MaterialPaint.Steam:
                     PaintCobble(canvas, tone, rng);
                     canvas.Noise(rng, new Color(1f, 1f, 1f, 0.35f), 16);
-                    canvas.Line(3, 10, 12, 4, new Color(1f, 1f, 1f, 0.25f));
-                    canvas.Line(18, 22, 28, 14, new Color(1f, 1f, 1f, 0.2f));
+                    canvas.Line(3 + frame, 10 + frame, 12 + frame, 4 + frame, new Color(1f, 1f, 1f, 0.25f));
+                    canvas.Line(18, 22 - frame, 28, 14 - frame, new Color(1f, 1f, 1f, 0.2f));
                     break;
                 case MaterialPaint.Dust:
                     PaintCobble(canvas, tone, rng);
@@ -1096,16 +1140,16 @@ namespace RuneMagic
                     break;
                 case MaterialPaint.Cloud:
                     canvas.Clear(Color.Lerp(tone, Color.white, 0.15f));
-                    canvas.FillCircle(10, 16, 8, new Color(1f, 1f, 1f, 0.45f));
-                    canvas.FillCircle(20, 14, 9, new Color(0.92f, 0.94f, 0.98f, 0.4f));
-                    canvas.FillCircle(16, 20, 6, new Color(0.8f, 0.84f, 0.9f, 0.35f));
+                    canvas.FillCircle(10 + frame, 16, 8, new Color(1f, 1f, 1f, 0.45f));
+                    canvas.FillCircle(20 - frame, 14 + (frame & 1), 9, new Color(0.92f, 0.94f, 0.98f, 0.4f));
+                    canvas.FillCircle(16, 20 - frame, 6, new Color(0.8f, 0.84f, 0.9f, 0.35f));
                     break;
                 case MaterialPaint.Rain:
                     PaintCobble(canvas, tone, rng);
-                    canvas.Line(6, 26, 4, 6, new Color(0.55f, 0.75f, 0.95f, 0.45f));
-                    canvas.Line(14, 28, 12, 8, new Color(0.55f, 0.75f, 0.95f, 0.35f));
-                    canvas.Line(22, 24, 20, 4, new Color(0.55f, 0.75f, 0.95f, 0.4f));
-                    canvas.Line(28, 22, 26, 8, new Color(0.55f, 0.75f, 0.95f, 0.3f));
+                    canvas.Line(6, 26 - frame * 3, 4, 6 - frame * 3, new Color(0.55f, 0.75f, 0.95f, 0.45f));
+                    canvas.Line(14, 28 - frame * 2, 12, 8 - frame * 2, new Color(0.55f, 0.75f, 0.95f, 0.35f));
+                    canvas.Line(22, 24 - frame * 3, 20, 4 - frame * 3, new Color(0.55f, 0.75f, 0.95f, 0.4f));
+                    canvas.Line(28, 22 - frame * 2, 26, 8 - frame * 2, new Color(0.55f, 0.75f, 0.95f, 0.3f));
                     break;
                 case MaterialPaint.Snow:
                     PaintCobble(canvas, tone, rng);
@@ -1123,10 +1167,13 @@ namespace RuneMagic
                     canvas.SoftCircle(12, 16, 5, new Color(0.7f, 0.95f, 0.2f, 0.35f));
                     break;
                 case MaterialPaint.Water:
-                    canvas.Clear(Color.Lerp(tone, Color.black, 0.2f));
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.28f));
                     canvas.FillCircle(16, 16, 13, tone);
-                    canvas.Line(4, 14, 28, 12, new Color(0.7f, 0.88f, 1f, 0.4f));
-                    canvas.Line(6, 20, 26, 18, new Color(0.55f, 0.78f, 0.95f, 0.3f));
+                    canvas.SoftCircle(16, 16, 11, new Color(0.12f, 0.28f, 0.48f, 0.35f));
+                    canvas.Line(4 + frame, 14 + (frame & 1), 28 - frame, 12 + frame, new Color(0.7f, 0.88f, 1f, 0.45f));
+                    canvas.Line(6 - frame, 20, 26 + frame, 18 - (frame & 1), new Color(0.55f, 0.78f, 0.95f, 0.32f));
+                    canvas.Line(8, 24 - frame, 22, 22, new Color(0.8f, 0.92f, 1f, 0.2f));
+                    canvas.Set(10 + frame * 3, 16, new Color(1f, 1f, 1f, 0.55f));
                     break;
                 case MaterialPaint.Plant:
                     PaintCobble(canvas, Color.Lerp(tone, new Color(0.28f, 0.26f, 0.16f), 0.45f), rng);
@@ -1288,7 +1335,7 @@ namespace RuneMagic
 
         static void PaintCobble(PixelCanvas canvas, Color stone, HashRng rng)
         {
-            var grout = Color.Lerp(stone, new Color(0.08f, 0.08f, 0.1f), 0.7f);
+            var grout = Color.Lerp(stone, new Color(0.08f, 0.08f, 0.1f), 0.74f);
             canvas.Clear(grout);
             for (var row = 0; row < 4; row++)
             {
@@ -1299,10 +1346,16 @@ namespace RuneMagic
                     var y = row * 8 + rng.Range(0, 2);
                     var shade = rng.Jitter(((row + col) & 1) == 0
                         ? stone
-                        : Color.Lerp(stone, Color.black, 0.14f), 0.05f);
-                    canvas.FillRounded(x + 1, y + 1, rng.Range(6, 8), rng.Range(6, 8), 2, shade);
-                    canvas.Set(x + 2, y + 6, Color.Lerp(shade, Color.white, 0.18f));
-                    canvas.Shade(x + 4, y + 2, 2, 3, 0.08f);
+                        : Color.Lerp(stone, Color.black, 0.16f), 0.06f);
+                    var w = rng.Range(6, 9);
+                    var h = rng.Range(6, 9);
+                    canvas.FillRounded(x + 1, y + 1, w, h, 2, shade);
+                    canvas.Highlight(x + 2, y + h - 1, 3, 1, 0.16f);
+                    canvas.Shade(x + w - 2, y + 2, 2, 3, 0.1f);
+                    if (rng.Value() < 0.35f)
+                    {
+                        canvas.Set(x + 3, y + 3, Color.Lerp(shade, Color.white, 0.14f));
+                    }
                 }
             }
         }

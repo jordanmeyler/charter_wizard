@@ -7,6 +7,7 @@ namespace RuneMagic
     {
         public float moveSpeed = 5.2f;
         public Vector2 Facing { get; private set; } = Vector2.right;
+        public bool Moving { get; private set; }
 
         Rigidbody2D _body;
         SpriteRenderer _sprite;
@@ -30,12 +31,14 @@ namespace RuneMagic
 
             if (_director != null && !_director.CanMove)
             {
+                Moving = false;
                 return;
             }
 
             var host = StatusHost.On(this);
             if (host != null && host.BlocksMove)
             {
+                Moving = false;
                 return;
             }
 
@@ -45,7 +48,8 @@ namespace RuneMagic
                 input.Normalize();
             }
 
-            if (input.sqrMagnitude > 0.01f)
+            Moving = input.sqrMagnitude > 0.01f;
+            if (Moving)
             {
                 Facing = input;
                 if (_sprite != null && Mathf.Abs(Facing.x) > 0.15f)

@@ -254,6 +254,91 @@ namespace RuneMagic
             }
         }
 
+        public void FillEllipse(int cx, int cy, int rx, int ry, Color color)
+        {
+            var rx2 = Mathf.Max(1, rx * rx);
+            var ry2 = Mathf.Max(1, ry * ry);
+            for (var y = -ry; y <= ry; y++)
+            {
+                for (var x = -rx; x <= rx; x++)
+                {
+                    if ((x * x) * ry2 + (y * y) * rx2 <= rx2 * ry2)
+                    {
+                        Set(cx + x, cy + y, color);
+                    }
+                }
+            }
+        }
+
+        public void SoftEllipse(int cx, int cy, int rx, int ry, Color color)
+        {
+            var rxSafe = Mathf.Max(1, rx);
+            var rySafe = Mathf.Max(1, ry);
+            for (var y = -rySafe; y <= rySafe; y++)
+            {
+                for (var x = -rxSafe; x <= rxSafe; x++)
+                {
+                    var nx = x / (float)rxSafe;
+                    var ny = y / (float)rySafe;
+                    var d = Mathf.Sqrt(nx * nx + ny * ny);
+                    if (d > 1f)
+                    {
+                        continue;
+                    }
+
+                    var fade = color;
+                    fade.a = color.a * Mathf.Clamp01(1f - d);
+                    Blend(cx + x, cy + y, fade);
+                }
+            }
+        }
+
+        public void GroundShadow(int cx, int cy, int rx, int ry)
+        {
+            SoftEllipse(cx, cy, rx, ry, new Color(0f, 0f, 0f, 0.16f));
+        }
+
+        public void Outline(Color color)
+        {
+            var mark = new bool[_pixels.Length];
+            for (var y = 0; y < Height; y++)
+            {
+                for (var x = 0; x < Width; x++)
+                {
+                    if (Get(x, y).a < 0.18f)
+                    {
+                        continue;
+                    }
+
+                    MarkOutline(mark, x - 1, y);
+                    MarkOutline(mark, x + 1, y);
+                    MarkOutline(mark, x, y - 1);
+                    MarkOutline(mark, x, y + 1);
+                }
+            }
+
+            for (var i = 0; i < mark.Length; i++)
+            {
+                if (mark[i])
+                {
+                    _pixels[i] = color;
+                }
+            }
+        }
+
+        void MarkOutline(bool[] mark, int x, int y)
+        {
+            if ((uint)x >= (uint)Width || (uint)y >= (uint)Height)
+            {
+                return;
+            }
+
+            if (Get(x, y).a < 0.12f)
+            {
+                mark[y * Width + x] = true;
+            }
+        }
+
         public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)

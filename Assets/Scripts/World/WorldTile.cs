@@ -29,6 +29,7 @@ namespace RuneMagic
         int _growth;
         GameObject _linger;
         bool _hasFoundation;
+        int _animFrame = -1;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -260,13 +261,13 @@ namespace RuneMagic
                         break;
                     case TileKind.Pit:
                         _renderer.sprite = Material == MaterialId.Water
-                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y)
+                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
                             : SpriteFactory.Pit(Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:
                         _renderer.sprite = IsConjured && Material != MaterialId.Stone
-                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y)
+                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
                             : SpriteFactory.Bridge();
                         _renderer.sortingOrder = 1;
                         break;
@@ -274,7 +275,7 @@ namespace RuneMagic
                         ApplyDoorSprite(open: false);
                         break;
                     default:
-                        _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y);
+                        _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame);
                         _renderer.sortingOrder = 0;
                         break;
                 }
@@ -477,6 +478,53 @@ namespace RuneMagic
 
             Destroy(_linger);
             _linger = null;
+        }
+
+        void Update()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            var live = SpriteFactory.Animates(Material) || Fire > 0.08f || Wet > 0.18f || Charge > 0.18f || _growth >= 1;
+            if (!live)
+            {
+                return;
+            }
+
+            var frame = Mathf.FloorToInt(Time.time * 3.6f) & 3;
+            if (frame == _animFrame)
+            {
+                return;
+            }
+
+            _animFrame = frame;
+            if (SpriteFactory.Animates(Material) &&
+                (Kind == TileKind.Floor || (Kind == TileKind.Bridge && IsConjured) || (Kind == TileKind.Pit && Material == MaterialId.Water)))
+            {
+                _renderer.sprite = SpriteFactory.Floor(Material, Coord.x, Coord.y, frame);
+            }
+
+            if (_fx != null && _fx.enabled)
+            {
+                if (Fire > 0.12f)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-fire")[frame % 3];
+                }
+                else if (Charge > 0.18f)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-charge")[frame % 2];
+                }
+                else if (Wet > 0.18f)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-wet")[frame % 2];
+                }
+                else if (_growth >= 1)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-grow")[frame % 2];
+                }
+            }
         }
 
         void OnTriggerEnter2D(Collider2D other)
