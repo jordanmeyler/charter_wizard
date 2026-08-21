@@ -6,7 +6,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basi
 
 ## What is implemented
 
-**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk into each, read the labelled altar, use that element’s spells on the obstacle, and take the stone. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
+**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
 
 Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: a wall of marks you have remembered, and a sideways-scrolling weave of everything on screen. **Play** sight shows only the marks; **Develop** (F1) shows names and the written book. Enemies and terrain are both locks.
 
@@ -114,6 +114,8 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Scripts/Magic/GlyphView.cs` | Play vs Develop sight (F1) |
 | `Assets/Scripts/Magic/RuneMemory.cs` | Remembered wall marks; later keep-conditions by rune depth |
 | `Assets/Scripts/Presentation/RuneMark.cs` | Abstract Play-mode marks |
+| `Assets/Scripts/Presentation/RuneSign.cs` | Mark + nature picture (flame, water, rock, gale, body, spirit, mind) |
+| `Assets/Scripts/World/RuneStele.cs` | Floor inscriptions and aspect pillars |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Resources/Catalog/spells.json` | Master recipes and joins (what the game actually casts) |
 | `Assets/Resources/Catalog/art.json` | Custom sprites and items |

@@ -92,6 +92,30 @@
             25,
             5
           ]
+        },
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            22,
+            7
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Vein",
+          "cells": [
+            24,
+            7
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            23,
+            8
+          ]
         }
       ],
       "props": [
@@ -130,6 +154,54 @@
             "Air"
           ],
           "dir": "up"
+        },
+        {
+          "type": "inscription",
+          "x": 22,
+          "y": 7,
+          "runes": [
+            "Salt"
+          ]
+        },
+        {
+          "type": "inscription",
+          "x": 24,
+          "y": 7,
+          "runes": [
+            "Mercury"
+          ]
+        },
+        {
+          "type": "inscription",
+          "x": 23,
+          "y": 8,
+          "runes": [
+            "Sulphur"
+          ]
+        },
+        {
+          "type": "pillar",
+          "x": 21,
+          "y": 8,
+          "runes": [
+            "Salt"
+          ]
+        },
+        {
+          "type": "pillar",
+          "x": 25,
+          "y": 8,
+          "runes": [
+            "Mercury"
+          ]
+        },
+        {
+          "type": "pillar",
+          "x": 23,
+          "y": 5,
+          "runes": [
+            "Sulphur"
+          ]
         },
         {
           "type": "gate",
