@@ -4,9 +4,9 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// An ordered sentence written into the field. Strands keep sequence so
-    /// the player can read it as a line, not a cloud. World events and the
-    /// adept's place can hang more of these later.
+    /// An ordered sentence written into the field. The world altar shows
+    /// the mark beside a picture of the thing — a flame for Fire, a
+    /// standing body for Salt — so Play can read it without a name.
     /// </summary>
     public sealed class RuneStringSource : MonoBehaviour, IRuneSource
     {
@@ -19,6 +19,10 @@ namespace RuneMagic
         public float VoiceRadius => 3.2f;
         public float VoiceWeight => 1.6f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
+
+        Transform _picture;
+        TextMesh _name;
+        float _born;
 
         public static RuneStringSource Spawn(Vector3 origin, IReadOnlyList<RuneId> sequence, Vector3 heading)
         {
@@ -42,27 +46,27 @@ namespace RuneMagic
             }
 
             Heading = heading.sqrMagnitude < 0.0001f ? Vector3.right : heading.normalized;
+            _born = Time.time;
             ShowAltar();
         }
 
         void ShowAltar()
         {
-            var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Plaque();
-            renderer.sortingOrder = 4;
             var rune = Sequence.Length > 0 ? Sequence[0] : RuneId.None;
-            var tint = rune == RuneId.None ? new Color(0.85f, 0.78f, 0.55f) : RunePalette.Of(rune);
-            renderer.color = Color.Lerp(Color.white, tint, 0.35f);
-            FixtureGlow.Attach(transform, new Color(tint.r, tint.g, tint.b, 0.55f), 1.35f, 0.1f);
+            RuneSign.MountAltar(transform, rune);
+            _picture = transform.Find("Nature");
+            _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 0.95f, 0f));
+        }
 
-            var names = new string[Sequence.Length];
-            for (var i = 0; i < Sequence.Length; i++)
+        void LateUpdate()
+        {
+            if (_name != null)
             {
-                names[i] = RuneCatalog.NameOf(Sequence[i]).ToUpperInvariant();
+                _name.gameObject.SetActive(GlyphView.IsDevelop);
             }
 
-            var title = names.Length == 0 ? "RUNE" : string.Join(" · ", names);
-            WorldLabel.Attach(transform, title, new Vector3(0f, 0.72f, 0f), tint);
+            var rune = Sequence != null && Sequence.Length > 0 ? Sequence[0] : RuneId.None;
+            RuneSign.Pulse(_picture, rune, Time.time - _born);
         }
 
         public void Collect(List<RuneId> buffer)

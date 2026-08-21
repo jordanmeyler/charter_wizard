@@ -86,6 +86,8 @@
       <div class="row">
         <button class="tool" data-prop="plaque">Plaque</button>
         <button class="tool" data-prop="runes">Runes</button>
+        <button class="tool" data-prop="inscription">Inscription</button>
+        <button class="tool" data-prop="pillar">Pillar</button>
         <button class="tool" data-prop="charm">Charm</button>
         <button class="tool" data-prop="mite">Mite</button>
         <button class="tool" data-prop="torch">Torch</button>
@@ -154,7 +156,7 @@
       ["Snow", "#e0e6f0"], ["Glacier", "#b3d1e0"], ["Acid", "#8cb82e"], ["Water", "#2e619e"], ["Plant", "#386b29"] ]
     ];
     const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
-    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
+    const PROP_MARK = { plaque: "P", runes: "R", inscription: "n", pillar: "Λ", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
 
     const SANCTUM = {
       id: "sanctum", name: "The Sanctum", spawn: { x: 2, y: 5 },
@@ -265,10 +267,12 @@
         room.props = room.props.filter(p => !(p.x === x && p.y === y));
         const prop = { type: propTool, x, y };
         if (propTool === "plaque") prop.text = document.getElementById("propText").value;
-        if (propTool === "runes") {
+        if (propTool === "runes" || propTool === "inscription" || propTool === "pillar") {
           prop.runes = document.getElementById("propRunes").value.split(",").map(s => s.trim()).filter(Boolean);
-          prop.dir = document.getElementById("propDir").value || "right";
-          prop.text = document.getElementById("propText").value;
+          if (propTool === "runes") {
+            prop.dir = document.getElementById("propDir").value || "right";
+            prop.text = document.getElementById("propText").value;
+          }
         }
         if (propTool === "arrows") {
           prop.dir = document.getElementById("propDir").value || "south";
