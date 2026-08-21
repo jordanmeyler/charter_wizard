@@ -84,7 +84,9 @@ namespace RuneMagic
         Confuse,
         Freeze,
         Snowstorm,
-        IceWall
+        IceWall,
+        Push,
+        LightningStrike
     }
 
     public readonly struct SpellRecipe
@@ -157,6 +159,8 @@ namespace RuneMagic
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gust, "Gust", "Compressed. Catalog: Air · Mercury. Breath sent.");
+            Register(RuneId.Air, RuneId.Salt, SpellShape.Shot, SpellId.Push, "Push", "Compressed. Catalog: Air · Salt · Mercury. Breath given a body and sent. Wind that pushes.");
+            Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Remote, SpellId.LightningStrike, "Lightning strike", "Compressed. Catalog: Fire · Air · Salt · Air · Mercury. A spark given form from the air, falling from the sky.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Mercury · Salt. You fly.");

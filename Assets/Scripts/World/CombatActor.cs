@@ -616,6 +616,12 @@ namespace RuneMagic
             ShowMindChip();
         }
 
+        public void PlaceAt(Vector3 world)
+        {
+            transform.position = world;
+            _idleOrigin = world;
+        }
+
         bool StepToward(Vector3 world, float speed = 0f)
         {
             if (_status != null && _status.BlocksMove)

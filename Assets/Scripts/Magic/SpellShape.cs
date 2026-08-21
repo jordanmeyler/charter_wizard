@@ -160,7 +160,7 @@ namespace RuneMagic
                 case SpellShape.Remote:
                     return IsAny(material, RuneId.Earth, RuneId.Water, RuneId.Ice, RuneId.Stone);
                 case SpellShape.Shot:
-                    return IsAny(material, RuneId.Earth, RuneId.Ice, RuneId.Stone);
+                    return IsAny(material, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Air);
                 case SpellShape.Self:
                     return material == RuneId.Air;
                 default:

@@ -24,10 +24,11 @@ PITS = [
     "HurledStone",
 ]
 ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
-WIND = ["Gust", "Gale", "StormCall", "Flight"]
+WIND = ["Gust", "Gale", "Push", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
 SPARK = [
     "LightningBolt",
+    "LightningStrike",
     "LiveFloor",
     "Jolt",
     "BrilliantArc",
@@ -38,10 +39,12 @@ SPARK = [
 ]
 ATTACK = [
     "Fireball",
+    "FlamePillar",
     "Douse",
     "WaterJet",
     "HurledStone",
     "LightningBolt",
+    "LightningStrike",
     "IceSpear",
     "Gale",
     "Gust",
