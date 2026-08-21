@@ -95,8 +95,6 @@ namespace RuneMagic
 
         public const float PoisonKillSeconds = 6f;
 
-        public static bool NeedsFocus(StatusId id) => Of(id).NeedsFocus;
-
         public static StatusSpec Of(StatusId id)
         {
             switch (id)
@@ -172,7 +170,7 @@ namespace RuneMagic
         public StatusInstance(StatusId id, float seconds, Component caster = null)
         {
             Id = id;
-            Remaining = StatusSpec.NeedsFocus(id) ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
+            Remaining = StatusSpec.Of(id).NeedsFocus ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
             Caster = caster;
         }
 
