@@ -25,6 +25,8 @@ namespace RuneMagic
         string[] _requires;
         string _resolvedNote;
         SanctumDirector _director;
+        WorldGrid _grid;
+        Vector2Int[] _doors;
         float _pulse;
 
         public void Bind(
@@ -33,13 +35,24 @@ namespace RuneMagic
             string[] requires,
             bool finishesFloor,
             string resolvedNote,
-            string spriteId)
+            string spriteId,
+            WorldGrid grid = null,
+            IList<Vector2Int> doors = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
             _requires = requires ?? System.Array.Empty<string>();
             FinishesFloor = finishesFloor;
             _resolvedNote = resolvedNote;
+            _grid = grid;
+            _doors = doors != null ? new Vector2Int[doors.Count] : System.Array.Empty<Vector2Int>();
+            if (doors != null)
+            {
+                for (var i = 0; i < doors.Count; i++)
+                {
+                    _doors[i] = doors[i];
+                }
+            }
 
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             var art = string.IsNullOrEmpty(spriteId) ? "socket-gate" : spriteId;
@@ -74,9 +87,23 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
+            OpenDoors();
             return string.IsNullOrEmpty(_resolvedNote)
                 ? $"{DisplayName} takes the stones it asked for. The way opens."
                 : _resolvedNote;
+        }
+
+        void OpenDoors()
+        {
+            if (_grid == null || _doors == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _doors.Length; i++)
+            {
+                _grid.Get(_doors[i])?.OpenDoor();
+            }
         }
 
         void Update()

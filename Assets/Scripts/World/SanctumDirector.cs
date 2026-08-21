@@ -41,7 +41,8 @@ namespace RuneMagic
         public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
         public bool CanMove =>
-            (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming || Mode == PlayMode.Charter) && !Busy;
+            (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming || Mode == PlayMode.Charter)
+            && !Busy && !GameHud.EditingName;
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -146,6 +147,12 @@ namespace RuneMagic
             if (Underfoot != null && (Underfoot.Kind == TileKind.Floor || Underfoot.Kind == TileKind.Bridge))
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
+                if (Mode == PlayMode.Paused || GameHud.EditingName)
+                {
+                    FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
+                    return;
+                }
+
                 var host = StatusHost.On(player);
                 if (Underfoot.Fire > 0.35f)
                 {
@@ -167,13 +174,23 @@ namespace RuneMagic
 
         void HandleInput()
         {
+            if (GameHud.EditingName)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    GameHud.CancelNaming();
+                }
+
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 ToggleSight();
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.K) && !GameHud.EditingName
+            if (Input.GetKeyDown(KeyCode.K)
                 && Mode != PlayMode.Paused && Mode != PlayMode.Inventory)
             {
                 YieldSelf();
@@ -423,6 +440,19 @@ namespace RuneMagic
             _modeBeforePause = Mode;
             Mode = PlayMode.Paused;
             Time.timeScale = 0f;
+        }
+
+        public void PauseForNaming()
+        {
+            Time.timeScale = 0f;
+        }
+
+        public void ResumeFromNaming()
+        {
+            if (Mode != PlayMode.Paused)
+            {
+                Time.timeScale = 1f;
+            }
         }
 
         public void OpenGrimoire()

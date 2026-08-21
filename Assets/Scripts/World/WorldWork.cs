@@ -517,7 +517,132 @@ namespace RuneMagic
                 }
             }
 
+            if (IsWaterWork(spell))
+            {
+                var filled = FillSmallPits(grid, cells);
+                if (filled > 0)
+                {
+                    notes.Add(filled == 1
+                        ? "Yield takes a small hollow and stands as a floor."
+                        : "Yield fills the small hollows. Water · Salt holds as a floor.");
+                }
+            }
+
             return FirstFilled(notes);
+        }
+
+        public const int SmallPitSpan = 4;
+
+        /// <summary>
+        /// Water · Salt is a floor. A connected pit smaller than 4×4
+        /// takes that floor when yield finds it.
+        /// </summary>
+        public static int FillSmallPits(WorldGrid grid, List<Vector2Int> seeds)
+        {
+            if (grid == null || seeds == null || seeds.Count == 0)
+            {
+                return 0;
+            }
+
+            var seen = new HashSet<Vector2Int>();
+            var filled = 0;
+            for (var i = 0; i < seeds.Count; i++)
+            {
+                var start = seeds[i];
+                if (!seen.Add(start))
+                {
+                    continue;
+                }
+
+                var tile = grid.Get(start);
+                if (tile == null || tile.Kind != TileKind.Pit)
+                {
+                    continue;
+                }
+
+                var cluster = FloodPits(grid, start, seen);
+                if (!IsSmallPit(cluster))
+                {
+                    continue;
+                }
+
+                for (var c = 0; c < cluster.Count; c++)
+                {
+                    var pit = grid.Get(cluster[c]);
+                    if (pit == null || pit.Kind != TileKind.Pit)
+                    {
+                        continue;
+                    }
+
+                    pit.BecomeWalkable(MaterialId.Water);
+                    pit.Drench(1f);
+                    filled++;
+                }
+            }
+
+            return filled;
+        }
+
+        static List<Vector2Int> FloodPits(WorldGrid grid, Vector2Int start, HashSet<Vector2Int> seen)
+        {
+            var cluster = new List<Vector2Int>();
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(start);
+            seen.Add(start);
+            while (queue.Count > 0)
+            {
+                var cell = queue.Dequeue();
+                var tile = grid.Get(cell);
+                if (tile == null || tile.Kind != TileKind.Pit)
+                {
+                    continue;
+                }
+
+                cluster.Add(cell);
+                TryEnqueuePit(grid, seen, queue, cell.x + 1, cell.y);
+                TryEnqueuePit(grid, seen, queue, cell.x - 1, cell.y);
+                TryEnqueuePit(grid, seen, queue, cell.x, cell.y + 1);
+                TryEnqueuePit(grid, seen, queue, cell.x, cell.y - 1);
+            }
+
+            return cluster;
+        }
+
+        static void TryEnqueuePit(WorldGrid grid, HashSet<Vector2Int> seen, Queue<Vector2Int> queue, int x, int y)
+        {
+            var cell = new Vector2Int(x, y);
+            if (!seen.Add(cell))
+            {
+                return;
+            }
+
+            var tile = grid.Get(cell);
+            if (tile != null && tile.Kind == TileKind.Pit)
+            {
+                queue.Enqueue(cell);
+            }
+        }
+
+        static bool IsSmallPit(List<Vector2Int> cluster)
+        {
+            if (cluster == null || cluster.Count == 0)
+            {
+                return false;
+            }
+
+            var minX = cluster[0].x;
+            var maxX = cluster[0].x;
+            var minY = cluster[0].y;
+            var maxY = cluster[0].y;
+            for (var i = 1; i < cluster.Count; i++)
+            {
+                minX = Mathf.Min(minX, cluster[i].x);
+                maxX = Mathf.Max(maxX, cluster[i].x);
+                minY = Mathf.Min(minY, cluster[i].y);
+                maxY = Mathf.Max(maxY, cluster[i].y);
+            }
+
+            return (maxX - minX + 1) < SmallPitSpan && (maxY - minY + 1) < SmallPitSpan;
         }
 
         static bool IsSpreadWork(SpellId spell)

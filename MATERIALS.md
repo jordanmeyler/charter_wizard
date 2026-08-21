@@ -56,7 +56,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | Material | Signature | Manifestation | Note |
 | --- | --- | --- | --- |
 | **Ice** | Water · Salt · Earth · Ice | Ice | Hard water. Thaws. Not Death. |
-| **Water** | Water · Salt | Water | A pool — yield holding a vessel |
+| **Water** | Water · Salt | Water | A pool — yield holding a vessel. **Walkable floor.** Water work fills a connected pit smaller than 4×4 and leaves this floor. |
 | **Mud** | Water · Earth · Mud | Mud | Soft ground |
 | **Sand** | Water · Earth · Mud · Air · Sand | Sand | Mud given breath until it dries |
 | **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight |
@@ -91,7 +91,7 @@ Oil, gas, bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grav
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
 | **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
+Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across an adjacent pit**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
 
 | Material | Flam | Cond | Note |
 | --- | --- | --- | --- |

@@ -6,7 +6,8 @@ namespace RuneMagic
     {
         None,
         Golem,
-        Wizard
+        Wizard,
+        Archer
     }
 
     public enum ShotAllegiance
@@ -39,6 +40,7 @@ namespace RuneMagic
         SpriteRenderer _sprite;
         SpriteAnim _anim;
         TextMesh _castChip;
+        RuneId[] _castRecipe = System.Array.Empty<RuneId>();
         float _reach = 1.2f;
         float _sight = 8.2f;
         float _walk = 2.6f;
@@ -51,7 +53,7 @@ namespace RuneMagic
         Transform _confusedMark;
         SanctumDirector _director;
 
-        public void Bind(CombatKind kind, float castSeconds, WorldGrid grid)
+        public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
             Kind = kind;
             CastSeconds = Mathf.Max(0.35f, castSeconds);
@@ -64,6 +66,7 @@ namespace RuneMagic
             _anim = GetComponent<SpriteAnim>() ?? SpriteAnim.On(gameObject, _sprite);
             _restScale = transform.localScale;
             _idleOrigin = transform.position;
+            _castRecipe = RecipeOf(kind, castRecipe);
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
                 new Color(1f, 0.72f, 0.28f), 14);
             if (_castChip != null)
@@ -78,6 +81,29 @@ namespace RuneMagic
                 {
                     CastSeconds = Mathf.Max(0.7f, castSeconds <= 2.01f ? 0.85f : castSeconds);
                 }
+            }
+
+            if (kind == CombatKind.Archer)
+            {
+                CastSeconds = Mathf.Max(0.45f, castSeconds <= 2.01f ? 1.15f : castSeconds);
+            }
+        }
+
+        static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
+        {
+            if (written != null && written.Length > 0)
+            {
+                return written;
+            }
+
+            switch (kind)
+            {
+                case CombatKind.Wizard:
+                    return new[] { RuneId.Fire, RuneId.Mercury };
+                case CombatKind.Archer:
+                    return new[] { RuneId.Earth, RuneId.Mercury };
+                default:
+                    return System.Array.Empty<RuneId>();
             }
         }
 
@@ -165,9 +191,9 @@ namespace RuneMagic
                 Face(toMark);
             }
 
-            if (Kind == CombatKind.Wizard)
+            if (Kind == CombatKind.Wizard || Kind == CombatKind.Archer)
             {
-                TickWizard(mark, toMark, distance);
+                TickCaster(mark, toMark, distance);
                 return;
             }
 
@@ -344,7 +370,7 @@ namespace RuneMagic
             Director()?.TurnLock(_lock);
         }
 
-        void TickWizard(Transform mark, Vector2 toMark, float distance)
+        void TickCaster(Transform mark, Vector2 toMark, float distance)
         {
             if (!_casting)
             {
@@ -360,8 +386,18 @@ namespace RuneMagic
 
             _windup += Time.deltaTime;
             var left = Mathf.Max(0f, CastSeconds - _windup);
-            ShowCast($"{MindVerb()} {left:0.0}");
-            _anim?.Play("warden-cast", 5f);
+            var mind = _status != null ? _status.MindAilment : StatusId.None;
+            if (mind != StatusId.None)
+            {
+                ShowCast($"{MindVerb()} {left:0.0}");
+            }
+            else
+            {
+                ShowCast(_castRecipe.Length > 0 ? string.Empty : $"casting… {left:0.0}");
+                ShowRunes();
+            }
+
+            _anim?.Play(Kind == CombatKind.Archer ? "warden" : "warden-cast", 5f);
             if (_windup < CastSeconds)
             {
                 return;
@@ -371,8 +407,9 @@ namespace RuneMagic
             _windup = 0f;
             _anim?.Play("warden", 4f);
             ClearCastChip();
+            var shot = Kind == CombatKind.Archer ? ProjectileKind.Arrow : ProjectileKind.Fireball;
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, ProjectileKind.Fireball, _grid, 6.4f, this, ShotOf());
+            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Arrow ? 7.4f : 6.4f, this, ShotOf());
         }
 
         void LandBlow(Transform mark, AdeptAvatar player)
@@ -572,9 +609,10 @@ namespace RuneMagic
 
         string MindVerb()
         {
+            var ranged = Kind == CombatKind.Wizard || Kind == CombatKind.Archer;
             if (_status == null)
             {
-                return Kind == CombatKind.Wizard ? "casting…" : "slam…";
+                return ranged ? "casting…" : "slam…";
             }
 
             if (_status.Has(StatusId.Raging))
@@ -584,7 +622,7 @@ namespace RuneMagic
 
             if (_status.Has(StatusId.Charmed))
             {
-                return Kind == CombatKind.Wizard ? "serves…" : "guards…";
+                return ranged ? "serves…" : "guards…";
             }
 
             if (_status.Has(StatusId.Confused))
@@ -592,7 +630,7 @@ namespace RuneMagic
                 return "confused…";
             }
 
-            return Kind == CombatKind.Wizard ? "casting…" : "slam…";
+            return ranged ? "casting…" : "slam…";
         }
 
         void ShowMindChip()
@@ -614,7 +652,7 @@ namespace RuneMagic
                 return "fire-golem";
             }
 
-            if (Kind == CombatKind.Wizard)
+            if (Kind == CombatKind.Wizard || Kind == CombatKind.Archer)
             {
                 return "warden";
             }
@@ -635,12 +673,25 @@ namespace RuneMagic
             }
         }
 
+        void ShowRunes()
+        {
+            if (_castRecipe == null || _castRecipe.Length == 0)
+            {
+                CastSign.Hide(transform);
+                return;
+            }
+
+            CastSign.Show(transform, _castRecipe, new Vector3(0f, 1.95f, 0f));
+        }
+
         void ClearCastChip()
         {
             if (_castChip != null)
             {
                 _castChip.text = string.Empty;
             }
+
+            CastSign.Hide(transform);
         }
     }
 }
