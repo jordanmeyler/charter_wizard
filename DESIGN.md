@@ -95,13 +95,13 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 
 | The sentence does this | Form | Example |
 |---|---|---|
-| Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. |
+| Asked to rest (Earth at the end of a standing body) | **Pillar** | Flame-pillar: Fire · Salt · **Earth**. Ice-pillar. Wall. Ice-wall: Ice · Salt · Ice. |
 | Sent *into* a thing, or placed away (a stood body, then Mercury) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
 | Hunger sent, or breath already in the chain, then sent | **Shot** | Fire: Fire · Mercury. Lightning: Fire · Air · Mercury. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight. Wards. |
 
-Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier.
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 

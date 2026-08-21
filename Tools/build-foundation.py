@@ -10,10 +10,11 @@ from pathlib import Path
 FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald"]
 ICE = FIRE + ["Thaw"]
 WATER = ["Douse", "WaterJet", "Rain", "Flood", "Smother"]
-GOLEM = WATER + ["Gale", "Quagmire", "Wall", "Pit", "Bridge", "IcePillar"]
+GOLEM = WATER + ["Gale", "Quagmire", "Wall", "IceWall", "Pit", "Bridge", "IcePillar"]
 PITS = [
     "EarthPillar",
     "Wall",
+    "IceWall",
     "Bridge",
     "FlamePillar",
     "IcePillar",
@@ -22,7 +23,7 @@ PITS = [
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["EarthPillar", "Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
+ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
 WIND = ["Gust", "Gale", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
 SPARK = [

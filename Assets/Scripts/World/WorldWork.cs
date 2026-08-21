@@ -26,7 +26,7 @@ namespace RuneMagic
             spell == SpellId.TimeStop;
 
         public static bool NeedsSpan(SpellId spell) =>
-            spell == SpellId.Wall;
+            spell == SpellId.Wall || spell == SpellId.IceWall;
 
         public static bool IsPillar(SpellId spell)
         {
@@ -34,6 +34,7 @@ namespace RuneMagic
             {
                 case SpellId.FlamePillar:
                 case SpellId.IcePillar:
+                case SpellId.IceWall:
                 case SpellId.Wall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
@@ -368,7 +369,7 @@ namespace RuneMagic
                 return MaterialId.Obsidian;
             }
 
-            if (spell == SpellId.IcePillar)
+            if (spell == SpellId.IcePillar || spell == SpellId.IceWall)
             {
                 return MaterialId.Ice;
             }

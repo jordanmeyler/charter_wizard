@@ -861,7 +861,9 @@ namespace RuneMagic
 
             if (WorldWork.NeedsSpan(spell))
             {
-                return "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
+                return spell == SpellId.IceWall
+                    ? "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Fire thaws ice."
+                    : "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
             }
 
             if (WorldWork.IsPillar(spell))

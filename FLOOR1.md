@@ -43,6 +43,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
 | 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
+| 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
+| 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
 
 ---
 
@@ -104,7 +106,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
-- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough.
+- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough. Ice-wall is Ice · Salt · Ice.
 - **Stone:** on the far ledge.
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
