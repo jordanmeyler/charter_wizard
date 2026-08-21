@@ -271,7 +271,6 @@ namespace RuneMagic
                 case MaterialId.Stone:
                 case MaterialId.SaltCrust:
                 case MaterialId.Scoured:
-                case MaterialId.Obsidian:
                 case MaterialId.Crystal:
                     return true;
                 default:
@@ -310,12 +309,18 @@ namespace RuneMagic
         /// <summary>
         /// A stood body only yields to an opposed element. Water melts a
         /// basic earth wall. Heat thaws ice — witchfire takes glacier.
-        /// Water ends a flame. Fire eats vine. A boulder or Shatter breaks
-        /// rock. Room ice still melts; other masonry is not a spell-body.
+        /// Melt bores stone and steel, even room masonry. Water ends a
+        /// flame. Fire eats vine. A boulder or Shatter breaks rock.
+        /// Obsidian will not take the work.
         /// </summary>
         public static bool Unmakes(SpellId spell, WorldTile tile)
         {
-            if (tile == null || !tile.IsConjured)
+            if (tile == null || MatterLaw.ResistsMagic(tile.Material))
+            {
+                return false;
+            }
+
+            if (!tile.IsConjured)
             {
                 return false;
             }

@@ -81,7 +81,7 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 **Fire · Salt · Earth** is Salt doing its job: hunger given a standing body and asked to rest. A pillar.
 
-**Fire · Salt · Mercury** is that stood body sent *into* a thing. Melt, not fire.
+**Fire · Salt · Mercury** is that stood body sent *into* a thing. Melt, not fire. It bores stone and steel walls — even the masonry of the room. Obsidian will not take it.
 
 **Fire · Air · Sulphur · Mercury** is the wildcard on the bolt. The same moving spark now reaches a mind. That is Jolt, not fire.
 
@@ -129,7 +129,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Grove** | Plant · Life | The vegetable body, marked living. | Growth, vine, thicket |
 | **Sand** | Dust · Salt | Grit given a body. | Grains |
 | **Glass** | Sand · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
-| **Obsidian** | Lava · Water · Salt | Hungry earth quenched and given a body. | Black glass. A path |
+| **Obsidian** | Lava · Water · Salt | Hungry earth quenched and given a body. | Black glass. A path. Melt, Shatter, and hunger's thaw will not take it |
 | **Ash** | Fire · Plant | What hunger leaves of a vegetable body. | Grey dust. Not grave-work |
 | **Wind** | Air · Mercury | Breath going. | A push |
 | **Current** | Water · Mercury | Yield going. | A flow |
@@ -165,7 +165,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Hunger sent. Fire that flies. Water thrown on it ends it. | Fireball | Fire · Mercury | — | Shot | Kill |
 | 2 | Hunger given a standing body and asked to rest. It stands. | Flame-pillar | Fire · Salt · Earth | — | Pillar | Kill / Neither |
-| 3 | A stood fire-body sent *into* a thing. Salt keeps it from flying. | Melt | Fire · Salt · Mercury | — | Remote | Neither |
+| 3 | A stood fire-body sent *into* a thing. Salt keeps it from flying. Stone and steel remember they were liquid. | Melt | Fire · Salt · Mercury | — | Remote | Neither |
 | 4 | Hunger needs breath; that breath is withheld. The flame cannot live. | Smother | Fire · Air · Dark | Spark · Dark | Remote | Neither |
 | 5 | Hunger is shown, given breath, and sent as a clean line. | Sun-lance | Fire · Light · Air · Mercury | Spark · Light · Mercury | Shot | Kill |
 | 6 | Hunger’s wildcard given a standing body — a wick that stays. | Ignite | Fire · Sulphur · Salt | — | Remote | Neither |
@@ -271,7 +271,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 69 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
 | 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
 
-Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass.
+Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Obsidian** refuses almost all of that work. Use it when a wall must stay.
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 

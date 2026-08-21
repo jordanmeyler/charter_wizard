@@ -375,11 +375,24 @@ namespace RuneMagic
 
         /// <summary>
         /// Heat finds this cell. Ice always yields to fire. Witchfire
-        /// takes glacier and glass. A stood body falls back to what was under it.
+        /// takes glacier and glass. Melt bores stone and steel, even a
+        /// room wall at the edge of the map — the cell opens. A stood
+        /// body falls back to what was under it. Obsidian will not hear it.
         /// </summary>
         public bool MeltWith(SpellId spell)
         {
-            if (Kind == TileKind.Door || !MatterLaw.Melts(spell, Material))
+            if (Kind == TileKind.Door
+                || MatterLaw.ResistsMagic(Material)
+                || !MatterLaw.Melts(spell, Material))
+            {
+                return false;
+            }
+
+            if (MatterLaw.IsMeltWork(spell)
+                && MatterLaw.IsBoreable(Material)
+                && Kind != TileKind.Wall
+                && !IsConjured
+                && !MatterLaw.CanMelt(Material, MatterLaw.HeatOf(spell)))
             {
                 return false;
             }

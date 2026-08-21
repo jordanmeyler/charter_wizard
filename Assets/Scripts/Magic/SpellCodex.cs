@@ -84,7 +84,7 @@ namespace RuneMagic
         {
             E(1, SpellBook.End, SpellId.Fireball, "Hunger sent. Fire that flies.", "Fireball", "Fire · Mercury", "", "Shot", SpellOutcome.Kill),
             E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "", "Pillar", SpellOutcome.Kill),
-            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying.", "Melt", "Fire · Salt · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying. Stone and steel remember they were liquid. Obsidian will not.", "Melt", "Fire · Salt · Mercury", "", "Remote", SpellOutcome.Neither),
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
             E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),

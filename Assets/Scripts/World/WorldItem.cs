@@ -83,10 +83,17 @@ namespace RuneMagic
                 return false;
             }
 
-            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material)
-                && MatterLaw.Melts(spell, material))
+            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material))
             {
-                return true;
+                if (MatterLaw.ResistsMagic(material))
+                {
+                    return false;
+                }
+
+                if (MatterLaw.Melts(spell, material))
+                {
+                    return true;
+                }
             }
 
             var matter = Matter != Essence.None ? Matter : Essence.Physical;
