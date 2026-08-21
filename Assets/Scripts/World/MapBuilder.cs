@@ -197,6 +197,12 @@ namespace RuneMagic
                 case "chasm":
                     BindLock(room, locks, SpawnChasm(prop, world, grid, room));
                     break;
+                case "barrier":
+                    BindLock(room, locks, SpawnBarrier(prop, world, grid, origin));
+                    break;
+                case "gate":
+                    BindLock(room, locks, SpawnGate(prop, world));
+                    break;
             }
         }
 
@@ -211,7 +217,9 @@ namespace RuneMagic
                 ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
                 ParseKeys(prop.keys, MiteKeys),
                 ensouled: false,
-                spriteId: prop.sprite);
+                spriteId: prop.sprite,
+                blocking: prop.blocking,
+                grantItem: prop.grant);
             return encounter;
         }
 
@@ -241,6 +249,56 @@ namespace RuneMagic
             var chasm = actor.AddComponent<PitChasm>();
             chasm.Bind(NameOf(prop, "Chasm"), IdOf(prop, "chasm"), ParseKeys(prop.keys, PitKeys), grid, pits);
             return chasm;
+        }
+
+        static BarrierLock SpawnBarrier(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Barrier"));
+            actor.transform.position = world;
+            var barrier = actor.AddComponent<BarrierLock>();
+            barrier.Bind(
+                NameOf(prop, "Barrier"),
+                IdOf(prop, "barrier"),
+                ParseKeys(prop.keys, TorchKeys),
+                ParseRunes(prop.formula),
+                grid,
+                LocalCells(origin, prop.cells),
+                prop.grant,
+                prop.clearMaterial,
+                prop.sprite,
+                prop.note);
+            return barrier;
+        }
+
+        static SocketGate SpawnGate(MapProp prop, Vector3 world)
+        {
+            var actor = new GameObject(NameOf(prop, "Gate"));
+            actor.transform.position = world;
+            var gate = actor.AddComponent<SocketGate>();
+            gate.Bind(
+                NameOf(prop, "Gate"),
+                IdOf(prop, "gate"),
+                prop.requires,
+                prop.finishes,
+                prop.note,
+                prop.sprite);
+            return gate;
+        }
+
+        static List<Vector2Int> LocalCells(Vector2Int origin, int[] cells)
+        {
+            var list = new List<Vector2Int>();
+            if (cells == null)
+            {
+                return list;
+            }
+
+            for (var i = 0; i + 1 < cells.Length; i += 2)
+            {
+                list.Add(new Vector2Int(origin.x + cells[i], origin.y + cells[i + 1]));
+            }
+
+            return list;
         }
 
         static List<Vector2Int> CollectPits(WorldGrid grid, RectInt bounds)
@@ -366,6 +424,8 @@ namespace RuneMagic
                     case "rod":
                     case "chasm":
                     case "charm":
+                    case "barrier":
+                    case "gate":
                         prop.type = item.kind;
                         break;
                     default:

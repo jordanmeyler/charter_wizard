@@ -25,14 +25,25 @@ namespace RuneMagic
         SpriteRenderer _renderer;
         Vector3 _rest;
         float _phase;
+        string _grant;
+        Collider2D _hit;
 
-        public void Bind(string displayName, string formulaId, RuneId[] formula, SpellId[] keys, bool ensouled, string spriteId = null)
+        public void Bind(
+            string displayName,
+            string formulaId,
+            RuneId[] formula,
+            SpellId[] keys,
+            bool ensouled,
+            string spriteId = null,
+            bool blocking = false,
+            string grantItem = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
             Formula = formula;
             AcceptedKeys = keys;
             Ensouled = ensouled;
+            _grant = grantItem;
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             _renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId);
@@ -44,8 +55,9 @@ namespace RuneMagic
             body.bodyType = RigidbodyType2D.Kinematic;
 
             var hit = gameObject.AddComponent<CircleCollider2D>();
-            hit.radius = 0.42f;
-            hit.isTrigger = true;
+            hit.radius = blocking ? 0.48f : 0.42f;
+            hit.isTrigger = !blocking;
+            _hit = hit;
             _rest = transform.position;
 
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 0.85f, 0f),
@@ -66,11 +78,17 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
+            if (_hit != null)
+            {
+                _hit.enabled = false;
+            }
+
             if (_renderer != null)
             {
                 _renderer.color = new Color(1f, 1f, 1f, 0.15f);
             }
 
+            LockReward.Grant(transform.position, _grant);
             Destroy(gameObject, 0.35f);
             return $"{DisplayName} unmakes. A simple lock; many keys would have turned it.";
         }

@@ -105,7 +105,9 @@ namespace RuneMagic
                         _renderer.sortingOrder = 3;
                         break;
                     case TileKind.Pit:
-                        _renderer.sprite = SpriteFactory.Pit(Coord.x, Coord.y);
+                        _renderer.sprite = Material == MaterialId.Water
+                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y)
+                            : SpriteFactory.Pit(Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:

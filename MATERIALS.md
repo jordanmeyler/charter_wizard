@@ -51,7 +51,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 
 ## Ready for later maps
 
-These already have tiles and a class. None of the four tutorial rooms use them yet.
+These already have tiles and a class. Floor 1 uses Ice and Water as hazards (ice seals, the Door I moat, the Ember Vault basin). The rest wait on later maps.
 
 | Material | Signature | Manifestation | Note |
 | --- | --- | --- | --- |

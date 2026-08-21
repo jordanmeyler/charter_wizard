@@ -34,6 +34,55 @@
       "sprite": "rod",
       "spriteLit": "rod-live",
       "keys": []
+    },
+    {
+      "id": "fire-stone",
+      "name": "Fire stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "A stone that remembers hunger. The Gate of Elements has a socket for it."
+    },
+    {
+      "id": "water-stone",
+      "name": "Water stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "A stone that remembers yield. The Gate of Elements has a socket for it."
+    },
+    {
+      "id": "earth-stone",
+      "name": "Earth stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "A stone that remembers rest. The Gate of Elements has a socket for it."
+    },
+    {
+      "id": "air-stone",
+      "name": "Air stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "A stone that remembers breath. The Gate of Elements has a socket for it."
+    },
+    {
+      "id": "body-stone",
+      "name": "Body stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "Salt, seated. The Gate of Aspects wants a standing body."
+    },
+    {
+      "id": "spirit-stone",
+      "name": "Spirit stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "Mercury, seated. The Gate of Aspects wants a thing that goes."
+    },
+    {
+      "id": "mind-stone",
+      "name": "Mind stone",
+      "kind": "key",
+      "sprite": "charm",
+      "note": "Sulphur, seated. The Gate of Aspects wants a mind."
     }
   ]
 }

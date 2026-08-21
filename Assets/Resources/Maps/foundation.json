@@ -1,0 +1,2133 @@
+{
+  "id": "foundation",
+  "name": "The Foundation",
+  "spawn": {
+    "x": 22,
+    "y": 2
+  },
+  "rooms": [
+    {
+      "exit": "north",
+      "stamps": [
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            4,
+            3,
+            5,
+            3,
+            4,
+            4,
+            5,
+            4,
+            6,
+            4
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Timber",
+          "cells": [
+            5,
+            7,
+            6,
+            7,
+            7,
+            7,
+            6,
+            8
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 4,
+          "y": 4,
+          "runes": [
+            "Fire"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "barrier",
+          "x": 6,
+          "y": 8,
+          "displayName": "Rope",
+          "formulaId": "rope",
+          "formula": [
+            "Fire"
+          ],
+          "keys": [
+            "Fireball",
+            "FlamePillar",
+            "Melt",
+            "Ignite",
+            "SunLance",
+            "Scald"
+          ],
+          "sprite": "torch",
+          "note": "Hunger finds the rope. The portcullis forgets why it was shut."
+        }
+      ],
+      "id": "antechamber",
+      "name": "Antechamber",
+      "origin": {
+        "x": 16,
+        "y": 0
+      },
+      "width": 13,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Stone",
+      "hint": "Read the labelled Fire. Hunger sent is the first verb."
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            13,
+            5,
+            14,
+            5,
+            15,
+            5,
+            13,
+            6,
+            14,
+            6,
+            15,
+            6,
+            13,
+            7,
+            14,
+            7,
+            15,
+            7
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            4,
+            6,
+            24,
+            6
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 3,
+          "y": 3,
+          "runes": [
+            "Fire"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "runes",
+          "x": 25,
+          "y": 3,
+          "runes": [
+            "Water"
+          ],
+          "dir": "left"
+        },
+        {
+          "type": "runes",
+          "x": 3,
+          "y": 9,
+          "runes": [
+            "Earth"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "runes",
+          "x": 25,
+          "y": 9,
+          "runes": [
+            "Air"
+          ],
+          "dir": "left"
+        }
+      ],
+      "id": "hub",
+      "name": "The Cross",
+      "origin": {
+        "x": 16,
+        "y": 15
+      },
+      "width": 29,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Wall",
+          "material": "Ice",
+          "cells": [
+            10,
+            2,
+            11,
+            2,
+            10,
+            3,
+            11,
+            3,
+            10,
+            4,
+            11,
+            4,
+            10,
+            5,
+            11,
+            5,
+            10,
+            6,
+            11,
+            6,
+            10,
+            7,
+            11,
+            7,
+            10,
+            8,
+            11,
+            8,
+            10,
+            9,
+            11,
+            9,
+            10,
+            10,
+            11,
+            10
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Ice",
+          "cells": [
+            2,
+            8,
+            3,
+            8,
+            4,
+            8,
+            2,
+            9,
+            4,
+            9,
+            2,
+            10,
+            3,
+            10,
+            4,
+            10
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            3,
+            2,
+            4,
+            2,
+            3,
+            3,
+            7,
+            11
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 3,
+          "y": 3,
+          "runes": [
+            "Fire"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "barrier",
+          "x": 10,
+          "y": 6,
+          "displayName": "Ice seal",
+          "formulaId": "ice-seal",
+          "formula": [
+            "Water",
+            "Salt",
+            "Earth"
+          ],
+          "keys": [
+            "Fireball",
+            "FlamePillar",
+            "Melt",
+            "Ignite",
+            "SunLance",
+            "Scald",
+            "Thaw"
+          ],
+          "cells": [
+            10,
+            2,
+            11,
+            2,
+            10,
+            3,
+            11,
+            3,
+            10,
+            4,
+            11,
+            4,
+            10,
+            5,
+            11,
+            5,
+            10,
+            6,
+            11,
+            6,
+            10,
+            7,
+            11,
+            7,
+            10,
+            8,
+            11,
+            8,
+            10,
+            9,
+            11,
+            9,
+            10,
+            10,
+            11,
+            10
+          ],
+          "clearMaterial": "Stone",
+          "sprite": "torch",
+          "note": "Hunger finds the hard water. The seal remembers yield."
+        },
+        {
+          "type": "mite",
+          "x": 7,
+          "y": 6,
+          "displayName": "Ice-thing",
+          "formulaId": "ice-thing",
+          "formula": [
+            "Water",
+            "Salt",
+            "Earth"
+          ],
+          "keys": [
+            "Fireball",
+            "FlamePillar",
+            "Melt",
+            "Ignite",
+            "SunLance",
+            "Scald",
+            "Thaw"
+          ],
+          "sprite": "ash-mite"
+        },
+        {
+          "type": "barrier",
+          "x": 3,
+          "y": 9,
+          "displayName": "Ice cage",
+          "formulaId": "ice-cage",
+          "formula": [
+            "Water",
+            "Salt",
+            "Earth"
+          ],
+          "keys": [
+            "Fireball",
+            "FlamePillar",
+            "Melt",
+            "Ignite",
+            "SunLance",
+            "Scald",
+            "Thaw"
+          ],
+          "cells": [
+            2,
+            8,
+            3,
+            8,
+            4,
+            8,
+            2,
+            9,
+            4,
+            9,
+            2,
+            10,
+            3,
+            10,
+            4,
+            10
+          ],
+          "clearMaterial": "Stone",
+          "sprite": "torch",
+          "note": "The cage thaws. A stone of hunger sits free."
+        },
+        {
+          "type": "item",
+          "x": 3,
+          "y": 9,
+          "item": "fire-stone"
+        }
+      ],
+      "id": "fire-wing",
+      "name": "The Frozen Hall",
+      "origin": {
+        "x": 0,
+        "y": 15
+      },
+      "width": 13,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Ice"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Wall",
+          "material": "Hearth",
+          "cells": [
+            1,
+            2,
+            2,
+            2,
+            1,
+            3,
+            2,
+            3,
+            1,
+            4,
+            2,
+            4,
+            1,
+            5,
+            2,
+            5,
+            1,
+            6,
+            2,
+            6,
+            1,
+            7,
+            2,
+            7,
+            1,
+            8,
+            2,
+            8,
+            1,
+            9,
+            2,
+            9,
+            1,
+            10,
+            2,
+            10
+          ]
+        },
+        {
+          "kind": "Pit",
+          "material": "Water",
+          "cells": [
+            10,
+            3,
+            11,
+            3,
+            12,
+            3,
+            13,
+            3,
+            14,
+            3,
+            15,
+            3,
+            10,
+            4,
+            11,
+            4,
+            12,
+            4,
+            13,
+            4,
+            14,
+            4,
+            15,
+            4,
+            10,
+            5,
+            11,
+            5,
+            12,
+            5,
+            13,
+            5,
+            14,
+            5,
+            15,
+            5,
+            10,
+            6,
+            11,
+            6,
+            12,
+            6,
+            13,
+            6,
+            14,
+            6,
+            15,
+            6,
+            10,
+            7,
+            11,
+            7,
+            12,
+            7,
+            13,
+            7,
+            14,
+            7,
+            15,
+            7,
+            10,
+            8,
+            11,
+            8,
+            12,
+            8,
+            13,
+            8,
+            14,
+            8,
+            15,
+            8,
+            10,
+            9,
+            11,
+            9,
+            12,
+            9,
+            13,
+            9,
+            14,
+            9,
+            15,
+            9
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            8,
+            2,
+            5,
+            10,
+            6,
+            10
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Ember",
+          "cells": [
+            4,
+            10,
+            7,
+            10
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 8,
+          "y": 2,
+          "runes": [
+            "Water"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "barrier",
+          "x": 2,
+          "y": 6,
+          "displayName": "Flame curtain",
+          "formulaId": "flame-curtain",
+          "formula": [
+            "Fire"
+          ],
+          "keys": [
+            "Douse",
+            "WaterJet",
+            "Rain",
+            "Flood",
+            "Smother"
+          ],
+          "cells": [
+            1,
+            2,
+            2,
+            2,
+            1,
+            3,
+            2,
+            3,
+            1,
+            4,
+            2,
+            4,
+            1,
+            5,
+            2,
+            5,
+            1,
+            6,
+            2,
+            6,
+            1,
+            7,
+            2,
+            7,
+            1,
+            8,
+            2,
+            8,
+            1,
+            9,
+            2,
+            9,
+            1,
+            10,
+            2,
+            10
+          ],
+          "clearMaterial": "Stone",
+          "sprite": "torch",
+          "note": "Yield thrown. The curtain forgets how to burn."
+        },
+        {
+          "type": "mite",
+          "x": 5,
+          "y": 6,
+          "displayName": "Fire Golem",
+          "formulaId": "fire-golem",
+          "formula": [
+            "Fire",
+            "Salt"
+          ],
+          "keys": [
+            "Douse",
+            "WaterJet",
+            "Rain",
+            "Flood",
+            "Smother",
+            "Gale",
+            "Quagmire",
+            "Wall",
+            "Pit",
+            "Bridge",
+            "IcePillar"
+          ],
+          "sprite": "ash-mite",
+          "blocking": true
+        },
+        {
+          "type": "barrier",
+          "x": 13,
+          "y": 6,
+          "displayName": "Sunken basin",
+          "formulaId": "sunken-basin",
+          "formula": [
+            "Water"
+          ],
+          "keys": [
+            "Flood",
+            "WaterJet",
+            "Rain",
+            "IcePillar",
+            "Douse"
+          ],
+          "cells": [
+            10,
+            3,
+            11,
+            3,
+            12,
+            3,
+            13,
+            3,
+            14,
+            3,
+            15,
+            3,
+            10,
+            4,
+            11,
+            4,
+            12,
+            4,
+            13,
+            4,
+            14,
+            4,
+            15,
+            4,
+            10,
+            5,
+            11,
+            5,
+            12,
+            5,
+            13,
+            5,
+            14,
+            5,
+            15,
+            5,
+            10,
+            6,
+            11,
+            6,
+            12,
+            6,
+            13,
+            6,
+            14,
+            6,
+            15,
+            6,
+            10,
+            7,
+            11,
+            7,
+            12,
+            7,
+            13,
+            7,
+            14,
+            7,
+            15,
+            7,
+            10,
+            8,
+            11,
+            8,
+            12,
+            8,
+            13,
+            8,
+            14,
+            8,
+            15,
+            8,
+            10,
+            9,
+            11,
+            9,
+            12,
+            9,
+            13,
+            9,
+            14,
+            9,
+            15,
+            9
+          ],
+          "clearMaterial": "Water",
+          "grant": "water-stone",
+          "sprite": "rod",
+          "note": "The basin rises. A stone of yield comes up with it."
+        }
+      ],
+      "id": "water-wing",
+      "name": "The Ember Vault",
+      "origin": {
+        "x": 49,
+        "y": 15
+      },
+      "width": 17,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Pit",
+          "material": "Void",
+          "cells": [
+            3,
+            7,
+            4,
+            7,
+            5,
+            7,
+            6,
+            7,
+            7,
+            7,
+            8,
+            7,
+            9,
+            7,
+            3,
+            8,
+            4,
+            8,
+            5,
+            8,
+            6,
+            8,
+            7,
+            8,
+            8,
+            8,
+            9,
+            8
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Metal",
+          "cells": [
+            1,
+            3,
+            2,
+            3,
+            3,
+            3,
+            4,
+            3,
+            1,
+            4,
+            2,
+            4,
+            3,
+            4,
+            4,
+            4,
+            1,
+            5,
+            2,
+            5,
+            3,
+            5,
+            4,
+            5,
+            1,
+            6,
+            2,
+            6,
+            3,
+            6,
+            4,
+            6
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Metal",
+          "cells": [
+            8,
+            3,
+            9,
+            3,
+            10,
+            3,
+            11,
+            3,
+            8,
+            4,
+            9,
+            4,
+            10,
+            4,
+            11,
+            4,
+            8,
+            5,
+            9,
+            5,
+            10,
+            5,
+            11,
+            5,
+            8,
+            6,
+            9,
+            6,
+            10,
+            6,
+            11,
+            6
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Metal",
+          "cells": [
+            5,
+            5,
+            6,
+            5,
+            7,
+            5
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            6,
+            2,
+            6,
+            9
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 6,
+          "y": 9,
+          "runes": [
+            "Earth"
+          ],
+          "dir": "up"
+        },
+        {
+          "type": "chasm",
+          "x": 6,
+          "y": 7,
+          "displayName": "Entry gap",
+          "formulaId": "earth-gap",
+          "keys": [
+            "Wall",
+            "Bridge",
+            "FlamePillar",
+            "IcePillar",
+            "VineRise",
+            "Hop",
+            "Flight",
+            "HurledStone"
+          ]
+        },
+        {
+          "type": "barrier",
+          "x": 6,
+          "y": 5,
+          "displayName": "Arrow volley",
+          "formulaId": "arrow-volley",
+          "formula": [
+            "Earth"
+          ],
+          "keys": [
+            "Wall",
+            "FlamePillar",
+            "IcePillar",
+            "VineRise",
+            "Bridge"
+          ],
+          "cells": [
+            5,
+            5,
+            6,
+            5,
+            7,
+            5
+          ],
+          "clearMaterial": "Stone",
+          "sprite": "rod",
+          "note": "Rest stands in the way of the arrows. The hall can be walked."
+        },
+        {
+          "type": "item",
+          "x": 6,
+          "y": 2,
+          "item": "earth-stone"
+        }
+      ],
+      "id": "earth-wing",
+      "name": "The Arrow Gauntlet",
+      "origin": {
+        "x": 33,
+        "y": 0
+      },
+      "width": 13,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Pit",
+          "material": "Void",
+          "cells": [
+            1,
+            8,
+            2,
+            8,
+            3,
+            8,
+            4,
+            8,
+            5,
+            8,
+            6,
+            8,
+            7,
+            8,
+            8,
+            8,
+            9,
+            8,
+            10,
+            8,
+            11,
+            8,
+            1,
+            9,
+            2,
+            9,
+            3,
+            9,
+            4,
+            9,
+            5,
+            9,
+            6,
+            9,
+            7,
+            9,
+            8,
+            9,
+            9,
+            9,
+            10,
+            9,
+            11,
+            9
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Steam",
+          "cells": [
+            1,
+            10,
+            2,
+            10,
+            3,
+            10,
+            4,
+            10,
+            5,
+            10,
+            6,
+            10,
+            7,
+            10,
+            8,
+            10,
+            9,
+            10,
+            10,
+            10,
+            11,
+            10
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Vein",
+          "cells": [
+            3,
+            3,
+            6,
+            3
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 3,
+          "y": 3,
+          "runes": [
+            "Air"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "chasm",
+          "x": 6,
+          "y": 8,
+          "displayName": "The rift",
+          "formulaId": "air-rift",
+          "keys": [
+            "Wall",
+            "Bridge",
+            "FlamePillar",
+            "IcePillar",
+            "VineRise",
+            "Hop",
+            "Flight",
+            "HurledStone"
+          ]
+        },
+        {
+          "type": "barrier",
+          "x": 6,
+          "y": 10,
+          "displayName": "Poison veil",
+          "formulaId": "poison-veil",
+          "formula": [
+            "Air"
+          ],
+          "keys": [
+            "Gale",
+            "StormCall",
+            "Flight"
+          ],
+          "cells": [
+            1,
+            10,
+            2,
+            10,
+            3,
+            10,
+            4,
+            10,
+            5,
+            10,
+            6,
+            10,
+            7,
+            10,
+            8,
+            10,
+            9,
+            10,
+            10,
+            10,
+            11,
+            10
+          ],
+          "clearMaterial": "Scoured",
+          "sprite": "rod",
+          "note": "Breath going pushes the veil out. The chamber can be entered."
+        },
+        {
+          "type": "item",
+          "x": 6,
+          "y": 11,
+          "item": "air-stone"
+        }
+      ],
+      "id": "air-wing",
+      "name": "The Sundered Heights",
+      "origin": {
+        "x": 0,
+        "y": 32
+      },
+      "width": 13,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Scoured"
+    },
+    {
+      "exit": "north",
+      "stamps": [
+        {
+          "kind": "Pit",
+          "material": "Void",
+          "cells": [
+            1,
+            1,
+            2,
+            1,
+            3,
+            1,
+            4,
+            1,
+            5,
+            1,
+            6,
+            1,
+            7,
+            1,
+            8,
+            1,
+            1,
+            2,
+            2,
+            2,
+            3,
+            2,
+            4,
+            2,
+            5,
+            2,
+            6,
+            2,
+            7,
+            2,
+            8,
+            2,
+            1,
+            3,
+            2,
+            3,
+            3,
+            3,
+            4,
+            3,
+            5,
+            3,
+            6,
+            3,
+            7,
+            3,
+            8,
+            3,
+            1,
+            4,
+            2,
+            4,
+            3,
+            4,
+            4,
+            4,
+            5,
+            4,
+            6,
+            4,
+            7,
+            4,
+            8,
+            4,
+            1,
+            5,
+            2,
+            5,
+            3,
+            5,
+            4,
+            5,
+            5,
+            5,
+            6,
+            5,
+            7,
+            5,
+            8,
+            5,
+            1,
+            6,
+            2,
+            6,
+            3,
+            6,
+            4,
+            6,
+            5,
+            6,
+            6,
+            6,
+            7,
+            6,
+            8,
+            6,
+            1,
+            7,
+            2,
+            7,
+            3,
+            7,
+            4,
+            7,
+            5,
+            7,
+            6,
+            7,
+            7,
+            7,
+            8,
+            7,
+            1,
+            8,
+            2,
+            8,
+            3,
+            8,
+            4,
+            8,
+            5,
+            8,
+            6,
+            8,
+            7,
+            8,
+            8,
+            8,
+            1,
+            9,
+            2,
+            9,
+            3,
+            9,
+            4,
+            9,
+            5,
+            9,
+            6,
+            9,
+            7,
+            9,
+            8,
+            9,
+            1,
+            10,
+            2,
+            10,
+            3,
+            10,
+            4,
+            10,
+            5,
+            10,
+            6,
+            10,
+            7,
+            10,
+            8,
+            10,
+            1,
+            11,
+            2,
+            11,
+            3,
+            11,
+            4,
+            11,
+            5,
+            11,
+            6,
+            11,
+            7,
+            11,
+            8,
+            11
+          ]
+        },
+        {
+          "kind": "Pit",
+          "material": "Water",
+          "cells": [
+            20,
+            1,
+            21,
+            1,
+            22,
+            1,
+            23,
+            1,
+            24,
+            1,
+            25,
+            1,
+            26,
+            1,
+            27,
+            1,
+            20,
+            2,
+            21,
+            2,
+            22,
+            2,
+            23,
+            2,
+            24,
+            2,
+            25,
+            2,
+            26,
+            2,
+            27,
+            2,
+            20,
+            3,
+            21,
+            3,
+            22,
+            3,
+            23,
+            3,
+            24,
+            3,
+            25,
+            3,
+            26,
+            3,
+            27,
+            3,
+            20,
+            4,
+            21,
+            4,
+            22,
+            4,
+            23,
+            4,
+            24,
+            4,
+            25,
+            4,
+            26,
+            4,
+            27,
+            4,
+            20,
+            5,
+            21,
+            5,
+            22,
+            5,
+            23,
+            5,
+            24,
+            5,
+            25,
+            5,
+            26,
+            5,
+            27,
+            5,
+            20,
+            6,
+            21,
+            6,
+            22,
+            6,
+            23,
+            6,
+            24,
+            6,
+            25,
+            6,
+            26,
+            6,
+            27,
+            6,
+            20,
+            7,
+            21,
+            7,
+            22,
+            7,
+            23,
+            7,
+            24,
+            7,
+            25,
+            7,
+            26,
+            7,
+            27,
+            7,
+            20,
+            8,
+            21,
+            8,
+            22,
+            8,
+            23,
+            8,
+            24,
+            8,
+            25,
+            8,
+            26,
+            8,
+            27,
+            8,
+            20,
+            9,
+            21,
+            9,
+            22,
+            9,
+            23,
+            9,
+            24,
+            9,
+            25,
+            9,
+            26,
+            9,
+            27,
+            9,
+            20,
+            10,
+            21,
+            10,
+            22,
+            10,
+            23,
+            10,
+            24,
+            10,
+            25,
+            10,
+            26,
+            10,
+            27,
+            10,
+            20,
+            11,
+            21,
+            11,
+            22,
+            11,
+            23,
+            11,
+            24,
+            11,
+            25,
+            11,
+            26,
+            11,
+            27,
+            11
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            14,
+            3,
+            13,
+            3,
+            15,
+            3
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Stone",
+          "cells": [
+            3,
+            12,
+            4,
+            12,
+            5,
+            12,
+            23,
+            12,
+            24,
+            12,
+            25,
+            12
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "gate",
+          "x": 14,
+          "y": 10,
+          "displayName": "Gate of Elements",
+          "formulaId": "door-i",
+          "requires": [
+            "fire-stone",
+            "water-stone",
+            "earth-stone",
+            "air-stone"
+          ],
+          "sprite": "rod",
+          "note": "Four sockets take four stones. The gate of elements opens."
+        }
+      ],
+      "id": "door-i",
+      "name": "Gate of Elements",
+      "origin": {
+        "x": 16,
+        "y": 32
+      },
+      "width": 29,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            7,
+            6,
+            8,
+            6
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Vein",
+          "cells": [
+            14,
+            6,
+            15,
+            6
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Hearth",
+          "cells": [
+            21,
+            6,
+            22,
+            6
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 7,
+          "y": 6,
+          "runes": [
+            "Salt"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "runes",
+          "x": 14,
+          "y": 6,
+          "runes": [
+            "Mercury"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "runes",
+          "x": 21,
+          "y": 6,
+          "runes": [
+            "Sulphur"
+          ],
+          "dir": "right"
+        }
+      ],
+      "id": "aspect-foyer",
+      "name": "Aspect Antechamber",
+      "origin": {
+        "x": 16,
+        "y": 49
+      },
+      "width": 29,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Pit",
+          "material": "Void",
+          "cells": [
+            1,
+            8,
+            2,
+            8,
+            3,
+            8,
+            4,
+            8,
+            5,
+            8,
+            6,
+            8,
+            7,
+            8,
+            8,
+            8,
+            9,
+            8,
+            10,
+            8,
+            11,
+            8,
+            1,
+            9,
+            2,
+            9,
+            3,
+            9,
+            4,
+            9,
+            5,
+            9,
+            6,
+            9,
+            7,
+            9,
+            8,
+            9,
+            9,
+            9,
+            10,
+            9,
+            11,
+            9
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            6,
+            3,
+            6,
+            11,
+            5,
+            11,
+            7,
+            11
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 6,
+          "y": 3,
+          "runes": [
+            "Salt"
+          ],
+          "dir": "up"
+        },
+        {
+          "type": "chasm",
+          "x": 6,
+          "y": 8,
+          "displayName": "The standing gap",
+          "formulaId": "body-gap",
+          "keys": [
+            "Wall",
+            "Bridge",
+            "FlamePillar",
+            "IcePillar",
+            "VineRise",
+            "Hop",
+            "Flight",
+            "HurledStone"
+          ]
+        },
+        {
+          "type": "item",
+          "x": 6,
+          "y": 11,
+          "item": "body-stone"
+        }
+      ],
+      "id": "body-sanctum",
+      "name": "The Standing Stone",
+      "origin": {
+        "x": 0,
+        "y": 49
+      },
+      "width": 13,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Floor",
+          "material": "Vein",
+          "cells": [
+            8,
+            6,
+            3,
+            3,
+            9,
+            6
+          ]
+        },
+        {
+          "kind": "Wall",
+          "material": "Metal",
+          "cells": [
+            6,
+            4,
+            10,
+            4,
+            6,
+            8,
+            10,
+            8
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 3,
+          "y": 3,
+          "runes": [
+            "Mercury"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "mite",
+          "x": 8,
+          "y": 6,
+          "displayName": "Warden",
+          "formulaId": "spirit-warden",
+          "formula": [
+            "Earth",
+            "Salt"
+          ],
+          "keys": [
+            "Fireball",
+            "Douse",
+            "WaterJet",
+            "HurledStone",
+            "LightningBolt",
+            "IceSpear",
+            "Gale",
+            "SunLance",
+            "Scald"
+          ],
+          "sprite": "ash-mite",
+          "blocking": true,
+          "grant": "spirit-stone"
+        }
+      ],
+      "id": "spirit-sanctum",
+      "name": "The Gallery of Force",
+      "origin": {
+        "x": 49,
+        "y": 49
+      },
+      "width": 17,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "none",
+      "stamps": [
+        {
+          "kind": "Wall",
+          "material": "Stone",
+          "cells": [
+            13,
+            3,
+            13,
+            4,
+            13,
+            5,
+            13,
+            6,
+            13,
+            7,
+            13,
+            8,
+            13,
+            9,
+            15,
+            3,
+            15,
+            4,
+            15,
+            5,
+            15,
+            6,
+            15,
+            7,
+            15,
+            8,
+            15,
+            9
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Crystal",
+          "cells": [
+            14,
+            11,
+            8,
+            3
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "runes",
+          "x": 8,
+          "y": 3,
+          "runes": [
+            "Sulphur"
+          ],
+          "dir": "right"
+        },
+        {
+          "type": "mite",
+          "x": 14,
+          "y": 4,
+          "displayName": "Stone man",
+          "formulaId": "stone-man",
+          "formula": [
+            "Earth",
+            "Salt"
+          ],
+          "keys": [
+            "Rage",
+            "Lull",
+            "Terror",
+            "Command",
+            "Jolt"
+          ],
+          "sprite": "ash-mite",
+          "blocking": true
+        },
+        {
+          "type": "mite",
+          "x": 14,
+          "y": 6,
+          "displayName": "Stone man",
+          "formulaId": "stone-man",
+          "formula": [
+            "Earth",
+            "Salt"
+          ],
+          "keys": [
+            "Rage",
+            "Lull",
+            "Terror",
+            "Command",
+            "Jolt"
+          ],
+          "sprite": "ash-mite",
+          "blocking": true
+        },
+        {
+          "type": "mite",
+          "x": 14,
+          "y": 8,
+          "displayName": "Stone man",
+          "formulaId": "stone-man",
+          "formula": [
+            "Earth",
+            "Salt"
+          ],
+          "keys": [
+            "Rage",
+            "Lull",
+            "Terror",
+            "Command",
+            "Jolt"
+          ],
+          "sprite": "ash-mite",
+          "blocking": true
+        },
+        {
+          "type": "item",
+          "x": 14,
+          "y": 11,
+          "item": "mind-stone"
+        }
+      ],
+      "id": "mind-sanctum",
+      "name": "The Silent Court",
+      "origin": {
+        "x": 16,
+        "y": 66
+      },
+      "width": 29,
+      "height": 13,
+      "wall": "Stone",
+      "floor": "Stone"
+    },
+    {
+      "exit": "north",
+      "stamps": [
+        {
+          "kind": "Floor",
+          "material": "Crystal",
+          "cells": [
+            8,
+            4,
+            9,
+            4,
+            10,
+            4,
+            11,
+            4,
+            12,
+            4,
+            8,
+            5,
+            9,
+            5,
+            10,
+            5,
+            11,
+            5,
+            12,
+            5,
+            8,
+            6,
+            9,
+            6,
+            10,
+            6,
+            11,
+            6,
+            12,
+            6
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "SaltCrust",
+          "cells": [
+            10,
+            8
+          ]
+        }
+      ],
+      "props": [
+        {
+          "type": "gate",
+          "x": 10,
+          "y": 7,
+          "displayName": "Gate of Aspects",
+          "formulaId": "door-ii",
+          "requires": [
+            "body-stone",
+            "spirit-stone",
+            "mind-stone"
+          ],
+          "finishes": true,
+          "sprite": "rod",
+          "note": "Body, spirit, and mind take their seats. The floor opens."
+        }
+      ],
+      "id": "door-ii",
+      "name": "Gate of Aspects",
+      "origin": {
+        "x": 16,
+        "y": 83
+      },
+      "width": 21,
+      "height": 11,
+      "wall": "Stone",
+      "floor": "Stone"
+    }
+  ],
+  "halls": [
+    {
+      "from": "antechamber",
+      "to": "hub",
+      "material": "Stone"
+    },
+    {
+      "from": "earth-wing",
+      "to": "hub",
+      "material": "Stone"
+    },
+    {
+      "from": "fire-wing",
+      "to": "hub",
+      "material": "Ice"
+    },
+    {
+      "from": "hub",
+      "to": "water-wing",
+      "material": "Stone"
+    },
+    {
+      "from": "fire-wing",
+      "to": "air-wing",
+      "material": "Scoured"
+    },
+    {
+      "from": "hub",
+      "to": "door-i",
+      "material": "Stone"
+    },
+    {
+      "from": "air-wing",
+      "to": "door-i",
+      "material": "Scoured"
+    },
+    {
+      "from": "door-i",
+      "to": "aspect-foyer",
+      "material": "Stone"
+    },
+    {
+      "from": "body-sanctum",
+      "to": "aspect-foyer",
+      "material": "SaltCrust"
+    },
+    {
+      "from": "aspect-foyer",
+      "to": "spirit-sanctum",
+      "material": "Vein"
+    },
+    {
+      "from": "aspect-foyer",
+      "to": "mind-sanctum",
+      "material": "Stone"
+    },
+    {
+      "from": "mind-sanctum",
+      "to": "door-ii",
+      "material": "Crystal"
+    }
+  ]
+}
