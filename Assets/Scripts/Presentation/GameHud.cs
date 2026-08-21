@@ -79,7 +79,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (mouse.x <= 560f && mouse.y >= Screen.height - 168f)
+            if (mouse.x <= 560f && mouse.y >= Screen.height - 196f)
             {
                 return true;
             }
@@ -160,34 +160,34 @@ namespace RuneMagic
 
         void DrawWorldChrome()
         {
-            DrawPanel(12, 12, 560, 168);
+            DrawPanel(12, 12, 560, 196);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
+            var look = Label(15, FontStyle.Italic, new Color(0.9f, 0.86f, 0.74f));
 
-            GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
-            GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 66, 400, 22), PackLine(), body);
-            if (DrawAction(new Rect(430, 64, 58, 26), "Look", true, new Color(0.32f, 0.28f, 0.18f)))
+            GUI.Label(new Rect(28, 18, 400, 26), "Rune Magic", title);
+            GUI.Label(new Rect(28, 44, 400, 22), RoomLine(), body);
+            if (DrawAction(new Rect(430, 40, 58, 26), "Look", true, new Color(0.32f, 0.28f, 0.18f)))
             {
                 _director.OpenInventory();
             }
 
-            if (DrawAction(new Rect(492, 64, 58, 26), "Yield", true, new Color(0.38f, 0.16f, 0.16f)))
+            if (DrawAction(new Rect(492, 40, 58, 26), "Yield", true, new Color(0.38f, 0.16f, 0.16f)))
             {
                 _director.YieldSelf();
             }
 
+            var y = 70f;
             var statuses = _director.PlayerStatuses();
             if (!string.IsNullOrEmpty(statuses))
             {
-                GUI.Label(new Rect(28, 88, 510, 20), "On you: " + statuses,
+                GUI.Label(new Rect(28, y, 510, 20), "On you: " + statuses,
                     Label(14, FontStyle.Italic, new Color(0.95f, 0.78f, 0.42f)));
-                GUI.Label(new Rect(28, 108, 510, 44), TargetAndLog(), body);
+                y += 22f;
             }
-            else
-            {
-                GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
-            }
+
+            GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
+            GUI.Label(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
         }
 
         void DrawCastLedger()
@@ -967,7 +967,9 @@ namespace RuneMagic
                 ? $"Aim  ·  {_director.PendingPreview}  ·  {_director.PendingStance}"
                 : _director.ChosenShape == SpellShape.None
                     ? "Aim  ·  the sentence did not hold"
-                    : "Aim  ·  a working";
+                    : string.IsNullOrEmpty(_director.PendingPreview)
+                        ? "Aim  ·  a working"
+                        : "Aim  ·  " + _director.PendingPreview;
             GUI.Label(new Rect(16, y + 8, 720, 22), aimTitle, title);
 
             var shape = _director.ChosenShape;
@@ -1528,32 +1530,6 @@ namespace RuneMagic
 
             var tile = _director.Underfoot != null ? _director.Underfoot.Def.DisplayName : "empty air";
             return $"{room}   ·   underfoot: {tile}";
-        }
-
-        string PackLine()
-        {
-            var pack = _director.Pack != null ? _director.Pack.Summary() : "no stones";
-            return $"Pack   ·   {pack}";
-        }
-
-        string TargetAndLog()
-        {
-            var target = _director.CurrentTarget;
-            string lockLine;
-            if (target == null)
-            {
-                lockLine = "Space opens the Charter. You can only draw runes that are on the screen.";
-            }
-            else if (GlyphView.IsPlay)
-            {
-                lockLine = target.DisplayName;
-            }
-            else
-            {
-                lockLine = $"{target.DisplayName}  {{{target.FormulaText()}}}";
-            }
-
-            return $"{lockLine}\n{_director.LastLog}";
         }
 
         static GUIStyle Label(int size, FontStyle style, Color color)

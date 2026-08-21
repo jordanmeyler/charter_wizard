@@ -5,9 +5,14 @@ namespace RuneMagic
     /// <summary>
     /// A pickup from the item catalog. Walking into it teaches a recipe.
     /// </summary>
-    public sealed class WorldItem : MonoBehaviour
+    public sealed class WorldItem : MonoBehaviour, ILookable
     {
         public bool Collected { get; private set; }
+        public CatalogItem Item => _item;
+        public Vector3 WorldPosition => transform.position;
+        public float LookRadius => 0.55f;
+        public bool CanLook => !Collected && _item != null;
+        public string LookText => Sight.OfItem(_item);
 
         CatalogItem _item;
         Grimoire _grimoire;
@@ -40,6 +45,12 @@ namespace RuneMagic
             hit.radius = 0.4f;
             WorldLabel.Attach(transform, _item != null ? _item.name : "Item", new Vector3(0f, 0.7f, 0f),
                 new Color(1f, 0.72f, 0.3f));
+            Lookables.Register(this);
+        }
+
+        void OnDisable()
+        {
+            Lookables.Unregister(this);
         }
 
         void OnTriggerEnter2D(Collider2D other)

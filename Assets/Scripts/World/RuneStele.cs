@@ -7,7 +7,7 @@ namespace RuneMagic
     /// A teaching stone. Floor inscriptions and standing pillars both
     /// show a mark beside a picture, and speak that rune into the weave.
     /// </summary>
-    public sealed class RuneStele : MonoBehaviour, IRuneSource
+    public sealed class RuneStele : MonoBehaviour, IRuneSource, ILookable
     {
         public enum Kind
         {
@@ -20,6 +20,10 @@ namespace RuneMagic
 
         public bool IsEmitting => Rune != RuneId.None;
         public Vector3 WorldOrigin => transform.position;
+        public Vector3 WorldPosition => transform.position;
+        public float LookRadius => Form == Kind.Pillar ? 0.7f : 0.55f;
+        public bool CanLook => Rune != RuneId.None;
+        public string LookText => Sight.OfRune(Rune);
         public float VoiceRadius => Form == Kind.Pillar ? 3.4f : 2.6f;
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
@@ -62,6 +66,12 @@ namespace RuneMagic
             }
 
             _picture = transform.Find("Nature");
+            Lookables.Register(this);
+        }
+
+        void OnDisable()
+        {
+            Lookables.Unregister(this);
         }
 
         void LateUpdate()
