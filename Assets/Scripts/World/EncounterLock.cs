@@ -43,7 +43,7 @@ namespace RuneMagic
         {
             DisplayName = displayName;
             FormulaId = formulaId;
-            Formula = formula;
+            Formula = WithLife(formula);
             AcceptedKeys = keys;
             Ensouled = ensouled;
             _grant = grantItem;
@@ -78,6 +78,35 @@ namespace RuneMagic
                 var combat = gameObject.AddComponent<CombatActor>();
                 combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>());
             }
+        }
+
+        /// <summary>
+        /// Living enemies carry Life as a mark. Ice, stone, and fire
+        /// recipes stay as written; Life is appended if the author omitted it.
+        /// </summary>
+        public static RuneId[] WithLife(RuneId[] formula)
+        {
+            if (formula == null || formula.Length == 0)
+            {
+                return new[] { RuneId.Vita };
+            }
+
+            for (var i = 0; i < formula.Length; i++)
+            {
+                if (formula[i] == RuneId.Vita)
+                {
+                    return formula;
+                }
+            }
+
+            var marked = new RuneId[formula.Length + 1];
+            for (var i = 0; i < formula.Length; i++)
+            {
+                marked[i] = formula[i];
+            }
+
+            marked[formula.Length] = RuneId.Vita;
+            return marked;
         }
 
         static CreatureNature NatureOf(string formulaId, bool ensouled)
