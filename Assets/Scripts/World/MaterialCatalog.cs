@@ -459,6 +459,8 @@ namespace RuneMagic
                     return material == MaterialId.Timber ? "timber wall"
                         : material == MaterialId.Metal ? "iron wall"
                         : material == MaterialId.Ice ? "ice wall"
+                        : material == MaterialId.Hearth ? "flame wall"
+                        : material == MaterialId.Grove ? "vine wall"
                         : def.Name + " wall";
                 default:
                     return def.Name;
