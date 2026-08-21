@@ -6,14 +6,18 @@ namespace RuneMagic
     public sealed class GameHud : MonoBehaviour
     {
         public const float BarHeight = 96f;
-        public const float LedgerWidth = 312f;
-        public const float LedgerMaxHeight = 348f;
+        public const float LedgerWidth = 400f;
+        public const float LedgerMaxHeight = 380f;
 
         SanctumDirector _director;
         Vector2 _pauseScroll;
         Vector2 _packScroll;
         Vector2 _ledgerScroll;
         static Rect _ledgerGui;
+        int _namingLedger = -1;
+        string _namingText = string.Empty;
+
+        public static bool EditingName { get; private set; }
 
         public void Bind(SanctumDirector director)
         {
@@ -65,6 +69,7 @@ namespace RuneMagic
         void OnGUI()
         {
             _ledgerGui = default;
+            EditingName = false;
             if (_director == null)
             {
                 return;
@@ -122,9 +127,14 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
             GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
             GUI.Label(new Rect(28, 66, 400, 22), PackLine(), body);
-            if (DrawAction(new Rect(430, 64, 120, 26), "Look (I)", true, new Color(0.32f, 0.28f, 0.18f)))
+            if (DrawAction(new Rect(430, 64, 58, 26), "Look", true, new Color(0.32f, 0.28f, 0.18f)))
             {
                 _director.OpenInventory();
+            }
+
+            if (DrawAction(new Rect(492, 64, 58, 26), "Yield", true, new Color(0.38f, 0.16f, 0.16f)))
+            {
+                _director.YieldSelf();
             }
 
             var statuses = _director.PlayerStatuses();
@@ -144,9 +154,11 @@ namespace RuneMagic
         {
             var entries = _director.Ledger.Recent;
             const float pad = 12f;
-            const float row = 32f;
+            const float row = 36f;
+            var naming = _namingLedger >= 0;
             var inner = Mathf.Max(row, entries.Count * row);
-            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f);
+            var extra = naming ? 40f : 0f;
+            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f + extra);
             if (entries.Count == 0)
             {
                 height = 64f;
@@ -167,20 +179,56 @@ namespace RuneMagic
                 return;
             }
 
-            var view = new Rect(panel.x + 8, panel.y + 30, panel.width - 16, height - 38);
+            var viewH = height - 38 - extra;
+            var view = new Rect(panel.x + 8, panel.y + 30, panel.width - 16, viewH);
             _ledgerScroll = GUI.BeginScrollView(view, _ledgerScroll, new Rect(0, 0, view.width - 18, inner));
             for (var i = 0; i < entries.Count; i++)
             {
-                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), entries[i]);
+                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), entries[i], i);
             }
 
             GUI.EndScrollView();
+
+            if (naming)
+            {
+                DrawNameField(new Rect(panel.x + 8, panel.yMax - 36, panel.width - 16, 28));
+            }
         }
 
-        void DrawCastRow(Rect rect, CastAttempt attempt)
+        void DrawNameField(Rect rect)
+        {
+            EditingName = true;
+            var field = new Rect(rect.x, rect.y, rect.width - 72, rect.height);
+            GUI.SetNextControlName("RecentCastName");
+            _namingText = GUI.TextField(field, _namingText ?? string.Empty);
+            if (GUI.GetNameOfFocusedControl() != "RecentCastName")
+            {
+                GUI.FocusControl("RecentCastName");
+            }
+            var ev = Event.current;
+            var submit = ev != null && ev.type == EventType.KeyDown
+                && (ev.keyCode == KeyCode.Return || ev.keyCode == KeyCode.KeypadEnter);
+            if (submit)
+            {
+                ev.Use();
+            }
+
+            if (submit || DrawAction(new Rect(rect.xMax - 68, rect.y, 68, rect.height), "Keep", true,
+                    new Color(0.42f, 0.32f, 0.14f)))
+            {
+                _director.KeepRecent(_namingLedger, _namingText);
+                _namingLedger = -1;
+                _namingText = string.Empty;
+                GUI.FocusControl(null);
+            }
+        }
+
+        void DrawCastRow(Rect rect, CastAttempt attempt, int index)
         {
             var previous = GUI.color;
-            GUI.color = new Color(0.1f, 0.11f, 0.14f, 0.55f);
+            GUI.color = attempt.Saved
+                ? new Color(0.32f, 0.24f, 0.1f, 0.85f)
+                : new Color(0.1f, 0.11f, 0.14f, 0.55f);
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
             GUI.color = previous;
 
@@ -188,8 +236,8 @@ namespace RuneMagic
 
             var runes = attempt.Runes;
             var count = runes != null ? Mathf.Max(1, runes.Length) : 1;
-            var room = rect.width - 114f;
-            var mark = Mathf.Clamp(Mathf.Floor((room - (count - 1) * 3f) / count), 16f, 22f);
+            var room = rect.width - 196f;
+            var mark = Mathf.Clamp(Mathf.Floor((room - (count - 1) * 3f) / count), 14f, 22f);
             var start = rect.x + 32;
             if (runes == null || runes.Length == 0)
             {
@@ -211,16 +259,36 @@ namespace RuneMagic
                 }
             }
 
-            var tag = attempt.HideRunes ? "Free" : "Charter";
-            if (GlyphView.IsDevelop && !attempt.HideRunes && attempt.Spell != SpellId.None &&
-                SpellCodex.TryGet(attempt.Spell, out var named))
+            var tag = !string.IsNullOrEmpty(attempt.GivenName)
+                ? attempt.GivenName
+                : attempt.HideRunes
+                    ? "Free"
+                    : "Charter";
+            if (string.IsNullOrEmpty(attempt.GivenName) && GlyphView.IsDevelop && !attempt.HideRunes
+                && attempt.Spell != SpellId.None && SpellCodex.TryGet(attempt.Spell, out var named))
             {
                 tag = named.Name;
             }
 
-            var ink = Label(11, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
+            var ink = Label(10, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
             ink.alignment = TextAnchor.MiddleRight;
-            GUI.Label(new Rect(rect.xMax - 78, rect.y, 74, rect.height), tag, ink);
+            GUI.Label(new Rect(rect.xMax - 160, rect.y, 52, rect.height), tag, ink);
+
+            var canSend = attempt.Worked && attempt.Runes != null && attempt.Runes.Length > 0;
+            if (DrawAction(new Rect(rect.xMax - 104, rect.y + 4, 48, rect.height - 8), "Cast", canSend,
+                    new Color(0.22f, 0.32f, 0.42f)))
+            {
+                _director.CastRecent(index);
+            }
+
+            if (DrawAction(new Rect(rect.xMax - 52, rect.y + 4, 48, rect.height - 8),
+                    attempt.Saved ? "Kept" : "Keep",
+                    attempt.Worked && attempt.Spell != SpellId.None,
+                    attempt.Saved ? new Color(0.42f, 0.32f, 0.14f) : new Color(0.28f, 0.24f, 0.18f)))
+            {
+                _namingLedger = index;
+                _namingText = attempt.GivenName ?? string.Empty;
+            }
         }
 
         static void DrawVerdict(Rect rect, bool worked)
@@ -807,30 +875,22 @@ namespace RuneMagic
             var title = Label(28, FontStyle.Bold, Color.white);
             var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
 
-            GUI.Label(new Rect(40, 20, 800, 34),
-                GlyphView.IsDevelop ? "Grimoire" : "Kept marks", title);
+            GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
-                    $"{_director.Attunement.Notes()}   ·   Click a name to string it. Materials sit with the spells. 41–50: Death / Free. 51: Time-stop. Esc closes.",
-                    "Only marks you have kept. The written book is a Develop ledger. F1 toggles. Esc closes."),
+                    $"{_director.Attunement.Notes()}   ·   Click a name to cast it if those runes are in view. Kept workings are highlighted. Esc closes.",
+                    "The written book. Click a page to send it if those marks are in view. Kept pages are highlighted. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
-            if (GlyphView.IsPlay)
-            {
-                DrawKeptMarks(view);
-                return;
-            }
-
             var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
             var row = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
             var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
-            var innerHeight = CodexHeight();
+            var innerHeight = CodexHeight() + 120f;
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
-            var y = DrawCodex(0f, heading, row, muted, loadable: true);
-
+            var y = DrawKeptMarksInline(0f);
+            y = DrawCodex(y, heading, row, muted, loadable: true);
             y = DrawMaterialsLedger(y, heading, row, muted);
-
             GUI.EndScrollView();
         }
 
@@ -916,6 +976,14 @@ namespace RuneMagic
                     current = entry.Book;
                     GUI.Label(new Rect(0, y, 900, 22), SpellCodex.BookName(entry.Book), heading);
                     y += 24f;
+                }
+
+                if (_director.Grimoire.Keeps(entry.Spell))
+                {
+                    var previous = GUI.color;
+                    GUI.color = new Color(0.42f, 0.32f, 0.1f, 0.55f);
+                    GUI.DrawTexture(new Rect(0, y, 990, 20), Texture2D.whiteTexture);
+                    GUI.color = previous;
                 }
 
                 GUI.Label(new Rect(0, y, 24, 18), entry.Number.ToString(), muted);
@@ -1045,6 +1113,38 @@ namespace RuneMagic
             {
                 onClick?.Invoke();
             }
+        }
+
+        float DrawKeptMarksInline(float y)
+        {
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            GUI.Label(new Rect(0, y, 700, 22), "Kept marks", heading);
+            y += 26f;
+            var kept = _director.Memory.Kept;
+            if (kept.Count == 0)
+            {
+                var muted = Label(14, FontStyle.Italic, new Color(0.72f, 0.74f, 0.82f));
+                GUI.Label(new Rect(0, y, 900, 20),
+                    "No wall marks kept yet. Right-click a mark in the Charter weave to remember it.",
+                    muted);
+                return y + 28f;
+            }
+
+            const float size = 48f;
+            const float gap = 8f;
+            for (var i = 0; i < kept.Count; i++)
+            {
+                var rect = new Rect(i * (size + gap), y, size, size);
+                var rune = kept[i];
+                DrawRuneCard(rect, rune, () =>
+                {
+                    _director.CloseGrimoire();
+                    _director.OpenCharter();
+                    _director.AddRune(rune);
+                }, true);
+            }
+
+            return y + size + 16f;
         }
 
         void DrawKeptMarks(Rect view)

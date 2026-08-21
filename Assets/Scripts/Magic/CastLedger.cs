@@ -26,22 +26,55 @@ namespace RuneMagic
                 _entries.RemoveAt(_entries.Count - 1);
             }
         }
+
+        public bool TryKeep(int index, string givenName)
+        {
+            if (index < 0 || index >= _entries.Count)
+            {
+                return false;
+            }
+
+            var old = _entries[index];
+            if (!old.Worked || old.Spell == SpellId.None)
+            {
+                return false;
+            }
+
+            _entries[index] = new CastAttempt(
+                old.Stance,
+                old.Runes,
+                old.Worked,
+                old.Spell,
+                string.IsNullOrWhiteSpace(givenName) ? old.GivenName : givenName.Trim(),
+                saved: true);
+            return true;
+        }
     }
 
     public readonly struct CastAttempt
     {
-        public CastAttempt(CastingStance stance, RuneId[] runes, bool worked, SpellId spell)
+        public CastAttempt(
+            CastingStance stance,
+            RuneId[] runes,
+            bool worked,
+            SpellId spell,
+            string givenName = "",
+            bool saved = false)
         {
             Stance = stance;
             Runes = runes ?? System.Array.Empty<RuneId>();
             Worked = worked;
             Spell = spell;
+            GivenName = givenName ?? string.Empty;
+            Saved = saved;
         }
 
         public CastingStance Stance { get; }
         public RuneId[] Runes { get; }
         public bool Worked { get; }
         public SpellId Spell { get; }
+        public string GivenName { get; }
+        public bool Saved { get; }
         public bool HideRunes => Stance == CastingStance.Free;
     }
 }

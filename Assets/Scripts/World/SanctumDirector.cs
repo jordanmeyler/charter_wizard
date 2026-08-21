@@ -145,14 +145,19 @@ namespace RuneMagic
             if (Underfoot != null && (Underfoot.Kind == TileKind.Floor || Underfoot.Kind == TileKind.Bridge))
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
+                var host = StatusHost.On(player);
                 if (Underfoot.Fire > 0.35f)
                 {
-                    var host = StatusHost.On(player);
                     host?.Apply(StatusId.Burning, 2.4f);
                     if (Underfoot.Fire > 0.85f && (host == null || !host.Fends(Essence.Fire)))
                     {
                         KillPlayer("The floor is hunger. The crystal calls you back.");
                     }
+                }
+
+                if (Underfoot.Material == MaterialId.Lava && (host == null || !host.Fends(Essence.Fire)))
+                {
+                    KillPlayer("Hungry earth. The crystal calls you back.");
                 }
             }
 
@@ -164,6 +169,13 @@ namespace RuneMagic
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 ToggleSight();
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.K) && !GameHud.EditingName
+                && Mode != PlayMode.Paused && Mode != PlayMode.Inventory)
+            {
+                YieldSelf();
                 return;
             }
 
@@ -388,8 +400,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. All written chains. Click a name to string it.",
-                "Marks you have kept. The written book stays closed in Play."));
+                "The Grimoire. All written chains. Click a name to cast it if those runes are in view. Kept workings are marked.",
+                "The book of workings. Click a page to send it if those marks are in view. Kept pages are marked."));
         }
 
         public void CloseGrimoire()
@@ -798,6 +810,11 @@ namespace RuneMagic
                 return;
             }
 
+            if (TryCastPrepared(entry.RecipeRunes, entry.ViaRunes, CastingStance.Charter))
+            {
+                return;
+            }
+
             Composer.Load(entry.RecipeRunes);
             if (Mode == PlayMode.Grimoire)
             {
@@ -811,8 +828,155 @@ namespace RuneMagic
 
             var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
             Log(GlyphView.Speak(
-                $"Testing {entry.Name}: {entry.Recipe} · {entry.Form}.{gate} The form is in the sentence. Charter Cast or Free Cast to aim.",
-                "A sentence is strung. Charter Cast or Free Cast to aim."));
+                $"{entry.Name} is strung, but those runes are not all in this view. Walk until they speak, then Charter Cast.{gate}",
+                "A sentence is strung, but those marks are not all in this view."));
+        }
+
+        public void CastRecent(int index)
+        {
+            if (Busy || index < 0 || index >= Ledger.Recent.Count)
+            {
+                return;
+            }
+
+            var attempt = Ledger.Recent[index];
+            if (!attempt.Worked || attempt.Runes == null || attempt.Runes.Length == 0)
+            {
+                Log("That working did not hold. There is nothing to send again.");
+                return;
+            }
+
+            if (TryCastPrepared(attempt.Runes, null, attempt.Stance))
+            {
+                return;
+            }
+
+            Log(GlyphView.Speak(
+                "Those runes are not in this view. Walk until they speak, then send it again.",
+                "Those marks are not in this view."));
+        }
+
+        public void KeepRecent(int index, string givenName)
+        {
+            if (!Ledger.TryKeep(index, givenName))
+            {
+                Log("Only a working that held can be kept.");
+                return;
+            }
+
+            var attempt = Ledger.Recent[index];
+            Grimoire.Keep(attempt.Spell);
+            var label = string.IsNullOrWhiteSpace(attempt.GivenName)
+                ? (SpellCodex.TryGet(attempt.Spell, out var named) ? named.Name : "that working")
+                : attempt.GivenName;
+            Log(GlyphView.Speak(
+                $"{label} is kept. The book still writes the catalog name; the page is marked.",
+                "The working is kept. The book marks the page."));
+        }
+
+        bool TryCastPrepared(IReadOnlyList<RuneId> runes, IReadOnlyList<RuneId> via, CastingStance stance)
+        {
+            if (Busy)
+            {
+                return false;
+            }
+
+            IReadOnlyList<RuneId> chosen = null;
+            if (FieldOffers(runes))
+            {
+                chosen = runes;
+            }
+            else if (via != null && via.Count > 0 && FieldOffers(via))
+            {
+                chosen = via;
+            }
+
+            if (chosen == null)
+            {
+                return false;
+            }
+
+            if (Mode == PlayMode.Grimoire)
+            {
+                CloseGrimoire();
+            }
+
+            BeginAim(Composition.FromSequence(chosen), stance, fromHeld: false);
+            return true;
+        }
+
+        public bool FieldOffers(IReadOnlyList<RuneId> runes)
+        {
+            if (runes == null || runes.Count == 0)
+            {
+                return false;
+            }
+
+            var seen = new HashSet<RuneId>();
+            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
+            for (var i = 0; i < perceived.Count; i++)
+            {
+                RememberField(seen, perceived[i]);
+            }
+
+            if (Tapestry != null)
+            {
+                Tapestry.Resample();
+                var vicinity = Tapestry.Vicinity;
+                for (var i = 0; i < vicinity.Count; i++)
+                {
+                    RememberField(seen, vicinity[i]);
+                }
+            }
+
+            for (var i = 0; i < runes.Count; i++)
+            {
+                if (!FieldHas(seen, runes[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        static void RememberField(HashSet<RuneId> seen, RuneId rune)
+        {
+            if (rune == RuneId.None || !seen.Add(rune))
+            {
+                return;
+            }
+
+            if (ChainBook.TryBirth(rune, out var sources))
+            {
+                for (var i = 0; i < sources.Count; i++)
+                {
+                    RememberField(seen, sources[i]);
+                }
+            }
+        }
+
+        static bool FieldHas(HashSet<RuneId> seen, RuneId need)
+        {
+            if (need == RuneId.None || seen.Contains(need))
+            {
+                return true;
+            }
+
+            if (!ChainBook.TryBirth(need, out var sources) || sources.Count == 0)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < sources.Count; i++)
+            {
+                if (!FieldHas(seen, sources[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         void HandleAimingInput()
@@ -1555,10 +1719,61 @@ namespace RuneMagic
                 return;
             }
 
+            SweepOwnWork(CurrentRoom, player.position);
+            player.GetComponent<AdeptAvatar>()?.ClearWork();
             StatusHost.On(player)?.Clear();
+            if (Mode == PlayMode.Aiming)
+            {
+                CancelAim();
+            }
+
             PlacePlayer(player, _spawnPoint, string.IsNullOrEmpty(message)
-                ? "You fall. The crystal calls you back."
+                ? "You fall. The work you stood forgets itself. The crystal calls you back."
                 : message);
+        }
+
+        public void YieldSelf()
+        {
+            KillPlayer(GlyphView.Speak(
+                "You yield. Pillars, walls, and hanging work in this room fall. Stones and keys stay with you.",
+                "You yield. The work you stood in this room forgets itself. What you carry stays."));
+        }
+
+        void SweepOwnWork(RoomInfo room, Vector3 origin)
+        {
+            if (Grid != null)
+            {
+                foreach (var tile in Grid.All)
+                {
+                    if (tile == null || !tile.IsConjured)
+                    {
+                        continue;
+                    }
+
+                    if (room != null)
+                    {
+                        if (!room.Contains(tile.transform.position))
+                        {
+                            continue;
+                        }
+                    }
+                    else if (Vector2.Distance(origin, tile.transform.position) > 10f)
+                    {
+                        continue;
+                    }
+
+                    tile.RestoreFoundation();
+                }
+            }
+
+            if (room != null)
+            {
+                VeilField.ClearInBounds(room.Bounds);
+            }
+            else
+            {
+                VeilField.ClearNear(Grid, origin, VeilKind.None, 8);
+            }
         }
 
         public string PlayerStatuses()

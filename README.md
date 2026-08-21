@@ -59,14 +59,16 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it. Arrows move the selection. Esc or I closes.
-- **Grimoire** on the bottom bar (or **Esc** / **G**): in Play, marks you have kept; in Develop, every written spell and your Free attunement.
+- **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell. Click a name to cast it if those runes are in view. Workings you **Keep** from Recent casts are highlighted (the catalog name stays).
+- **Recent casts** (top-right): **Cast** again if the marks are in view; **Keep** names a working and marks it in the Grimoire.
+- **K** or **Yield** sends you back to the spawn crystal and drops pillars, walls, and hanging work you stood in this room. Stones and keys stay in the pack.
 - **Backspace** / **C** unmake the last rune
 
-Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. Each work is particles and light of its element — fire is embers, water is droplets, lightning is a jagged arc. Fog and poison mist hang until another element tears them. Walls and pillars stay as masonry or a column; water melts a basic earth wall. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
+Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. Each work is particles and light of its element — fire is embers, water is droplets, lightning is a jagged arc. Fog and poison mist hang until another element tears them. A **wind ward** turns poison fog. Walls and pillars stay as masonry or a column; water melts a basic earth wall and puts out a flame wall; water cools a lava wall to rock, which a boulder or Shatter then breaks. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
-Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
+Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**, and the work you stood in that room falls. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
 
-**Wards** are `Element · Salt · Sulphur`, held on you. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water. Only one ward stands at a time.
+**Wards** are `Element · Salt · Sulphur`, held on you. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water, and a wind ward also turns poison fog. Only one ward stands at a time.
 
 Spells are single-target, area, or self. Status chips name what holds on you and on them. Water a plant and it grows. Fire spreads onto flammable tiles and dies against water and ice. Charge runs metal and wet stone.
 

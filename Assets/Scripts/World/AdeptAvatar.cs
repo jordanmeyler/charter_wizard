@@ -56,6 +56,13 @@ namespace RuneMagic
             _stillUntil = Mathf.Max(_stillUntil, Time.time + seconds);
         }
 
+        public void ClearWork()
+        {
+            _airborneUntil = 0f;
+            _stillUntil = 0f;
+            WorldHeld = false;
+        }
+
         void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();

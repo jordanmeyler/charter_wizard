@@ -85,7 +85,7 @@ The four roots are a square. Adjacent sides have a winner. Opposites do not touc
 | **Water ward** | Water · Salt · Sulphur | Fire — fireballs, burning floors | Earth / a physical blow |
 | **Flame ward** | Fire · Salt · Sulphur | Earth — hurled rest, roots | Air |
 | **Stoneskin** | Earth · Salt · Sulphur | Air, and **physical** blows (arrows, a golem slam) | Fire — hunger sent still finds you |
-| **Wind ward** | Air · Salt · Sulphur | Water — ice, soak | Fire |
+| **Wind ward** | Air · Salt · Sulphur | Water — ice, soak — and **poison fog / miasma** | Fire |
 
 Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. A chip over the body names what holds; the HUD repeats it for the adept. Fire-nature will not burn; ice will not freeze; earth shrugs off elemental soak and heat; mind takes stun, sleep, and fear harder. Frozen / stunned / sleeping stop action and movement. Rooted stops movement.
 
@@ -196,7 +196,7 @@ Marquee reactions (each a puzzle key):
 - **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
-- **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields only to an opposed element. **Water melts a basic earth wall.** Fire thaws ice. Water ends a flame-pillar. Fire eats vine. Room masonry is not a spell-body.
+- **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice. Fire eats vine. Room masonry is not a spell-body. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and keys stay in the pack.
 - **Fog and poison mist linger** as hanging veils. Gale or fire tears them. Light lifts fog, not poison.
 
 Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
@@ -236,7 +236,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`).
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I (local keys + skip flanks), three aspect sanctums, Door II (aspect keys only). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

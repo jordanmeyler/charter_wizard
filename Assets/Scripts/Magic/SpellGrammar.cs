@@ -78,7 +78,9 @@ namespace RuneMagic
         Stoneskin,
         Watershield,
         Flameward,
-        Windward
+        Windward,
+        LavaPillar,
+        Shatter
     }
 
     public readonly struct SpellRecipe
@@ -160,6 +162,9 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "Living plant standing as a column.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");
+
+            Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt · Earth. Hungry earth given a body and asked to rest.");
+            Register(RuneId.Stone, RuneId.Mercury, SpellShape.Remote, SpellId.Shatter, "Shatter", "Compressed. Catalog: Earth · Salt · Earth · Air · Mercury. A stood wall given breath and sent. Matter comes apart.");
         }
 
         static void Register(RuneId material, RuneId aspect, SpellShape shape, SpellId spell, string name, string effect)

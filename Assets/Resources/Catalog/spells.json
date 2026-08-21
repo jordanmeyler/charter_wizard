@@ -1010,7 +1010,7 @@
       "id": "Windward",
       "book": "Mind",
       "name": "Wind ward",
-      "want": "Breath given a body, then the mind holds it on you. Yield thrown breaks.",
+      "want": "Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks.",
       "recipe": "Air · Salt · Sulphur",
       "via": "",
       "form": "Self",
@@ -1020,6 +1020,35 @@
       "target": "Self",
       "status": "Windward",
       "statusSeconds": 14
+    },
+    {
+      "number": 60,
+      "id": "LavaPillar",
+      "book": "End",
+      "name": "Lava-pillar",
+      "want": "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.",
+      "recipe": "Fire · Earth · Salt · Earth",
+      "via": "Lava · Salt · Earth",
+      "form": "Pillar",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "LavaPillar",
+      "target": "Single",
+      "status": "Burning",
+      "statusSeconds": 5
+    },
+    {
+      "number": 61,
+      "id": "Shatter",
+      "book": "Cross",
+      "name": "Shatter",
+      "want": "A stood wall given breath and sent. Matter comes apart.",
+      "recipe": "Earth · Salt · Earth · Air · Mercury",
+      "via": "Stone · Earth · Air · Mercury",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Shatter"
     }
   ]
 }

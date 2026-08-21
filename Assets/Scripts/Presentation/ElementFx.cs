@@ -471,33 +471,30 @@ namespace RuneMagic
             {
                 case ElementFamily.Fire:
                 case ElementFamily.Lava:
-                    velocity.y = new ParticleSystem.MinMaxCurve(0.6f, 1.6f);
+                    SetVelocity(velocity, 0f, 0f, 0.6f, 1.6f);
                     break;
                 case ElementFamily.Water:
-                    velocity.y = new ParticleSystem.MinMaxCurve(-1.4f, -0.2f);
-                    velocity.x = new ParticleSystem.MinMaxCurve(-0.25f, 0.25f);
+                    SetVelocity(velocity, -0.25f, 0.25f, -1.4f, -0.2f);
                     break;
                 case ElementFamily.Ice:
-                    velocity.y = new ParticleSystem.MinMaxCurve(-0.15f, 0.35f);
+                    SetVelocity(velocity, 0f, 0f, -0.15f, 0.35f);
                     break;
                 case ElementFamily.Earth:
-                    velocity.y = new ParticleSystem.MinMaxCurve(0.4f, 1.1f);
+                    SetVelocity(velocity, 0f, 0f, 0.4f, 1.1f);
                     break;
                 case ElementFamily.Air:
-                    velocity.x = new ParticleSystem.MinMaxCurve(-1.6f, 1.6f);
-                    velocity.y = new ParticleSystem.MinMaxCurve(-0.2f, 0.4f);
+                    SetVelocity(velocity, -1.6f, 1.6f, -0.2f, 0.4f);
                     break;
                 case ElementFamily.Fog:
                 case ElementFamily.Poison:
                 case ElementFamily.Steam:
-                    velocity.x = new ParticleSystem.MinMaxCurve(-0.25f, 0.25f);
-                    velocity.y = new ParticleSystem.MinMaxCurve(0.05f, 0.28f);
+                    SetVelocity(velocity, -0.25f, 0.25f, 0.05f, 0.28f);
                     break;
                 case ElementFamily.Plant:
-                    velocity.y = new ParticleSystem.MinMaxCurve(0.2f, 0.7f);
+                    SetVelocity(velocity, 0f, 0f, 0.2f, 0.7f);
                     break;
                 default:
-                    velocity.y = new ParticleSystem.MinMaxCurve(-0.1f, 0.4f);
+                    SetVelocity(velocity, 0f, 0f, -0.1f, 0.4f);
                     break;
             }
 
@@ -573,8 +570,7 @@ namespace RuneMagic
 
             var velocity = system.velocityOverLifetime;
             velocity.enabled = true;
-            velocity.x = new ParticleSystem.MinMaxCurve(-0.18f, 0.18f);
-            velocity.y = new ParticleSystem.MinMaxCurve(0.02f, 0.16f);
+            SetVelocity(velocity, -0.18f, 0.18f, 0.02f, 0.16f);
 
             var noise = system.noise;
             noise.enabled = true;
@@ -624,6 +620,19 @@ namespace RuneMagic
             {
                 renderer.material.mainTexture = texture;
             }
+        }
+
+        static void SetVelocity(
+            ParticleSystem.VelocityOverLifetimeModule velocity,
+            float xMin,
+            float xMax,
+            float yMin,
+            float yMax)
+        {
+            // Unity requires every velocity axis to use the same MinMaxCurve mode.
+            velocity.x = new ParticleSystem.MinMaxCurve(xMin, xMax);
+            velocity.y = new ParticleSystem.MinMaxCurve(yMin, yMax);
+            velocity.z = new ParticleSystem.MinMaxCurve(0f, 0f);
         }
 
         static ParticleSystem.MinMaxCurve Lifetime(ElementLook look, SpellShape shape, bool loop)

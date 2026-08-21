@@ -40,7 +40,9 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Arrows and slams break. Hunger sent still finds you. |
 | 57 | **Water ward** | Water · Salt · Sulphur | Hunger breaks. Wear it against the wizard and a burning floor. |
 | 58 | **Flame ward** | Fire · Salt · Sulphur | Rest thrown breaks. |
-| 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. |
+| 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
+| 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
+| 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 
 ---
 

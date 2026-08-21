@@ -10,6 +10,7 @@ namespace RuneMagic
     {
         readonly HashSet<(RuneId Material, RuneId Aspect, SpellShape Shape)> _knownRecipes = new();
         readonly HashSet<string> _knownInterpretations = new();
+        readonly HashSet<SpellId> _keptSpells = new();
 
         public IReadOnlyCollection<(RuneId Material, RuneId Aspect, SpellShape Shape)> KnownRecipes => _knownRecipes;
 
@@ -40,6 +41,17 @@ namespace RuneMagic
         }
 
         public bool KnowsInterpretation(string id) => _knownInterpretations.Contains(id);
+
+        public bool Keeps(SpellId spell) =>
+            spell != SpellId.None && _keptSpells.Contains(spell);
+
+        public void Keep(SpellId spell)
+        {
+            if (spell != SpellId.None)
+            {
+                _keptSpells.Add(spell);
+            }
+        }
 
         public string DescribeSpell(RuneId material, RuneId aspect, SpellShape shape)
         {
