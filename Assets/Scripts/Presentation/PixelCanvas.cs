@@ -181,42 +181,6 @@ namespace RuneMagic
             }
         }
 
-        public void Outline(Color color)
-        {
-            var extra = new System.Collections.Generic.List<int>(Width * 2);
-            for (var y = 0; y < Height; y++)
-            {
-                for (var x = 0; x < Width; x++)
-                {
-                    if (Get(x, y).a < 0.2f)
-                    {
-                        continue;
-                    }
-
-                    TryOutline(x - 1, y, extra);
-                    TryOutline(x + 1, y, extra);
-                    TryOutline(x, y - 1, extra);
-                    TryOutline(x, y + 1, extra);
-                }
-            }
-
-            for (var i = 0; i < extra.Count; i++)
-            {
-                var packed = extra[i];
-                Set(packed & 0xffff, packed >> 16, color);
-            }
-        }
-
-        void TryOutline(int x, int y, System.Collections.Generic.List<int> extra)
-        {
-            if ((uint)x >= (uint)Width || (uint)y >= (uint)Height || Get(x, y).a >= 0.2f)
-            {
-                return;
-            }
-
-            extra.Add(x | (y << 16));
-        }
-
         static int Edge(int ax, int ay, int bx, int by, int px, int py)
         {
             return (px - ax) * (by - ay) - (py - ay) * (bx - ax);

@@ -109,6 +109,7 @@ namespace RuneMagic
                 if (tile.Wet > 0.2f && tile.IsPlantish)
                 {
                     tile.Grow(1);
+                    _grid.SpreadPlant(tile);
                 }
 
                 tile.Dry(0.08f);

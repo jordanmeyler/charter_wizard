@@ -8,26 +8,61 @@ namespace RuneMagic
         public const float BarHeight = 96f;
         public const float LedgerWidth = 400f;
         public const float LedgerMaxHeight = 380f;
+        static readonly Color CharterSuccess = new(0.28f, 0.82f, 0.42f);
+        static readonly Color FreeSuccess = new(0.72f, 0.36f, 0.92f);
+        static Texture2D _castIcon;
+        static Texture2D _plusIcon;
 
         SanctumDirector _director;
         Vector2 _pauseScroll;
         Vector2 _packScroll;
         Vector2 _ledgerScroll;
         static Rect _ledgerGui;
+        static GameHud _instance;
         int _namingLedger = -1;
         string _namingText = string.Empty;
+        bool _focusName;
 
         public static bool EditingName { get; private set; }
 
         public void Bind(SanctumDirector director)
         {
             _director = director;
+            _instance = this;
+        }
+
+        void OnEnable()
+        {
+            _instance = this;
+        }
+
+        void OnDisable()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+
+            if (EditingName)
+            {
+                CloseNaming();
+            }
+        }
+
+        public static void CancelNaming()
+        {
+            _instance?.CloseNaming();
         }
 
         public static bool PointerOverChrome(PlayMode mode) => BlocksWorldPick(mode);
 
         public static bool BlocksWorldPick(PlayMode mode)
         {
+            if (EditingName)
+            {
+                return true;
+            }
+
             var mouse = Input.mousePosition;
             if (mouse.y <= BarHeight + 8f)
             {
@@ -69,53 +104,58 @@ namespace RuneMagic
         void OnGUI()
         {
             _ledgerGui = default;
-            EditingName = false;
+            EditingName = _namingLedger >= 0;
             if (_director == null)
             {
                 return;
+            }
+
+            var previousEnabled = GUI.enabled;
+            if (EditingName)
+            {
+                GUI.enabled = false;
             }
 
             if (_director.Mode == PlayMode.Paused)
             {
                 DrawPause();
                 DrawSpellBar();
-                return;
             }
-
-            if (_director.Mode == PlayMode.Grimoire)
+            else if (_director.Mode == PlayMode.Grimoire)
             {
                 DrawGrimoire();
                 DrawSpellBar();
-                return;
             }
-
-            if (_director.Mode == PlayMode.Inventory)
+            else if (_director.Mode == PlayMode.Inventory)
             {
                 DrawInventory();
                 DrawSpellBar();
-                return;
             }
-
-            if (_director.Mode == PlayMode.Charter)
+            else if (_director.Mode == PlayMode.Charter)
             {
                 DrawCharter();
                 DrawCastLedger();
                 DrawSpellBar();
-                return;
             }
-
-            if (_director.Mode == PlayMode.Aiming)
+            else if (_director.Mode == PlayMode.Aiming)
             {
                 DrawWorldChrome();
                 DrawAimDock();
                 DrawCastLedger();
                 DrawSpellBar();
-                return;
+            }
+            else
+            {
+                DrawWorldChrome();
+                DrawCastLedger();
+                DrawSpellBar();
             }
 
-            DrawWorldChrome();
-            DrawCastLedger();
-            DrawSpellBar();
+            GUI.enabled = previousEnabled;
+            if (EditingName)
+            {
+                DrawKeepModal();
+            }
         }
 
         void DrawWorldChrome()
@@ -155,10 +195,8 @@ namespace RuneMagic
             var entries = _director.Ledger.Recent;
             const float pad = 12f;
             const float row = 36f;
-            var naming = _namingLedger >= 0;
             var inner = Mathf.Max(row, entries.Count * row);
-            var extra = naming ? 40f : 0f;
-            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f + extra);
+            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f);
             if (entries.Count == 0)
             {
                 height = 64f;
@@ -169,7 +207,14 @@ namespace RuneMagic
             DrawPanel(panel.x, panel.y, panel.width, panel.height);
 
             var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
-            GUI.Label(new Rect(panel.x + 12, panel.y + 6, panel.width - 24, 22), "Recent casts", heading);
+            GUI.Label(new Rect(panel.x + 12, panel.y + 6, 140, 22), "Recent casts", heading);
+            DrawSprite(new Rect(panel.x + 156, panel.y + 10, 12, 12),
+                SpriteFactory.Circle(CharterSuccess, 24), Color.white);
+            DrawSprite(new Rect(panel.x + 212, panel.y + 10, 12, 12),
+                SpriteFactory.Circle(FreeSuccess, 24), Color.white);
+            var key = Label(11, FontStyle.Normal, new Color(0.7f, 0.72f, 0.8f));
+            GUI.Label(new Rect(panel.x + 170, panel.y + 8, 42, 16), "Charter", key);
+            GUI.Label(new Rect(panel.x + 226, panel.y + 8, 36, 16), "Free", key);
 
             if (entries.Count == 0)
             {
@@ -179,7 +224,7 @@ namespace RuneMagic
                 return;
             }
 
-            var viewH = height - 38 - extra;
+            var viewH = height - 38;
             var view = new Rect(panel.x + 8, panel.y + 30, panel.width - 16, viewH);
             _ledgerScroll = GUI.BeginScrollView(view, _ledgerScroll, new Rect(0, 0, view.width - 18, inner));
             for (var i = 0; i < entries.Count; i++)
@@ -188,39 +233,6 @@ namespace RuneMagic
             }
 
             GUI.EndScrollView();
-
-            if (naming)
-            {
-                DrawNameField(new Rect(panel.x + 8, panel.yMax - 36, panel.width - 16, 28));
-            }
-        }
-
-        void DrawNameField(Rect rect)
-        {
-            EditingName = true;
-            var field = new Rect(rect.x, rect.y, rect.width - 72, rect.height);
-            GUI.SetNextControlName("RecentCastName");
-            _namingText = GUI.TextField(field, _namingText ?? string.Empty);
-            if (GUI.GetNameOfFocusedControl() != "RecentCastName")
-            {
-                GUI.FocusControl("RecentCastName");
-            }
-            var ev = Event.current;
-            var submit = ev != null && ev.type == EventType.KeyDown
-                && (ev.keyCode == KeyCode.Return || ev.keyCode == KeyCode.KeypadEnter);
-            if (submit)
-            {
-                ev.Use();
-            }
-
-            if (submit || DrawAction(new Rect(rect.xMax - 68, rect.y, 68, rect.height), "Keep", true,
-                    new Color(0.42f, 0.32f, 0.14f)))
-            {
-                _director.KeepRecent(_namingLedger, _namingText);
-                _namingLedger = -1;
-                _namingText = string.Empty;
-                GUI.FocusControl(null);
-            }
         }
 
         void DrawCastRow(Rect rect, CastAttempt attempt, int index)
@@ -232,11 +244,24 @@ namespace RuneMagic
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
             GUI.color = previous;
 
-            DrawVerdict(new Rect(rect.x + 4, rect.y + 4, 22, 22), attempt.Worked);
+            DrawVerdict(new Rect(rect.x + 4, rect.y + 6, 22, 22), attempt);
+
+            const float icon = 28f;
+            var keepRect = new Rect(rect.xMax - icon - 4, rect.y + 3, icon, rect.height - 6);
+            var castRect = new Rect(keepRect.x - icon - 4, rect.y + 3, icon, rect.height - 6);
+            var named = !string.IsNullOrEmpty(attempt.GivenName);
+            var labelWidth = named ? 70f : 0f;
+            if (named)
+            {
+                var ink = Label(10, FontStyle.Normal, new Color(0.82f, 0.78f, 0.6f));
+                ink.alignment = TextAnchor.MiddleRight;
+                GUI.Label(new Rect(castRect.x - labelWidth - 4, rect.y, labelWidth, rect.height),
+                    attempt.GivenName, ink);
+            }
 
             var runes = attempt.Runes;
             var count = runes != null ? Mathf.Max(1, runes.Length) : 1;
-            var room = rect.width - 196f;
+            var room = castRect.x - labelWidth - (rect.x + 32) - 12f;
             var mark = Mathf.Clamp(Mathf.Floor((room - (count - 1) * 3f) / count), 14f, 22f);
             var start = rect.x + 32;
             if (runes == null || runes.Length == 0)
@@ -259,51 +284,179 @@ namespace RuneMagic
                 }
             }
 
-            var tag = !string.IsNullOrEmpty(attempt.GivenName)
-                ? attempt.GivenName
-                : attempt.HideRunes
-                    ? "Free"
-                    : "Charter";
-            if (string.IsNullOrEmpty(attempt.GivenName) && GlyphView.IsDevelop && !attempt.HideRunes
-                && attempt.Spell != SpellId.None && SpellCodex.TryGet(attempt.Spell, out var named))
-            {
-                tag = named.Name;
-            }
-
-            var ink = Label(10, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
-            ink.alignment = TextAnchor.MiddleRight;
-            GUI.Label(new Rect(rect.xMax - 160, rect.y, 52, rect.height), tag, ink);
-
             var canSend = attempt.Worked && attempt.Runes != null && attempt.Runes.Length > 0;
-            if (DrawAction(new Rect(rect.xMax - 104, rect.y + 4, 48, rect.height - 8), "Cast", canSend,
-                    new Color(0.22f, 0.32f, 0.42f)))
+            if (DrawIconAction(castRect, CastIcon(), canSend, new Color(0.22f, 0.32f, 0.42f)))
             {
                 _director.CastRecent(index);
             }
 
-            if (DrawAction(new Rect(rect.xMax - 52, rect.y + 4, 48, rect.height - 8),
-                    attempt.Saved ? "Kept" : "Keep",
+            if (DrawIconAction(keepRect, PlusIcon(),
                     attempt.Worked && attempt.Spell != SpellId.None,
                     attempt.Saved ? new Color(0.42f, 0.32f, 0.14f) : new Color(0.28f, 0.24f, 0.18f)))
             {
-                _namingLedger = index;
-                _namingText = attempt.GivenName ?? string.Empty;
+                BeginNaming(index, attempt);
             }
         }
 
-        static void DrawVerdict(Rect rect, bool worked)
+        void BeginNaming(int index, CastAttempt attempt)
+        {
+            _namingLedger = index;
+            if (!string.IsNullOrEmpty(attempt.GivenName))
+            {
+                _namingText = attempt.GivenName;
+            }
+            else if (GlyphView.IsDevelop && attempt.Spell != SpellId.None
+                && SpellCodex.TryGet(attempt.Spell, out var named))
+            {
+                _namingText = named.Name;
+            }
+            else
+            {
+                _namingText = string.Empty;
+            }
+
+            EditingName = true;
+            _focusName = true;
+            _director.PauseForNaming();
+        }
+
+        void CloseNaming()
+        {
+            _namingLedger = -1;
+            _namingText = string.Empty;
+            EditingName = false;
+            GUI.FocusControl(null);
+            _director?.ResumeFromNaming();
+        }
+
+        void ConfirmNaming()
+        {
+            if (_namingLedger < 0)
+            {
+                return;
+            }
+
+            _director.KeepRecent(_namingLedger, _namingText);
+            CloseNaming();
+        }
+
+        void DrawKeepModal()
+        {
+            var entries = _director.Ledger.Recent;
+            if (_namingLedger < 0 || _namingLedger >= entries.Count)
+            {
+                CloseNaming();
+                return;
+            }
+
+            var attempt = entries[_namingLedger];
+            DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
+
+            const float width = 520f;
+            const float height = 292f;
+            var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
+            var ev = Event.current;
+            if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
+            {
+                ev.Use();
+            }
+
+            DrawPanel(modal.x, modal.y, modal.width, modal.height);
+
+            var title = Label(22, FontStyle.Bold, Color.white);
+            var body = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
+            var hint = Label(13, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
+            GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28), "Keep this working", title);
+            GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 20),
+                "Name the spell. The runes you used stay on the page.", body);
+
+            var stanceColor = attempt.Stance == CastingStance.Free ? FreeSuccess : CharterSuccess;
+            DrawSprite(new Rect(modal.x + 24, modal.y + 76, 18, 18), SpriteFactory.Circle(stanceColor, 32), Color.white);
+            var stance = Label(14, FontStyle.Bold, stanceColor);
+            GUI.Label(new Rect(modal.x + 48, modal.y + 74, 200, 22),
+                attempt.Stance == CastingStance.Free ? "Free" : "Charter", stance);
+
+            DrawRuneCombo(new Rect(modal.x + 24, modal.y + 104, modal.width - 48, 56), attempt);
+
+            GUI.Label(new Rect(modal.x + 24, modal.y + 168, 120, 20), "Spell name", hint);
+            GUI.SetNextControlName("KeepSpellName");
+            _namingText = GUI.TextField(
+                new Rect(modal.x + 24, modal.y + 190, modal.width - 48, 32),
+                _namingText ?? string.Empty);
+            if (_focusName)
+            {
+                GUI.FocusControl("KeepSpellName");
+                if (ev != null && ev.type == EventType.Repaint)
+                {
+                    _focusName = false;
+                }
+            }
+
+            var submit = ev != null && ev.type == EventType.KeyDown
+                && (ev.keyCode == KeyCode.Return || ev.keyCode == KeyCode.KeypadEnter);
+            var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
+            if (submit || cancel)
+            {
+                ev.Use();
+            }
+
+            if (DrawAction(new Rect(modal.x + 24, modal.y + 236, 120, 38), "Cancel", true,
+                    new Color(0.22f, 0.22f, 0.26f)) || cancel)
+            {
+                CloseNaming();
+                return;
+            }
+
+            if (DrawAction(new Rect(modal.xMax - 144, modal.y + 236, 120, 38), "Keep", true,
+                    new Color(0.42f, 0.32f, 0.14f)) || submit)
+            {
+                ConfirmNaming();
+            }
+        }
+
+        void DrawRuneCombo(Rect rect, CastAttempt attempt)
         {
             var previous = GUI.color;
-            GUI.color = worked
-                ? new Color(0.12f, 0.22f, 0.14f, 0.95f)
-                : new Color(0.24f, 0.1f, 0.1f, 0.95f);
+            GUI.color = new Color(0.08f, 0.08f, 0.1f, 0.7f);
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
             GUI.color = previous;
-            var mark = Label(18, FontStyle.Bold, worked
-                ? new Color(0.45f, 0.9f, 0.5f)
-                : new Color(0.95f, 0.38f, 0.32f));
-            mark.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(rect, worked ? "○" : "✕", mark);
+
+            var runes = attempt.Runes;
+            if (runes == null || runes.Length == 0)
+            {
+                var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+                muted.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(rect, "No marks were written.", muted);
+                return;
+            }
+
+            const float gap = 8f;
+            var mark = Mathf.Min(48f, (rect.width - 24f - (runes.Length - 1) * gap) / runes.Length);
+            var start = rect.x + (rect.width - (mark * runes.Length + gap * (runes.Length - 1))) * 0.5f;
+            var y = rect.y + (rect.height - mark) * 0.5f;
+            for (var i = 0; i < runes.Length; i++)
+            {
+                var slot = new Rect(start + i * (mark + gap), y, mark, mark);
+                DrawMiniMark(slot, runes[i]);
+            }
+        }
+
+        static void DrawVerdict(Rect rect, CastAttempt attempt)
+        {
+            if (!attempt.Worked)
+            {
+                var previous = GUI.color;
+                GUI.color = new Color(0.24f, 0.1f, 0.1f, 0.95f);
+                GUI.DrawTexture(rect, Texture2D.whiteTexture);
+                GUI.color = previous;
+                var mark = Label(18, FontStyle.Bold, new Color(0.95f, 0.38f, 0.32f));
+                mark.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(rect, "✕", mark);
+                return;
+            }
+
+            var color = attempt.Stance == CastingStance.Free ? FreeSuccess : CharterSuccess;
+            DrawSprite(rect, SpriteFactory.Circle(color, 32), Color.white);
         }
 
         static void DrawMiniMark(Rect rect, RuneId rune)
@@ -1144,7 +1297,7 @@ namespace RuneMagic
             }
 
             var ev = Event.current;
-            if (ev != null && rect.Contains(ev.mousePosition) && ev.type == EventType.MouseDown)
+            if (!EditingName && ev != null && rect.Contains(ev.mousePosition) && ev.type == EventType.MouseDown)
             {
                 if (ev.button == 1 || (ev.button == 0 && ev.shift))
                 {
@@ -1298,7 +1451,7 @@ namespace RuneMagic
         static bool DrawAction(Rect rect, string text, bool enabled, Color color)
         {
             var previous = GUI.enabled;
-            GUI.enabled = enabled;
+            GUI.enabled = previous && enabled;
             var bg = GUI.backgroundColor;
             GUI.backgroundColor = color;
             var style = new GUIStyle(GUI.skin.button)
@@ -1309,7 +1462,60 @@ namespace RuneMagic
             var clicked = GUI.Button(rect, text, style);
             GUI.backgroundColor = bg;
             GUI.enabled = previous;
-            return clicked && enabled;
+            return clicked && enabled && previous;
+        }
+
+        static bool DrawIconAction(Rect rect, Texture2D icon, bool enabled, Color color)
+        {
+            var previous = GUI.enabled;
+            GUI.enabled = previous && enabled;
+            var bg = GUI.backgroundColor;
+            GUI.backgroundColor = color;
+            var style = new GUIStyle(GUI.skin.button)
+            {
+                padding = new RectOffset(0, 0, 0, 0)
+            };
+            var clicked = GUI.Button(rect, GUIContent.none, style);
+            GUI.backgroundColor = bg;
+            if (icon != null)
+            {
+                var pad = Mathf.Max(5f, rect.height * 0.18f);
+                var slot = new Rect(rect.x + pad, rect.y + pad, rect.width - pad * 2f, rect.height - pad * 2f);
+                var tint = GUI.color;
+                GUI.color = enabled && previous ? Color.white : new Color(1f, 1f, 1f, 0.3f);
+                GUI.DrawTexture(slot, icon, ScaleMode.ScaleToFit, true);
+                GUI.color = tint;
+            }
+
+            GUI.enabled = previous;
+            return clicked && enabled && previous;
+        }
+
+        static Texture2D CastIcon()
+        {
+            if (_castIcon != null)
+            {
+                return _castIcon;
+            }
+
+            var canvas = new PixelCanvas(24);
+            canvas.FillTriangle(6, 3, 6, 20, 20, 12, Color.white);
+            _castIcon = canvas.ToTexture();
+            return _castIcon;
+        }
+
+        static Texture2D PlusIcon()
+        {
+            if (_plusIcon != null)
+            {
+                return _plusIcon;
+            }
+
+            var canvas = new PixelCanvas(24);
+            canvas.Fill(4, 10, 16, 4, Color.white);
+            canvas.Fill(10, 4, 4, 16, Color.white);
+            _plusIcon = canvas.ToTexture();
+            return _plusIcon;
         }
 
         string RoomLine()

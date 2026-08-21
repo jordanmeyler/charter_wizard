@@ -234,7 +234,7 @@ namespace RuneMagic
                     BindLock(room, locks, SpawnBarrier(prop, world, grid, origin));
                     break;
                 case "gate":
-                    BindLock(room, locks, SpawnGate(prop, world));
+                    BindLock(room, locks, SpawnGate(prop, world, grid, origin));
                     break;
                 case "fog":
                     BindLock(room, locks, SpawnFog(prop, world, origin));
@@ -257,14 +257,15 @@ namespace RuneMagic
             encounter.Bind(
                 NameOf(prop, "Ash Mite"),
                 IdOf(prop, "ash-mite"),
-                ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
+                ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt, RuneId.Vita),
                 ParseKeys(prop.keys, MiteKeys),
                 ensouled: prop.ensouled,
                 spriteId: prop.sprite,
                 blocking: prop.blocking,
                 grantItem: prop.grant,
                 attack: prop.attack,
-                castSeconds: prop.castSeconds);
+                castSeconds: prop.castSeconds,
+                castRecipe: ParseRunes(prop.cast));
             return encounter;
         }
 
@@ -315,7 +316,7 @@ namespace RuneMagic
             return barrier;
         }
 
-        static SocketGate SpawnGate(MapProp prop, Vector3 world)
+        static SocketGate SpawnGate(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
         {
             var actor = new GameObject(NameOf(prop, "Gate"));
             actor.transform.position = world;
@@ -326,7 +327,9 @@ namespace RuneMagic
                 prop.requires,
                 prop.finishes,
                 prop.note,
-                prop.sprite);
+                prop.sprite,
+                grid,
+                LocalCells(origin, prop.cells));
             return gate;
         }
 

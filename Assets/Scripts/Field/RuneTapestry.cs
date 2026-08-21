@@ -109,7 +109,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (!HoverPaused)
+            if (!HoverPaused && !GameHud.EditingName)
             {
                 Scroll += Time.unscaledDeltaTime * ScrollSpeed;
                 if (Scroll >= _sequence.Count)
