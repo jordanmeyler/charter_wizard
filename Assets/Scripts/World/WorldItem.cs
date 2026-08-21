@@ -48,11 +48,7 @@ namespace RuneMagic
             }
 
             Collected = true;
-            var kind = (_item.kind ?? string.Empty).ToLowerInvariant();
-            if (kind == "key" && _pack != null)
-            {
-                _pack.Take(_item);
-            }
+            var carried = AdeptPack.CanCarry(_item) && _pack != null && _pack.Take(_item);
 
             if (!string.IsNullOrEmpty(_item.teachesSpell) && SpellCodex.TryGet(SpellRegistry.Parse(_item.teachesSpell), out var entry))
             {
@@ -64,11 +60,18 @@ namespace RuneMagic
                 _grimoire?.LearnInterpretation(_item.teachesFormula);
             }
 
-            _log?.Invoke(string.IsNullOrEmpty(_item.note)
-                ? kind == "key"
-                    ? $"{_item.name} is a key. A door somewhere wants it."
-                    : $"{_item.name} unspools. A recipe is borrowed."
-                : _item.note);
+            if (!string.IsNullOrEmpty(_item.note))
+            {
+                _log?.Invoke(_item.note);
+            }
+            else if (carried)
+            {
+                _log?.Invoke($"{_item.name} goes into the pack. I to look.");
+            }
+            else
+            {
+                _log?.Invoke($"{_item.name} unspools. A recipe is borrowed.");
+            }
             Destroy(gameObject);
         }
     }
