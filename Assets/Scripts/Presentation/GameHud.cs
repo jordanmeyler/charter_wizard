@@ -346,7 +346,11 @@ namespace RuneMagic
 
         static void DrawItemSprite(Rect rect, CatalogItem item)
         {
-            var sprite = SpriteFactory.Named(item != null ? item.sprite : null);
+            DrawSprite(rect, SpriteFactory.Named(item != null ? item.sprite : null), Color.white);
+        }
+
+        static void DrawSprite(Rect rect, Sprite sprite, Color tint)
+        {
             if (sprite == null || sprite.texture == null)
             {
                 return;
@@ -359,7 +363,10 @@ namespace RuneMagic
                 source.y / texture.height,
                 source.width / texture.width,
                 source.height / texture.height);
+            var previous = GUI.color;
+            GUI.color = tint;
             GUI.DrawTextureWithTexCoords(rect, texture, uv);
+            GUI.color = previous;
         }
 
         void DrawCharter()
@@ -946,23 +953,36 @@ namespace RuneMagic
             var play = GlyphView.IsPlay;
             var wrought = !oneSpace && ChainBook.IsWrought(rune);
             var inChunk = chunk != RuneId.None;
+            var tone = RunePalette.Of(rune);
             var fill = play
                 ? (available ? GlyphView.Slate : new Color(0.1f, 0.1f, 0.12f, 0.4f))
                 : inChunk
                     ? PaneOn(RunePalette.Of(chunk))
-                    : Color.Lerp(RunePalette.Of(rune), new Color(0.08f, 0.08f, 0.1f), available ? 0.25f : 0.72f);
-            if (!play)
+                    : RunePalette.Card(rune, available);
+            if (!play && inChunk)
             {
-                fill.a = inChunk ? 0.28f : available ? 0.92f : 0.35f;
+                fill.a = 0.2f;
             }
 
             var previous = GUI.color;
             GUI.color = fill;
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            if (!inChunk || play)
+            if (play)
             {
-                GUI.color = new Color(1f, 1f, 1f, available ? 0.35f : 0.08f);
-                GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 2f), Texture2D.whiteTexture);
+                GUI.color = new Color(1f, 1f, 1f, available ? 0.28f : 0.08f);
+                GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, 2f), Texture2D.whiteTexture);
+            }
+            else
+            {
+                var rim = tone;
+                rim.a = available ? (inChunk ? 0.8f : 0.95f) : 0.28f;
+                GUI.color = rim;
+                DrawFrame(rect, inChunk ? 1f : 2f);
+                if (!inChunk)
+                {
+                    GUI.color = new Color(1f, 1f, 1f, available ? 0.28f : 0.08f);
+                    GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, 2f), Texture2D.whiteTexture);
+                }
             }
 
             GUI.color = previous;
@@ -984,22 +1004,30 @@ namespace RuneMagic
             }
             else
             {
-                var ink = inChunk ? InkOn(RunePalette.Of(chunk)) : available ? Color.white : new Color(0.55f, 0.56f, 0.6f, 0.45f);
-                var birth = wrought ? ChainBook.BirthText(rune) : string.Empty;
-                var main = !string.IsNullOrEmpty(birth) ? birth : RuneCatalog.GlyphOf(rune);
-                var glyph = Label(rect.height > 70f ? 18 : 12, FontStyle.Bold, ink);
-                glyph.alignment = TextAnchor.MiddleCenter;
-                glyph.wordWrap = true;
-                var captionInk = inChunk
-                    ? new Color(ink.r, ink.g, ink.b, 0.82f)
-                    : available ? new Color(0.1f, 0.08f, 0.08f) : new Color(0.45f, 0.46f, 0.5f, 0.55f);
-                var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Normal, captionInk);
-                name.alignment = TextAnchor.MiddleCenter;
-                GUI.Label(new Rect(rect.x + 3, rect.y + 6, rect.width - 6, rect.height * 0.5f),
-                    main, glyph);
-                var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
-                GUI.Label(new Rect(rect.x, rect.y + rect.height * 0.52f, rect.width, rect.height * 0.4f),
-                    caption, name);
+                var showName = rect.height > 40f;
+                var markPad = rect.height > 56f ? 8f : 4f;
+                var markSide = showName
+                    ? Mathf.Min(rect.width - markPad * 2f, rect.height * 0.58f)
+                    : Mathf.Min(rect.width, rect.height) - markPad * 2f;
+                var mark = new Rect(
+                    rect.x + (rect.width - markSide) * 0.5f,
+                    rect.y + (showName ? 4f : (rect.height - markSide) * 0.5f),
+                    markSide,
+                    markSide);
+                var tint = available ? Color.white : new Color(1f, 1f, 1f, 0.32f);
+                DrawSprite(mark, SpriteFactory.RuneMark(rune), tint);
+
+                if (showName)
+                {
+                    var captionInk = inChunk
+                        ? InkOn(RunePalette.Of(chunk))
+                        : RunePalette.Caption(rune, available);
+                    var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Bold, captionInk);
+                    name.alignment = TextAnchor.MiddleCenter;
+                    var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
+                    GUI.Label(new Rect(rect.x + 2f, rect.y + rect.height * 0.62f, rect.width - 4f, rect.height * 0.34f),
+                        caption, name);
+                }
             }
 
             var ev = Event.current;

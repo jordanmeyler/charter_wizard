@@ -154,7 +154,7 @@ namespace RuneMagic
             for (var i = 0; i < take; i++)
             {
                 var glyph = _sequence[Mod(start + i, _sequence.Count)];
-                parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Shown));
+                parts.Add(glyph.IsTear ? "—" : RuneCatalog.NameOf(glyph.Shown));
             }
 
             _readingText = GlyphView.IsDevelop

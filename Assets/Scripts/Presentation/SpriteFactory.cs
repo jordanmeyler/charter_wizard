@@ -81,6 +81,11 @@ namespace RuneMagic
             }
         }
 
+        public static Sprite RuneMark(RuneId id)
+        {
+            return Memo($"rune-mark:{id}", () => RuneGlyphs.Build(id));
+        }
+
         public static Sprite Circle(Color color, int size = 48)
         {
             return Memo($"circle:{color}:{size}", () =>

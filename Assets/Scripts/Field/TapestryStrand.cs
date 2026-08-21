@@ -23,6 +23,7 @@ namespace RuneMagic
         float _amp;
         float _life;
         SpriteRenderer _body;
+        SpriteRenderer _mark;
         TextMesh _glyph;
         MeshRenderer _glyphRenderer;
 
@@ -48,7 +49,8 @@ namespace RuneMagic
                 _body = gameObject.AddComponent<SpriteRenderer>();
             }
 
-            _body.sprite = SpriteFactory.Circle(new Color(color.r, color.g, color.b, 0.9f), 28);
+            _body.sprite = SpriteFactory.Circle(new Color(color.r, color.g, color.b, 0.55f), 32);
+            _body.color = color;
             _body.sortingOrder = 8;
 
             EnsureGlyph(color);
@@ -105,6 +107,14 @@ namespace RuneMagic
 
         void EnsureGlyph(Color color)
         {
+            var markObject = new GameObject("Mark");
+            markObject.transform.SetParent(transform, false);
+            markObject.transform.localScale = Vector3.one * 0.85f;
+            _mark = markObject.AddComponent<SpriteRenderer>();
+            _mark.sprite = SpriteFactory.RuneMark(Rune);
+            _mark.color = Color.white;
+            _mark.sortingOrder = 9;
+
             var font = BuiltinFont.Get();
             if (font == null)
             {
@@ -113,14 +123,15 @@ namespace RuneMagic
 
             var labelObject = new GameObject("Glyph");
             labelObject.transform.SetParent(transform, false);
+            labelObject.transform.localPosition = new Vector3(0f, -0.42f, 0f);
             _glyph = labelObject.AddComponent<TextMesh>();
             _glyph.font = font;
-            _glyph.text = RuneCatalog.GlyphOf(Rune);
+            _glyph.text = RuneCatalog.NameOf(Rune);
             _glyph.anchor = TextAnchor.MiddleCenter;
             _glyph.alignment = TextAlignment.Center;
-            _glyph.fontSize = 36;
-            _glyph.characterSize = 0.085f;
-            _glyph.color = Color.Lerp(color, Color.white, 0.55f);
+            _glyph.fontSize = 28;
+            _glyph.characterSize = 0.05f;
+            _glyph.color = Color.Lerp(color, Color.white, 0.35f);
             _glyphRenderer = labelObject.GetComponent<MeshRenderer>();
             if (_glyphRenderer != null)
             {
@@ -138,8 +149,15 @@ namespace RuneMagic
             if (_body != null)
             {
                 var color = _body.color;
-                color.a = Alpha * 0.78f;
+                color.a = Alpha * 0.55f;
                 _body.color = color;
+            }
+
+            if (_mark != null)
+            {
+                var color = _mark.color;
+                color.a = Mathf.Clamp01(Alpha * 1.15f);
+                _mark.color = color;
             }
 
             if (_glyph != null)
