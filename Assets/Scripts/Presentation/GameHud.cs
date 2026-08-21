@@ -6,10 +6,14 @@ namespace RuneMagic
     public sealed class GameHud : MonoBehaviour
     {
         public const float BarHeight = 96f;
+        public const float LedgerWidth = 312f;
+        public const float LedgerMaxHeight = 348f;
 
         SanctumDirector _director;
         Vector2 _pauseScroll;
         Vector2 _packScroll;
+        Vector2 _ledgerScroll;
+        static Rect _ledgerGui;
 
         public void Bind(SanctumDirector director)
         {
@@ -46,11 +50,21 @@ namespace RuneMagic
                 return true;
             }
 
+            if (_ledgerGui.width > 1f)
+            {
+                var gui = new Vector2(mouse.x, Screen.height - mouse.y);
+                if (_ledgerGui.Contains(gui))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         void OnGUI()
         {
+            _ledgerGui = default;
             if (_director == null)
             {
                 return;
@@ -80,6 +94,7 @@ namespace RuneMagic
             if (_director.Mode == PlayMode.Charter)
             {
                 DrawCharter();
+                DrawCastLedger();
                 DrawSpellBar();
                 return;
             }
@@ -88,11 +103,13 @@ namespace RuneMagic
             {
                 DrawWorldChrome();
                 DrawAimDock();
+                DrawCastLedger();
                 DrawSpellBar();
                 return;
             }
 
             DrawWorldChrome();
+            DrawCastLedger();
             DrawSpellBar();
         }
 
@@ -121,6 +138,124 @@ namespace RuneMagic
             {
                 GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
             }
+        }
+
+        void DrawCastLedger()
+        {
+            var entries = _director.Ledger.Recent;
+            const float pad = 12f;
+            const float row = 32f;
+            var inner = Mathf.Max(row, entries.Count * row);
+            var height = Mathf.Min(LedgerMaxHeight, 36f + Mathf.Min(inner, 10 * row) + 10f);
+            if (entries.Count == 0)
+            {
+                height = 64f;
+            }
+
+            var panel = new Rect(Screen.width - LedgerWidth - pad, pad, LedgerWidth, height);
+            _ledgerGui = panel;
+            DrawPanel(panel.x, panel.y, panel.width, panel.height);
+
+            var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
+            GUI.Label(new Rect(panel.x + 12, panel.y + 6, panel.width - 24, 22), "Recent casts", heading);
+
+            if (entries.Count == 0)
+            {
+                var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+                GUI.Label(new Rect(panel.x + 12, panel.y + 30, panel.width - 24, 24),
+                    "Nothing attempted yet.", muted);
+                return;
+            }
+
+            var view = new Rect(panel.x + 8, panel.y + 30, panel.width - 16, height - 38);
+            _ledgerScroll = GUI.BeginScrollView(view, _ledgerScroll, new Rect(0, 0, view.width - 18, inner));
+            for (var i = 0; i < entries.Count; i++)
+            {
+                DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), entries[i]);
+            }
+
+            GUI.EndScrollView();
+        }
+
+        void DrawCastRow(Rect rect, CastAttempt attempt)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.1f, 0.11f, 0.14f, 0.55f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = previous;
+
+            DrawVerdict(new Rect(rect.x + 4, rect.y + 4, 22, 22), attempt.Worked);
+
+            var runes = attempt.Runes;
+            var count = runes != null ? Mathf.Max(1, runes.Length) : 1;
+            var room = rect.width - 114f;
+            var mark = Mathf.Clamp(Mathf.Floor((room - (count - 1) * 3f) / count), 16f, 22f);
+            var start = rect.x + 32;
+            if (runes == null || runes.Length == 0)
+            {
+                DrawBlockedMark(new Rect(start, rect.y + (rect.height - mark) * 0.5f, mark, mark));
+            }
+            else
+            {
+                for (var i = 0; i < runes.Length; i++)
+                {
+                    var slot = new Rect(start + i * (mark + 3), rect.y + (rect.height - mark) * 0.5f, mark, mark);
+                    if (attempt.HideRunes)
+                    {
+                        DrawBlockedMark(slot);
+                    }
+                    else
+                    {
+                        DrawMiniMark(slot, runes[i]);
+                    }
+                }
+            }
+
+            var tag = attempt.HideRunes ? "Free" : "Charter";
+            if (GlyphView.IsDevelop && !attempt.HideRunes && attempt.Spell != SpellId.None &&
+                SpellCodex.TryGet(attempt.Spell, out var named))
+            {
+                tag = named.Name;
+            }
+
+            var ink = Label(11, FontStyle.Normal, new Color(0.72f, 0.74f, 0.8f));
+            ink.alignment = TextAnchor.MiddleRight;
+            GUI.Label(new Rect(rect.xMax - 78, rect.y, 74, rect.height), tag, ink);
+        }
+
+        static void DrawVerdict(Rect rect, bool worked)
+        {
+            var previous = GUI.color;
+            GUI.color = worked
+                ? new Color(0.12f, 0.22f, 0.14f, 0.95f)
+                : new Color(0.24f, 0.1f, 0.1f, 0.95f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = previous;
+            var mark = Label(18, FontStyle.Bold, worked
+                ? new Color(0.45f, 0.9f, 0.5f)
+                : new Color(0.95f, 0.38f, 0.32f));
+            mark.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(rect, worked ? "○" : "✕", mark);
+        }
+
+        static void DrawMiniMark(Rect rect, RuneId rune)
+        {
+            var previous = GUI.color;
+            GUI.color = GlyphView.Slate;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = previous;
+            RuneMark.DrawGui(rect, rune, GlyphView.Ink);
+        }
+
+        static void DrawBlockedMark(Rect rect)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.08f, 0.08f, 0.1f, 0.95f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = new Color(0.28f, 0.22f, 0.22f, 0.9f);
+            GUI.DrawTexture(new Rect(rect.x + 3, rect.y + rect.height * 0.5f - 1.5f, rect.width - 6, 3f),
+                Texture2D.whiteTexture);
+            GUI.color = previous;
         }
 
         void DrawInventory()

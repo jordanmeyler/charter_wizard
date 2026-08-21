@@ -13,6 +13,7 @@ namespace RuneMagic
         const int Size = 48;
 
         static readonly Dictionary<int, Texture2D> Cache = new();
+        static readonly Dictionary<int, Sprite> Sprites = new();
         static readonly Color Clear = new(0f, 0f, 0f, 0f);
 
         public static Texture2D Of(RuneId rune, Color ink)
@@ -26,6 +27,24 @@ namespace RuneMagic
             texture = Draw(rune, ink);
             Cache[key] = texture;
             return texture;
+        }
+
+        public static Sprite AsSprite(RuneId rune, Color ink)
+        {
+            var key = ((int)rune * 397) ^ ColorKey(ink);
+            if (Sprites.TryGetValue(key, out var sprite) && sprite != null)
+            {
+                return sprite;
+            }
+
+            var texture = Of(rune, ink);
+            sprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f),
+                Size);
+            Sprites[key] = sprite;
+            return sprite;
         }
 
         public static void DrawGui(Rect rect, RuneId rune, Color ink)

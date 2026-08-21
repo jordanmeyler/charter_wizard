@@ -1,0 +1,47 @@
+using System.Collections.Generic;
+
+namespace RuneMagic
+{
+    /// <summary>
+    /// The last ten attempted casts. Charter keeps the marks.
+    /// Free blocks them — wild work is not written down.
+    /// </summary>
+    public sealed class CastLedger
+    {
+        public const int Cap = 10;
+
+        readonly List<CastAttempt> _entries = new();
+
+        public IReadOnlyList<CastAttempt> Recent => _entries;
+
+        public void Record(Composition composition, CastingStance stance, bool worked, SpellId spell)
+        {
+            var source = composition.Sequence;
+            var runes = source != null && source.Length > 0
+                ? (RuneId[])source.Clone()
+                : System.Array.Empty<RuneId>();
+            _entries.Insert(0, new CastAttempt(stance, runes, worked, spell));
+            while (_entries.Count > Cap)
+            {
+                _entries.RemoveAt(_entries.Count - 1);
+            }
+        }
+    }
+
+    public readonly struct CastAttempt
+    {
+        public CastAttempt(CastingStance stance, RuneId[] runes, bool worked, SpellId spell)
+        {
+            Stance = stance;
+            Runes = runes ?? System.Array.Empty<RuneId>();
+            Worked = worked;
+            Spell = spell;
+        }
+
+        public CastingStance Stance { get; }
+        public RuneId[] Runes { get; }
+        public bool Worked { get; }
+        public SpellId Spell { get; }
+        public bool HideRunes => Stance == CastingStance.Free;
+    }
+}

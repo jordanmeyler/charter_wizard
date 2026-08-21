@@ -6,7 +6,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basi
 
 ## What is implemented
 
-**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk into each, read the labelled altar, use that element’s spells on the obstacle, and take the stone. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
+**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
 
 Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: a wall of marks you have remembered, and a sideways-scrolling weave of everything on screen. **Play** sight shows only the marks; **Develop** (F1) shows names and the written book. Enemies and terrain are both locks.
 
@@ -47,10 +47,11 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 You only move and cast. The adept is the hooded figure with a violet glow. A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
-- **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk.
+- **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
 - **Click a cell in the weave** to draw that rune (only in the Charter).
 - **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
 - **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
+- The **top-right** panel lists the last ten attempted casts. ○ held together; ✕ fizzled. Charter shows the marks. Free blocks them.
 - In the Charter: **click wall runes** or weave cells to string them (up to 8). In Play the wall is only what you have kept. In Develop the eleven are named and listed. Only runes **on screen** light up. **Air is ambient** wherever a room still holds breath. **You** are always mind · body · soul. Walk to bring other missing runes into view. Two runes birth a join or wait; a finished spell is a sentence. Then **Charter Cast**, **Store**, or **Free Cast**.
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
@@ -114,6 +115,8 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Scripts/Magic/GlyphView.cs` | Play vs Develop sight (F1) |
 | `Assets/Scripts/Magic/RuneMemory.cs` | Remembered wall marks; later keep-conditions by rune depth |
 | `Assets/Scripts/Presentation/RuneMark.cs` | Abstract Play-mode marks |
+| `Assets/Scripts/Presentation/RuneSign.cs` | Mark + nature picture (flame, water, rock, gale, body, spirit, mind) |
+| `Assets/Scripts/World/RuneStele.cs` | Floor inscriptions and aspect pillars |
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Resources/Catalog/spells.json` | Master recipes and joins (what the game actually casts) |
 | `Assets/Resources/Catalog/art.json` | Custom sprites and items |
