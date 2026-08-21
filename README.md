@@ -6,7 +6,7 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basi
 
 ## What is implemented
 
-**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
+**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk in, read the altar (the mark sits beside a flame, water, rock, or gale), use that element’s spells on the obstacle, and take the stone. Around the crystal the floor is carved **body · spirit · mind**. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Past Door II, the Wrought Courts teach joins, keys, and inner doors — Door III wants grove, flood, and spark stones. Extra keys from hop paths stay in the pack. Doors gate on **possession, not sequence**.
 
 Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: a wall of marks you have remembered, and a sideways-scrolling weave of everything on screen. **Play** sight shows only the marks; **Develop** (F1) shows names and the written book. Enemies and terrain are both locks.
 
@@ -20,11 +20,16 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Bridge; Hop if you know Air | Salt stands a body. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
 | **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
-| **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. The floor opens. |
+| **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
+| **The Living Thicket** | A pit, a key-door | Water the plants, burn the timber, or hop; grove key opens the west door | Plants grow across gaps. |
+| **The Cistern** | A 3×3 hollow, a key-door | Flood / Douse fills pits smaller than 4×4; hop the long trench | Water · Salt is a floor. |
+| **The Seed of Charge** | A live rod, a key-door | Click Spark, or write Fire · Air | The join is a rune when it already stands. |
+| **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. |
+| **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
 
-Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for this floor. You cannot swim; water is a wall until you freeze it, span it, or boil it dry.
+Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for this floor. Water · Salt is a walkable floor. Water work fills a connected pit smaller than 4×4. Larger hollows stay open until you hop, span, or grow a plant across. You cannot swim a pit that is still a pit.
 
 | Design rule | In this slice |
 | --- | --- |

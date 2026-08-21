@@ -56,10 +56,12 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Walks what is on screen as a weave. Material joins unfold to
-    /// basics. Creature recipes stay as written — Life marks a living
-    /// formula and is not unfolded. Every enemy carries that mark when
-    /// the weave is populated. The adept is mind, body, and soul.
+    /// Walks what is on screen as a weave. A wrought join that already
+    /// stands (Spark, Plant, Ice) appears as itself so it can be drawn.
+    /// The basics that compose it are strewn through the grid. Creature
+    /// recipes stay as written — Life marks a living formula and is not
+    /// unfolded. Every enemy carries that mark when the weave is
+    /// populated. The adept is mind, body, and soul.
     /// </summary>
     public static class RoomSentence
     {
@@ -87,6 +89,7 @@ namespace RuneMagic
             var breathable = false;
             var spokenLocks = new HashSet<int>();
             var spokenStrings = new HashSet<int>();
+            var scatter = new List<WeaveGlyph>(16);
 
             for (var row = 0; row <= y1 - y0; row++)
             {
@@ -107,10 +110,12 @@ namespace RuneMagic
                         breathable = true;
                     }
 
-                    AppendTile(sequence, tile, ref lastMaterial, ref lastWasTear);
+                    AppendTile(sequence, tile, scatter, ref lastMaterial, ref lastWasTear);
                     AppendHere(sequence, locks, strings, extras, x, y, spokenLocks, spokenStrings);
                 }
             }
+
+            ScatterComposing(sequence, scatter, FieldView.Key(view));
 
             if (breathable)
             {
@@ -145,6 +150,7 @@ namespace RuneMagic
         static void AppendTile(
             List<WeaveGlyph> sequence,
             WorldTile tile,
+            List<WeaveGlyph> scatter,
             ref MaterialId lastMaterial,
             ref bool lastWasTear)
         {
@@ -176,7 +182,9 @@ namespace RuneMagic
             var def = MaterialCatalog.Of(material);
             if (def.Manifestation != RuneId.None && ChainBook.IsWrought(def.Manifestation))
             {
-                AppendRune(sequence, def.Manifestation, material, WeaveKind.Material);
+                sequence.Add(new WeaveGlyph(
+                    def.Manifestation, def.Manifestation, material, WeaveKind.Material, 0, 0, 1));
+                CollectComposing(scatter, def.Manifestation, material);
                 return;
             }
 
@@ -187,6 +195,39 @@ namespace RuneMagic
                 {
                     AppendRune(sequence, signature[i], material, WeaveKind.Material);
                 }
+            }
+        }
+
+        static void CollectComposing(List<WeaveGlyph> scatter, RuneId wrought, MaterialId material)
+        {
+            if (scatter == null)
+            {
+                return;
+            }
+
+            var recipe = new List<RuneId>(8);
+            ChainBook.ExpandRecipe(wrought, recipe);
+            for (var i = 0; i < recipe.Count; i++)
+            {
+                if (recipe[i] != RuneId.None && recipe[i] != wrought)
+                {
+                    scatter.Add(new WeaveGlyph(recipe[i], material, WeaveKind.Material));
+                }
+            }
+        }
+
+        static void ScatterComposing(List<WeaveGlyph> sequence, List<WeaveGlyph> extras, int seed)
+        {
+            if (sequence == null || extras == null || extras.Count == 0)
+            {
+                return;
+            }
+
+            var rng = new System.Random(seed == int.MinValue ? 1 : seed);
+            for (var i = 0; i < extras.Count; i++)
+            {
+                var at = rng.Next(0, sequence.Count + 1);
+                sequence.Insert(at, extras[i]);
             }
         }
 

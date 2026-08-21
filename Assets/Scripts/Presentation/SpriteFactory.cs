@@ -54,6 +54,14 @@ namespace RuneMagic
                 case "stone-body": return ElementStone("stone-body", new Color(0.88f, 0.84f, 0.72f), new Color(0.98f, 0.96f, 0.88f));
                 case "stone-spirit": return ElementStone("stone-spirit", new Color(0.55f, 0.42f, 0.82f), new Color(0.82f, 0.88f, 1f));
                 case "stone-mind": return ElementStone("stone-mind", new Color(0.92f, 0.62f, 0.12f), new Color(1f, 0.92f, 0.45f));
+                case "stone-grove": return ElementStone("stone-grove", new Color(0.22f, 0.62f, 0.22f), new Color(0.55f, 0.92f, 0.38f));
+                case "stone-flood": return ElementStone("stone-flood", new Color(0.12f, 0.42f, 0.78f), new Color(0.55f, 0.82f, 1f));
+                case "stone-spark": return ElementStone("stone-spark", new Color(0.95f, 0.78f, 0.18f), new Color(1f, 0.95f, 0.55f));
+                case "key-grove":
+                case "key-flood":
+                case "key-spark":
+                case "key-spare":
+                    return RoomKey(id.Trim().ToLowerInvariant());
                 case "ice-thing": return IceThing();
                 case "fire-golem": return FireGolem();
                 case "stone-man": return StoneMan();
@@ -1131,6 +1139,28 @@ namespace RuneMagic
                 canvas.Clear(Clear);
                 canvas.SoftCircle(16, 16, 13, color);
                 return canvas.ToSprite(32);
+            });
+        }
+
+        static Sprite RoomKey(string id)
+        {
+            var gem = id.Contains("grove") ? new Color(0.28f, 0.72f, 0.28f)
+                : id.Contains("flood") ? new Color(0.2f, 0.52f, 0.95f)
+                : id.Contains("spark") ? new Color(0.98f, 0.82f, 0.2f)
+                : new Color(0.82f, 0.68f, 0.28f);
+            var rim = Color.Lerp(gem, Color.white, 0.45f);
+            return Memo(id, () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.FillCircle(11, 20, 6, Color.Lerp(gem, Color.black, 0.35f));
+                canvas.FillCircle(11, 20, 5, gem);
+                canvas.Circle(11, 20, 3, rim);
+                canvas.Fill(15, 18, 12, 4, gem);
+                canvas.Fill(23, 14, 3, 8, gem);
+                canvas.Fill(20, 14, 3, 3, gem);
+                canvas.Circle(11, 20, 6, rim);
+                return canvas.ToSprite(28);
             });
         }
 

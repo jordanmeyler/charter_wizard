@@ -111,6 +111,20 @@ namespace RuneMagic
                     return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.55f, 0.42f, 0.82f), new Color(0.82f, 0.88f, 1f))));
                 case "stone-mind":
                     return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.92f, 0.62f, 0.12f), new Color(1f, 0.92f, 0.45f))));
+                case "stone-grove":
+                    return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.22f, 0.62f, 0.22f), new Color(0.55f, 0.92f, 0.38f))));
+                case "stone-flood":
+                    return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.12f, 0.42f, 0.78f), new Color(0.55f, 0.82f, 1f))));
+                case "stone-spark":
+                    return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.95f, 0.78f, 0.18f), new Color(1f, 0.95f, 0.55f))));
+                case "key-grove":
+                    return Cache(key, Frames(2, frame => PaintKey(frame, new Color(0.28f, 0.72f, 0.28f))));
+                case "key-flood":
+                    return Cache(key, Frames(2, frame => PaintKey(frame, new Color(0.2f, 0.52f, 0.95f))));
+                case "key-spark":
+                    return Cache(key, Frames(2, frame => PaintKey(frame, new Color(0.98f, 0.82f, 0.2f))));
+                case "key-spare":
+                    return Cache(key, Frames(2, frame => PaintKey(frame, new Color(0.82f, 0.68f, 0.28f))));
                 case "plaque":
                     return Cache(key, Frames(1, _ => PaintPlaque()));
                 default:
@@ -645,6 +659,27 @@ namespace RuneMagic
                 canvas.Fill(1, 3, 4, 6, new Color(0.85f, 0.45f, 0.15f));
                 canvas.Outline(new Color(0.2f, 0.1f, 0.05f));
                 return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
+            });
+        }
+
+        static Sprite PaintKey(int frame, Color gem)
+        {
+            return Memo($"actor-key-v1:{gem}:{frame}", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var lift = frame == 1 ? 1 : 0;
+                var rim = Color.Lerp(gem, Color.white, 0.4f);
+                canvas.GroundShadow(16, 8, 7, 3);
+                canvas.FillCircle(11, 19 + lift, 6, Color.Lerp(gem, Color.black, 0.35f));
+                canvas.FillCircle(11, 20 + lift, 5, gem);
+                canvas.Circle(11, 20 + lift, 3, rim);
+                canvas.Fill(15, 18 + lift, 12, 4, gem);
+                canvas.Fill(23, 14 + lift, 3, 8, gem);
+                canvas.Fill(20, 14 + lift, 3, 3, gem);
+                canvas.Circle(11, 20 + lift, 6, rim);
+                canvas.Outline(Color.Lerp(gem, Color.black, 0.5f));
+                return canvas.ToSprite(28, new Vector2(0.5f, 0.38f));
             });
         }
 

@@ -173,6 +173,10 @@ namespace RuneMagic
                         if (tile.IsPlantish)
                         {
                             tile.Grow(1);
+                            if (grid.SpreadPlant(tile))
+                            {
+                                changed++;
+                            }
                         }
 
                         changed++;
@@ -186,6 +190,7 @@ namespace RuneMagic
                         else if (tile.IsPlantish)
                         {
                             tile.Grow(1);
+                            grid.SpreadPlant(tile);
                             changed++;
                         }
 
@@ -202,6 +207,21 @@ namespace RuneMagic
                         tile.Drench(0.4f);
                         changed++;
                         break;
+                }
+            }
+
+            if (verb.Tiles == TileVerb.Douse || verb.Tiles == TileVerb.Wet)
+            {
+                var seeds = new List<Vector2Int>(cells.Count);
+                for (var i = 0; i < cells.Count; i++)
+                {
+                    seeds.Add(cells[i].Coord);
+                }
+
+                var filled = WorldWork.FillSmallPits(grid, seeds);
+                if (filled > 0)
+                {
+                    notes.Add("Yield fills a small hollow. Water · Salt stands as a floor.");
                 }
             }
 

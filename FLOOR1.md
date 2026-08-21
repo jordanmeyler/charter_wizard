@@ -49,13 +49,19 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 ## The floor at a glance
 
 ```
+                         [ DOOR III ]
+                        grove · flood · spark
+                      /          |           \
+              [GROVE]      [FOYER]      [CISTERN]
+                 |            |              |
+              [SPARK]      [ARENA]           |
+                                 |
+                           [ DOOR II ]
+                                 |
                          [ ASPECT FOYER ]
                         Salt · Mercury · Sulphur
                       /          |           \
                  [BODY]      [SPIRIT]      [MIND]
-                  Salt       Mercury      Sulphur
-                                 |
-                           [ DOOR II ]
                                  |
          [ FIRE ] ---- [  HUB + Door I  ] ---- [ WATER ]
                             /          \
@@ -64,7 +70,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 
 You spawn in the **hub**. Four rooms stand open around it — west, east, and two to the south. Each room is one element. Walk in. Read the altar. Use that element’s spells on the obstacle. Take the stone.
 
-**Door I** is the hub’s north door. It wants the four element stones. **Door II** wants the three aspect stones — only *this* section’s keys.
+**Door I** is the hub’s north door. It wants the four element stones. **Door II** wants the three aspect stones — only *that* section’s keys. **Door III** wants the three join stones (grove, flood, spark). Extra keys from hop paths sit in the pack for a later secret.
 
 ---
 
@@ -113,7 +119,31 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 - Force fails on purpose. Mind is discovered as the way through.
 
 ### Door II · Gate of Aspects
-Three sockets: Body, Spirit, Mind. Insert them → the floor opens.
+Three sockets: Body, Spirit, Mind. Insert them → the living work stands open.
+
+---
+
+## Section 3 — The Wrought Courts
+
+The aspects taught *how a sentence stands or goes.* This stage is more open: keys open doors, doors hide stones, and some doors you can hop past for an extra key. Joins already in the room (Spark, Plant, Water) appear as themselves in the Charter. The composing basics are still there, scattered — so you can click Spark, or write Fire · Air if you know.
+
+### Join Foyer · "The Wrought Cross"
+Open. Labels **Spark**, **Plant**, and **Water**. Four rooms stand off it. The north hall leads to Door III.
+
+### Grove Court · "The Living Thicket" — *grow, burn, hop*
+A two-tile pit splits the room. Plant and moss sit on both banks. **Water the plants** and they grow across the gap. **Fire the timber** on the north lip and the wall becomes ash — a walk-around. **Hop** the pit if you already know Air. A **grove key** sits on the east bank. The west door wants that key and hides the **grove stone**. South of the east bank, a short pit holds a **spare grove key** — hop it. The spare is not for Door III.
+
+### Cistern · "The Cistern" — *water as floor*
+**Water · Salt is a floor.** A 3×3 hollow blocks the lane — Flood, Douse, Rain, or Water-jet fills any pit smaller than 4×4 and you walk the pool. A longer trench to the south will not fill; hop it for a **spare flood key**. The **flood key** sits past the small hollow. The east door wants it and hides the **flood stone**.
+
+### Spark Cell · "The Seed of Charge" — *the join as a rune*
+Vein and metal already hold Spark. The Charter shows **Spark** as its own mark; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air if you know and the room has no seed. A **live rod** waits in the plate. The **spark key** is in the open; the east door hides the **spark stone**. A spare key sits across a hop pit.
+
+### Arena · "The Mixed Court" — *many bodies, two kinds of send*
+Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
+
+### Door III · Gate of Joins
+Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys stay in the pack.
 
 ---
 
@@ -144,6 +174,12 @@ Three sockets: Body, Spirit, Mind. Insert them → the floor opens.
 | `body-sanctum` | The Standing Stone | Salt stands a body |
 | `spirit-sanctum` | The Gallery of Force | Mercury sends |
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |
-| `door-ii` | Gate of Aspects | Three stones. The floor ends. |
+| `door-ii` | Gate of Aspects | Three aspect stones. Opens section 3. |
+| `join-foyer` | The Wrought Cross | Spark, Plant, Water labelled. Open courts. |
+| `grove-court` | The Living Thicket | Grow, burn, or hop a gap. Key → door → grove stone. Spare key by hop. |
+| `cistern` | The Cistern | Water · Salt fills small pits. Key → door → flood stone. |
+| `spark-cell` | The Seed of Charge | Spark as a rune. Key → door → spark stone. |
+| `arena` | The Mixed Court | Melee and ranged. Casters show their marks. |
+| `door-iii` | Gate of Joins | Three join stones. The floor ends. |
 
 Regenerate the JSON with `python3 Tools/build-foundation.py`. The old four-room slice remains as `sanctum`.
