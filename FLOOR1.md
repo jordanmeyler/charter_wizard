@@ -33,6 +33,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | --- | --- | --- | --- |
 | 52 | **Douse** | Water · Mercury | Parallel to Fireball. Yield sent. The first water verb. |
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
+| 54 | **Gust** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 
 ---
 
@@ -71,11 +72,11 @@ Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wa
 ### Water · "The Ember Vault" — *douse, flow, fill, cool*
 Walk in from the west. A labelled **Water** waits near the mouth. A Fire Golem stands off the path (optional). A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
-### Earth · "The Arrow Gauntlet" — *raise walls, block, bridge, cover*
-Walk in from the north. A labelled **Earth** waits near the mouth. A two-tile **gap** crosses the floor — Hop / Wall / Bridge / any pillar. Past the gap, a short **arrow rack** holds the Earth stone in an alcove. Wall / pillar / Command.
+### Earth · "The Arrow Gauntlet" — *raise walls, block, walk around*
+Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** owns the floor beyond. Raise a wall or a pillar on the lane so the shots break, then walk around the cover to the Earth stone. A single pit sits on either side of the stone.
 
-### Air · "The Sundered Heights" — *leap, glide, gust, clear*
-Walk in from the north. A labelled **Air** waits near the mouth. A two-tile **rift** — Hop / Flight / Wall. Past the rift, a short **poison veil** holds the Air stone. Gale / Storm-call / Flight.
+### Air · "The Sundered Heights" — *gust, clear*
+Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is a **green fog** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
 
 ### Door I · Gate of Elements
 Four sockets on the hub’s north wall. Walk up holding the four element stones and they seat themselves. The north door opens into the aspect foyer.
@@ -84,7 +85,7 @@ Four sockets on the hub’s north wall. Walk up holding the four element stones 
 
 ## Section 2 — The Aspect Sanctums
 
-The elements taught *substance*. This stage teaches the three ways to **apply** it. The foyer labels **Salt**, **Mercury**, and **Sulphur** before the sanctums.
+The elements taught *substance*. This stage teaches the three ways to **apply** it. The foyer labels **Salt**, **Mercury**, and **Sulphur** before the sanctums. The Silent Court labels those three again, plus Fire and Water, so Rage, Lull, and Command can all be written without leaving the room. You are always Salt · Sulphur · Mercury; Command is the sentence that was already on you.
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
@@ -93,7 +94,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a warden that only accepts a *sent* element (Fireball, Douse, Hurled stone, Lightning, Ice-spear, Gale…). Constructs and mind-work do not turn this lock.
+- **Signature:** a warden that only accepts a *sent* element (Fireball, Douse, Hurled stone, Lightning, Ice-spear, Gust, Gale…). Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
@@ -126,8 +127,8 @@ Three sockets: Body, Spirit, Mind. Insert them → the floor opens.
 | `hub` | The Cross | Choice. Four labelled roots. Door I. |
 | `fire-wing` | The Frozen Hall | Fire against ice |
 | `water-wing` | The Ember Vault | Water against fire |
-| `earth-wing` | The Arrow Gauntlet | Earth as cover / span |
-| `air-wing` | The Sundered Heights | Air as leap and gale |
+| `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots, walk around |
+| `air-wing` | The Sundered Heights | Air as gust. Fog, not a wall. |
 | `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
 | `spirit-sanctum` | The Gallery of Force | Mercury sends |

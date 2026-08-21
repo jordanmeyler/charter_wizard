@@ -53,6 +53,7 @@ namespace RuneMagic
         public string sprite;
         public string item;
         public int[] cells;
+        public int[] cover;
         public string grant;
         public string[] requires;
         public string clearMaterial;

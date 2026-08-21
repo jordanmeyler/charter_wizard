@@ -21,8 +21,8 @@ PITS = [
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["Wall", "FlamePillar", "IcePillar", "VineRise", "Bridge", "Command"]
-POISON = ["Gale", "StormCall", "Flight"]
+ARROWS = ["Wall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
+WIND = ["Gust", "Gale", "StormCall", "Flight"]
 MIND = ["Rage", "Lull", "Terror", "Command", "Jolt"]
 ATTACK = [
     "Fireball",
@@ -32,6 +32,7 @@ ATTACK = [
     "LightningBolt",
     "IceSpear",
     "Gale",
+    "Gust",
     "SunLance",
     "Scald",
 ]
@@ -130,10 +131,10 @@ def assert_walkable(data):
     must(closed, "fire cage face", world("fire-wing", rooms, 5, 7))
     must(closed, "water altar", world("water-wing", rooms, 3, 7))
     must(closed, "water curtain face", world("water-wing", rooms, 8, 7))
-    must(closed, "earth altar", world("earth-wing", rooms, 7, 12))
-    must(closed, "earth pit lip", world("earth-wing", rooms, 7, 9))
+    must(closed, "earth altar", world("earth-wing", rooms, 7, 13))
+    must(closed, "earth stone approach", world("earth-wing", rooms, 7, 3))
     must(closed, "air altar", world("air-wing", rooms, 7, 12))
-    must(closed, "air rift lip", world("air-wing", rooms, 7, 9))
+    must(closed, "air fog lip", world("air-wing", rooms, 7, 9))
     must(closed, "door I", world("hub", rooms, 23, 13))
 
     foyer = world("aspect-foyer", rooms, 15, 6)
@@ -378,33 +379,23 @@ def main():
             wall="Stone",
             floor="Stone",
             stamps=[
-                stamp("Pit", "Void", rect(1, 7, 12, 8)),
-                stamp("Wall", "Metal", cells((5, 1), (5, 2), (5, 3), (5, 4), (9, 1), (9, 2), (9, 3), (9, 4))),
-                stamp("Wall", "Metal", cells((6, 4), (7, 4), (8, 4))),
-                stamp("Floor", "SaltCrust", cells((7, 12), (7, 2))),
+                stamp("Pit", "Void", cells((6, 2), (8, 2))),
+                stamp("Floor", "SaltCrust", cells((7, 13), (7, 2))),
             ],
             props=[
-                {"type": "runes", "x": 7, "y": 12, "runes": ["Earth"], "dir": "up"},
+                {"type": "runes", "x": 7, "y": 13, "runes": ["Earth"], "dir": "up"},
                 {
-                    "type": "chasm",
+                    "type": "arrows",
                     "x": 7,
-                    "y": 8,
-                    "displayName": "The standing gap",
-                    "formulaId": "earth-gap",
-                    "keys": PITS,
-                },
-                {
-                    "type": "barrier",
-                    "x": 7,
-                    "y": 4,
-                    "displayName": "Arrow rack",
+                    "y": 11,
+                    "displayName": "Arrow volley",
                     "formulaId": "arrow-volley",
                     "formula": ["Earth"],
                     "keys": ARROWS,
-                    "cells": [6, 4, 7, 4, 8, 4],
-                    "clearMaterial": "Stone",
+                    "cover": [6, 10, 7, 10, 8, 10, 6, 9, 7, 9, 8, 9],
+                    "cells": rect(1, 1, 12, 10),
                     "sprite": "arrow-rack",
-                    "note": "Rest stands in the way of the arrows.",
+                    "note": "Rest stands. The shots break. Walk around the body you raised.",
                 },
                 {"type": "item", "x": 7, "y": 2, "item": "earth-stone"},
             ],
@@ -418,33 +409,22 @@ def main():
             wall="Stone",
             floor="Scoured",
             stamps=[
-                stamp("Pit", "Void", rect(1, 7, 12, 8)),
-                stamp("Wall", "Steam", cells((5, 1), (5, 2), (5, 3), (5, 4), (9, 1), (9, 2), (9, 3), (9, 4))),
-                stamp("Wall", "Steam", cells((6, 4), (7, 4), (8, 4))),
                 stamp("Floor", "Vein", cells((7, 12), (7, 2))),
+                stamp("Floor", "Acid", rect(1, 1, 12, 8)),
             ],
             props=[
                 {"type": "runes", "x": 7, "y": 12, "runes": ["Air"], "dir": "up"},
                 {
-                    "type": "chasm",
+                    "type": "fog",
                     "x": 7,
-                    "y": 8,
-                    "displayName": "The rift",
-                    "formulaId": "air-rift",
-                    "keys": PITS,
-                },
-                {
-                    "type": "barrier",
-                    "x": 7,
-                    "y": 4,
-                    "displayName": "Poison veil",
-                    "formulaId": "poison-veil",
+                    "y": 5,
+                    "displayName": "Poison fog",
+                    "formulaId": "poison-fog",
                     "formula": ["Air"],
-                    "keys": POISON,
-                    "cells": [6, 4, 7, 4, 8, 4],
-                    "clearMaterial": "Scoured",
-                    "sprite": "poison-veil",
-                    "note": "Breath going pushes the veil out.",
+                    "keys": WIND,
+                    "cells": rect(1, 1, 12, 8),
+                    "sprite": "poison-fog",
+                    "note": "Breath sent. The foul air forgets the room.",
                 },
                 {"type": "item", "x": 7, "y": 2, "item": "air-stone"},
             ],
@@ -503,10 +483,11 @@ def main():
             floor="Stone",
             stamps=[
                 stamp("Floor", "Vein", cells((3, 3), (8, 6), (12, 6))),
-                stamp("Wall", "Metal", cells((4, 8), (12, 3))),
+                stamp("Floor", "Hearth", cells((4, 8), (5, 8))),
             ],
             props=[
                 {"type": "runes", "x": 3, "y": 3, "runes": ["Mercury"], "dir": "right"},
+                {"type": "runes", "x": 4, "y": 8, "runes": ["Fire"], "dir": "right"},
                 {
                     "type": "mite",
                     "x": 8,
@@ -533,9 +514,16 @@ def main():
                 stamp("Wall", "Stone", rect(6, 5, 14, 5)),
                 stamp("Wall", "Stone", rect(6, 7, 14, 7)),
                 stamp("Floor", "Crystal", cells((3, 6), (13, 6))),
+                stamp("Floor", "Hearth", cells((3, 3), (4, 3))),
+                stamp("Floor", "Damp", cells((3, 9), (4, 9))),
+                stamp("Floor", "SaltCrust", cells((3, 8), (4, 8))),
             ],
             props=[
+                {"type": "runes", "x": 3, "y": 3, "runes": ["Salt"], "dir": "right"},
                 {"type": "runes", "x": 3, "y": 6, "runes": ["Sulphur"], "dir": "right"},
+                {"type": "runes", "x": 3, "y": 9, "runes": ["Mercury"], "dir": "right"},
+                {"type": "runes", "x": 5, "y": 3, "runes": ["Fire"], "dir": "right"},
+                {"type": "runes", "x": 5, "y": 9, "runes": ["Water"], "dir": "right"},
                 {
                     "type": "mite",
                     "x": 8,

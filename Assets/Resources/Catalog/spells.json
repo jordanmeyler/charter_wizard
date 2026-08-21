@@ -921,6 +921,19 @@
       "outcome": "Restrain",
       "gate": "",
       "work": "Command"
+    },
+    {
+      "number": 54,
+      "id": "Gust",
+      "book": "Weather",
+      "name": "Gust",
+      "want": "Breath sent. A simple wind.",
+      "recipe": "Air · Mercury",
+      "via": "",
+      "form": "Shot",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Gust"
     }
   ]
 }

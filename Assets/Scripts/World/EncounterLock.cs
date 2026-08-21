@@ -83,13 +83,58 @@ namespace RuneMagic
                 _hit.enabled = false;
             }
 
+            LockReward.Grant(transform.position, _grant);
+            if (spell == SpellId.Command)
+            {
+                var player = AdeptAvatar.Find();
+                var away = player != null
+                    ? (transform.position - player.transform.position)
+                    : Vector3.right;
+                away.z = 0f;
+                if (away.sqrMagnitude < 0.01f)
+                {
+                    away = Vector3.right;
+                }
+
+                away = away.normalized * 1.35f;
+                _rest += away;
+                transform.position = _rest;
+                if (_renderer != null)
+                {
+                    _renderer.color = new Color(0.75f, 0.85f, 1f, 0.85f);
+                }
+
+                Destroy(gameObject, 2.4f);
+                return $"{DisplayName} obeys. They step aside.";
+            }
+
+            if (spell == SpellId.Lull)
+            {
+                if (_renderer != null)
+                {
+                    _renderer.color = new Color(0.55f, 0.7f, 1f, 0.35f);
+                }
+
+                Destroy(gameObject, 0.8f);
+                return $"{DisplayName} sleeps. The aisle is open.";
+            }
+
             if (_renderer != null)
             {
                 _renderer.color = new Color(1f, 1f, 1f, 0.15f);
             }
 
-            LockReward.Grant(transform.position, _grant);
             Destroy(gameObject, 0.35f);
+            if (spell == SpellId.Rage)
+            {
+                return $"{DisplayName} turns on itself. The mind was the lock.";
+            }
+
+            if (spell == SpellId.Terror || spell == SpellId.Jolt)
+            {
+                return $"{DisplayName} cannot hold a thought. They leave the aisle.";
+            }
+
             return $"{DisplayName} unmakes. A simple lock; many keys would have turned it.";
         }
 
