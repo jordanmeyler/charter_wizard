@@ -47,6 +47,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
 | 64 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
 | 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
+| 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
+| 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 
 ---
 
@@ -113,7 +115,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Ice-spear, Gust, Gale…). Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Gust, Gale…). A flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"

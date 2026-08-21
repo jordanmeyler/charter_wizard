@@ -22,6 +22,17 @@ namespace RuneMagic
         public static bool IsFlight(SpellId spell) =>
             spell == SpellId.Flight;
 
+        public static bool IsPush(SpellId spell) =>
+            spell == SpellId.Push || spell == SpellId.Gale;
+
+        public static bool IsSkyStrike(SpellId spell) =>
+            spell == SpellId.LightningStrike;
+
+        public static bool StopsOnWalls(SpellId spell) =>
+            spell == SpellId.LightningBolt
+            || spell == SpellId.BrilliantArc
+            || spell == SpellId.Blackout;
+
         public static bool IsTimeStop(SpellId spell) =>
             spell == SpellId.TimeStop;
 
@@ -171,6 +182,7 @@ namespace RuneMagic
             {
                 case SpellId.Gale:
                 case SpellId.Gust:
+                case SpellId.Push:
                 case SpellId.StormCall:
                     return true;
                 default:
@@ -231,6 +243,21 @@ namespace RuneMagic
 
         public static bool IsLavaBody(MaterialId material) =>
             material == MaterialId.Lava;
+
+        public static bool BurnsOccupants(WorldTile tile)
+        {
+            if (tile == null || !tile.IsConjured)
+            {
+                return false;
+            }
+
+            if (!IsFlameBody(tile.Material) && !IsLavaBody(tile.Material))
+            {
+                return false;
+            }
+
+            return tile.Kind == TileKind.Wall || tile.RaisedAs == RaisedForm.Pillar;
+        }
 
         public static bool IsRockBody(MaterialId material)
         {
@@ -725,8 +752,10 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
-                || spell == SpellId.Gust || spell == SpellId.Scald || spell == SpellId.SunLance
-                || spell == SpellId.HurledStone || spell == SpellId.Douse || spell == SpellId.IceSpear)
+                || spell == SpellId.Gust || spell == SpellId.Push || spell == SpellId.Scald
+                || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.Douse
+                || spell == SpellId.IceSpear || spell == SpellId.LightningBolt
+                || spell == SpellId.BrilliantArc || spell == SpellId.Blackout)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }
@@ -967,6 +996,96 @@ namespace RuneMagic
                 }
 
                 break;
+            }
+
+            return WorldGrid.Center(land.x, land.y);
+        }
+
+        public const float PushTiles = 3.2f;
+
+        public static Vector3 ClampShot(WorldGrid grid, Vector3 from, Vector3 to)
+        {
+            if (grid == null)
+            {
+                return to;
+            }
+
+            var path = Span(CoordOf(from), CoordOf(to));
+            for (var i = 1; i < path.Count; i++)
+            {
+                var tile = grid.Get(path[i]);
+                if (tile != null && tile.Def.BlocksMovement)
+                {
+                    return WorldGrid.Center(path[i].x, path[i].y);
+                }
+            }
+
+            return to;
+        }
+
+        public static bool HasWallBetween(WorldGrid grid, Vector3 from, Vector3 to)
+        {
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var start = CoordOf(from);
+            var stop = CoordOf(to);
+            if (start == stop)
+            {
+                return false;
+            }
+
+            var path = Span(start, stop);
+            for (var i = 1; i < path.Count; i++)
+            {
+                if (path[i] == stop)
+                {
+                    return false;
+                }
+
+                var tile = grid.Get(path[i]);
+                if (tile != null && tile.Def.BlocksMovement)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static Vector3 PushLanding(WorldGrid grid, Vector3 from, Vector3 body)
+        {
+            var delta = (Vector2)(body - from);
+            if (delta.sqrMagnitude < 0.04f)
+            {
+                delta = Vector2.right;
+            }
+
+            delta.Normalize();
+            var dest = (Vector2)body + delta * PushTiles;
+            if (grid == null)
+            {
+                return dest;
+            }
+
+            var path = Span(CoordOf(body), CoordOf(dest), Mathf.CeilToInt(PushTiles) + 1);
+            var land = CoordOf(body);
+            for (var i = 1; i < path.Count; i++)
+            {
+                var tile = grid.Get(path[i]);
+                if (tile == null)
+                {
+                    break;
+                }
+
+                if (tile.Def.BlocksMovement)
+                {
+                    break;
+                }
+
+                land = path[i];
             }
 
             return WorldGrid.Center(land.x, land.y);

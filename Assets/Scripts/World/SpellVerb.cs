@@ -81,6 +81,10 @@ namespace RuneMagic
                 case SpellId.LightningBolt:
                 case SpellId.BrilliantArc:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Stunned, 2.2f, TileVerb.Charge);
+                case SpellId.LightningStrike:
+                    return new SpellVerb(SpellTarget.Single, 1.15f, StatusId.Stunned, 2.6f, TileVerb.Charge);
+                case SpellId.Push:
+                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.ChainLightning:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2.8f, TileVerb.Charge);
                 case SpellId.Jolt:

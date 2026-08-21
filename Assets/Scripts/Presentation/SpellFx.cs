@@ -84,6 +84,13 @@ namespace RuneMagic
             _potency = potency <= 0f ? 1f : potency;
             _from = from;
             _to = to;
+            if (WorldWork.IsSkyStrike(spell))
+            {
+                _from = to + new Vector3(0f, 7.2f, 0f);
+                _to = to;
+                shape = SpellShape.Shot;
+            }
+
             _mid = Vector3.Lerp(_from, _to, 0.45f) + new Vector3(0f, 0.35f, 0f);
             if (shape == SpellShape.Self)
             {

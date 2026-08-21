@@ -67,7 +67,7 @@ namespace RuneMagic
                 _label.color = new Color(1f, 0.95f, 0.45f);
             }
 
-            return spell == SpellId.LightningBolt
+            return spell == SpellId.LightningBolt || spell == SpellId.LightningStrike
                 ? "The rod drinks the bolt. Lightning stands in the cell."
                 : "Spark takes the rod. The cell wakes.";
         }

@@ -114,7 +114,7 @@ namespace RuneMagic
             E(30, SpellBook.Hold, SpellId.Vine, "That living plant is sent. It holds them, or it climbs.", "Vine", "Water · Earth · Salt · Life · Mercury", "Grove · Mercury", "Remote", SpellOutcome.Restrain),
             E(31, SpellBook.GrowHeal, SpellId.VineRise, "That living plant is asked to stand.", "Vine-rise", "Water · Earth · Salt · Life · Earth", "Grove · Earth", "Pillar", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
-            E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "Air · Salt · Mercury", "Self", SpellOutcome.Neither),
+            E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
             E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
@@ -146,7 +146,9 @@ namespace RuneMagic
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. It will thaw.", "Ice-wall", "Water · Salt · Earth · Salt · Water · Salt · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
             E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
-            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain)
+            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain),
+            E(66, SpellBook.Weather, SpellId.Push, "Breath given a body and sent. Wind that pushes the person.", "Push", "Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
+            E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -284,6 +286,40 @@ namespace RuneMagic
             if (bolt.Count == 0 || bolt[0].Spell != SpellId.LightningBolt)
             {
                 broken.Add("Fire · Air · Mercury should be Lightning");
+            }
+
+            var hop = Composition.FromSequence(new[] { RuneId.Air, RuneId.Salt, RuneId.Air });
+            var hopExact = ChainBook.CollectExact(hop, SpellShape.None);
+            if (hopExact.Count == 0 || hopExact[0].Spell != SpellId.Hop)
+            {
+                broken.Add("Air · Salt · Air should be Hop");
+            }
+
+            var push = Composition.FromSequence(new[] { RuneId.Air, RuneId.Salt, RuneId.Mercury });
+            var pushExact = ChainBook.CollectExact(push, SpellShape.None);
+            if (pushExact.Count == 0 || pushExact[0].Spell != SpellId.Push)
+            {
+                broken.Add("Air · Salt · Mercury should be Push");
+            }
+
+            var strike = Composition.FromSequence(new[]
+            {
+                RuneId.Fire, RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Mercury
+            });
+            var strikeExact = ChainBook.CollectExact(strike, SpellShape.None);
+            if (strikeExact.Count == 0 || strikeExact[0].Spell != SpellId.LightningStrike)
+            {
+                broken.Add("Fire · Air · Salt · Air · Mercury should be Lightning strike");
+            }
+
+            var sparkStrike = Composition.FromSequence(new[]
+            {
+                RuneId.Spark, RuneId.Salt, RuneId.Air, RuneId.Mercury
+            });
+            var sparkStrikeExact = ChainBook.CollectExact(sparkStrike, SpellShape.None);
+            if (sparkStrikeExact.Count == 0 || sparkStrikeExact[0].Spell != SpellId.LightningStrike)
+            {
+                broken.Add("Spark · Salt · Air · Mercury should be Lightning strike");
             }
 
             var free = ChainBook.CollectForFree(fireball, SpellShape.None, 2);

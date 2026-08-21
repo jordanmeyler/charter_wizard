@@ -68,13 +68,21 @@ namespace RuneMagic
                 return new SpellImpactResult(First(notes), hits);
             }
 
-            var single = Nearest(locks, aim, Mathf.Max(radius, 1.55f), verb);
-            if (single != null)
+            if (WorldWork.IsSinglePillar(spell) && (WorldWork.IsFireWork(spell) || spell == SpellId.LavaPillar))
             {
-                hits.Add(single);
-                ApplyHosts(hits, origin, verb, notes);
+                CollectLocksOnTile(locks, aim, hits, verb);
             }
 
+            if (hits.Count == 0)
+            {
+                var single = Nearest(locks, aim, Mathf.Max(radius, 1.55f), verb, grid, spell, origin);
+                if (single != null)
+                {
+                    hits.Add(single);
+                }
+            }
+
+            ApplyHosts(hits, origin, verb, notes);
             ApplyTiles(grid, verb, aim, Mathf.Max(0.8f, radius), notes);
             return new SpellImpactResult(First(notes), hits);
         }
@@ -103,7 +111,41 @@ namespace RuneMagic
             }
         }
 
-        static ISpellLock Nearest(IReadOnlyList<ISpellLock> locks, Vector3 point, float radius, SpellVerb verb = default)
+        static void CollectLocksOnTile(
+            IReadOnlyList<ISpellLock> locks,
+            Vector3 point,
+            List<ISpellLock> hits,
+            SpellVerb verb)
+        {
+            if (locks == null)
+            {
+                return;
+            }
+
+            var tile = WorldWork.CoordOf(point);
+            for (var i = 0; i < locks.Count; i++)
+            {
+                var encounter = locks[i];
+                if (encounter is not MonoBehaviour body || body == null || encounter.Resolved || !CanTake(encounter, verb))
+                {
+                    continue;
+                }
+
+                if (WorldWork.CoordOf(encounter.WorldPosition) == tile && !hits.Contains(encounter))
+                {
+                    hits.Add(encounter);
+                }
+            }
+        }
+
+        static ISpellLock Nearest(
+            IReadOnlyList<ISpellLock> locks,
+            Vector3 point,
+            float radius,
+            SpellVerb verb,
+            WorldGrid grid,
+            SpellId spell,
+            Vector3 origin)
         {
             ISpellLock best = null;
             var bestDistance = radius;
@@ -116,6 +158,11 @@ namespace RuneMagic
             {
                 var encounter = locks[i];
                 if (encounter is not MonoBehaviour body || body == null || encounter.Resolved || !CanTake(encounter, verb))
+                {
+                    continue;
+                }
+
+                if (WorldWork.StopsOnWalls(spell) && WorldWork.HasWallBetween(grid, origin, encounter.WorldPosition))
                 {
                     continue;
                 }

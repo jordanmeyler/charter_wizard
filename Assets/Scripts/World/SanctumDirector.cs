@@ -196,6 +196,17 @@ namespace RuneMagic
                 }
             }
 
+            if (Underfoot != null && WorldWork.BurnsOccupants(Underfoot) && (adept == null || !adept.IsAirborne))
+            {
+                var host = StatusHost.On(player);
+                if (host == null || !host.Fends(Essence.Fire))
+                {
+                    KillPlayer("A standing flame finds you. The crystal calls you back.");
+                }
+            }
+
+            BurnLocksOnPillars();
+
             FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
         }
 
@@ -893,9 +904,19 @@ namespace RuneMagic
                     : "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
             }
 
+            if (WorldWork.IsSkyStrike(spell))
+            {
+                return "Click where it should fall. A spark given form comes from the sky. Walls will not hide them.";
+            }
+
+            if (WorldWork.IsPush(spell) && spell == SpellId.Push)
+            {
+                return "Click through a person. Breath given a body finds them, and they go.";
+            }
+
             if (WorldWork.IsPillar(spell))
             {
-                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds.";
+                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds. Standing fire unmakes flesh.";
             }
 
             if (WorldWork.LaysVeil(spell))
@@ -1313,7 +1334,9 @@ namespace RuneMagic
                 }
 
                 aim = AimPoint(spell, shape, origin, requested, potency);
-                target = ResolveCastLock(shape, origin, requested, potency) ?? target;
+                target = ResolveCastLock(shape, origin, aim, potency, spell)
+                    ?? ResolveCastLock(shape, origin, requested, potency, spell)
+                    ?? target;
                 if (WorldWork.IsHop(SpellCodex.WorkOf(spell)))
                 {
                     target = FindLockNear(aim, 1.8f) ?? FindLockNear(origin, 2.4f) ?? target;
@@ -1439,6 +1462,12 @@ namespace RuneMagic
                             CurrentTarget = null;
                             workNote = FirstNote(flavor, workNote);
                         }
+
+                        if (WorldWork.IsPush(work))
+                        {
+                            var shoved = ShoveHits(impact.Locks, target, origin);
+                            workNote = FirstNote(shoved, workNote);
+                        }
                     }
                     else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                     {
@@ -1498,7 +1527,13 @@ namespace RuneMagic
                 return SpellFormations.ClampPoint(SpellShape.Remote, origin, requested, potency);
             }
 
-            return SpellFormations.ClampPoint(shape, origin, requested, potency);
+            var point = SpellFormations.ClampPoint(shape, origin, requested, potency);
+            if (WorldWork.StopsOnWalls(spell))
+            {
+                return WorldWork.ClampShot(Grid, origin, point);
+            }
+
+            return point;
         }
 
         System.Collections.IEnumerator CarryCaster(SpellId spell, Vector3 origin, Vector3 requested)
@@ -1578,34 +1613,54 @@ namespace RuneMagic
             }
 
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
-            return ResolveCastLock(shape, CasterPosition(), mouse);
+            return ResolveCastLock(shape, CasterPosition(), mouse, 1f, PendingSpell);
         }
 
-        ISpellLock ResolveCastLock(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        ISpellLock ResolveCastLock(
+            SpellShape shape,
+            Vector3 origin,
+            Vector3 requested,
+            float potency = 1f,
+            SpellId spell = SpellId.None)
         {
             var clicked = FindLockNear(requested, 1.85f);
-            if (clicked != null)
+            if (clicked != null && !ShotBlocked(spell, origin, clicked.WorldPosition))
             {
                 return clicked;
             }
 
-            var aimed = LockAtAim(shape, origin, requested, potency);
+            var aimed = LockAtAim(shape, origin, requested, potency, spell);
             if (aimed != null)
             {
                 return aimed;
             }
 
-            return LockAlive(_focus) ? _focus : null;
+            if (LockAlive(_focus) && !ShotBlocked(spell, origin, _focus.WorldPosition))
+            {
+                return _focus;
+            }
+
+            return null;
         }
 
-        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f)
+        bool ShotBlocked(SpellId spell, Vector3 from, Vector3 to)
+        {
+            return WorldWork.StopsOnWalls(spell) && WorldWork.HasWallBetween(Grid, from, to);
+        }
+
+        ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f, SpellId spell = SpellId.None)
         {
             var scale = potency <= 0f ? 1f : potency;
             var point = SpellFormations.ClampPoint(shape, origin, requested, scale);
+            if (WorldWork.StopsOnWalls(spell))
+            {
+                point = WorldWork.ClampShot(Grid, origin, point);
+            }
+
             var radius = SpellFormations.Get(shape).LockRadius * scale;
             if (shape == SpellShape.Shot)
             {
-                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f));
+                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f), spell);
             }
 
             if (shape == SpellShape.Spread || shape == SpellShape.Self)
@@ -1616,7 +1671,7 @@ namespace RuneMagic
             return FindLockNear(point, radius);
         }
 
-        ISpellLock FindLockAlong(Vector3 from, Vector3 to, float radius)
+        ISpellLock FindLockAlong(Vector3 from, Vector3 to, float radius, SpellId spell = SpellId.None)
         {
             ISpellLock best = null;
             var bestAlong = float.MaxValue;
@@ -1640,6 +1695,11 @@ namespace RuneMagic
                 var t = lengthSq < 0.0001f ? 0f : Mathf.Clamp01(Vector2.Dot(point - a, span) / lengthSq);
                 var closest = a + span * t;
                 if (Vector2.Distance(point, closest) > radius)
+                {
+                    continue;
+                }
+
+                if (ShotBlocked(spell, from, encounter.WorldPosition))
                 {
                     continue;
                 }
@@ -1840,6 +1900,92 @@ namespace RuneMagic
             _targetRing.color = Mode == PlayMode.Aiming
                 ? new Color(0.45f, 0.92f, 0.95f, 0.95f)
                 : new Color(1f, 0.86f, 0.35f, 0.95f);
+        }
+
+        string ShoveHits(IReadOnlyList<ISpellLock> hits, ISpellLock fallback, Vector3 origin)
+        {
+            var pushed = 0;
+            if (hits != null)
+            {
+                for (var i = 0; i < hits.Count; i++)
+                {
+                    if (ShoveLock(hits[i], origin))
+                    {
+                        pushed++;
+                    }
+                }
+            }
+
+            if (pushed == 0 && ShoveLock(fallback, origin))
+            {
+                pushed++;
+            }
+
+            if (pushed == 0)
+            {
+                return string.Empty;
+            }
+
+            return pushed == 1
+                ? "Breath given a body finds them. They go."
+                : "The wind takes them. They go.";
+        }
+
+        bool ShoveLock(ISpellLock encounter, Vector3 origin)
+        {
+            if (!LockAlive(encounter) || encounter is not MonoBehaviour body || body == null)
+            {
+                return false;
+            }
+
+            var land = WorldWork.PushLanding(Grid, origin, encounter.WorldPosition);
+            if (Vector2.Distance(land, encounter.WorldPosition) < 0.2f)
+            {
+                return false;
+            }
+
+            var combat = body.GetComponent<CombatActor>();
+            if (combat != null)
+            {
+                combat.PlaceAt(land);
+            }
+            else
+            {
+                body.transform.position = land;
+            }
+
+            return true;
+        }
+
+        void BurnLocksOnPillars()
+        {
+            if (_locks == null || Grid == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _locks.Count; i++)
+            {
+                var encounter = _locks[i];
+                if (!LockAlive(encounter) || encounter is not MonoBehaviour body || body == null)
+                {
+                    continue;
+                }
+
+                var tile = Grid.TileAtWorld(encounter.WorldPosition);
+                if (!WorldWork.BurnsOccupants(tile))
+                {
+                    continue;
+                }
+
+                var host = StatusHost.On(body);
+                host?.Apply(StatusId.Burning, 3f);
+                if (Accepts(encounter, SpellId.FlamePillar) || Accepts(encounter, SpellId.LavaPillar))
+                {
+                    UnmakeLock(encounter, $"{encounter.DisplayName} cannot stand in the flame. They fall.");
+                    return;
+                }
+            }
         }
 
         public void TurnLock(ISpellLock encounter)
