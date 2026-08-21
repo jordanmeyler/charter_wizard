@@ -12,6 +12,9 @@ namespace RuneMagic
         public TileSubstance Substance => Def.Substance;
         public RuneId Element => Def.Element;
         public IReadOnlyList<RuneId> Emission => Def.Emission;
+        public bool IsConjured { get; private set; }
+        public RaisedForm RaisedAs { get; private set; }
+        public TileDef Foundation { get; private set; }
 
         public bool IsEmitting => !Def.TearsTapestry && Emission.Count > 0;
         public Vector3 WorldOrigin => transform.position;
@@ -24,6 +27,8 @@ namespace RuneMagic
         SpriteRenderer _fx;
         Collider2D _collider;
         int _growth;
+        GameObject _linger;
+        bool _hasFoundation;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -58,19 +63,60 @@ namespace RuneMagic
             BecomeWalkable(MaterialId.Stone);
         }
 
-        public void BecomeWalkable(MaterialId material)
+        public void BecomeWalkable(MaterialId material, bool conjured = false)
         {
+            if (conjured)
+            {
+                RememberFoundation();
+            }
+
+            IsConjured = conjured;
+            RaisedAs = conjured ? RaisedForm.Span : RaisedForm.None;
             Reshape(new TileDef(TileKind.Bridge, material == MaterialId.None ? MaterialId.Stone : material));
         }
 
-        public void BecomeBarrier(MaterialId material)
+        public void BecomeBarrier(MaterialId material, RaisedForm form = RaisedForm.Wall)
         {
             if (!CanRaiseBarrier)
             {
                 return;
             }
 
+            RememberFoundation();
+            IsConjured = true;
+            RaisedAs = form == RaisedForm.None ? RaisedForm.Wall : form;
             Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
+        }
+
+        public bool RestoreFoundation()
+        {
+            if (!IsConjured)
+            {
+                return false;
+            }
+
+            var restored = _hasFoundation
+                ? Foundation
+                : new TileDef(TileKind.Floor, MaterialId.Stone);
+
+            IsConjured = false;
+            RaisedAs = RaisedForm.None;
+            Foundation = default;
+            _hasFoundation = false;
+            ClearLinger();
+            Reshape(restored);
+            return true;
+        }
+
+        void RememberFoundation()
+        {
+            if (_hasFoundation)
+            {
+                return;
+            }
+
+            Foundation = Def;
+            _hasFoundation = true;
         }
 
         public void Ignite(float amount)
@@ -160,6 +206,7 @@ namespace RuneMagic
             ApplyVisual();
             RefreshCollider();
             RefreshFx();
+            RefreshLinger();
             var grid = GetComponentInParent<WorldGrid>();
             grid?.DressLooks();
         }
@@ -199,8 +246,17 @@ namespace RuneMagic
                 switch (Kind)
                 {
                     case TileKind.Wall:
-                        _renderer.sprite = SpriteFactory.Wall(Material, Coord.x, Coord.y);
-                        _renderer.sortingOrder = 3;
+                        if (RaisedAs == RaisedForm.Pillar)
+                        {
+                            _renderer.sprite = SpriteFactory.Column(Material, Coord.x, Coord.y);
+                            _renderer.sortingOrder = 5;
+                        }
+                        else
+                        {
+                            _renderer.sprite = SpriteFactory.Wall(Material, Coord.x, Coord.y);
+                            _renderer.sortingOrder = 3;
+                        }
+
                         break;
                     case TileKind.Pit:
                         _renderer.sprite = Material == MaterialId.Water
@@ -209,7 +265,9 @@ namespace RuneMagic
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:
-                        _renderer.sprite = SpriteFactory.Bridge();
+                        _renderer.sprite = IsConjured && Material != MaterialId.Stone
+                            ? SpriteFactory.Floor(Material, Coord.x, Coord.y)
+                            : SpriteFactory.Bridge();
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Door:
@@ -372,6 +430,53 @@ namespace RuneMagic
 
             _collider.isTrigger = pit;
             _collider.enabled = true;
+        }
+
+        void RefreshLinger()
+        {
+            ClearLinger();
+            if (!IsConjured)
+            {
+                return;
+            }
+
+            var look = ElementLook.For(Element);
+            if (!NeedsLinger(look.Family))
+            {
+                return;
+            }
+
+            var offset = RaisedAs == RaisedForm.Pillar
+                ? new Vector3(0f, 0.55f, 0f)
+                : new Vector3(0f, 0.2f, 0f);
+            _linger = ElementFx.Linger(transform, look, 0.85f, offset);
+        }
+
+        static bool NeedsLinger(ElementFamily family)
+        {
+            switch (family)
+            {
+                case ElementFamily.Fire:
+                case ElementFamily.Ice:
+                case ElementFamily.Plant:
+                case ElementFamily.Lava:
+                case ElementFamily.Lightning:
+                case ElementFamily.Spark:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        void ClearLinger()
+        {
+            if (_linger == null)
+            {
+                return;
+            }
+
+            Destroy(_linger);
+            _linger = null;
         }
 
         void OnTriggerEnter2D(Collider2D other)

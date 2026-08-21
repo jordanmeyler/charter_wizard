@@ -59,7 +59,7 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
 
-Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
+Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. Each work is particles and light of its element — fire is embers, water is droplets, lightning is a jagged arc. Fog and poison mist hang until another element tears them. Walls and pillars stay as masonry or a column; water melts a basic earth wall. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
 Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
 

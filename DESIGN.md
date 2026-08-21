@@ -196,6 +196,8 @@ Marquee reactions (each a puzzle key):
 - **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
+- **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields only to an opposed element. **Water melts a basic earth wall.** Fire thaws ice. Water ends a flame-pillar. Fire eats vine. Room masonry is not a spell-body.
+- **Fog and poison mist linger** as hanging veils. Gale or fire tears them. Light lifts fog, not poison.
 
 Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
 
