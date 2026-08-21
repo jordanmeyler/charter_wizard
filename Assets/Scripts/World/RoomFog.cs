@@ -136,6 +136,15 @@ namespace RuneMagic
                 return;
             }
 
+            var host = StatusHost.On(player);
+            var ward = host != null ? host.FendingName(Essence.Poison) : string.Empty;
+            if (!string.IsNullOrEmpty(ward))
+            {
+                FindFirstObjectByType<SanctumDirector>()?.Log(
+                    $"A {ward} turns the foul breath. The mist does not take you.");
+                return;
+            }
+
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {

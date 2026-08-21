@@ -113,6 +113,47 @@ namespace RuneMagic
             return cleared;
         }
 
+        public static int ClearInBounds(RectInt bounds)
+        {
+            var cleared = 0;
+            for (var i = Live.Count - 1; i >= 0; i--)
+            {
+                var field = Live[i];
+                if (field == null)
+                {
+                    continue;
+                }
+
+                if (!TouchesBounds(field, bounds))
+                {
+                    continue;
+                }
+
+                Object.Destroy(field.gameObject);
+                cleared++;
+            }
+
+            return cleared;
+        }
+
+        static bool TouchesBounds(VeilField field, RectInt bounds)
+        {
+            if (bounds.Contains(field.Origin))
+            {
+                return true;
+            }
+
+            foreach (var cell in field._cells)
+            {
+                if (bounds.Contains(cell))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static bool Covering(Vector3 world, out VeilKind kind)
         {
             kind = VeilKind.None;

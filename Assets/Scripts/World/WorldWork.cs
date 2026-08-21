@@ -39,6 +39,7 @@ namespace RuneMagic
                 case SpellId.StonePillar:
                 case SpellId.EarthPillar:
                 case SpellId.Menhir:
+                case SpellId.LavaPillar:
                     return true;
                 default:
                     return false;
@@ -123,6 +124,7 @@ namespace RuneMagic
                 case SpellId.Rain:
                 case SpellId.Scald:
                 case SpellId.Spring:
+                case SpellId.Douse:
                     return true;
                 default:
                     return false;
@@ -138,6 +140,7 @@ namespace RuneMagic
                 case SpellId.Ignite:
                 case SpellId.SunLance:
                 case SpellId.LavaFlood:
+                case SpellId.LavaPillar:
                 case SpellId.LiveFloor:
                 case SpellId.Melt:
                     return true;
@@ -210,6 +213,38 @@ namespace RuneMagic
         public static bool IsFlameBody(MaterialId material) =>
             material == MaterialId.Hearth || material == MaterialId.Ember;
 
+        public static bool IsLavaBody(MaterialId material) =>
+            material == MaterialId.Lava;
+
+        public static bool IsRockBody(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Stone:
+                case MaterialId.SaltCrust:
+                case MaterialId.Scoured:
+                case MaterialId.Obsidian:
+                case MaterialId.Crystal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsSolidMatter(MaterialId material)
+        {
+            return IsRockBody(material)
+                || IsBasicEarth(material)
+                || IsIceBody(material)
+                || IsPlantBody(material);
+        }
+
+        public static bool IsShatterWork(SpellId spell) =>
+            spell == SpellId.Shatter;
+
+        public static bool IsBoulderWork(SpellId spell) =>
+            spell == SpellId.HurledStone;
+
         public static bool IsPlantBody(MaterialId material)
         {
             switch (material)
@@ -227,7 +262,7 @@ namespace RuneMagic
         /// <summary>
         /// A stood body only yields to an opposed element. Water melts a
         /// basic earth wall. Fire thaws ice. Water ends a flame. Fire eats vine.
-        /// Room masonry is not a spell-body and will not go.
+        /// A boulder or Shatter breaks rock. Room masonry is not a spell-body.
         /// </summary>
         public static bool Unmakes(SpellId spell, WorldTile tile)
         {
@@ -263,7 +298,25 @@ namespace RuneMagic
                 return true;
             }
 
+            if (IsShatterWork(spell) && IsSolidMatter(material))
+            {
+                return true;
+            }
+
+            if (IsBoulderWork(spell) && IsRockBody(material))
+            {
+                return true;
+            }
+
             return false;
+        }
+
+        public static bool QuenchesLava(SpellId spell, WorldTile tile)
+        {
+            return tile != null
+                && tile.IsConjured
+                && IsWaterWork(spell)
+                && IsLavaBody(tile.Material);
         }
 
         public static string UnmakeNote(SpellId spell, WorldTile tile)
@@ -295,6 +348,16 @@ namespace RuneMagic
                 return "Hunger eats the vine. The column falls.";
             }
 
+            if (IsShatterWork(spell))
+            {
+                return "The stood matter comes apart.";
+            }
+
+            if (IsBoulderWork(spell))
+            {
+                return "The hurled rest shatters the rock.";
+            }
+
             return "The stood body comes apart.";
         }
 
@@ -313,6 +376,11 @@ namespace RuneMagic
             if (spell == SpellId.FlamePillar)
             {
                 return MaterialId.Hearth;
+            }
+
+            if (spell == SpellId.LavaPillar)
+            {
+                return MaterialId.Lava;
             }
 
             if (spell == SpellId.VineRise)
@@ -409,6 +477,12 @@ namespace RuneMagic
             var notes = new List<string>();
             var reach = IsSpreadWork(spell) ? VeilRadius : 1;
             var cells = WorkCells(spell, origin, from, to);
+            var quenchNote = QuenchAlong(grid, spell, cells, out var quenched);
+            if (quenched > 0)
+            {
+                notes.Add(quenchNote);
+            }
+
             var unmakeNote = UnmakeAlong(grid, spell, cells, out var undone);
             if (undone > 0)
             {
@@ -481,12 +555,49 @@ namespace RuneMagic
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
                 || spell == SpellId.Gust || spell == SpellId.Scald || spell == SpellId.SunLance
-                || spell == SpellId.HurledStone)
+                || spell == SpellId.HurledStone || spell == SpellId.Douse)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }
 
+            if (IsShatterWork(spell))
+            {
+                return Disk(CoordOf(to), 1);
+            }
+
+            if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood)
+            {
+                return Disk(CoordOf(to), VeilRadius);
+            }
+
             return new List<Vector2Int> { CoordOf(to) };
+        }
+
+        static string QuenchAlong(WorldGrid grid, SpellId spell, List<Vector2Int> cells, out int changed)
+        {
+            changed = 0;
+            var note = string.Empty;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (!QuenchesLava(spell, tile))
+                {
+                    continue;
+                }
+
+                if (tile.Transmute(MaterialId.Stone))
+                {
+                    changed++;
+                    if (string.IsNullOrEmpty(note))
+                    {
+                        note = tile.RaisedAs == RaisedForm.Pillar
+                            ? "Yield finds the hungry earth. The column cools to rock."
+                            : "Yield finds the hungry earth. The wall cools to rock.";
+                    }
+                }
+            }
+
+            return note;
         }
 
         static string UnmakeAlong(WorldGrid grid, SpellId spell, List<Vector2Int> cells, out int undone)

@@ -109,6 +109,17 @@ namespace RuneMagic
             return true;
         }
 
+        public bool Transmute(MaterialId material)
+        {
+            if (!IsConjured)
+            {
+                return false;
+            }
+
+            Reshape(new TileDef(Kind, material == MaterialId.None ? MaterialId.Stone : material));
+            return true;
+        }
+
         void RememberFoundation()
         {
             if (_hasFoundation)

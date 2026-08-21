@@ -71,6 +71,7 @@ namespace RuneMagic
                 case SpellId.Scald:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Burning, 4.5f, TileVerb.Ignite);
                 case SpellId.FlamePillar:
+                case SpellId.LavaPillar:
                 case SpellId.Ignite:
                 case SpellId.Melt:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Burning, 5f, TileVerb.Ignite);

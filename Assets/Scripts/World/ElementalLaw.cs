@@ -12,7 +12,8 @@ namespace RuneMagic
         Earth,
         Air,
         Physical,
-        Mind
+        Mind,
+        Poison
     }
 
     /// <summary>

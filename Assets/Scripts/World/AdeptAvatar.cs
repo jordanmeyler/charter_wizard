@@ -67,6 +67,14 @@ namespace RuneMagic
             _casting = casting;
         }
 
+        public void ClearWork()
+        {
+            _airborneUntil = 0f;
+            _stillUntil = 0f;
+            _casting = false;
+            WorldHeld = false;
+        }
+
         void Awake()
         {
             _restScale = transform.localScale;

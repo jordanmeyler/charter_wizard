@@ -124,6 +124,11 @@ namespace RuneMagic
                     return spec.Name;
                 }
 
+                if (incoming == Essence.Poison && spec.Id == StatusId.Windward)
+                {
+                    return spec.Name;
+                }
+
                 if (spec.IsWard && ElementalLaw.Beats(spec.Element, incoming))
                 {
                     return spec.Name;
