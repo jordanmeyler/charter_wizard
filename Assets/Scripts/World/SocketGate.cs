@@ -42,8 +42,10 @@ namespace RuneMagic
             _resolvedNote = resolvedNote;
 
             var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "rod" : spriteId);
+            var art = string.IsNullOrEmpty(spriteId) ? "socket-gate" : spriteId;
+            renderer.sprite = SpriteFactory.Named(art);
             renderer.sortingOrder = 8;
+            SpriteAnim.On(gameObject, renderer).Play(art, 3f);
             FixtureGlow.Attach(transform, new Color(0.85f, 0.72f, 0.28f, 0.7f), 2.1f, 0.18f);
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 1.05f, 0f),
                 new Color(0.95f, 0.84f, 0.45f));
