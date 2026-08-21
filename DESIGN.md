@@ -103,7 +103,7 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
 | Kept on the caster | **Self** | Hop. Flight. Wards. |
 
-Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air) is Self: click a landing and leap a few tiles, including over a pit. **Push** (Air · Salt · Mercury) is Shot: breath given a body and sent, so the wind moves them. **Lightning strike** (Fire · Air · Salt · Air · Mercury) falls from the sky. A lightning bolt will not travel through a wall. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
+Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air) is Self: click a landing and leap a few tiles, including over a pit. **Push** (Air · Salt · Mercury) is Shot: breath given a body and sent, so the wind moves them. **Lightning strike** (Fire · Air · Salt · Air · Mercury) falls from the sky. **A flying shot stops on a wall or a shut door** — fireball, ice-spear, hurled stone, a bolt, an arrow. Lightning strike ignores cover because it is not a line through the room. An opened door is a hole. Remote work still forms at the click. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier. **Ice-wall** is that same start-to-stop for hard water: Ice · Salt · Ice.
 
 A combo that *looks* as if it should work can still fizzle if it is not written. The catalog is [`SPELLS.md`](SPELLS.md).
 
@@ -207,7 +207,7 @@ Marquee reactions (each a puzzle key):
 
 Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
 
-A beginner wizard writes a fireball for **two seconds** and commits the facing when the sentence starts — hop over it, raise a wall, or get behind them. Golems slam in reach. Arrow racks fire real shots down a heading; a stood body (wall / pillar) breaks them. Stoneskin breaks arrows and slams only. Death is temporary: the adept returns to the **spawn crystal**. Pits still use the last safe floor. A better death system waits.
+A beginner wizard writes a fireball for **two seconds** and commits the facing when the sentence starts — hop over it, raise a wall, or get behind them. Golems slam in reach. Arrow racks fire real shots down a heading; a stood body (wall / pillar) breaks them, and so does room masonry. Your own shots break the same way. Stoneskin breaks arrows and slams only. Death is temporary: the adept returns to the **spawn crystal**. Pits still use the last safe floor. A better death system waits.
 
 ---
 
@@ -257,6 +257,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [~] **"Reading" creatures** — Play hides formula text on the chrome. The weave still shows the marks. Whether the player *understands* a living recipe is still open.
 - [ ] **Item catalogue** — concrete mythic items and the gates they touch.
 - [ ] **Magnum Opus color meta** — Nigredo → Albedo → Citrinitas → Rubedo as chapter/tier/world-tint.
+- [~] **Finished sprites** — generated painters are a fallback. Drop PNGs in `Assets/Resources/Sprites/` or point `art.json` at them. First replacements: the adept and the living locks. See [`ART.md`](ART.md).
 
 ---
 

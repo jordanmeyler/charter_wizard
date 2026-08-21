@@ -389,6 +389,31 @@ namespace RuneMagic
             {
                 broken.Add("Blight must poison");
             }
+
+            if (!WorldWork.StopsOnWalls(SpellId.Fireball)
+                || !WorldWork.StopsOnWalls(SpellId.IceSpear)
+                || !WorldWork.StopsOnWalls(SpellId.HurledStone)
+                || !WorldWork.StopsOnWalls(SpellId.WaterJet)
+                || !WorldWork.StopsOnWalls(SpellId.Douse)
+                || !WorldWork.StopsOnWalls(SpellId.Gust)
+                || !WorldWork.StopsOnWalls(SpellId.Push)
+                || !WorldWork.StopsOnWalls(SpellId.LightningBolt))
+            {
+                broken.Add("A flying shot must stop on a wall");
+            }
+
+            if (WorldWork.StopsOnWalls(SpellId.LightningStrike))
+            {
+                broken.Add("Lightning strike falls from the sky and must not be stopped by a wall");
+            }
+
+            if (WorldWork.StopsOnWalls(SpellId.Melt)
+                || WorldWork.StopsOnWalls(SpellId.Rain)
+                || WorldWork.StopsOnWalls(SpellId.Hop)
+                || WorldWork.StopsOnWalls(SpellId.Wall))
+            {
+                broken.Add("Remote, hop, and stood work must not be treated as flying shots");
+            }
         }
 
         public static bool TryGet(int number, out CodexEntry entry)

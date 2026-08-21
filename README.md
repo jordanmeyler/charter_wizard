@@ -90,17 +90,18 @@ You do not place rooms in `Main.unity`. Maps are JSON. Floor 1 is `Assets/Resour
 
 A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`, `item`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
 
-Tiles are still painted in code (`SpriteFactory` / `SpriteActors`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Water, lava, ice, and ember tiles ripple. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. You can still replace or add sprites yourself — see Catalog below. A custom still in `art.json` overrides the generated clip.
+Tiles are still painted in code (`SpriteFactory` / `SpriteActors`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Water, lava, ice, and ember tiles ripple. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. A flying shot — yours or theirs — stops on a wall or a shut door; an opened door is a hole. You can replace the generated actors: drop a PNG in `Assets/Resources/Sprites/{id}.png` or point `art.json` at it. See [`ART.md`](ART.md). A custom still overrides the generated clip.
 
 ## Catalog — recipes, sprites, items
 
 **Yes: one master file controls the recipes.** The game loads [`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json) at boot. That file is the written story-chains plus the joins (Fire · Air → Spark). [`SPELLS.md`](SPELLS.md) is the prose companion; if they disagree, the JSON wins in play. `SpellCodex.cs` is only a fallback if the JSON is missing.
 
-[`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop.
+[`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop. A PNG in [`Assets/Resources/Sprites/`](Assets/Resources/Sprites/) with that same id also replaces the painter — that is the path off the generated look. `python3 Tools/import-sprite.py file.png --id adept` copies and registers it.
 
 | Tool | Use it for |
 | --- | --- |
 | [`Tools/catalog-editor.html`](Tools/catalog-editor.html) | Edit recipes, joins, pixel sprites, and items. Export `spells.json` / `art.json` back into `Assets/Resources/Catalog/`. |
+| [`Tools/import-sprite.py`](Tools/import-sprite.py) | Copy a PNG into `Assets/Resources/Sprites/` and register it in `art.json` |
 | Unity `Window → Rune Magic → Catalog` | Jump to those files |
 
 A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place it on a map with `"type": "item", "item": "your-id"` or set `"sprite"` on a mite/torch.
@@ -128,6 +129,8 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Scripts/Magic/MaterialTree.cs` | Second/third-tier blends |
 | `Assets/Resources/Catalog/spells.json` | Master recipes and joins (what the game actually casts) |
 | `Assets/Resources/Catalog/art.json` | Custom sprites and items |
+| `Assets/Resources/Sprites/` | Drop-in PNG replacements (`adept.png`, `fire-golem.png`…) |
+| `ART.md` | How to get or generate better sprites, and why the painters have a ceiling |
 | `Tools/catalog-editor.html` | Paint sprites and rewrite recipes without opening C# |
 | `Assets/Scripts/Magic/SpellGrammar.cs` | Legacy compressed pair recipes (fallback only) |
 | `Assets/Scripts/Magic/SpellShape.cs` | How a written form is aimed (range, lock radius) |
