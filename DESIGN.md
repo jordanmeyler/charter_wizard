@@ -62,7 +62,7 @@ A chain is a sentence, left to right. Two roots meeting become a third:
 | Fire · Water | **Steam** | Hunger forced through yield. |
 | Air · Earth | **Dust** | Breath forced through rest. |
 
-Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest). Death is not how you freeze water. Plant is **Water · Earth · Salt**; Grove is Plant · Life.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**, **Steam · Metal → Acid**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest — Body, not Death). Death is not how you freeze water. Plant is **Water · Earth · Salt**; Grove is Plant · Life. The Grimoire lists every birth: elemental joins in one page, joins that also take Body / Spirit / Life / Death in the next.
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 

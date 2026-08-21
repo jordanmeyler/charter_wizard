@@ -1031,8 +1031,8 @@ namespace RuneMagic
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
-                    $"{_director.Attunement.Notes()}   ·   Click a name to cast it if those runes are in view. Kept workings are highlighted. Esc closes.",
-                    "The written book. Click a page to send it if those marks are in view. Kept pages are highlighted. Esc closes."),
+                    $"{_director.Attunement.Notes()}   ·   Click a spell to cast it, or a join to string how it is born, if those runes are in view. Kept workings are highlighted. Esc closes.",
+                    "The written book. Click a page to send it, or a join to string how it is born, if those marks are in view. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -1043,6 +1043,7 @@ namespace RuneMagic
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawKeptMarksInline(0f);
             y = DrawCodex(y, heading, row, muted, loadable: true);
+            y = DrawWroughtLedger(y, heading, row, muted, loadable: true);
             y = DrawMaterialsLedger(y, heading, row, muted);
             GUI.EndScrollView();
         }
@@ -1058,14 +1059,14 @@ namespace RuneMagic
 
             GUI.Label(new Rect(40, 24, 800, 34), "Paused — written spells", title);
             GUI.Label(new Rect(40, 62, 980, 22),
-                "Developer ledger. Written spells, world materials, and joins. F1 toggles Play sight. Esc resumes.",
+                "Developer ledger. Written spells, wrought joins, and world materials. F1 toggles Play sight. Esc resumes.",
                 subtitle);
 
             var view = new Rect(40, 100, Screen.width - 80, Screen.height - 140);
             var innerHeight = CodexHeight();
             _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, view.width - 24, innerHeight));
             var y = DrawCodex(0f, heading, row, muted, loadable: false);
-
+            y = DrawWroughtLedger(y, heading, row, muted, loadable: false);
             y = DrawMaterialsLedger(y, heading, row, muted);
 
             GUI.EndScrollView();
@@ -1088,18 +1089,76 @@ namespace RuneMagic
                 y += 20f;
             }
 
+            return y;
+        }
+
+        float DrawWroughtLedger(float y, GUIStyle heading, GUIStyle row, GUIStyle muted, bool loadable)
+        {
+            CatalogBook.EnsureLoaded();
             y += 16f;
-            GUI.Label(new Rect(0, y, 700, 24), "Material joins", heading);
-            y += 28f;
-            foreach (var blend in MaterialTree.All)
+            GUI.Label(new Rect(0, y, 700, 24), "Wrought runes", heading);
+            y += 22f;
+            GUI.Label(new Rect(0, y, 980, 18),
+                "A join is a new rune born from others. Acid is Steam · Metal — elements only.",
+                muted);
+            y += 18f;
+            GUI.Label(new Rect(0, y, 980, 18),
+                "Some also take Body (Salt), Spirit (Mercury), Life, or Death. Ice is Water · Salt · Earth — yield, a body, asked to rest.",
+                muted);
+            y += 22f;
+            if (loadable)
             {
-                var tone = blend.Result.Kind == BlendKind.Violent ? "violent" : "stable";
-                GUI.Label(new Rect(0, y, 820, 20),
-                    $"{RuneCatalog.NameOf(blend.Left)} + {RuneCatalog.NameOf(blend.Right)} → {RuneCatalog.NameOf(blend.Result.Result)}   ({tone})",
-                    row);
+                GUI.Label(new Rect(0, y, 980, 18),
+                    "Click a name to string the recipe if those runes are in view.",
+                    muted);
                 y += 22f;
             }
 
+            y = DrawBirthGroup(y, heading, row, muted, loadable, "From elements", ChainBook.ElementalBirths);
+            y = DrawBirthGroup(y, heading, row, muted, loadable, "With Body, Spirit, Life, or Death", ChainBook.MixedBirths);
+            return y;
+        }
+
+        float DrawBirthGroup(
+            float y,
+            GUIStyle heading,
+            GUIStyle row,
+            GUIStyle muted,
+            bool loadable,
+            string title,
+            IReadOnlyList<ChainBook.Birth> births)
+        {
+            if (births == null || births.Count == 0)
+            {
+                return y;
+            }
+
+            GUI.Label(new Rect(0, y, 900, 22), title, heading);
+            y += 24f;
+            for (var i = 0; i < births.Count; i++)
+            {
+                var birth = births[i];
+                var name = RuneCatalog.NameOf(birth.Rune);
+                var nameRect = new Rect(0, y, 150, 18);
+                if (loadable && GUI.Button(nameRect, name, row))
+                {
+                    _director.LoadBirth(birth.Rune);
+                }
+                else if (!loadable)
+                {
+                    GUI.Label(nameRect, name, row);
+                }
+
+                GUI.Label(new Rect(160, y, 420, 18), birth.Recipe, muted);
+                if (!birth.ElementalOnly)
+                {
+                    GUI.Label(new Rect(590, y, 280, 18), $"+ {birth.Extras}", row);
+                }
+
+                y += 20f;
+            }
+
+            y += 10f;
             return y;
         }
 
@@ -1109,11 +1168,11 @@ namespace RuneMagic
             y += 24f;
             GUI.Label(new Rect(0, y, 980, 18), "Roots: Fire (hunger) · Air (breath) · Earth (rest) · Water (yield)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (stands — walls, pillars) · Mercury (going) · Sulphur (wildcard)", row);
+            GUI.Label(new Rect(0, y, 980, 18), "Operators: Salt (Body — stands) · Mercury (Spirit — going) · Sulphur (Mind — wildcard)", row);
             y += 18f;
             GUI.Label(new Rect(0, y, 980, 18), "Veils: Light (shown) · Dark (withheld)     Modifiers: Life (marks a living recipe) · Death (grave / Free only)", row);
             y += 18f;
-            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Ice is Water·Salt·Earth (not Death). Plant·Life→Grove.", row);
+            GUI.Label(new Rect(0, y, 980, 18), "A join is a new rune. Fire·Air→Spark. Acid is Steam·Metal. Ice is Water·Salt·Earth (Body, not Death).", row);
             y += 28f;
 
             SpellBook? current = null;
@@ -1165,8 +1224,9 @@ namespace RuneMagic
 
         static float CodexHeight()
         {
-            return 220f + SpellCodex.All.Count * 20f + 12 * 28f
-                + MaterialCatalog.All.Count * 20f + MaterialTree.All.Count * 22f;
+            return 320f + SpellCodex.All.Count * 20f + 12 * 28f
+                + MaterialCatalog.All.Count * 20f
+                + ChainBook.BirthCount * 20f + 80f;
         }
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false, RuneId chunk = RuneId.None)

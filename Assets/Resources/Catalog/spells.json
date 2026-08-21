@@ -230,6 +230,27 @@
         "Fire",
         "Salt"
       ]
+    },
+    {
+      "rune": "Plasma",
+      "sources": [
+        "Inferno",
+        "Spark"
+      ]
+    },
+    {
+      "rune": "Blizzard",
+      "sources": [
+        "Wind",
+        "Snow"
+      ]
+    },
+    {
+      "rune": "Sandstorm",
+      "sources": [
+        "Wind",
+        "Dust"
+      ]
     }
   ],
   "spells": [

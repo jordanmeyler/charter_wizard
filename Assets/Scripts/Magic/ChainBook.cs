@@ -10,43 +10,66 @@ namespace RuneMagic
     /// </summary>
     public static class ChainBook
     {
+        public readonly struct Birth
+        {
+            public Birth(RuneId rune, IReadOnlyList<RuneId> sources, string recipe, string extras)
+            {
+                Rune = rune;
+                Sources = sources;
+                Recipe = recipe;
+                Extras = extras;
+            }
+
+            public RuneId Rune { get; }
+            public IReadOnlyList<RuneId> Sources { get; }
+            public string Recipe { get; }
+            public string Extras { get; }
+            public bool ElementalOnly => string.IsNullOrEmpty(Extras);
+        }
+
         static readonly Dictionary<RuneId, RuneId[]> Births = new();
         static readonly Dictionary<string, SpellShape> Shapes = new();
+        static readonly List<Birth> ElementalBirthCache = new();
+        static readonly List<Birth> MixedBirthCache = new();
+        static bool _birthCacheReady;
 
         static ChainBook()
         {
-            Births[RuneId.Spark] = new[] { RuneId.Fire, RuneId.Air };
-            Births[RuneId.Lightning] = new[] { RuneId.Spark, RuneId.Air };
-            Births[RuneId.Thunder] = new[] { RuneId.Lightning, RuneId.Earth };
-            Births[RuneId.Cloud] = new[] { RuneId.Air, RuneId.Water };
-            Births[RuneId.Storm] = new[] { RuneId.Spark, RuneId.Cloud };
-            Births[RuneId.Rain] = new[] { RuneId.Cloud, RuneId.Earth };
-            Births[RuneId.Steam] = new[] { RuneId.Fire, RuneId.Water };
-            Births[RuneId.Lava] = new[] { RuneId.Fire, RuneId.Earth };
-            Births[RuneId.Dust] = new[] { RuneId.Air, RuneId.Earth };
-            Births[RuneId.Mud] = new[] { RuneId.Water, RuneId.Earth };
-            Births[RuneId.Ice] = new[] { RuneId.Water, RuneId.Salt, RuneId.Earth };
-            Births[RuneId.Stone] = new[] { RuneId.Earth, RuneId.Salt };
-            Births[RuneId.Plant] = new[] { RuneId.Water, RuneId.Earth, RuneId.Salt };
-            Births[RuneId.Grove] = new[] { RuneId.Plant, RuneId.Vita };
-            Births[RuneId.Forest] = new[] { RuneId.Plant, RuneId.Vita };
-            Births[RuneId.Flame] = new[] { RuneId.Fire, RuneId.Salt };
-            Births[RuneId.Ember] = new[] { RuneId.Fire, RuneId.Mors };
-            Births[RuneId.Wind] = new[] { RuneId.Air, RuneId.Mercury };
-            Births[RuneId.Current] = new[] { RuneId.Water, RuneId.Mercury };
-            Births[RuneId.Shade] = new[] { RuneId.Umbra, RuneId.Mors, RuneId.Salt };
-            Births[RuneId.Ash] = new[] { RuneId.Fire, RuneId.Plant };
-            Births[RuneId.Obsidian] = new[] { RuneId.Lava, RuneId.Water, RuneId.Salt };
-            Births[RuneId.Sand] = new[] { RuneId.Dust, RuneId.Salt };
-            Births[RuneId.Glass] = new[] { RuneId.Sand, RuneId.Flame, RuneId.Earth };
-            Births[RuneId.Blight] = new[] { RuneId.Grove, RuneId.Mors };
-            Births[RuneId.Snow] = new[] { RuneId.Cloud, RuneId.Ice };
-            Births[RuneId.Vine] = new[] { RuneId.Grove, RuneId.Mercury };
-            Births[RuneId.Metal] = new[] { RuneId.Lava, RuneId.Earth };
-            Births[RuneId.Crystal] = new[] { RuneId.Stone, RuneId.Water };
-            Births[RuneId.Glacier] = new[] { RuneId.Ice, RuneId.Stone };
-            Births[RuneId.Acid] = new[] { RuneId.Steam, RuneId.Metal };
-            Births[RuneId.Inferno] = new[] { RuneId.Fire, RuneId.Fire, RuneId.Salt };
+            SetBirth(RuneId.Spark, RuneId.Fire, RuneId.Air);
+            SetBirth(RuneId.Lightning, RuneId.Spark, RuneId.Air);
+            SetBirth(RuneId.Thunder, RuneId.Lightning, RuneId.Earth);
+            SetBirth(RuneId.Cloud, RuneId.Air, RuneId.Water);
+            SetBirth(RuneId.Storm, RuneId.Spark, RuneId.Cloud);
+            SetBirth(RuneId.Rain, RuneId.Cloud, RuneId.Earth);
+            SetBirth(RuneId.Steam, RuneId.Fire, RuneId.Water);
+            SetBirth(RuneId.Lava, RuneId.Fire, RuneId.Earth);
+            SetBirth(RuneId.Dust, RuneId.Air, RuneId.Earth);
+            SetBirth(RuneId.Mud, RuneId.Water, RuneId.Earth);
+            SetBirth(RuneId.Ice, RuneId.Water, RuneId.Salt, RuneId.Earth);
+            SetBirth(RuneId.Stone, RuneId.Earth, RuneId.Salt);
+            SetBirth(RuneId.Plant, RuneId.Water, RuneId.Earth, RuneId.Salt);
+            SetBirth(RuneId.Grove, RuneId.Plant, RuneId.Vita);
+            SetBirth(RuneId.Forest, RuneId.Plant, RuneId.Vita);
+            SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Salt);
+            SetBirth(RuneId.Ember, RuneId.Fire, RuneId.Mors);
+            SetBirth(RuneId.Wind, RuneId.Air, RuneId.Mercury);
+            SetBirth(RuneId.Current, RuneId.Water, RuneId.Mercury);
+            SetBirth(RuneId.Shade, RuneId.Umbra, RuneId.Mors, RuneId.Salt);
+            SetBirth(RuneId.Ash, RuneId.Fire, RuneId.Plant);
+            SetBirth(RuneId.Obsidian, RuneId.Lava, RuneId.Water, RuneId.Salt);
+            SetBirth(RuneId.Sand, RuneId.Dust, RuneId.Salt);
+            SetBirth(RuneId.Glass, RuneId.Sand, RuneId.Flame, RuneId.Earth);
+            SetBirth(RuneId.Blight, RuneId.Grove, RuneId.Mors);
+            SetBirth(RuneId.Snow, RuneId.Cloud, RuneId.Ice);
+            SetBirth(RuneId.Vine, RuneId.Grove, RuneId.Mercury);
+            SetBirth(RuneId.Metal, RuneId.Lava, RuneId.Earth);
+            SetBirth(RuneId.Crystal, RuneId.Stone, RuneId.Water);
+            SetBirth(RuneId.Glacier, RuneId.Ice, RuneId.Stone);
+            SetBirth(RuneId.Acid, RuneId.Steam, RuneId.Metal);
+            SetBirth(RuneId.Inferno, RuneId.Fire, RuneId.Fire, RuneId.Salt);
+            SetBirth(RuneId.Plasma, RuneId.Inferno, RuneId.Spark);
+            SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
+            SetBirth(RuneId.Sandstorm, RuneId.Wind, RuneId.Dust);
 
             Shapes["shot"] = SpellShape.Shot;
             Shapes["pillar"] = SpellShape.Pillar;
@@ -55,7 +78,7 @@ namespace RuneMagic
             Shapes["self"] = SpellShape.Self;
         }
 
-        public static void DefineBirth(RuneId rune, RuneId[] sources)
+        static void SetBirth(RuneId rune, params RuneId[] sources)
         {
             if (rune == RuneId.None || sources == null || sources.Length == 0)
             {
@@ -63,6 +86,76 @@ namespace RuneMagic
             }
 
             Births[rune] = sources;
+            _birthCacheReady = false;
+        }
+
+        public static void DefineBirth(RuneId rune, RuneId[] sources)
+        {
+            SetBirth(rune, sources);
+        }
+
+        public static IReadOnlyList<Birth> ElementalBirths
+        {
+            get
+            {
+                EnsureBirthCache();
+                return ElementalBirthCache;
+            }
+        }
+
+        public static IReadOnlyList<Birth> MixedBirths
+        {
+            get
+            {
+                EnsureBirthCache();
+                return MixedBirthCache;
+            }
+        }
+
+        public static int BirthCount
+        {
+            get
+            {
+                EnsureBirthCache();
+                return ElementalBirthCache.Count + MixedBirthCache.Count;
+            }
+        }
+
+        static void EnsureBirthCache()
+        {
+            if (_birthCacheReady)
+            {
+                return;
+            }
+
+            ElementalBirthCache.Clear();
+            MixedBirthCache.Clear();
+            foreach (var pair in Births)
+            {
+                var birth = DescribeBirth(pair.Key, pair.Value);
+                if (birth.ElementalOnly)
+                {
+                    ElementalBirthCache.Add(birth);
+                }
+                else
+                {
+                    MixedBirthCache.Add(birth);
+                }
+            }
+
+            ElementalBirthCache.Sort(CompareBirthName);
+            MixedBirthCache.Sort(CompareBirthName);
+            _birthCacheReady = true;
+        }
+
+        static Birth DescribeBirth(RuneId rune, IReadOnlyList<RuneId> sources)
+        {
+            return new Birth(rune, sources, JoinNames(sources), ExtraRoles(sources));
+        }
+
+        static int CompareBirthName(Birth left, Birth right)
+        {
+            return string.CompareOrdinal(RuneCatalog.NameOf(left.Rune), RuneCatalog.NameOf(right.Rune));
         }
 
         public static bool IsWrought(RuneId rune)
@@ -93,6 +186,47 @@ namespace RuneMagic
             for (var i = 0; i < sources.Count; i++)
             {
                 parts[i] = RuneCatalog.GlyphOf(sources[i]);
+            }
+
+            return string.Join(" · ", parts);
+        }
+
+        public static string BirthNameText(RuneId rune)
+        {
+            return TryBirth(rune, out var sources) ? JoinNames(sources) : string.Empty;
+        }
+
+        public static string ExtraRoles(IReadOnlyList<RuneId> sources)
+        {
+            if (sources == null || sources.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var parts = new List<string>(sources.Count);
+            for (var i = 0; i < sources.Count; i++)
+            {
+                var role = RuneCatalog.OperatorRole(sources[i]);
+                if (role.Length > 0 && !parts.Contains(role))
+                {
+                    parts.Add(role);
+                }
+            }
+
+            return string.Join(" · ", parts);
+        }
+
+        static string JoinNames(IReadOnlyList<RuneId> sources)
+        {
+            if (sources == null || sources.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var parts = new string[sources.Count];
+            for (var i = 0; i < sources.Count; i++)
+            {
+                parts[i] = RuneCatalog.NameOf(sources[i]);
             }
 
             return string.Join(" · ", parts);

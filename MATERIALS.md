@@ -108,4 +108,4 @@ Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs to
 | Metal | 0 | 1.6 | The spark’s favourite road. |
 | Vein | 0 | 0.85 | Spark in the stone. |
 
-The Grimoire and pause ledger list this catalog next to the written spells.
+The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Salt · Earth — Body, not Death).

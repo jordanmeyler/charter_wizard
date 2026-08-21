@@ -211,6 +211,29 @@ namespace RuneMagic
 
         public static bool IsElemental(RuneId id) => IsMaterial(id);
 
+        /// <summary>
+        /// Player-facing role for a non-root rune in a join. Salt is Body;
+        /// Mercury is Spirit. Empty for elemental / material runes.
+        /// </summary>
+        public static string OperatorRole(RuneId id)
+        {
+            switch (id)
+            {
+                case RuneId.Salt: return "Body";
+                case RuneId.Mercury: return "Spirit";
+                case RuneId.Sulphur: return "Mind";
+                case RuneId.Vita: return "Life";
+                case RuneId.Mors: return "Death";
+                case RuneId.Lumen: return "Light";
+                case RuneId.Umbra: return "Dark";
+                case RuneId.Hot: return "Hot";
+                case RuneId.Cold: return "Cold";
+                case RuneId.Wet: return "Wet";
+                case RuneId.Dry: return "Dry";
+                default: return string.Empty;
+            }
+        }
+
         public static string NameOf(RuneId id) => id == RuneId.None ? "—" : Get(id).Name;
 
         public static string GlyphOf(RuneId id) => id == RuneId.None ? "?" : Get(id).Glyph;
