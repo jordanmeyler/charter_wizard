@@ -35,6 +35,7 @@ namespace RuneMagic
         public CombatKind Kind { get; private set; }
         public float CastSeconds { get; private set; } = 2f;
         public Vector2 Facing { get; private set; } = Vector2.left;
+        public RuneId[] CastRecipe => _castRecipe;
         public bool AlliedWithAdept => _status != null && _status.Has(StatusId.Charmed);
 
         ISpellLock _lock;
@@ -614,8 +615,10 @@ namespace RuneMagic
                     return;
                 }
 
-                var who = _lock != null ? _lock.DisplayName : "The blow";
-                Director()?.KillPlayer($"{who} finds you. The crystal calls you back.");
+                var who = _lock != null ? _lock.DisplayName : string.Empty;
+                Director()?.KillPlayer(DeathCause.Plain(string.IsNullOrEmpty(who)
+                    ? "A blow finds you."
+                    : $"{who}'s blow finds you."));
                 return;
             }
 

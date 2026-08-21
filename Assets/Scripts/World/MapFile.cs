@@ -88,6 +88,7 @@ namespace RuneMagic
         public string from;
         public string to;
         public string material = "Stone";
+        public string hazard;
     }
 
     [Serializable]
