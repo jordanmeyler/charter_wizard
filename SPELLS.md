@@ -93,6 +93,8 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 A join is not a modifier. It is a **new rune** with its own concept. Once it exists (you mixed it, or the room already holds it), later chains can start from it.
 
+Most joins are elements meeting elements (**Steam · Metal → Acid**). Some also take an operator: **Water · Salt · Earth → Ice** is yield plus Body, asked to rest. The Grimoire lists every written birth, split that way.
+
 ### First joins — two roots
 
 | Wrought | Born from | Concept | What you see |
@@ -130,6 +132,16 @@ A join is not a modifier. It is a **new rune** with its own concept. Once it exi
 | **Ash** | Fire · Plant | What hunger leaves of a vegetable body. | Grey dust. Not grave-work |
 | **Wind** | Air · Mercury | Breath going. | A push |
 | **Current** | Water · Mercury | Yield going. | A flow |
+| **Metal** | Lava · Earth | Hungry earth given more rest, then stilled. | Hard. The spark’s road |
+| **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
+| **Glacier** | Ice · Stone | Ice given Stone. | Ice that will not thaw easily |
+| **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
+| **Inferno** | Fire · Fire · Salt | A fire-body taught to travel and keep eating. | Spreading hunger |
+| **Plasma** | Inferno · Spark | Inferno joined to Spark. | Reserved |
+| **Vine** | Grove · Mercury | Waking plant sent. | Climbing green |
+| **Forest** | Plant · Life | The vegetable body waking as a mass. | Trees as one body |
+| **Blizzard** | Wind · Snow | Wind driving Snow. | Hard-water weather |
+| **Sandstorm** | Wind · Dust | Wind driving Dust. | A grit gale |
 
 ### Death-wrought (Free / arcane only)
 
@@ -248,7 +260,8 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 59 | Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks. | Wind ward | Air · Salt · Sulphur | — | Self | Neither |
 | 60 | Hungry earth given a body and asked to rest. It stands. Yield cools it to rock. | Lava-pillar | Fire · Earth · Salt · Earth | Lava · Salt · Earth | Pillar | Kill |
 | 61 | A stood wall given breath and sent. Matter comes apart. | Shatter | Earth · Salt · Earth · Air · Mercury | Stone · Earth · Air · Mercury | Remote | Neither |
-| 62 | A body of ice asked to stand as more ice. Click start and stop. Across a pit it is a span; on the floor it is a barrier. It will thaw. | Ice-wall | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice · Salt · Ice | Pillar | Restrain |
+| 62 | Breath turned by Sulphur, into a mind. They lose the thread. | Confuse | Air · Sulphur · Mercury | — | Remote | Restrain |
+| 63 | A body of ice asked to stand as more ice. Click start and stop. Across a pit it is a span; on the floor it is a barrier. It will thaw. | Ice-wall | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice · Salt · Ice | Pillar | Restrain |
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 

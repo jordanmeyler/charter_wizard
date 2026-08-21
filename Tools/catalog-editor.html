@@ -51,7 +51,7 @@
     let tab = "spells";
     let index = 0;
     let paint = 1;
-    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Grove","Ember"];
+    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Grove","Ember","Metal","Acid","Crystal","Glacier","Inferno","Plasma","Snow","Blizzard","Sandstorm","Vine","Forest","Wind","Current","Obsidian","Glass","Sand","Thunder","Storm","Rain","Shade","Blight"];
 
     const $ = id => document.getElementById(id);
     document.querySelectorAll(".tab").forEach(btn => btn.onclick = () => { tab = btn.dataset.tab; index = 0; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b===btn)); draw(); });
@@ -102,7 +102,7 @@
           <label>Work (existing effect) <input name="work" value="${esc(item.work||item.id)}"></label>
           <label>Target <select name="target">${opts(["","Single","Area","Self"], item.target||"")}</select></label>
           <label>Radius <input name="radius" type="number" step="0.1" value="${item.radius||0}"></label>
-          <label>Status <select name="status">${opts(["","Burning","Frozen","Soaked","Stunned","Sleeping","Rooted","Frightened","Stoneskin","Veiled","Watershield","Flameward","Windward"], item.status||"")}</select></label>
+          <label>Status <select name="status">${opts(["","Burning","Frozen","Soaked","Stunned","Sleeping","Rooted","Frightened","Raging","Charmed","Confused","Stoneskin","Veiled","Watershield","Flameward","Windward"], item.status||"")}</select></label>
           <label>Status seconds <input name="statusSeconds" type="number" step="0.1" value="${item.statusSeconds||0}"></label>
         </div>
         <label>Recipe <input name="recipe" value="${esc(item.recipe)}"></label>
@@ -113,7 +113,7 @@
       if (tab === "joins") return `
         <label>Wrought rune <input name="rune" value="${esc(item.rune)}"></label>
         <label>Born from (comma) <input name="sources" value="${esc((item.sources||[]).join(", "))}"></label>
-        <p class="hint">Fire, Air → Spark. The Charter unfolds these when it reads a tile.</p>`;
+        <p class="hint">Fire, Air → Spark. Steam, Metal → Acid. Water, Salt, Earth → Ice (Body). The Charter unfolds these when it reads a tile.</p>`;
       if (tab === "sprites") return spriteForm(item);
       return `
         <div class="grid2">

@@ -85,6 +85,11 @@ namespace RuneMagic
                 return "The string unravels. Nothing holds.";
             }
 
+            if (SpellVerb.HoldsMind(outcome.Spell))
+            {
+                return "The working reaches a mind.";
+            }
+
             if (outcome.Resolved)
             {
                 return "The working turns the lock.";

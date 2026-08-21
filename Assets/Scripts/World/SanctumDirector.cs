@@ -266,6 +266,28 @@ namespace RuneMagic
                 return;
             }
 
+            if (PlayerBlocksAction())
+            {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return)
+                    || Input.GetMouseButtonDown(0))
+                {
+                    if (Mode == PlayMode.Aiming)
+                    {
+                        CancelAim();
+                    }
+                    else if (Mode == PlayMode.Charter)
+                    {
+                        CloseCharter();
+                    }
+                    else
+                    {
+                        Log("A held mind will not write.");
+                    }
+                }
+
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (Mode == PlayMode.Aiming)
@@ -451,8 +473,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. All written chains. Click a name to cast it if those runes are in view. Kept workings are marked.",
-                "The book of workings. Click a page to send it if those marks are in view. Kept pages are marked."));
+                "The Grimoire. Written chains, and every join — Acid is Steam · Metal, Ice is Water · Salt · Earth. Click a name to string it if those runes are in view. Kept workings are marked.",
+                "The book of workings and joins. Click a page to send it if those marks are in view. Kept pages are marked."));
         }
 
         public void CloseGrimoire()
@@ -857,6 +879,44 @@ namespace RuneMagic
             }
 
             return SpellFormations.Get(shape).Hint;
+        }
+
+        public void LoadBirth(RuneId rune)
+        {
+            if (!ChainBook.TryBirth(rune, out var sources) || sources.Count == 0)
+            {
+                Log("That join is not written.");
+                return;
+            }
+
+            if (Mode == PlayMode.Grimoire)
+            {
+                CloseGrimoire();
+            }
+
+            if (Mode != PlayMode.Charter)
+            {
+                OpenCharter();
+            }
+
+            Composer.Load(sources);
+            var name = RuneCatalog.NameOf(rune);
+            var recipe = ChainBook.BirthNameText(rune);
+            var extras = ChainBook.ExtraRoles(sources);
+            var extra = extras.Length == 0
+                ? string.Empty
+                : $"  ({extras})";
+            if (FieldOffers(sources))
+            {
+                Log(GlyphView.Speak(
+                    $"{name} is {recipe}{extra}. The sentence is strung.",
+                    "The join is strung."));
+                return;
+            }
+
+            Log(GlyphView.Speak(
+                $"{name} is {recipe}{extra}, but those runes are not all in this view. Walk until they speak.",
+                "The join is strung, but those marks are not all in this view."));
         }
 
         public void LoadCodex(int number)
@@ -1303,7 +1363,19 @@ namespace RuneMagic
                             for (var i = 0; i < impact.Locks.Count; i++)
                             {
                                 var hit = impact.Locks[i];
-                                if (!LockAlive(hit) || !Accepts(hit, outcome.Spell))
+                                if (!LockAlive(hit))
+                                {
+                                    continue;
+                                }
+
+                                if (SpellVerb.HoldsMind(outcome.Spell))
+                                {
+                                    Grimoire.LearnInterpretation(hit.FormulaId);
+                                    workNote = FirstNote(impactNote, workNote);
+                                    continue;
+                                }
+
+                                if (!Accepts(hit, outcome.Spell))
                                 {
                                     continue;
                                 }
@@ -1320,7 +1392,7 @@ namespace RuneMagic
                                 workNote = FirstNote(flavor, workNote);
                             }
                         }
-                        else if (outcome.Resolved && LockAlive(target))
+                        else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                         {
                             Grimoire.LearnInterpretation(target.FormulaId);
                             var flavor = target.Resolve(outcome.Spell);
@@ -1334,7 +1406,7 @@ namespace RuneMagic
                             workNote = FirstNote(flavor, workNote);
                         }
                     }
-                    else if (outcome.Resolved && LockAlive(target))
+                    else if (outcome.Resolved && LockAlive(target) && !SpellVerb.HoldsMind(outcome.Spell))
                     {
                         Grimoire.LearnInterpretation(target.FormulaId);
                         var flavor = target.Resolve(outcome.Spell);
@@ -1738,7 +1810,7 @@ namespace RuneMagic
 
         public void TurnLock(ISpellLock encounter)
         {
-            if (!LockAlive(encounter) || Busy)
+            if (!LockAlive(encounter))
             {
                 return;
             }
@@ -1839,6 +1911,12 @@ namespace RuneMagic
             var player = PlayerTransform();
             var host = StatusHost.On(player);
             return host != null ? host.Summary() : string.Empty;
+        }
+
+        bool PlayerBlocksAction()
+        {
+            var host = StatusHost.On(PlayerTransform());
+            return host != null && host.BlocksAction;
         }
 
         static bool Accepts(ISpellLock encounter, SpellId spell)

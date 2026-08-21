@@ -43,7 +43,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
 | 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
-| 62 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
+| 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
+| 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
 
 ---
 
