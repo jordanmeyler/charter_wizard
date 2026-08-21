@@ -48,7 +48,20 @@ PITS = [
     "HurledStone",
 ]
 ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
-WIND = ["Gust", "Gale", "Push", "StormCall", "Flight"]
+WIND = [
+    "Gust",
+    "Gale",
+    "Push",
+    "StormCall",
+    "Flight",
+    "Fireball",
+    "FlamePillar",
+    "Ignite",
+    "Melt",
+    "SunLance",
+    "DayWake",
+    "BrilliantArc",
+]
 MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",
@@ -405,6 +418,7 @@ def main():
                     "note": "Hunger finds the hard water. A stone of fire sits free.",
                 },
                 {"type": "item", "x": 3, "y": 7, "item": "fire-stone"},
+                {"type": "item", "x": 10, "y": 10, "item": "ice-cask"},
             ],
         ),
         room(

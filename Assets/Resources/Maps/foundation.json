@@ -359,6 +359,12 @@
           "x": 3,
           "y": 7,
           "item": "fire-stone"
+        },
+        {
+          "type": "item",
+          "x": 10,
+          "y": 10,
+          "item": "ice-cask"
         }
       ],
       "id": "fire-wing",
@@ -1120,7 +1126,14 @@
             "Gale",
             "Push",
             "StormCall",
-            "Flight"
+            "Flight",
+            "Fireball",
+            "FlamePillar",
+            "Ignite",
+            "Melt",
+            "SunLance",
+            "DayWake",
+            "BrilliantArc"
           ],
           "cells": [
             1,

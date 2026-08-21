@@ -7,7 +7,7 @@ namespace RuneMagic
     /// Shots down a lane. A stood body — wall or pillar — stops them.
     /// Side pits keep the stone on that lane, so the shots have to break first.
     /// </summary>
-    public sealed class ArrowVolley : MonoBehaviour, ISpellLock, IRuneSource
+    public sealed class ArrowVolley : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -92,6 +92,21 @@ namespace RuneMagic
         {
             return "shots that will not wait — rest has to stand";
         }
+
+        public float DistanceTo(Vector3 point) =>
+            CellVolume.DistanceTo(point, transform.position, _cover);
+
+        public Vector3 ClosestPoint(Vector3 point) =>
+            CellVolume.ClosestPoint(point, transform.position, _cover);
+
+        public bool Touches(Vector3 point, float radius) =>
+            CellVolume.Touches(point, radius, transform.position, _cover);
+
+        public bool Crosses(Vector3 from, Vector3 to, float width) =>
+            CellVolume.Crosses(from, to, width, transform.position, _cover);
+
+        public bool OccupiesCell(Vector2Int cell) =>
+            CellVolume.Occupies(_cover, cell, transform.position);
 
         public string Resolve(SpellId spell)
         {

@@ -113,6 +113,34 @@ namespace RuneMagic
             return cleared;
         }
 
+        public static int ClearAlong(WorldGrid grid, SpellSweep sweep)
+        {
+            if (!WorldWork.ClearsVeils(sweep.Spell))
+            {
+                return 0;
+            }
+
+            var cleared = 0;
+            for (var i = Live.Count - 1; i >= 0; i--)
+            {
+                var field = Live[i];
+                if (field == null || !WorldWork.ClearsVeil(sweep.Spell, field.Kind))
+                {
+                    continue;
+                }
+
+                if (!field.Crosses(sweep.From, sweep.To, sweep.Width))
+                {
+                    continue;
+                }
+
+                Object.Destroy(field.gameObject);
+                cleared++;
+            }
+
+            return cleared;
+        }
+
         public static int ClearInBounds(RectInt bounds)
         {
             var cleared = 0;
@@ -257,6 +285,25 @@ namespace RuneMagic
             var dx = coord.x - Origin.x;
             var dy = coord.y - Origin.y;
             return dx * dx + dy * dy <= reach * reach;
+        }
+
+        public bool Crosses(Vector3 from, Vector3 to, float width)
+        {
+            var reach = Mathf.Max(0.2f, width);
+            if (CellVolume.SegmentDistance(from, to, transform.position) <= reach + Radius + 0.5f)
+            {
+                return true;
+            }
+
+            foreach (var cell in _cells)
+            {
+                if (CellVolume.SegmentDistance(from, to, WorldGrid.Center(cell.x, cell.y)) <= reach + CellVolume.TileRadius)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -166,6 +166,15 @@
       "sprite": "stone-spark",
       "note": "Fire from the sky. A spare.",
       "look": "fire from the sky. A spare from another path."
+    },
+    {
+      "id": "ice-cask",
+      "name": "Ice cask",
+      "kind": "prop",
+      "sprite": "ice-block",
+      "matter": "ice",
+      "fragile": true,
+      "look": "yield asked to stand, and poorly. Hunger or a shatter ends it."
     }
   ]
 }

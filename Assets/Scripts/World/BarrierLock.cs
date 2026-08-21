@@ -7,7 +7,7 @@ namespace RuneMagic
     /// A terrain lock: ice across a door, a rope on a portcullis,
     /// poison in a chamber. The right spell clears the cells.
     /// </summary>
-    public sealed class BarrierLock : MonoBehaviour, ISpellLock, IRuneSource
+    public sealed class BarrierLock : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -80,6 +80,21 @@ namespace RuneMagic
                 buffer.Add(_formula[i]);
             }
         }
+
+        public float DistanceTo(Vector3 point) =>
+            CellVolume.DistanceTo(point, transform.position, _cells);
+
+        public Vector3 ClosestPoint(Vector3 point) =>
+            CellVolume.ClosestPoint(point, transform.position, _cells);
+
+        public bool Touches(Vector3 point, float radius) =>
+            CellVolume.Touches(point, radius, transform.position, _cells);
+
+        public bool Crosses(Vector3 from, Vector3 to, float width) =>
+            CellVolume.Crosses(from, to, width, transform.position, _cells);
+
+        public bool OccupiesCell(Vector2Int cell) =>
+            CellVolume.Occupies(_cells, cell, transform.position);
 
         public string FormulaText()
         {

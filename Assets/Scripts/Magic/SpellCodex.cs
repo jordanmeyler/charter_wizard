@@ -414,6 +414,8 @@ namespace RuneMagic
             {
                 broken.Add("Remote, hop, and stood work must not be treated as flying shots");
             }
+
+            WorldPhysics.Audit(broken);
         }
 
         public static bool TryGet(int number, out CodexEntry entry)

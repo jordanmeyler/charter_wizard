@@ -1263,7 +1263,7 @@ namespace RuneMagic
             world.z = 0f;
             var clicked = FindLockNear(world, 1.2f);
             var lockDistance = clicked != null
-                ? Vector2.Distance(world, clicked.WorldPosition)
+                ? WorldPhysics.Distance(clicked, world)
                 : float.MaxValue;
             if (lockDistance > 0.7f && TryWeaveAt(world))
             {
@@ -1285,7 +1285,7 @@ namespace RuneMagic
             }
 
             var player = PlayerTransform();
-            if (player != null && Vector2.Distance(player.position, clicked.WorldPosition) > 3.6f)
+            if (player != null && WorldPhysics.Distance(clicked, player.position) > 3.6f)
             {
                 Log($"Walk closer to look, or Store a form and aim from here. {Sight.YouSee(Sight.OfLock(clicked))}");
                 return;
@@ -1410,7 +1410,7 @@ namespace RuneMagic
                     if (WorldWork.StopsOnWalls(work))
                     {
                         aim = WorldWork.ClampShot(Grid, origin, aim);
-                        if (target != null && WorldWork.HasWallBetween(Grid, origin, target.WorldPosition))
+                        if (target != null && WorldPhysics.Occluded(Grid, work, origin, target))
                         {
                             target = null;
                         }
@@ -1419,7 +1419,7 @@ namespace RuneMagic
                     var workFrom = spanFrom ?? aim;
                     try
                     {
-                        workNote = WorldWork.Apply(Grid, work, outcome.Material, origin, workFrom, aim);
+                        workNote = WorldWork.Apply(Grid, work, outcome.Material, origin, workFrom, aim, shape);
                         if (work == SpellId.Wall)
                         {
                             CombatActor.NoticePlayerSpell(work, origin, aim);
@@ -1659,7 +1659,7 @@ namespace RuneMagic
             SpellId spell = SpellId.None)
         {
             var clicked = FindLockNear(requested, 1.85f);
-            if (clicked != null && !ShotBlocked(spell, origin, clicked.WorldPosition))
+            if (clicked != null && !WorldPhysics.Occluded(Grid, spell, origin, clicked))
             {
                 return clicked;
             }
@@ -1670,17 +1670,12 @@ namespace RuneMagic
                 return aimed;
             }
 
-            if (LockAlive(_focus) && !ShotBlocked(spell, origin, _focus.WorldPosition))
+            if (LockAlive(_focus) && !WorldPhysics.Occluded(Grid, spell, origin, _focus))
             {
                 return _focus;
             }
 
             return null;
-        }
-
-        bool ShotBlocked(SpellId spell, Vector3 from, Vector3 to)
-        {
-            return WorldWork.StopsOnWalls(spell) && WorldWork.HasWallBetween(Grid, from, to);
         }
 
         ISpellLock LockAtAim(SpellShape shape, Vector3 origin, Vector3 requested, float potency = 1f, SpellId spell = SpellId.None)
@@ -1692,10 +1687,12 @@ namespace RuneMagic
                 point = WorldWork.ClampShot(Grid, origin, point);
             }
 
-            var radius = SpellFormations.Get(shape).LockRadius * scale;
+            var radius = Mathf.Max(
+                SpellFormations.Get(shape).LockRadius * scale,
+                WorldPhysics.WidthOf(spell, shape, scale));
             if (shape == SpellShape.Shot)
             {
-                return FindLockAlong(origin, point, Mathf.Max(radius, 1.35f), spell);
+                return FindLockAlong(origin, point, radius, spell);
             }
 
             if (shape == SpellShape.Spread || shape == SpellShape.Self)
@@ -1708,45 +1705,7 @@ namespace RuneMagic
 
         ISpellLock FindLockAlong(Vector3 from, Vector3 to, float radius, SpellId spell = SpellId.None)
         {
-            ISpellLock best = null;
-            var bestAlong = float.MaxValue;
-            if (_locks == null)
-            {
-                return null;
-            }
-
-            var a = (Vector2)from;
-            var b = (Vector2)to;
-            var span = b - a;
-            var lengthSq = span.sqrMagnitude;
-            foreach (var encounter in _locks)
-            {
-                if (!LockAlive(encounter))
-                {
-                    continue;
-                }
-
-                var point = (Vector2)encounter.WorldPosition;
-                var t = lengthSq < 0.0001f ? 0f : Mathf.Clamp01(Vector2.Dot(point - a, span) / lengthSq);
-                var closest = a + span * t;
-                if (Vector2.Distance(point, closest) > radius)
-                {
-                    continue;
-                }
-
-                if (ShotBlocked(spell, from, encounter.WorldPosition))
-                {
-                    continue;
-                }
-
-                if (t < bestAlong)
-                {
-                    bestAlong = t;
-                    best = encounter;
-                }
-            }
-
-            return best;
+            return WorldPhysics.FirstAlong(_locks, from, to, Mathf.Max(radius, 1.15f), Grid, spell);
         }
 
         bool TryMouseWorld(out Vector3 world)
@@ -1860,7 +1819,7 @@ namespace RuneMagic
             if (_focus != null)
             {
                 if (!LockAlive(_focus) || player == null ||
-                    Vector2.Distance(player.position, _focus.WorldPosition) > 6.5f)
+                    WorldPhysics.Distance(_focus, player.position) > 6.5f)
                 {
                     _focus = null;
                 }
@@ -1900,7 +1859,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                var distance = Vector2.Distance(point, encounter.WorldPosition);
+                var distance = WorldPhysics.Distance(encounter, point);
                 if (distance < bestDistance)
                 {
                     bestDistance = distance;
@@ -1929,7 +1888,8 @@ namespace RuneMagic
                 return;
             }
 
-            _targetRing.transform.position = CurrentTarget.WorldPosition + new Vector3(0f, -0.05f, 0f);
+            var mark = PlayerTransform() != null ? PlayerTransform().position : CurrentTarget.WorldPosition;
+            _targetRing.transform.position = WorldPhysics.ClosestPoint(CurrentTarget, mark) + new Vector3(0f, -0.05f, 0f);
             var pulse = 0.95f + Mathf.Sin(Time.time * 6f) * 0.12f;
             _targetRing.transform.localScale = Vector3.one * pulse;
             _targetRing.color = Mode == PlayMode.Aiming

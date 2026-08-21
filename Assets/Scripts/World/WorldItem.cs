@@ -5,8 +5,9 @@ namespace RuneMagic
     /// <summary>
     /// A pickup from the item catalog. Walking into it teaches a recipe.
     /// Charmed bodies can carry a nearby prize to the adept.
+    /// Fragile props do not pick up — they yield to opposed work.
     /// </summary>
-    public sealed class WorldItem : MonoBehaviour, ILookable
+    public sealed class WorldItem : MonoBehaviour, ILookable, IWorldMatter
     {
         public bool Collected { get; private set; }
         public bool Available => !Collected && _carrier == null;
@@ -15,6 +16,9 @@ namespace RuneMagic
         public float LookRadius => 0.55f;
         public bool CanLook => !Collected && _item != null;
         public string LookText => Sight.OfItem(_item);
+        public Essence Matter => WorldMatter.Parse(_item != null ? _item.matter : null);
+        public bool Fragile =>
+            _item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase));
 
         CatalogItem _item;
         Grimoire _grimoire;
@@ -50,16 +54,60 @@ namespace RuneMagic
             WorldLabel.Attach(transform, _item != null ? _item.name : "Item", new Vector3(0f, 0.7f, 0f),
                 new Color(1f, 0.72f, 0.3f));
             Lookables.Register(this);
+            WorldMatter.Register(this);
         }
 
         void OnDisable()
         {
             Lookables.Unregister(this);
+            WorldMatter.Unregister(this);
+        }
+
+        public bool YieldsTo(SpellId spell)
+        {
+            if (!Fragile || Collected)
+            {
+                return false;
+            }
+
+            if (_item != null && _item.keys != null && _item.keys.Length > 0)
+            {
+                for (var i = 0; i < _item.keys.Length; i++)
+                {
+                    if (SpellRegistry.Parse(_item.keys[i]) == spell)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            var matter = Matter != Essence.None ? Matter : Essence.Physical;
+            return WorldPhysics.UnmakesMatter(spell, matter);
+        }
+
+        public string Unmake(SpellId spell)
+        {
+            if (Collected || !Fragile)
+            {
+                return string.Empty;
+            }
+
+            Collected = true;
+            _carrier = null;
+            var name = _item != null && !string.IsNullOrEmpty(_item.name) ? _item.name : "The stood thing";
+            Destroy(gameObject);
+            return Matter == Essence.Water
+                ? $"{name} remembers yield. Hunger takes it."
+                : Matter == Essence.Air || Matter == Essence.Poison
+                    ? $"{name} is breath. The wind unmakes it."
+                    : $"{name} comes apart.";
         }
 
         public bool TryCarry(Transform carrier)
         {
-            if (!Available || carrier == null)
+            if (!Available || Fragile || carrier == null)
             {
                 return false;
             }
@@ -96,7 +144,7 @@ namespace RuneMagic
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (!Available || !AdeptAvatar.IsAdept(other) || _item == null)
+            if (!Available || Fragile || !AdeptAvatar.IsAdept(other) || _item == null)
             {
                 return;
             }

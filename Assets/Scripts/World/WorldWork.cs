@@ -534,7 +534,8 @@ namespace RuneMagic
             RuneId element,
             Vector3 origin,
             Vector3 from,
-            Vector3 to)
+            Vector3 to,
+            SpellShape shape = SpellShape.None)
         {
             if (grid == null || spell == SpellId.None)
             {
@@ -552,8 +553,8 @@ namespace RuneMagic
             }
 
             var notes = new List<string>();
-            var reach = IsSpreadWork(spell) ? VeilRadius : 1;
-            var cells = WorkCells(spell, origin, from, to);
+            var sweep = WorldPhysics.Build(grid, spell, shape, origin, from, to);
+            var cells = sweep.Cells.Count > 0 ? sweep.Cells : WorkCells(spell, origin, from, to);
             var quenchNote = QuenchAlong(grid, spell, cells, out var quenched);
             if (quenched > 0)
             {
@@ -566,14 +567,10 @@ namespace RuneMagic
                 notes.Add(unmakeNote);
             }
 
-            var cleared = VeilField.ClearWhat(grid, IsSpreadWork(spell) ? origin : to, spell, reach);
-            if (cleared > 0)
+            var blown = WorldPhysics.Apply(grid, sweep);
+            if (!string.IsNullOrEmpty(blown))
             {
-                notes.Add(IsLightWork(spell)
-                    ? "Light lifts the hanging veil."
-                    : IsAirWork(spell)
-                        ? "Breath tears the hanging veil."
-                        : "Hunger eats the hanging veil.");
+                notes.Add(blown);
             }
 
             if (LaysVeil(spell))
@@ -781,7 +778,7 @@ namespace RuneMagic
             return (maxX - minX + 1) < SmallPitSpan && (maxY - minY + 1) < SmallPitSpan;
         }
 
-        static bool IsSpreadWork(SpellId spell)
+        public static bool IsSpreadWork(SpellId spell)
         {
             switch (spell)
             {
@@ -1089,6 +1086,15 @@ namespace RuneMagic
 
         public static bool HasWallBetween(WorldGrid grid, Vector3 from, Vector3 to)
         {
+            return HasWallBetween(grid, from, to, null);
+        }
+
+        public static bool HasWallBetween(
+            WorldGrid grid,
+            Vector3 from,
+            Vector3 to,
+            System.Func<Vector2Int, bool> ignore)
+        {
             if (grid == null)
             {
                 return false;
@@ -1107,6 +1113,11 @@ namespace RuneMagic
                 if (path[i] == stop)
                 {
                     return false;
+                }
+
+                if (ignore != null && ignore(path[i]))
+                {
+                    continue;
                 }
 
                 var tile = grid.Get(path[i]);

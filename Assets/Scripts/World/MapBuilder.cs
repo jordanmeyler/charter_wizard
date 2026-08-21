@@ -44,7 +44,9 @@ namespace RuneMagic
 
         public static readonly SpellId[] FogKeys =
         {
-            SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight
+            SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.Ignite, SpellId.Melt, SpellId.SunLance,
+            SpellId.DayWake, SpellId.BrilliantArc
         };
 
         public static readonly SpellId[] ArrowKeys =

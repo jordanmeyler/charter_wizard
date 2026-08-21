@@ -7,7 +7,7 @@ namespace RuneMagic
     /// A breath of poison standing in a room. It is not a wall.
     /// Air sent pushes it out.
     /// </summary>
-    public sealed class RoomFog : MonoBehaviour, ISpellLock, IRuneSource
+    public sealed class RoomFog : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -24,6 +24,7 @@ namespace RuneMagic
         RuneId[] _formula;
         string _resolvedNote;
         Vector3 _retreat;
+        Vector2Int[] _cells;
         readonly List<GameObject> _wisps = new();
         float _pulse;
 
@@ -41,6 +42,14 @@ namespace RuneMagic
             AcceptedKeys = keys ?? System.Array.Empty<SpellId>();
             _formula = formula ?? System.Array.Empty<RuneId>();
             _resolvedNote = resolvedNote;
+            _cells = cells != null ? new Vector2Int[cells.Count] : System.Array.Empty<Vector2Int>();
+            if (cells != null)
+            {
+                for (var i = 0; i < cells.Count; i++)
+                {
+                    _cells[i] = cells[i];
+                }
+            }
 
             var sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "poison-fog" : spriteId);
             var north = int.MinValue;
@@ -109,6 +118,51 @@ namespace RuneMagic
             }
 
             return string.Join(" · ", parts);
+        }
+
+        public float DistanceTo(Vector3 point) =>
+            CellVolume.DistanceTo(point, transform.position, _cells);
+
+        public Vector3 ClosestPoint(Vector3 point) =>
+            CellVolume.ClosestPoint(point, transform.position, _cells);
+
+        public bool Touches(Vector3 point, float radius) =>
+            CellVolume.Touches(point, radius, transform.position, _cells);
+
+        public bool Crosses(Vector3 from, Vector3 to, float width) =>
+            CellVolume.Crosses(from, to, width, transform.position, _cells);
+
+        public bool OccupiesCell(Vector2Int cell) =>
+            CellVolume.Occupies(_cells, cell, transform.position);
+
+        public int BlowAlong(Vector3 from, Vector3 to, float width)
+        {
+            if (Resolved)
+            {
+                return 0;
+            }
+
+            var cleared = 0;
+            for (var i = _wisps.Count - 1; i >= 0; i--)
+            {
+                var wisp = _wisps[i];
+                if (wisp == null)
+                {
+                    _wisps.RemoveAt(i);
+                    continue;
+                }
+
+                if (CellVolume.SegmentDistance(from, to, wisp.transform.position) > width + CellVolume.TileRadius)
+                {
+                    continue;
+                }
+
+                Destroy(wisp);
+                _wisps.RemoveAt(i);
+                cleared++;
+            }
+
+            return cleared;
         }
 
         public string Resolve(SpellId spell)
