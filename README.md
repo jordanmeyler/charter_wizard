@@ -55,7 +55,8 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
 - After a cast: **click the world**. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
-- The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it. Collected stones appear in the top-left as **Keys**.
+- The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
+- **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it. Arrows move the selection. Esc or I closes.
 - **Grimoire** on the bottom bar (or **Esc** / **G**) lists every written spell and your Free attunement.
 - **Backspace** / **C** unmake the last rune
 

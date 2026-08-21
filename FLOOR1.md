@@ -142,6 +142,7 @@ Three sockets: Body, Spirit, Mind. Insert them → the floor opens. A first-time
 - **Reinforcement loop:** later rooms let earlier elements serve as alternate solutions.
 - **Free vs Charter:** this floor stays element-neutral on stance. Both actions work; Free is never the required key.
 - **No plaques that instruct.** Altars are labelled. Locks have names. The situation is the tutorial.
+- **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it.
 
 ---
 
