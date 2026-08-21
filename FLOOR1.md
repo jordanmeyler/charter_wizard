@@ -10,16 +10,16 @@ No text tutorials. Every lesson is a situation. Runes appear **labelled** on alt
 
 - **Teach by doing, never by telling.** The room poses a question; the element is the answer; the *click* of realizing it is the lesson.
 - **Read before cast.** Labelled altars write the rune into the world and into the Charter weave.
-- **Discovery arc per wing:** you see the element early, then are immediately placed somewhere only it resolves.
-- **Multiple solutions everywhere.** The *intended* path teaches the new element; alternatives (using elements already held, or knowledge already known) reward experimentation and enable sequence-breaking.
+- **Open rooms, closed stones.** The four elemental rooms stand open off the hub. You walk in, see the labelled altar, see a small obstacle, and use that element’s spells to reach the key. Walls never seal the doorway.
+- **Multiple solutions everywhere.** The *intended* path teaches the new element; alternatives (using elements already held) reward experimentation.
 - **Doors gate on possession, not sequence.** Stones are keys. Progress = collecting them and opening doors, never stats.
-- **Casting is knowledge; stones are only keys.** The rune-field is always present. Anyone who knows how can cast an element anywhere. A wing teaches that knowledge and hands you a door-key. Skips are possible because a player who already knows the fundamentals can cast without the wings — the only thing a wing gates is the *key*.
+- **Casting is knowledge; stones are only keys.** The rune-field is always present. Anyone who knows how can cast an element anywhere.
 
 ---
 
 ## Grammar this floor lands
 
-The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, **Mercury**, and **Sulphur**. The adept is always in the weave as mind · body · soul (`Sulphur · Salt · Mercury`), and **Air is ambient** in any room that still has a floor. That is why skips self-gate by understanding: Hop (`Air · Salt · Air`), Wall (`Earth · Salt · Earth`), and Ice-pillar (`Water · Salt · Earth`) are writable the moment you know the sentence and can see the missing root.
+The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, **Mercury**, and **Sulphur**. The adept is always in the weave as mind · body · soul (`Sulphur · Salt · Mercury`), and **Air is ambient** in any room that still has a floor.
 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
@@ -39,74 +39,46 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 ## The floor at a glance
 
 ```
-                    [ ANTECHAMBER ]              first cast — establish the verb
-                          |
-        ┌─────────┬────── HUB ──────┬─────────┐
-      FIRE      WATER             EARTH       AIR      four elemental wings
-     wing        wing              wing       wing     (each: an entry challenge + a stone)
-        └─────────┴────── ┬ ───────┴─────────┘
-                  [ DOOR I · four element sockets ]
-                          |
-                  aspect antechamber
-             ┌────────────┼────────────┐
-           BODY         SPIRIT         MIND           three aspect sanctums
-          (Salt)      (Mercury)     (Sulphur)
-             └────────────┼────────────┘
-                  [ DOOR II · three aspect sockets ]
-                          |
-                     → next floor
+                         [ ASPECT FOYER ]
+                        Salt · Mercury · Sulphur
+                      /          |           \
+                 [BODY]      [SPIRIT]      [MIND]
+                  Salt       Mercury      Sulphur
+                                 |
+                           [ DOOR II ]
+                                 |
+         [ FIRE ] ---- [  HUB + Door I  ] ---- [ WATER ]
+                            /          \
+                       [EARTH]        [AIR]
 ```
 
-**Door I** wants the four element stones. **Door II** wants the three aspect stones — only *this* section’s keys. A player who skips the element wings entirely can still clear the aspect section and progress. If Door II asked for all seven, bypassing Door I would strand you.
+You spawn in the **hub**. Four rooms stand open around it — west, east, and two to the south. Each room is one element. Walk in. Read the altar. Use that element’s spells on the obstacle. Take the stone.
+
+**Door I** is the hub’s north door. It wants the four element stones. **Door II** wants the three aspect stones — only *this* section’s keys.
 
 ---
 
-## Sequence-breaking
+## Section 1 — The Elemental Rooms
 
-Gates are **local, never cumulative.** Skips are earned: each asks the player to do something clever with knowledge they already hold.
+Each room is attached to the hub and **open**. The obstacle sits deeper in, around the stone, not across the doorway.
 
-Door I stands on a **narrow causeway**. A **chasm** falls away on the west; a **flooded moat** (you cannot swim) on the east. Either flank has a gap in the north wall, so crossing lands you *past* the keyed gate with no stones at all.
+### Hub · "The Cross"
+Four labelled pedestals point at the four rooms. A Fire altar stands on the west so the first verb is available before you step into the frozen hall. The Gate of Elements sits against the north wall.
 
-| Flank | Intended | Also |
-| --- | --- | --- |
-| Chasm | Hop / Flight (Air) | Wall / Bridge / any pillar (Earth, or any stood body) |
-| Water | Ice-pillar (Water · Salt · Earth) | Wall / Bridge; Fireball / Melt / Ignite to boil a bed dry; Hop / Flight |
+### Fire · "The Frozen Hall" — *heat, melt, burn, light*
+Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wanders the south wall (optional). The Fire stone sits in a small **ice cage** at the back. Melt / Fireball / Flame-pillar / Ignite.
 
-A newcomer *could* take a skip route but could not solve what lies past it without the aspect lessons — skips self-gate by understanding. The same hidden geometry rewards exploration.
+### Water · "The Ember Vault" — *douse, flow, fill, cool*
+Walk in from the west. A labelled **Water** waits near the mouth. A Fire Golem stands off the path (optional). A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.
 
-The Water wing’s basin and Door I’s moat are the same *kind* of water (impassable until transformed). A later pass can plumb them as one connected system so work in the vault changes the moat.
+### Earth · "The Arrow Gauntlet" — *raise walls, block, bridge, cover*
+Walk in from the north. A labelled **Earth** waits near the mouth. A two-tile **gap** crosses the floor — Hop / Wall / Bridge / any pillar. Past the gap, a short **arrow rack** holds the Earth stone in an alcove. Wall / pillar / Command.
 
----
-
-## Section 1 — The Elemental Wings
-
-### Antechamber · the first cast
-A labelled **Fire** altar; a rope holds the north portcullis. Mercury is already in the weave (you). The only first-timer affordance is: read Fire, send it (`Fire · Mercury`), burn the rope, walk through. Deliberately singular — it teaches perceive → cast → the world changes → progress before choice enters.
-
-### Fire Wing · "The Frozen Hall" — *heat, melt, burn, light*
-- **Entry:** ice seals the east door → Melt / Fireball / Flame-pillar / Ignite.
-- **Combat option:** an ice-thing. Fire is the obvious undoing.
-- **Stone:** frozen in an ice cage. Melt it free.
-- *Alt / return-trip:* Water later makes steam-secrets of this ice.
-
-### Water Wing · "The Ember Vault" — *douse, flow, fill, cool*
-- **Entry:** a curtain of flame → Douse / Water-jet / Rain / Flood / Smother.
-- **Signature — the Fire Golem:** douse it (Water) to extinguish. *Also:* Earth buries/smothers; Air starves it (Gale / Smother); Ice-pillar / Quagmire hold it.
-- **Stone:** raise or still the basin (`Flood`, `Water-jet`, `Rain`, `Ice-pillar`, `Douse`) so the Water stone comes up.
-
-### Earth Wing · "The Arrow Gauntlet" — *raise walls & pillars, block, bridge, cover*
-- **Entry:** a gap → Wall / pillar / Bridge / Hop / Flight.
-- **Signature — the arrow corridor:** raise an Earth wall (or any stood pillar) to block the volley.
-- **Stone:** past the arrows, on the floor.
-- *Alt:* freeze or gust if those elements are already held.
-
-### Air Wing · "The Sundered Heights" — *leap, glide, gust, clear*
-- **Jump the rift:** Hop / Flight, or raise Earth pillars / a Wall. Air as **traversal.**
-- **Blow out the poison:** Gale the steam-veil off the north chamber. Air as **displacement.**
-- **Stone:** inside the once-poisoned chamber.
+### Air · "The Sundered Heights" — *leap, glide, gust, clear*
+Walk in from the north. A labelled **Air** waits near the mouth. A two-tile **rift** — Hop / Flight / Wall. Past the rift, a short **poison veil** holds the Air stone. Gale / Storm-call / Flight.
 
 ### Door I · Gate of Elements
-Four sockets. Walk up holding the four element stones and they seat themselves. The flanks (above) bypass the sockets entirely.
+Four sockets on the hub’s north wall. Walk up holding the four element stones and they seat themselves. The north door opens into the aspect foyer.
 
 ---
 
@@ -126,23 +98,24 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
 **Lesson:** Sulphur reaches the enemy’s *mind.* Taught by taking every other tool away.
-- **Signature — the stone men:** humanoid rock, immune to elemental attack and to walls. They block the aisle. The Mind stone sits behind them.
+- **Signature — the stone men:** humanoid rock, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
 - **Multiple solutions:** **Rage** them, **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past.
 - Force fails on purpose. Mind is discovered as the way through.
 
 ### Door II · Gate of Aspects
-Three sockets: Body, Spirit, Mind. Insert them → the floor opens. A first-timer arrives holding the full grammar. A veteran may pass on the aspect stones alone.
+Three sockets: Body, Spirit, Mind. Insert them → the floor opens.
 
 ---
 
 ## Design notes
 
-- **Order-independent & multi-solution:** wings and sanctums can be tackled in any order; doors gate on possession.
-- **Difficulty via readability, not stats:** element wings telegraph their answer; aspect sanctums ask the player to *combine* what they now know.
-- **Reinforcement loop:** later rooms let earlier elements serve as alternate solutions.
+- **Order-independent & multi-solution:** rooms and sanctums can be tackled in any order; doors gate on possession.
+- **Difficulty via readability, not stats:** element rooms telegraph their answer; aspect sanctums ask the player to *combine* what they now know.
+- **Halls punch both walls.** A corridor that only opened the destination used to leave the hub looking open and the wing sealed. Both shared walls open; Door tiles stay shut until their gate resolves.
 - **Free vs Charter:** this floor stays element-neutral on stance. Both actions work; Free is never the required key.
 - **No plaques that instruct.** Altars are labelled. Locks have names. The situation is the tutorial.
 - **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it.
+- **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
 
 ---
 
@@ -150,13 +123,11 @@ Three sockets: Body, Spirit, Mind. Insert them → the floor opens. A first-time
 
 | Room id | Name | What it teaches |
 | --- | --- | --- |
-| `antechamber` | Antechamber | Fire · Mercury |
-| `hub` | The Cross | Choice. Four labelled roots. |
+| `hub` | The Cross | Choice. Four labelled roots. Door I. |
 | `fire-wing` | The Frozen Hall | Fire against ice |
 | `water-wing` | The Ember Vault | Water against fire |
 | `earth-wing` | The Arrow Gauntlet | Earth as cover / span |
 | `air-wing` | The Sundered Heights | Air as leap and gale |
-| `door-i` | Gate of Elements | Four stones, or a skip |
 | `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
 | `spirit-sanctum` | The Gallery of Force | Mercury sends |
