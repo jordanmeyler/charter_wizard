@@ -21,6 +21,23 @@ namespace RuneMagic
         public CastLedger Ledger { get; } = new();
         public ISpellLock CurrentTarget { get; private set; }
         public RoomInfo CurrentRoom { get; private set; }
+
+        public RoomInfo RoomAt(Vector3 world)
+        {
+            if (_rooms != null)
+            {
+                for (var i = 0; i < _rooms.Length; i++)
+                {
+                    if (_rooms[i] != null && _rooms[i].Contains(world))
+                    {
+                        return _rooms[i];
+                    }
+                }
+            }
+
+            return CurrentRoom;
+        }
+
         public WorldTile Underfoot { get; private set; }
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
         public float Taint { get; private set; }
@@ -1339,7 +1356,12 @@ namespace RuneMagic
                     var workFrom = spanFrom ?? aim;
                     try
                     {
-                        workNote = WorldWork.Apply(Grid, SpellCodex.WorkOf(outcome.Spell), outcome.Material, origin, workFrom, aim);
+                        var work = SpellCodex.WorkOf(outcome.Spell);
+                        workNote = WorldWork.Apply(Grid, work, outcome.Material, origin, workFrom, aim);
+                        if (work == SpellId.Wall)
+                        {
+                            CombatActor.NoticePlayerSpell(work, origin, aim);
+                        }
                     }
                     catch (System.Exception exception)
                     {

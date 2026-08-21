@@ -140,7 +140,7 @@ A two-tile pit splits the room. Plant and moss sit on both banks. **Water the pl
 Vein and metal already hold Spark. The Charter shows **Spark** as its own mark; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air if you know and the room has no seed. A **live rod** waits in the plate. The **spark key** is in the open; the east door hides the **spark stone**. A spare key sits across a hop pit.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
-Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
+Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
 
 ### Door III · Gate of Joins
 Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys stay in the pack.
@@ -179,7 +179,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens. Spare keys 
 | `grove-court` | The Living Thicket | Grow, burn, or hop a gap. Key → door → grove stone. Spare key by hop. |
 | `cistern` | The Cistern | Water · Salt fills small pits. Key → door → flood stone. |
 | `spark-cell` | The Seed of Charge | Spark as a rune. Key → door → spark stone. |
-| `arena` | The Mixed Court | Melee and ranged. Casters show their marks. |
+| `arena` | The Mixed Court | Melee and ranged. Casters show their marks. Wall the ember adept and the floor hungers, then a flame-pillar stands. |
 | `door-iii` | Gate of Joins | Three join stones. The floor ends. |
 
 Regenerate the JSON with `python3 Tools/build-foundation.py`. The old four-room slice remains as `sanctum`.

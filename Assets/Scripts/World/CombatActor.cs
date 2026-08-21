@@ -20,10 +20,18 @@ namespace RuneMagic
     /// <summary>
     /// A lock that can strike back. Golems slam. Wizards write a sentence
     /// and send it. A beginner fireball takes two seconds.
+    /// In the Mixed Court a fire mage answers a wall with a stood flame.
     /// Mind ailments rewrite who they hunt, and whether they stand still.
     /// </summary>
     public sealed class CombatActor : MonoBehaviour
     {
+        static readonly RuneId[] FlamePillarRecipe =
+        {
+            RuneId.Fire,
+            RuneId.Salt,
+            RuneId.Earth
+        };
+
         public CombatKind Kind { get; private set; }
         public float CastSeconds { get; private set; } = 2f;
         public Vector2 Facing { get; private set; } = Vector2.left;
@@ -52,6 +60,7 @@ namespace RuneMagic
         float _confusedUntil;
         Transform _confusedMark;
         SanctumDirector _director;
+        bool _pillarReply;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
@@ -407,9 +416,97 @@ namespace RuneMagic
             _windup = 0f;
             _anim?.Play("warden", 4f);
             ClearCastChip();
+            if (_pillarReply)
+            {
+                var aim = mark != null ? mark.position : transform.position + (Vector3)_committed;
+                EnemyPillar.Cast(_grid, transform.position, aim, SpellId.FlamePillar, this, ShotOf());
+                return;
+            }
+
             var shot = Kind == CombatKind.Archer ? ProjectileKind.Arrow : ProjectileKind.Fireball;
             var origin = transform.position + (Vector3)(_committed * 0.45f);
             WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Arrow ? 7.4f : 6.4f, this, ShotOf());
+        }
+
+        public static void NoticePlayerSpell(SpellId spell, Vector3 origin, Vector3 aim)
+        {
+            if (spell != SpellId.Wall)
+            {
+                return;
+            }
+
+            var director = Object.FindFirstObjectByType<SanctumDirector>();
+            if (director == null)
+            {
+                return;
+            }
+
+            var here = director.RoomAt(origin);
+            var there = director.RoomAt(aim);
+            var room = IsMixedCourt(here) ? here : IsMixedCourt(there) ? there : null;
+            if (room == null)
+            {
+                return;
+            }
+
+            var found = Object.FindObjectsByType<CombatActor>(FindObjectsSortMode.None);
+            for (var i = 0; i < found.Length; i++)
+            {
+                var actor = found[i];
+                if (actor == null || actor._lock == null || actor._lock.Resolved)
+                {
+                    continue;
+                }
+
+                if (!room.Contains(actor.transform.position))
+                {
+                    continue;
+                }
+
+                actor.AnswerWall();
+            }
+        }
+
+        void AnswerWall()
+        {
+            if (_pillarReply || !WritesFire())
+            {
+                return;
+            }
+
+            _pillarReply = true;
+            _castRecipe = FlamePillarRecipe;
+            CancelWindup();
+            var who = _lock != null ? _lock.DisplayName : "The adept";
+            Director()?.Log($"The wall stands. {who} writes hunger and asks it to rest.");
+        }
+
+        bool WritesFire()
+        {
+            if (Kind != CombatKind.Wizard || _castRecipe == null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < _castRecipe.Length; i++)
+            {
+                if (_castRecipe[i] == RuneId.Spark)
+                {
+                    return false;
+                }
+
+                if (_castRecipe[i] == RuneId.Fire)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool IsMixedCourt(RoomInfo room)
+        {
+            return room != null && (room.Id == "arena" || room.Name == "The Mixed Court");
         }
 
         void LandBlow(Transform mark, AdeptAvatar player)
