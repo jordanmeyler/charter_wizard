@@ -11,6 +11,7 @@ namespace RuneMagic
 
         CatalogItem _item;
         Grimoire _grimoire;
+        AdeptPack _pack;
         System.Action<string> _log;
 
         public static GameObject Spawn(Vector3 position, CatalogItem item)
@@ -22,10 +23,11 @@ namespace RuneMagic
             return host;
         }
 
-        public void Bind(Grimoire grimoire, System.Action<string> log)
+        public void Bind(Grimoire grimoire, System.Action<string> log, AdeptPack pack = null)
         {
             _grimoire = grimoire;
             _log = log;
+            _pack = pack;
             var spriteId = _item != null && !string.IsNullOrEmpty(_item.sprite) ? _item.sprite : "charm";
             var renderer = gameObject.AddComponent<SpriteRenderer>();
             renderer.sprite = SpriteFactory.Named(spriteId);
@@ -46,6 +48,8 @@ namespace RuneMagic
             }
 
             Collected = true;
+            var carried = AdeptPack.CanCarry(_item) && _pack != null && _pack.Take(_item);
+
             if (!string.IsNullOrEmpty(_item.teachesSpell) && SpellCodex.TryGet(SpellRegistry.Parse(_item.teachesSpell), out var entry))
             {
                 _grimoire?.LearnRecipe(entry.RecipeRunes.Count > 0 ? entry.RecipeRunes[0] : RuneId.Fire, RuneId.Mercury, entry.Shape);
@@ -56,9 +60,18 @@ namespace RuneMagic
                 _grimoire?.LearnInterpretation(_item.teachesFormula);
             }
 
-            _log?.Invoke(string.IsNullOrEmpty(_item.note)
-                ? $"{_item.name} unspools. A recipe is borrowed."
-                : _item.note);
+            if (!string.IsNullOrEmpty(_item.note))
+            {
+                _log?.Invoke(_item.note);
+            }
+            else if (carried)
+            {
+                _log?.Invoke($"{_item.name} goes into the pack. I to look.");
+            }
+            else
+            {
+                _log?.Invoke($"{_item.name} unspools. A recipe is borrowed.");
+            }
             Destroy(gameObject);
         }
     }

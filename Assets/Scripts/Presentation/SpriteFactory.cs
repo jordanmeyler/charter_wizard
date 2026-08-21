@@ -33,6 +33,25 @@ namespace RuneMagic
                 case "rod-idle": return LightningRod(false);
                 case "rod-live": return LightningRod(true);
                 case "charm": return Charm();
+                case "ice-block": return IceBlock();
+                case "flame-curtain": return FlameCurtain();
+                case "arrow-rack": return ArrowRack();
+                case "poison-veil":
+                case "poison-fog": return PoisonVeil();
+                case "rope": return Rope();
+                case "socket-gate":
+                case "gate": return SocketGateSprite();
+                case "stone-fire": return ElementStone("stone-fire", new Color(0.95f, 0.32f, 0.08f), new Color(1f, 0.78f, 0.28f));
+                case "stone-water": return ElementStone("stone-water", new Color(0.18f, 0.52f, 0.92f), new Color(0.7f, 0.9f, 1f));
+                case "stone-earth": return ElementStone("stone-earth", new Color(0.48f, 0.32f, 0.14f), new Color(0.72f, 0.82f, 0.28f));
+                case "stone-air": return ElementStone("stone-air", new Color(0.72f, 0.86f, 0.92f), new Color(1f, 1f, 1f));
+                case "stone-body": return ElementStone("stone-body", new Color(0.88f, 0.84f, 0.72f), new Color(0.98f, 0.96f, 0.88f));
+                case "stone-spirit": return ElementStone("stone-spirit", new Color(0.55f, 0.42f, 0.82f), new Color(0.82f, 0.88f, 1f));
+                case "stone-mind": return ElementStone("stone-mind", new Color(0.92f, 0.62f, 0.12f), new Color(1f, 0.92f, 0.45f));
+                case "ice-thing": return IceThing();
+                case "fire-golem": return FireGolem();
+                case "stone-man": return StoneMan();
+                case "warden": return Warden();
                 case "plaque": return Plaque();
                 case "pit": return Pit();
                 case "bridge": return Bridge();
@@ -567,6 +586,249 @@ namespace RuneMagic
                 canvas.Fill(15, 24, 2, 6, gold);
                 canvas.FillCircle(16, 16, 3, new Color(1f, 0.88f, 0.45f));
                 canvas.Set(14, 19, new Color(1f, 0.95f, 0.7f));
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite IceBlock()
+        {
+            return Memo("ice-block", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 14, 14, new Color(0.55f, 0.85f, 1f, 0.35f));
+                canvas.FillRounded(5, 4, 22, 24, 3, new Color(0.62f, 0.84f, 0.95f));
+                canvas.FillRounded(7, 6, 18, 20, 2, new Color(0.78f, 0.92f, 1f));
+                canvas.Fill(8, 18, 16, 8, new Color(0.42f, 0.68f, 0.86f, 0.55f));
+                canvas.Line(8, 22, 14, 8, new Color(1f, 1f, 1f, 0.7f));
+                canvas.Line(18, 24, 24, 10, new Color(0.85f, 0.95f, 1f, 0.55f));
+                canvas.Set(11, 20, Color.white);
+                canvas.Rect(5, 4, 22, 24, new Color(0.28f, 0.5f, 0.68f));
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite FlameCurtain()
+        {
+            return Memo("flame-curtain", () =>
+            {
+                var canvas = new PixelCanvas(32, 48);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 28, 16, new Color(1f, 0.35f, 0.05f, 0.4f));
+                canvas.FillRounded(6, 4, 20, 10, 2, new Color(0.22f, 0.1f, 0.06f));
+                var ember = new Color(0.95f, 0.38f, 0.06f);
+                var gold = new Color(1f, 0.78f, 0.2f);
+                canvas.FillCircle(10, 22, 7, ember);
+                canvas.FillCircle(16, 28, 8, ember);
+                canvas.FillCircle(22, 24, 7, ember);
+                canvas.FillCircle(16, 34, 6, gold);
+                canvas.FillCircle(12, 30, 4, gold);
+                canvas.FillCircle(20, 32, 4, gold);
+                canvas.FillCircle(16, 38, 3, new Color(1f, 0.95f, 0.7f));
+                canvas.FillCircle(10, 26, 2, new Color(1f, 0.95f, 0.7f));
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.2f));
+            });
+        }
+
+        public static Sprite ArrowRack()
+        {
+            return Memo("arrow-rack", () =>
+            {
+                var canvas = new PixelCanvas(32, 40);
+                canvas.Clear(Clear);
+                var wood = new Color(0.5f, 0.3f, 0.14f);
+                var dark = new Color(0.28f, 0.16f, 0.08f);
+                canvas.FillRounded(4, 3, 24, 6, 1, dark);
+                canvas.Fill(6, 8, 3, 18, wood);
+                canvas.Fill(23, 8, 3, 18, wood);
+                canvas.FillRounded(5, 24, 22, 4, 1, wood);
+                var shaft = new Color(0.82f, 0.78f, 0.62f);
+                var head = new Color(0.7f, 0.74f, 0.78f);
+                for (var i = 0; i < 4; i++)
+                {
+                    var x = 9 + i * 4;
+                    canvas.Fill(x, 12, 2, 20, shaft);
+                    canvas.Fill(x - 1, 30, 4, 3, head);
+                    canvas.Set(x, 33, new Color(0.95f, 0.25f, 0.18f));
+                    canvas.Line(x, 12, x - 2, 8, new Color(0.85f, 0.2f, 0.15f));
+                    canvas.Line(x + 1, 12, x + 3, 8, new Color(0.85f, 0.2f, 0.15f));
+                }
+
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.22f));
+            });
+        }
+
+        public static Sprite PoisonVeil()
+        {
+            return Memo("poison-veil", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var mist = new Color(0.35f, 0.82f, 0.22f, 0.55f);
+                canvas.SoftCircle(10, 12, 10, mist);
+                canvas.SoftCircle(22, 16, 11, new Color(0.55f, 0.95f, 0.28f, 0.45f));
+                canvas.SoftCircle(16, 22, 9, new Color(0.22f, 0.55f, 0.12f, 0.5f));
+                canvas.FillCircle(12, 18, 3, new Color(0.7f, 1f, 0.35f, 0.7f));
+                canvas.FillCircle(20, 14, 2, new Color(0.85f, 1f, 0.45f, 0.8f));
+                canvas.Line(6, 8, 10, 20, new Color(0.45f, 0.9f, 0.3f, 0.45f));
+                canvas.Line(24, 10, 18, 24, new Color(0.45f, 0.9f, 0.3f, 0.4f));
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite Rope()
+        {
+            return Memo("rope", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var coil = new Color(0.72f, 0.48f, 0.2f);
+                var dark = new Color(0.42f, 0.26f, 0.1f);
+                canvas.Circle(16, 16, 10, coil);
+                canvas.Circle(16, 16, 9, dark);
+                canvas.Circle(16, 16, 7, coil);
+                canvas.Circle(16, 16, 6, dark);
+                canvas.Circle(16, 16, 4, coil);
+                canvas.FillCircle(16, 16, 2, dark);
+                canvas.FillRounded(22, 14, 8, 4, 1, coil);
+                canvas.Line(24, 15, 28, 8, dark);
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite SocketGateSprite()
+        {
+            return Memo("socket-gate", () =>
+            {
+                var canvas = new PixelCanvas(32, 40);
+                canvas.Clear(Clear);
+                var stone = new Color(0.42f, 0.38f, 0.34f);
+                var gold = new Color(0.92f, 0.74f, 0.28f);
+                canvas.FillRounded(4, 2, 24, 34, 3, new Color(0.22f, 0.18f, 0.16f));
+                canvas.FillRounded(7, 6, 18, 26, 2, stone);
+                canvas.Fill(10, 10, 12, 18, new Color(0.08f, 0.06f, 0.07f));
+                canvas.FillCircle(16, 28, 3, gold);
+                canvas.FillCircle(12, 20, 2, gold);
+                canvas.FillCircle(20, 20, 2, gold);
+                canvas.FillCircle(16, 14, 2, gold);
+                canvas.Highlight(8, 30, 14, 2, 0.16f);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.28f));
+            });
+        }
+
+        public static Sprite IceThing()
+        {
+            return Memo("ice-thing", () =>
+            {
+                var canvas = new PixelCanvas(48);
+                canvas.Clear(Clear);
+                var body = new Color(0.55f, 0.82f, 0.95f);
+                var core = new Color(0.82f, 0.95f, 1f);
+                var spike = new Color(0.75f, 0.92f, 1f);
+                canvas.SoftCircle(24, 22, 16, new Color(0.45f, 0.8f, 1f, 0.35f));
+                canvas.FillCircle(24, 22, 11, new Color(0.22f, 0.4f, 0.55f));
+                canvas.FillCircle(24, 22, 10, body);
+                canvas.FillCircle(24, 24, 6, core);
+                canvas.ThickLine(24, 32, 24, 42, spike);
+                canvas.ThickLine(14, 30, 10, 40, spike);
+                canvas.ThickLine(34, 30, 38, 40, spike);
+                canvas.FillCircle(20, 26, 2, Color.white);
+                canvas.FillCircle(28, 26, 2, Color.white);
+                canvas.Set(20, 26, new Color(0.08f, 0.2f, 0.35f));
+                canvas.Set(28, 26, new Color(0.08f, 0.2f, 0.35f));
+                canvas.Line(18, 18, 14, 12, spike);
+                canvas.Line(30, 18, 34, 12, spike);
+                return canvas.ToSprite(36);
+            });
+        }
+
+        public static Sprite FireGolem()
+        {
+            return Memo("fire-golem", () =>
+            {
+                var canvas = new PixelCanvas(48);
+                canvas.Clear(Clear);
+                var body = new Color(0.82f, 0.22f, 0.06f);
+                var ember = new Color(1f, 0.55f, 0.12f);
+                canvas.SoftCircle(24, 20, 16, new Color(1f, 0.3f, 0.04f, 0.4f));
+                canvas.FillRounded(12, 8, 24, 22, 4, new Color(0.28f, 0.08f, 0.04f));
+                canvas.FillRounded(14, 10, 20, 18, 3, body);
+                canvas.FillRounded(16, 28, 16, 10, 3, body);
+                canvas.FillCircle(24, 34, 7, body);
+                canvas.FillCircle(24, 22, 6, ember);
+                canvas.FillCircle(20, 36, 2, new Color(1f, 0.92f, 0.4f));
+                canvas.FillCircle(28, 36, 2, new Color(1f, 0.92f, 0.4f));
+                canvas.Set(20, 36, Color.black);
+                canvas.Set(28, 36, Color.black);
+                canvas.FillRounded(8, 12, 6, 10, 2, ember);
+                canvas.FillRounded(34, 12, 6, 10, 2, ember);
+                canvas.FillCircle(24, 40, 3, new Color(1f, 0.85f, 0.3f));
+                return canvas.ToSprite(36);
+            });
+        }
+
+        public static Sprite StoneMan()
+        {
+            return Memo("stone-man", () =>
+            {
+                var canvas = new PixelCanvas(48);
+                canvas.Clear(Clear);
+                var rock = new Color(0.48f, 0.46f, 0.42f);
+                var dark = new Color(0.22f, 0.2f, 0.18f);
+                canvas.FillRounded(16, 6, 16, 20, 2, dark);
+                canvas.FillRounded(18, 8, 12, 16, 2, rock);
+                canvas.FillRounded(14, 24, 20, 8, 2, rock);
+                canvas.FillRounded(18, 30, 12, 10, 2, rock);
+                canvas.Fill(20, 36, 3, 3, dark);
+                canvas.Fill(26, 36, 3, 3, dark);
+                canvas.Line(20, 14, 28, 12, new Color(0.7f, 0.68f, 0.62f));
+                canvas.Line(18, 20, 30, 22, dark);
+                canvas.FillRounded(10, 16, 6, 8, 1, rock);
+                canvas.FillRounded(32, 16, 6, 8, 1, rock);
+                return canvas.ToSprite(36);
+            });
+        }
+
+        public static Sprite Warden()
+        {
+            return Memo("warden", () =>
+            {
+                var canvas = new PixelCanvas(48);
+                canvas.Clear(Clear);
+                var cloak = new Color(0.28f, 0.16f, 0.48f);
+                var metal = new Color(0.72f, 0.7f, 0.62f);
+                var gold = new Color(0.92f, 0.74f, 0.28f);
+                canvas.SoftCircle(24, 22, 14, new Color(0.55f, 0.35f, 0.9f, 0.3f));
+                canvas.FillRounded(16, 8, 16, 22, 4, new Color(0.12f, 0.06f, 0.2f));
+                canvas.FillRounded(18, 10, 12, 18, 3, cloak);
+                canvas.FillRounded(20, 26, 8, 10, 2, cloak);
+                canvas.FillCircle(24, 34, 6, metal);
+                canvas.Fill(22, 36, 2, 2, new Color(0.15f, 0.08f, 0.2f));
+                canvas.Fill(26, 36, 2, 2, new Color(0.15f, 0.08f, 0.2f));
+                canvas.Fill(34, 8, 3, 28, new Color(0.42f, 0.24f, 0.12f));
+                canvas.Fill(32, 34, 7, 6, metal);
+                canvas.FillCircle(35, 40, 3, gold);
+                canvas.FillRounded(14, 18, 6, 5, 1, gold);
+                canvas.FillRounded(28, 18, 6, 5, 1, gold);
+                return canvas.ToSprite(36);
+            });
+        }
+
+        static Sprite ElementStone(string key, Color gem, Color rim)
+        {
+            return Memo(key, () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 16, 12, new Color(gem.r, gem.g, gem.b, 0.4f));
+                canvas.FillCircle(16, 15, 9, Color.Lerp(gem, Color.black, 0.35f));
+                canvas.FillCircle(16, 16, 8, gem);
+                canvas.FillCircle(16, 17, 5, Color.Lerp(gem, rim, 0.55f));
+                canvas.FillCircle(16, 18, 2, Color.Lerp(rim, Color.white, 0.5f));
+                canvas.Set(13, 20, Color.white);
+                canvas.Circle(16, 16, 8, rim);
+                canvas.Fill(15, 6, 2, 5, rim);
+                canvas.FillCircle(16, 6, 2, rim);
                 return canvas.ToSprite(28);
             });
         }

@@ -9,6 +9,7 @@ namespace RuneMagic
         Charter,
         Aiming,
         Grimoire,
+        Inventory,
         Paused
     }
 
@@ -22,6 +23,7 @@ namespace RuneMagic
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
+        public AdeptPack Pack { get; } = new();
         public PlayMode Mode { get; private set; } = PlayMode.Exploring;
         public FreeAttunement Attunement { get; } = new();
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
@@ -155,6 +157,10 @@ namespace RuneMagic
                 {
                     CloseGrimoire();
                 }
+                else if (Mode == PlayMode.Inventory)
+                {
+                    CloseInventory();
+                }
                 else if (Mode == PlayMode.Charter)
                 {
                     CloseCharter();
@@ -182,6 +188,26 @@ namespace RuneMagic
                     OpenGrimoire();
                 }
 
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.I) && Mode != PlayMode.Charter && Mode != PlayMode.Aiming)
+            {
+                if (Mode == PlayMode.Inventory)
+                {
+                    CloseInventory();
+                }
+                else if (Mode != PlayMode.Paused)
+                {
+                    OpenInventory();
+                }
+
+                return;
+            }
+
+            if (Mode == PlayMode.Inventory)
+            {
+                HandleInventoryInput();
                 return;
             }
 
@@ -331,7 +357,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Mode == PlayMode.Charter)
+            if (Mode == PlayMode.Charter || Mode == PlayMode.Inventory)
             {
                 Mode = PlayMode.Exploring;
             }
@@ -348,6 +374,79 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
+        }
+
+        public void OpenInventory()
+        {
+            if (Mode == PlayMode.Paused || Busy)
+            {
+                return;
+            }
+
+            if (Mode == PlayMode.Aiming)
+            {
+                CancelAim();
+            }
+
+            if (Mode == PlayMode.Charter || Mode == PlayMode.Grimoire)
+            {
+                Mode = PlayMode.Exploring;
+            }
+
+            Mode = PlayMode.Inventory;
+            if (Pack.Empty)
+            {
+                Log("The pack is empty. Stones and other keys will sit here. Esc or I closes.");
+                return;
+            }
+
+            if (Pack.Selected == null)
+            {
+                Pack.Select(0);
+            }
+
+            Log(AdeptPack.LookText(Pack.Selected));
+        }
+
+        public void CloseInventory()
+        {
+            if (Mode != PlayMode.Inventory)
+            {
+                return;
+            }
+
+            Mode = PlayMode.Exploring;
+        }
+
+        public void SelectPack(int index)
+        {
+            if (!Pack.Select(index))
+            {
+                return;
+            }
+
+            Log(AdeptPack.LookText(Pack.Selected));
+        }
+
+        void HandleInventoryInput()
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                if (Pack.Nudge(-1))
+                {
+                    Log(AdeptPack.LookText(Pack.Selected));
+                }
+
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                if (Pack.Nudge(1))
+                {
+                    Log(AdeptPack.LookText(Pack.Selected));
+                }
+            }
         }
 
         public bool InVicinity(RuneId rune)
@@ -374,7 +473,8 @@ namespace RuneMagic
 
         public void WeaveFromField(RuneId rune)
         {
-            if (Busy || Mode == PlayMode.Aiming || Mode == PlayMode.Paused || Mode == PlayMode.Grimoire)
+            if (Busy || Mode == PlayMode.Aiming || Mode == PlayMode.Paused || Mode == PlayMode.Grimoire ||
+                Mode == PlayMode.Inventory)
             {
                 return;
             }
@@ -1268,7 +1368,8 @@ namespace RuneMagic
                 _targetRing.sortingOrder = 16;
             }
 
-            var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused;
+            var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused && Mode != PlayMode.Inventory &&
+                Mode != PlayMode.Grimoire;
             _targetRing.gameObject.SetActive(show);
             if (!show)
             {
@@ -1283,8 +1384,41 @@ namespace RuneMagic
                 : new Color(1f, 0.86f, 0.35f, 0.95f);
         }
 
+        public void TurnLock(ISpellLock encounter)
+        {
+            if (!LockAlive(encounter) || Busy)
+            {
+                return;
+            }
+
+            Grimoire.LearnInterpretation(encounter.FormulaId);
+            var flavor = encounter.Resolve(SpellId.None);
+            OpenDoorFor(encounter);
+            if (_focus == encounter)
+            {
+                _focus = null;
+            }
+
+            CurrentTarget = null;
+            Log(flavor);
+            CheckFinished();
+        }
+
         public void FallInPit(Transform player)
         {
+            var wet = Underfoot != null && Underfoot.Material == MaterialId.Water;
+            KnockBack(player, wet
+                ? "You cannot swim. Freeze it, span it, dry it, or give breath a body and cross."
+                : "The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
+        }
+
+        public void KnockBack(Transform player, string message)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {
@@ -1292,12 +1426,35 @@ namespace RuneMagic
             }
 
             player.position = _safePoint;
-            Log("The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
+            if (!string.IsNullOrEmpty(message))
+            {
+                Log(message);
+            }
         }
 
         void CheckFinished()
         {
             if (_finished || _locks == null)
+            {
+                return;
+            }
+
+            var hasFloorGate = false;
+            foreach (var encounter in _locks)
+            {
+                if (encounter is SocketGate gate && gate.FinishesFloor)
+                {
+                    hasFloorGate = true;
+                    if (gate.Resolved)
+                    {
+                        _finished = true;
+                        Log("The sockets of this floor are seated. The way down stands open.");
+                        return;
+                    }
+                }
+            }
+
+            if (hasFloorGate)
             {
                 return;
             }

@@ -70,7 +70,11 @@ namespace RuneMagic
         CorpseCall,
         GraveIce,
         LastBreath,
-        TimeStop
+        TimeStop,
+        Douse,
+        Command,
+        Gust,
+        EarthPillar
     }
 
     public readonly struct SpellRecipe
@@ -130,12 +134,13 @@ namespace RuneMagic
             Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
             Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
-            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.Wall, "Wall", "Compressed. Catalog: Earth · Salt · Earth. Form is in the chain.");
+            Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Rest given a body.");
+            Register(RuneId.Stone, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Stone already stood.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
             Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
-            Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gale, "Gale", "Air thrown as a line.");
+            Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gust, "Gust", "Compressed. Catalog: Air · Mercury. Breath sent.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Mercury · Salt. You fly.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");

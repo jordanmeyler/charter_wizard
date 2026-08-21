@@ -37,6 +37,7 @@ namespace RuneMagic
                 case SpellId.Wall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
+                case SpellId.EarthPillar:
                 case SpellId.Menhir:
                     return true;
                 default:
@@ -50,6 +51,23 @@ namespace RuneMagic
         public static bool FillsGaps(SpellId spell)
         {
             return IsPillar(spell) || spell == SpellId.Bridge || spell == SpellId.ObsidianPath;
+        }
+
+        public static bool DriesWater(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.Fireball:
+                case SpellId.FlamePillar:
+                case SpellId.Melt:
+                case SpellId.Ignite:
+                case SpellId.SunLance:
+                case SpellId.Scald:
+                case SpellId.Thaw:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static bool RaisesBarrier(SpellId spell) =>
@@ -133,6 +151,7 @@ namespace RuneMagic
             switch (spell)
             {
                 case SpellId.Gale:
+                case SpellId.Gust:
                 case SpellId.StormCall:
                     return true;
                 default:
@@ -415,7 +434,7 @@ namespace RuneMagic
                     : "The hanging veil is given a body. The room is lost.");
             }
 
-            if (FillsGaps(spell) || RaisesBarrier(spell))
+            if (FillsGaps(spell) || RaisesBarrier(spell) || DriesWater(spell))
             {
                 var built = RaiseBodies(grid, spell, element, origin, from, to);
                 if (!string.IsNullOrEmpty(built))
@@ -461,7 +480,8 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
-                || spell == SpellId.Scald || spell == SpellId.SunLance || spell == SpellId.HurledStone)
+                || spell == SpellId.Gust || spell == SpellId.Scald || spell == SpellId.SunLance
+                || spell == SpellId.HurledStone)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }
@@ -507,6 +527,10 @@ namespace RuneMagic
             var cells = NeedsSpan(spell)
                 ? Span(CoordOf(from), CoordOf(to))
                 : new List<Vector2Int> { CoordOf(to) };
+            if (DriesWater(spell) && !IsPillar(spell))
+            {
+                cells = CollectWet(grid, CoordOf(to), 2);
+            }
             var caster = CoordOf(origin);
             var form = IsSinglePillar(spell) ? RaisedForm.Pillar : RaisedForm.Wall;
             var crossesGap = false;
@@ -528,6 +552,14 @@ namespace RuneMagic
                 var tile = grid.Get(cells[i]);
                 if (tile == null)
                 {
+                    continue;
+                }
+
+                if (tile.Kind == TileKind.Pit && tile.Material == MaterialId.Water &&
+                    DriesWater(spell) && !IsPillar(spell))
+                {
+                    tile.BecomeWalkable(MaterialId.Stone);
+                    filled++;
                     continue;
                 }
 
@@ -557,6 +589,13 @@ namespace RuneMagic
 
             if (filled > 0)
             {
+                if (DriesWater(spell) && !IsPillar(spell))
+                {
+                    return filled == 1
+                        ? "Hunger drinks the water. The bed is left."
+                        : "The channel boils dry. You can walk the bed.";
+                }
+
                 return filled == 1
                     ? "The hollow takes a body and holds."
                     : "The span settles into the drop.";
@@ -632,6 +671,35 @@ namespace RuneMagic
             }
 
             return WorldGrid.Center(land.x, land.y);
+        }
+
+        static List<Vector2Int> CollectWet(WorldGrid grid, Vector2Int center, int radius)
+        {
+            var cells = new List<Vector2Int>();
+            if (grid == null)
+            {
+                cells.Add(center);
+                return cells;
+            }
+
+            for (var y = center.y - radius; y <= center.y + radius; y++)
+            {
+                for (var x = center.x - radius; x <= center.x + radius; x++)
+                {
+                    var tile = grid.Get(x, y);
+                    if (tile != null && tile.Kind == TileKind.Pit && tile.Material == MaterialId.Water)
+                    {
+                        cells.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            if (cells.Count == 0)
+            {
+                cells.Add(center);
+            }
+
+            return cells;
         }
 
         static Vector2Int ToStep(Vector2 delta, int tiles)

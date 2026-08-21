@@ -42,6 +42,27 @@ namespace RuneMagic
             }
 
             Heading = heading.sqrMagnitude < 0.0001f ? Vector3.right : heading.normalized;
+            ShowAltar();
+        }
+
+        void ShowAltar()
+        {
+            var renderer = gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = SpriteFactory.Plaque();
+            renderer.sortingOrder = 4;
+            var rune = Sequence.Length > 0 ? Sequence[0] : RuneId.None;
+            var tint = rune == RuneId.None ? new Color(0.85f, 0.78f, 0.55f) : RunePalette.Of(rune);
+            renderer.color = Color.Lerp(Color.white, tint, 0.35f);
+            FixtureGlow.Attach(transform, new Color(tint.r, tint.g, tint.b, 0.55f), 1.35f, 0.1f);
+
+            var names = new string[Sequence.Length];
+            for (var i = 0; i < Sequence.Length; i++)
+            {
+                names[i] = RuneCatalog.NameOf(Sequence[i]).ToUpperInvariant();
+            }
+
+            var title = names.Length == 0 ? "RUNE" : string.Join(" · ", names);
+            WorldLabel.Attach(transform, title, new Vector3(0f, 0.72f, 0f), tint);
         }
 
         public void Collect(List<RuneId> buffer)

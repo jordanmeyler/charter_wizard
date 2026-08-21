@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.14. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.15. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -117,6 +117,7 @@ Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projec
 - **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice.
 - **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free) a medium that makes one specific spell reliable.
 - **Keys** — open a specific gate; most gates have another solution, so keys usually *ease* rather than hard-lock.
+- **The pack** — stones, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Doors still gate on possession, not on using a key from a menu.
 - **The Primordial gate** — access to Primordial is *only* opened by acquiring an item or performing a deed.
 
 Free magic is **item-intertwined** (lacking understanding, it leans on mediums/foci — the source of off-focus reliability). Free magic and its items **reveal their runes** — a core learning mechanic. Acquisition is **non-linear**: varied difficulty, some main-quest (skippable), some needed regardless of route.
@@ -194,7 +195,8 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop (Water · Earth · Dark · Life · Death · Sulphur · Salt). Composer still folds the short slice.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52 Douse (`Water · Mercury`), 53 Command (`Salt · Sulphur · Mercury`), 54 Gust (`Air · Mercury`), and 55 Earth-pillar (`Earth · Salt`) were added so Floor 1 has a clean water-send, a charm, a simple wind, and a standing earth.
+- [~] **First floor** — The Foundation. Hub, four element wings, Door I (local keys + skip flanks), three aspect sanctums, Door II (aspect keys only). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.

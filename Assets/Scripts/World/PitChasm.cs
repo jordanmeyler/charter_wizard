@@ -56,7 +56,7 @@ namespace RuneMagic
                 ? "Breath given a body carries you. The drop is crossed."
                 : spell == SpellId.Flight
                     ? "A body of breath stays on you. The drop cannot take you."
-                    : spell == SpellId.Wall || spell == SpellId.StonePillar
+                    : spell == SpellId.Wall || spell == SpellId.StonePillar || spell == SpellId.EarthPillar
                         ? "A standing body of rest fills the gap, or bars the floor."
                         : WorldWork.IsPillar(spell)
                             ? "A column settles into the hollow and holds."

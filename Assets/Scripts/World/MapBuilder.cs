@@ -29,7 +29,7 @@ namespace RuneMagic
 
         public static readonly SpellId[] PitKeys =
         {
-            SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
+            SpellId.HurledStone, SpellId.StonePillar, SpellId.EarthPillar, SpellId.RaisedEarth,
             SpellId.Pit, SpellId.Bridge, SpellId.Wall,
             SpellId.FlamePillar, SpellId.IcePillar, SpellId.VineRise,
             SpellId.Hop, SpellId.Flight
@@ -39,6 +39,17 @@ namespace RuneMagic
         {
             SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout,
             SpellId.ChainLightning, SpellId.StormCall, SpellId.Thunderclap
+        };
+
+        public static readonly SpellId[] FogKeys =
+        {
+            SpellId.Gust, SpellId.Gale, SpellId.StormCall, SpellId.Flight
+        };
+
+        public static readonly SpellId[] ArrowKeys =
+        {
+            SpellId.Wall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar,
+            SpellId.IcePillar, SpellId.VineRise, SpellId.Menhir, SpellId.Bridge
         };
 
         public static SanctumBuild Build(MapFile map)
@@ -197,6 +208,18 @@ namespace RuneMagic
                 case "chasm":
                     BindLock(room, locks, SpawnChasm(prop, world, grid, room));
                     break;
+                case "barrier":
+                    BindLock(room, locks, SpawnBarrier(prop, world, grid, origin));
+                    break;
+                case "gate":
+                    BindLock(room, locks, SpawnGate(prop, world));
+                    break;
+                case "fog":
+                    BindLock(room, locks, SpawnFog(prop, world, origin));
+                    break;
+                case "arrows":
+                    BindLock(room, locks, SpawnArrows(prop, world, grid, origin));
+                    break;
             }
         }
 
@@ -211,7 +234,9 @@ namespace RuneMagic
                 ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
                 ParseKeys(prop.keys, MiteKeys),
                 ensouled: false,
-                spriteId: prop.sprite);
+                spriteId: prop.sprite,
+                blocking: prop.blocking,
+                grantItem: prop.grant);
             return encounter;
         }
 
@@ -241,6 +266,90 @@ namespace RuneMagic
             var chasm = actor.AddComponent<PitChasm>();
             chasm.Bind(NameOf(prop, "Chasm"), IdOf(prop, "chasm"), ParseKeys(prop.keys, PitKeys), grid, pits);
             return chasm;
+        }
+
+        static BarrierLock SpawnBarrier(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Barrier"));
+            actor.transform.position = world;
+            var barrier = actor.AddComponent<BarrierLock>();
+            barrier.Bind(
+                NameOf(prop, "Barrier"),
+                IdOf(prop, "barrier"),
+                ParseKeys(prop.keys, TorchKeys),
+                ParseRunes(prop.formula),
+                grid,
+                LocalCells(origin, prop.cells),
+                prop.grant,
+                prop.clearMaterial,
+                prop.sprite,
+                prop.note);
+            return barrier;
+        }
+
+        static SocketGate SpawnGate(MapProp prop, Vector3 world)
+        {
+            var actor = new GameObject(NameOf(prop, "Gate"));
+            actor.transform.position = world;
+            var gate = actor.AddComponent<SocketGate>();
+            gate.Bind(
+                NameOf(prop, "Gate"),
+                IdOf(prop, "gate"),
+                prop.requires,
+                prop.finishes,
+                prop.note,
+                prop.sprite);
+            return gate;
+        }
+
+        static RoomFog SpawnFog(MapProp prop, Vector3 world, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Fog"));
+            actor.transform.position = world;
+            var fog = actor.AddComponent<RoomFog>();
+            fog.Bind(
+                NameOf(prop, "Poison fog"),
+                IdOf(prop, "poison-fog"),
+                ParseKeys(prop.keys, FogKeys),
+                ParseRunes(prop.formula, RuneId.Air),
+                LocalCells(origin, prop.cells),
+                prop.sprite,
+                prop.note);
+            return fog;
+        }
+
+        static ArrowVolley SpawnArrows(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Arrows"));
+            actor.transform.position = world;
+            var volley = actor.AddComponent<ArrowVolley>();
+            volley.Bind(
+                NameOf(prop, "Arrow volley"),
+                IdOf(prop, "arrow-volley"),
+                ParseKeys(prop.keys, ArrowKeys),
+                ParseRunes(prop.formula, RuneId.Earth),
+                grid,
+                LocalCells(origin, prop.cover),
+                LocalCells(origin, prop.cells),
+                prop.sprite,
+                prop.note);
+            return volley;
+        }
+
+        static List<Vector2Int> LocalCells(Vector2Int origin, int[] cells)
+        {
+            var list = new List<Vector2Int>();
+            if (cells == null)
+            {
+                return list;
+            }
+
+            for (var i = 0; i + 1 < cells.Length; i += 2)
+            {
+                list.Add(new Vector2Int(origin.x + cells[i], origin.y + cells[i + 1]));
+            }
+
+            return list;
         }
 
         static List<Vector2Int> CollectPits(WorldGrid grid, RectInt bounds)
@@ -274,30 +383,81 @@ namespace RuneMagic
                 return;
             }
 
-            if (to.origin.x > from.origin.x)
+            const int half = 1;
+            if (to.origin.x > from.origin.x + from.width - 1)
             {
-                var hallX0 = from.origin.x + from.width;
-                var hallX1 = to.origin.x - 1;
-                var mid = from.origin.y + from.height / 2;
-                grid.Fill(hallX0, from.origin.y, hallX1, from.origin.y + from.height - 1, TileKind.Wall, MaterialId.Stone);
-                grid.Fill(hallX0, mid - 1, hallX1, mid + 1, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid - 1, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid + 1, TileKind.Floor, hall);
+                var y0 = Mathf.Max(from.origin.y + 1, to.origin.y + 1);
+                var y1 = Mathf.Min(from.origin.y + from.height - 2, to.origin.y + to.height - 2);
+                var mid = y0 <= y1 ? (y0 + y1) / 2 : to.origin.y + to.height / 2;
+                StampHall(grid, from.origin.x + from.width, to.origin.x - 1, mid, half, true, hall);
+                for (var dy = -half; dy <= half; dy++)
+                {
+                    OpenPassage(grid, from.origin.x + from.width - 1, mid + dy, hall);
+                    OpenPassage(grid, to.origin.x, mid + dy, hall);
+                }
+
                 return;
             }
 
-            if (to.origin.y > from.origin.y)
+            if (to.origin.y > from.origin.y + from.height - 1)
             {
-                var hallY0 = from.origin.y + from.height;
-                var hallY1 = to.origin.y - 1;
-                var mid = from.origin.x + from.width / 2;
-                grid.Fill(from.origin.x, hallY0, from.origin.x + from.width - 1, hallY1, TileKind.Wall, MaterialId.Stone);
-                grid.Fill(mid - 1, hallY0, mid + 1, hallY1, TileKind.Floor, hall);
-                grid.Set(mid - 1, to.origin.y, TileKind.Floor, hall);
-                grid.Set(mid, to.origin.y, TileKind.Floor, hall);
-                grid.Set(mid + 1, to.origin.y, TileKind.Floor, hall);
+                var x0 = Mathf.Max(from.origin.x + 1, to.origin.x + 1);
+                var x1 = Mathf.Min(from.origin.x + from.width - 2, to.origin.x + to.width - 2);
+                var mid = x0 <= x1 ? (x0 + x1) / 2 : to.origin.x + to.width / 2;
+                StampHall(grid, from.origin.y + from.height, to.origin.y - 1, mid, half, false, hall);
+                for (var dx = -half; dx <= half; dx++)
+                {
+                    OpenPassage(grid, mid + dx, from.origin.y + from.height - 1, hall);
+                    OpenPassage(grid, mid + dx, to.origin.y, hall);
+                }
             }
+        }
+
+        static void StampHall(WorldGrid grid, int gap0, int gap1, int mid, int half, bool eastWest, MaterialId hall)
+        {
+            if (gap0 > gap1)
+            {
+                return;
+            }
+
+            for (var along = gap0; along <= gap1; along++)
+            {
+                for (var side = -half - 1; side <= half + 1; side++)
+                {
+                    var x = eastWest ? along : mid + side;
+                    var y = eastWest ? mid + side : along;
+                    if (Mathf.Abs(side) <= half)
+                    {
+                        OpenPassage(grid, x, y, hall);
+                    }
+                    else
+                    {
+                        SealHallEdge(grid, x, y);
+                    }
+                }
+            }
+        }
+
+        static void OpenPassage(WorldGrid grid, int x, int y, MaterialId hall)
+        {
+            var tile = grid.Get(x, y);
+            if (tile != null && tile.Kind == TileKind.Door)
+            {
+                return;
+            }
+
+            grid.Set(x, y, TileKind.Floor, hall);
+        }
+
+        static void SealHallEdge(WorldGrid grid, int x, int y)
+        {
+            var tile = grid.Get(x, y);
+            if (tile != null && (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge || tile.Kind == TileKind.Door))
+            {
+                return;
+            }
+
+            grid.Set(x, y, TileKind.Wall, MaterialId.Stone);
         }
 
         static WorldTile[] PlaceExit(WorldGrid grid, Vector2Int origin, int width, int height, string exit, MaterialId material)
@@ -366,6 +526,8 @@ namespace RuneMagic
                     case "rod":
                     case "chasm":
                     case "charm":
+                    case "barrier":
+                    case "gate":
                         prop.type = item.kind;
                         break;
                     default:
