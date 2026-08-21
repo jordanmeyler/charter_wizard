@@ -80,7 +80,8 @@ namespace RuneMagic
         Flameward,
         Windward,
         LavaPillar,
-        Shatter
+        Shatter,
+        IceWall
     }
 
     public readonly struct SpellRecipe

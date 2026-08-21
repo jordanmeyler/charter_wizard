@@ -17,7 +17,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
 | **The Arrow Gauntlet** | Real arrow shots, then a pit either side of the stone | Earth-pillar (`Earth · Salt`), then walk around | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
 | **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
-| **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Bridge; Hop if you know Air | Salt stands a body. |
+| **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
 | **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |

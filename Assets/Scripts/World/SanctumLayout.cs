@@ -24,7 +24,7 @@ namespace RuneMagic
 
         static readonly SpellId[] MiteKeys =
         {
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.WaterJet, SpellId.IcePillar,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.WaterJet, SpellId.IcePillar, SpellId.IceWall,
             SpellId.LightningBolt, SpellId.LiveFloor, SpellId.Jolt,
             SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
@@ -43,7 +43,7 @@ namespace RuneMagic
         static readonly SpellId[] PitKeys =
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
-            SpellId.Pit, SpellId.Bridge, SpellId.Wall,
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall,
             SpellId.FlamePillar, SpellId.IcePillar, SpellId.VineRise,
             SpellId.Hop, SpellId.Flight
         };

@@ -1049,6 +1049,22 @@
       "outcome": "Neither",
       "gate": "",
       "work": "Shatter"
+    },
+    {
+      "number": 62,
+      "id": "IceWall",
+      "book": "Cross",
+      "name": "Ice-wall",
+      "want": "A body of ice asked to stand as more ice. A wall. It will thaw.",
+      "recipe": "Water · Salt · Earth · Salt · Water · Salt · Earth",
+      "via": "Ice · Salt · Ice",
+      "form": "Pillar",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "IceWall",
+      "target": "Single",
+      "status": "Frozen",
+      "statusSeconds": 3.4
     }
   ]
 }

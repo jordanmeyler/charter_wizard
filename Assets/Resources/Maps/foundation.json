@@ -530,6 +530,7 @@
             "Gale",
             "Quagmire",
             "Wall",
+            "IceWall",
             "Pit",
             "Bridge",
             "IcePillar"
@@ -601,6 +602,7 @@
           "keys": [
             "EarthPillar",
             "Wall",
+            "IceWall",
             "StonePillar",
             "FlamePillar",
             "IcePillar",
@@ -1491,6 +1493,7 @@
           "keys": [
             "EarthPillar",
             "Wall",
+            "IceWall",
             "Bridge",
             "FlamePillar",
             "IcePillar",
@@ -3019,6 +3022,7 @@
             "Gale",
             "Quagmire",
             "Wall",
+            "IceWall",
             "Pit",
             "Bridge",
             "IcePillar"
@@ -3045,6 +3049,7 @@
             "Gale",
             "Quagmire",
             "Wall",
+            "IceWall",
             "Pit",
             "Bridge",
             "IcePillar"

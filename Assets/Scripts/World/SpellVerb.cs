@@ -89,6 +89,7 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Stunned, 2.6f, TileVerb.Charge);
                 case SpellId.IceSpear:
                 case SpellId.IcePillar:
+                case SpellId.IceWall:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 3.4f, TileVerb.Freeze);
                 case SpellId.Snowfall:
                 case SpellId.GraveIce:
