@@ -244,7 +244,10 @@
       "form": "Shot",
       "outcome": "Kill",
       "gate": "",
-      "work": "Fireball"
+      "work": "Fireball",
+      "target": "Single",
+      "status": "Burning",
+      "statusSeconds": 4.5
     },
     {
       "number": 2,
@@ -400,7 +403,11 @@
       "form": "Remote",
       "outcome": "Neither",
       "gate": "",
-      "work": "Rain"
+      "work": "Rain",
+      "target": "Area",
+      "radius": 2.8,
+      "status": "Soaked",
+      "statusSeconds": 6
     },
     {
       "number": 14,
@@ -608,7 +615,9 @@
       "form": "Spread",
       "outcome": "Neither",
       "gate": "",
-      "work": "Sprout"
+      "work": "Sprout",
+      "target": "Area",
+      "radius": 2.2
     },
     {
       "number": 30,
@@ -947,6 +956,22 @@
       "outcome": "Neither",
       "gate": "",
       "work": "StonePillar"
+    },
+    {
+      "number": 56,
+      "id": "Stoneskin",
+      "book": "Mind",
+      "name": "Stoneskin",
+      "want": "Rest given a body, then the mind holds it on you. Arrows break.",
+      "recipe": "Earth · Salt · Sulphur",
+      "via": "",
+      "form": "Self",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Stoneskin",
+      "target": "Self",
+      "status": "Stoneskin",
+      "statusSeconds": 14
     }
   ]
 }

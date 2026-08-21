@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.15. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.16. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -72,7 +72,11 @@ Full wrought list and the written story-chains: **[`SPELLS.md`](SPELLS.md)**. 1�
 
 ## 4. The spell grammar
 
-There is **no damage**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform).
+There is **no hit-point bar**. A spell kills, restrains, or does neither (traverse, heal, hide, lift, summon, transform). The right key still unmakes a lock at once. Bodies can now **strike back** — a slam or a flying shot will send the adept to the spawn crystal — and spells leave **visible statuses** (buffs and debuffs) that different natures take differently.
+
+**Targeting is written with the spell.** Single-target work finds the nearest lock at the click. Area work (Rain, Live-floor, Thunderclap, Sprout…) offers the key to every lock in the radius and paints the tiles. Self work (Hop, Flight, Stoneskin, Veil) stays on the caster. Spread form widens a single sentence into an area. Runtime table: `SpellVerb`.
+
+**Statuses share one host.** Burning, Frozen, Soaked, Stunned, Sleeping, Rooted, Frightened are debuffs. Stoneskin and Veiled are buffs. A chip over the body names what holds; the HUD repeats it for the adept. Fire-nature will not burn; ice will not freeze; earth shrugs off elemental soak and heat; mind takes stun, sleep, and fear harder. Frozen / stunned / sleeping stop action and movement. Rooted stops movement. Stoneskin (`Earth · Salt · Sulphur`) stops **physical** blows — arrows and a golem slam — not hunger sent as a fireball.
 
 A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **Fire · Mercury**. Add breath and the same send is a bolt: **Fire · Air · Mercury** (or **Spark · Mercury** / **Lightning · Mercury** if that join already stands). Melt is the stood fire-body sent *into* a thing: **Fire · Salt · Mercury**. Salt is for work that *stands* — Flame-pillar is **Fire · Salt · Earth**. Sulphur is the wildcard: add it and the sentence is a different spell (Fire · Sulphur · Mercury is Rage; Lightning · Sulphur is Jolt), the way Life makes a plant living. Death is not in the ordinary book. Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt) — the same ideas, a different order. Chain is longer because more happened.
 
@@ -84,7 +88,7 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 | Sent *into* a thing, or placed away (a stood body, then Mercury) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
 | Hunger sent, or breath already in the chain, then sent | **Shot** | Fire: Fire · Mercury. Lightning: Fire · Air · Mercury. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
-| Kept on the caster | **Self** | Hop. Flight |
+| Kept on the caster | **Self** | Hop. Flight. Stoneskin. |
 
 Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier.
 
@@ -165,14 +169,26 @@ Not a stance toggle. Three actions on the same string:
 
 Tiles are **materials** (`WorldMaterial` / `MaterialId`), each with its own paint and a **full signature** — roots plus the manifestation the mix has already become. Timber is Water · Earth · Salt · Plant, not a lone Earth. Those signatures do not hover on the floor while you walk. They unroll in the **Charter** as a sideways-scrolling grid: odd rows travel right, even rows travel left. A join unfolds to its **full basic recipe** — one rune, one column — washed in the join’s colour under one gold ring. Plant is a green chunk of Water | Earth | Salt. Ash is a grey chunk of Fire | Water | Earth | Salt. The runes stay separate; the colour is the combined form. Nested joins keep unfolding: Ash is Fire | Water | Earth | Salt, never a cramped Plant cell. One continuous sentence of **what is on screen**. Off-screen tiles do not speak; you cannot string a rune that is not in the camera view. **Air is ambient** — breath is already in any room that still has a floor or a wall. A view that is only void has no Air. **The adept’s recipe is always in the weave**: Sulphur · Salt · Mercury (mind, body, soul). Creature formulas enter when the scan reaches their tile and stay **as written** — the ash mite is Fire · Salt · Life, and Life is not unfolded. Contiguous same-material runs collapse to one clause. Voids tear the weave. Locks and world-strings enter when the scan reaches their tile. The player reads glyphs there, then weaves.
 
+Each material now carries two numbers you can tweak in `MaterialCatalog.Flag`:
+
+| Flag | Negative | Zero | Positive |
+| --- | --- | --- | --- |
+| **Flammability** | Fire-retardant — puts nearby fire out (water −1.6, ice −0.85, rain −1.1) | Will not burn | How readily it catches and how far hunger runs (plant 1.5, timber 1.2, grove 1.35) |
+| **Conductivity** | — | Insulator | How freely a spark travels (metal 1.6, water 1.25, vein 0.85) |
+
+Tiles keep live state: **Fire**, **Wet**, **Charge**, **Growth**. Plant a vegetable body (`Sprout`) and water it — the patch grows toward Grove. Fire spreads onto flammable neighbors and burns plants to Ash. Retardant neighbors quench. Charge walks conductive tiles. Overlays (`tile-fire`, `tile-wet`, `tile-charge`, `tile-grow`) make the reaction visible.
+
 Marquee reactions (each a puzzle key):
-- **Lightning + Water(floor) → conduction** — strikes everything in the pool.
+- **Lightning + Water(floor) → conduction** — charge runs the pool.
 - **Fire + Plant/Wood → spreading burn** — runs along connected material, clears cover, leaves Ash.
+- **Water + Plant → growth** — wet vegetable bodies climb toward Grove.
 - **Water · Salt · Earth → Ice** — hard water that thaws. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
-- **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement).
+- **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
 
-Reactions **cascade** (fire spreads, water flows, gas chains). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
+Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
+
+A beginner wizard writes a fireball for **two seconds** and commits the facing when the sentence starts — hop over it, raise a wall, or get behind them. Golems slam in reach. Arrow racks fire real shots down a heading; a stood body (wall / pillar) breaks them. Stoneskin breaks arrows and slams only. Death is temporary: the adept returns to the **spawn crystal**. Pits still use the last safe floor. A better death system waits.
 
 ---
 
@@ -185,7 +201,7 @@ The player **moves and casts**. Perception is a stance, not a tile overlay. The 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as Fire · Water · Earth · Salt, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes Spark as Fire · Air.
 2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
 3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten or scrambled Charter strings fizzle. Free unscrambles a valid bag, fills up to the fill budget, and, on a clash, attunement picks the whole sentence — form included.
-4. **Overcome** — the right spell at the right place resolves it at once. No HP bar.
+4. **Overcome** — the right spell at the right place resolves it at once. No HP bar. A missed key can still leave a status or start a tile reaction. A slam or a shot that lands sends you to the crystal.
 
 Knowing an enemy's composition tells you *what spell it's vulnerable to* — you then **cast that spell**; it is not an abstract rune-puzzle. **Many solutions per obstacle** (torch behind a waterfall: freeze the fall, grow a plant, or raise a flame pillar). **Difficulty scales without stats:** the substance/form you need may be hard to build from what's flowing (decompose a primordial, use an item, reposition), the enemy's nature may demand a specific spell, or the environment may fight your casting. The same system runs **traversal**.
 
@@ -193,13 +209,14 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52 Douse (`Water · Mercury`), 53 Command (`Salt · Sulphur · Mercury`), 54 Gust (`Air · Mercury`), and 55 Earth-pillar (`Earth · Salt`) were added so Floor 1 has a clean water-send, a charm, a simple wind, and a standing earth.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56 Stoneskin** (`Earth · Salt · Sulphur`) is the first self buff.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I (local keys + skip flanks), three aspect sanctums, Door II (aspect keys only). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
-- [~] **Field economy** — tiles are materials with full signatures. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. World-strings can hang more sentences later. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
+- [~] **Field economy** — tiles are materials with full signatures plus **flammability** and **conductivity** numbers. Fire, wet, charge, and growth now tick. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. World-strings can hang more sentences later. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).
+- [~] **Combat that can kill** — golems slam, beginner wizards spend two seconds on a fireball, arrow racks fire projectiles. Lock-and-key still unmakes. Death respawns at the crystal. A real death / last-rites pass is later.
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Free also unscrambles a valid bag of runes. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.

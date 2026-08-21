@@ -25,6 +25,10 @@ namespace RuneMagic
         public string outcome;
         public string gate;
         public string work;
+        public string target;
+        public float radius;
+        public string status;
+        public float statusSeconds;
     }
 
     [Serializable]

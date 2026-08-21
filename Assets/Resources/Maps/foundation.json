@@ -68,6 +68,30 @@
             25,
             13
           ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Moss",
+          "cells": [
+            21,
+            6,
+            22,
+            6,
+            24,
+            6,
+            25,
+            6
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Plant",
+          "cells": [
+            21,
+            5,
+            25,
+            5
+          ]
         }
       ],
       "props": [
@@ -331,6 +355,30 @@
             5,
             3
           ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Moss",
+          "cells": [
+            2,
+            6,
+            2,
+            8,
+            4,
+            6,
+            4,
+            8
+          ]
+        },
+        {
+          "kind": "Floor",
+          "material": "Plant",
+          "cells": [
+            1,
+            7,
+            5,
+            7
+          ]
         }
       ],
       "props": [
@@ -412,7 +460,8 @@
             "Bridge",
             "IcePillar"
           ],
-          "sprite": "fire-golem"
+          "sprite": "fire-golem",
+          "attack": "golem"
         },
         {
           "type": "item",
@@ -742,6 +791,7 @@
             10
           ],
           "sprite": "arrow-rack",
+          "dir": "south",
           "note": "Rest stands. The shots break. Walk around the body you raised."
         },
         {
@@ -1463,7 +1513,10 @@
           ],
           "sprite": "warden",
           "blocking": true,
-          "grant": "spirit-stone"
+          "grant": "spirit-stone",
+          "ensouled": true,
+          "attack": "wizard",
+          "castSeconds": 2
         }
       ],
       "id": "spirit-sanctum",

@@ -156,6 +156,9 @@ namespace RuneMagic
             sprite.sortingOrder = 20;
             sprite.color = Color.white;
 
+            var statuses = player.AddComponent<StatusHost>();
+            statuses.Bind(CreatureNature.Flesh, new Vector3(0f, 1.42f, 0f));
+
             var body = player.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;
             body.freezeRotation = true;

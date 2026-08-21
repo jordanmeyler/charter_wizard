@@ -94,6 +94,9 @@
         <button class="tool" data-prop="barrier">Barrier</button>
         <button class="tool" data-prop="gate">Gate</button>
         <button class="tool" data-prop="item">Item</button>
+        <button class="tool" data-prop="arrows">Arrows</button>
+        <button class="tool" data-prop="fog">Fog</button>
+        <button class="tool" data-prop="crystal">Crystal</button>
         <button class="tool" data-prop="spawn">Spawn</button>
       </div>
       <label class="field">Plaque / rune text
@@ -101,6 +104,24 @@
       </label>
       <label class="field">Runes (comma)
         <input id="propRunes" value="Fire, Salt" />
+      </label>
+      <label class="field">Heading
+        <select id="propDir">
+          <option value="south">south</option>
+          <option value="north">north</option>
+          <option value="east">east</option>
+          <option value="west">west</option>
+        </select>
+      </label>
+      <label class="field">Attack
+        <select id="propAttack">
+          <option value="">none</option>
+          <option value="golem">golem</option>
+          <option value="wizard">wizard</option>
+        </select>
+      </label>
+      <label class="field">Cast seconds
+        <input id="propCast" type="number" value="2" step="0.1" />
       </label>
       <h2>Selected room</h2>
       <label class="field">Id <input id="roomId" /></label>
@@ -133,7 +154,7 @@
       ["Snow", "#e0e6f0"], ["Glacier", "#b3d1e0"], ["Acid", "#8cb82e"], ["Water", "#2e619e"], ["Plant", "#386b29"] ]
     ];
     const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
-    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", spawn: "S" };
+    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
 
     const SANCTUM = {
       id: "sanctum", name: "The Sanctum", spawn: { x: 2, y: 5 },
@@ -246,8 +267,21 @@
         if (propTool === "plaque") prop.text = document.getElementById("propText").value;
         if (propTool === "runes") {
           prop.runes = document.getElementById("propRunes").value.split(",").map(s => s.trim()).filter(Boolean);
-          prop.dir = "right";
+          prop.dir = document.getElementById("propDir").value || "right";
           prop.text = document.getElementById("propText").value;
+        }
+        if (propTool === "arrows") {
+          prop.dir = document.getElementById("propDir").value || "south";
+          prop.displayName = "Arrow volley";
+          prop.formulaId = "arrow-volley";
+        }
+        if (propTool === "mite") {
+          const attack = document.getElementById("propAttack").value;
+          if (attack) {
+            prop.attack = attack;
+            prop.castSeconds = +document.getElementById("propCast").value || 2;
+            if (attack === "wizard") prop.ensouled = true;
+          }
         }
         room.props.push(prop);
       } else {

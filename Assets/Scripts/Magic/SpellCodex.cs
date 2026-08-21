@@ -136,7 +136,8 @@ namespace RuneMagic
             E(52, SpellBook.Weather, SpellId.Douse, "Yield sent. Water thrown. Hunger ends.", "Douse", "Water · Mercury", "", "Shot", SpellOutcome.Neither),
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. A simple wind.", "Gust", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
-            E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar)
+            E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar),
+            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Arrows break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All

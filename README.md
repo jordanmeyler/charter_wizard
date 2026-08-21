@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.15). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences — are in [`MATERIALS.md`](MATERIALS.md). Floor 1 — the Foundation — is specified in [`FLOOR1.md`](FLOOR1.md) and boots from `Assets/Resources/Maps/foundation.json`. Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.16). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences, flammability, and conductivity — are in [`MATERIALS.md`](MATERIALS.md). Floor 1 — the Foundation — is specified in [`FLOOR1.md`](FLOOR1.md) and boots from `Assets/Resources/Maps/foundation.json`. Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
 
 ## What is implemented
 
@@ -14,11 +14,11 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | --- | --- | --- | --- |
 | **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
-| **The Ember Vault** | Flame curtain (golem optional) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. |
-| **The Arrow Gauntlet** | Arrow volley, then a pit either side of the stone | Earth-pillar (`Earth · Salt`), then walk around | Earth: rest given a body. |
+| **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
+| **The Arrow Gauntlet** | Real arrow shots, then a pit either side of the stone | Earth-pillar (`Earth · Salt`), then walk around | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. |
 | **The Sundered Heights** | Green poison fog | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Bridge; Hop if you know Air | Salt stands a body. |
-| **The Gallery of Force** | Warden | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. |
+| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Wall, hop, or get behind the shot, then unmake. |
 | **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. The floor opens. |
 
@@ -30,7 +30,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | --- | --- |
 | Casting is perception, not position | Runes live on their own layer, visible only in the Charter. The weave is what is on screen, alternating rows, scrolled sideways. You cannot draw a rune that is off-camera. Click a cell to draw it. |
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
-| Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. |
+| Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
 | Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. The Grimoire lists them all; click a name to string it. |
 | Joins are runes | Fire · Air → Spark. Spark · Air → Lightning. Short tutorial strings still work as a fallback. |
@@ -61,7 +61,9 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 
 Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
-Walk into a pit and you return to the last safe floor. A pillar or wall fills that hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles. Flight lets you walk over pits for a short while.
+Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while. Stoneskin (`Earth · Salt · Sulphur`) breaks arrows and slams, not fireballs.
+
+Spells are single-target, area, or self. Status chips name what holds on you and on them. Water a plant and it grows. Fire spreads onto flammable tiles and dies against water and ice. Charge runs metal and wet stone.
 
 ## Building levels and scenes
 
@@ -117,8 +119,9 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 ## Not in this slice (on purpose)
 
 - Full material tree, ternary nodes, and `material-codex.html`
-- Cascading environmental reactions (conduction, spreading burn, ice bridges over water)
-- Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work, ensouled casters
+- Ice bridges over water, gas/oil explosions, and the rest of the later reaction list
+- Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work
+- A real death / last-rites pass (this slice respawns at the crystal)
 - Wards, mediums, and the Primordial-gate item
 - Overworld, dialogue, and Magnum Opus world-tint
 

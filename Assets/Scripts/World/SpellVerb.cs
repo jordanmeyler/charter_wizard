@@ -1,0 +1,150 @@
+using UnityEngine;
+
+namespace RuneMagic
+{
+    public enum SpellTarget
+    {
+        Single,
+        Area,
+        Self
+    }
+
+    public enum TileVerb
+    {
+        None,
+        Ignite,
+        Douse,
+        Wet,
+        Grow,
+        Charge,
+        Freeze
+    }
+
+    /// <summary>
+    /// How a finished spell lands: who it touches, what condition it leaves,
+    /// and which tile reaction it starts.
+    /// </summary>
+    public readonly struct SpellVerb
+    {
+        public SpellVerb(SpellTarget target, float radius, StatusId status, float statusSeconds, TileVerb tiles)
+        {
+            Target = target;
+            Radius = radius;
+            Status = status;
+            StatusSeconds = statusSeconds;
+            Tiles = tiles;
+        }
+
+        public SpellTarget Target { get; }
+        public float Radius { get; }
+        public StatusId Status { get; }
+        public float StatusSeconds { get; }
+        public TileVerb Tiles { get; }
+
+        public static SpellVerb Of(SpellId spell, SpellShape shape = SpellShape.None)
+        {
+            var verb = FromSpell(spell);
+            if (verb.Target != SpellTarget.Single || verb.Radius > 0f || verb.Status != StatusId.None)
+            {
+                return verb;
+            }
+
+            if (shape == SpellShape.Spread)
+            {
+                return new SpellVerb(SpellTarget.Area, 2.4f, verb.Status, verb.StatusSeconds, verb.Tiles);
+            }
+
+            if (shape == SpellShape.Self)
+            {
+                return new SpellVerb(SpellTarget.Self, 0f, verb.Status, verb.StatusSeconds, verb.Tiles);
+            }
+
+            return verb;
+        }
+
+        static SpellVerb FromSpell(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.Fireball:
+                case SpellId.SunLance:
+                case SpellId.Scald:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Burning, 4.5f, TileVerb.Ignite);
+                case SpellId.FlamePillar:
+                case SpellId.Ignite:
+                case SpellId.Melt:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Burning, 5f, TileVerb.Ignite);
+                case SpellId.LiveFloor:
+                case SpellId.LavaFlood:
+                    return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Burning, 4f, TileVerb.Ignite);
+                case SpellId.LightningBolt:
+                case SpellId.BrilliantArc:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Stunned, 2.2f, TileVerb.Charge);
+                case SpellId.ChainLightning:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2.8f, TileVerb.Charge);
+                case SpellId.Jolt:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Stunned, 3.2f, TileVerb.Charge);
+                case SpellId.Thunderclap:
+                    return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Stunned, 2.6f, TileVerb.Charge);
+                case SpellId.IceSpear:
+                case SpellId.IcePillar:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 3.4f, TileVerb.Freeze);
+                case SpellId.Snowfall:
+                case SpellId.GraveIce:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Frozen, 3.8f, TileVerb.Freeze);
+                case SpellId.Douse:
+                case SpellId.WaterJet:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Soaked, 5f, TileVerb.Wet);
+                case SpellId.Rain:
+                case SpellId.Flood:
+                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.Soaked, 6f, TileVerb.Wet);
+                case SpellId.Sprout:
+                    return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.None, 0f, TileVerb.Grow);
+                case SpellId.Vine:
+                case SpellId.Quagmire:
+                    return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.Rooted, 4f, TileVerb.Wet);
+                case SpellId.Lull:
+                case SpellId.GraveSleep:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Sleeping, 6f, TileVerb.None);
+                case SpellId.Terror:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Frightened, 5f, TileVerb.None);
+                case SpellId.Stoneskin:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Stoneskin, 14f, TileVerb.None);
+                case SpellId.Veil:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
+                case SpellId.StormCall:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Soaked, 4f, TileVerb.Wet);
+                case SpellId.Fog:
+                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.TimeStop:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2f, TileVerb.None);
+                case SpellId.GraveDust:
+                case SpellId.Blight:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.Hop:
+                case SpellId.Flight:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.None, 0f, TileVerb.None);
+                default:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
+            }
+        }
+
+        public static bool IsArea(SpellId spell, SpellShape shape)
+        {
+            var verb = Of(spell, shape);
+            return verb.Target == SpellTarget.Area || shape == SpellShape.Spread;
+        }
+
+        public static float RadiusOf(SpellId spell, SpellShape shape, float potency = 1f)
+        {
+            var verb = Of(spell, shape);
+            var radius = verb.Radius;
+            if (radius <= 0f)
+            {
+                radius = shape == SpellShape.Spread ? SpellFormations.Spread.LockRadius : 1.35f;
+            }
+
+            return radius * (potency <= 0f ? 1f : potency);
+        }
+    }
+}

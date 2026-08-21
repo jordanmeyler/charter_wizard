@@ -100,12 +100,16 @@
           <label>Outcome <select name="outcome">${opts(["Kill","Restrain","Neither"], item.outcome)}</select></label>
           <label>Gate <select name="gate">${opts(["","Free","Either"], item.gate)}</select></label>
           <label>Work (existing effect) <input name="work" value="${esc(item.work||item.id)}"></label>
+          <label>Target <select name="target">${opts(["","Single","Area","Self"], item.target||"")}</select></label>
+          <label>Radius <input name="radius" type="number" step="0.1" value="${item.radius||0}"></label>
+          <label>Status <select name="status">${opts(["","Burning","Frozen","Soaked","Stunned","Sleeping","Rooted","Frightened","Stoneskin","Veiled"], item.status||"")}</select></label>
+          <label>Status seconds <input name="statusSeconds" type="number" step="0.1" value="${item.statusSeconds||0}"></label>
         </div>
         <label>Recipe <input name="recipe" value="${esc(item.recipe)}"></label>
         <label>Via (folded form) <input name="via" value="${esc(item.via||"")}"></label>
         <label>What it should look like if you do not know the name
           <textarea name="want">${esc(item.want||"")}</textarea></label>
-        <p class="hint">Recipe is the master sentence. Work is which coded effect it reuses (Fireball, Hop, Wall…). A new id still needs a work effect to move terrain.</p>`;
+        <p class="hint">Recipe is the master sentence. Work is which coded effect it reuses (Fireball, Hop, Wall…). Target / status document how it lands; play still reads <code>SpellVerb</code> for the live effect.</p>`;
       if (tab === "joins") return `
         <label>Wrought rune <input name="rune" value="${esc(item.rune)}"></label>
         <label>Born from (comma) <input name="sources" value="${esc((item.sources||[]).join(", "))}"></label>
@@ -150,7 +154,7 @@
           if (el.name === "sources" || el.name === "formula" || el.name === "keys")
             item[el.name] = el.value.split(",").map(s => s.trim()).filter(Boolean);
           else if (el.name === "colors") item.colors = el.value.split(/\s+/).filter(Boolean);
-          else if (el.name === "number" || el.name === "width") item[el.name] = +el.value;
+          else if (el.name === "number" || el.name === "width" || el.name === "radius" || el.name === "statusSeconds") item[el.name] = +el.value;
           else item[el.name] = el.value;
           if (el.name === "width") { item.height = item.width; item.cells = padCells(item); draw(); }
         };

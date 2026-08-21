@@ -52,6 +52,13 @@ namespace RuneMagic
                 case "fire-golem": return FireGolem();
                 case "stone-man": return StoneMan();
                 case "warden": return Warden();
+                case "spawn-crystal": return SpawnCrystalSprite();
+                case "arrow-shot": return ArrowShot();
+                case "fireball-shot": return FireballShot();
+                case "tile-fire": return TileWash(new Color(1f, 0.4f, 0.08f, 0.7f));
+                case "tile-wet": return TileWash(new Color(0.25f, 0.55f, 0.95f, 0.55f));
+                case "tile-charge": return TileWash(new Color(0.75f, 0.9f, 1f, 0.65f));
+                case "tile-grow": return TileWash(new Color(0.3f, 0.7f, 0.22f, 0.5f));
                 case "plaque": return Plaque();
                 case "pit": return Pit();
                 case "bridge": return Bridge();
@@ -688,6 +695,64 @@ namespace RuneMagic
                 canvas.FillRounded(14, 18, 6, 5, 1, gold);
                 canvas.FillRounded(28, 18, 6, 5, 1, gold);
                 return canvas.ToSprite(36);
+            });
+        }
+
+        public static Sprite SpawnCrystalSprite()
+        {
+            return Memo("spawn-crystal", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var gem = new Color(0.72f, 0.52f, 1f);
+                var rim = new Color(0.95f, 0.88f, 1f);
+                canvas.SoftCircle(16, 16, 12, new Color(0.7f, 0.5f, 1f, 0.4f));
+                canvas.FillCircle(16, 16, 8, gem);
+                canvas.Fill(14, 4, 4, 24, rim);
+                canvas.Fill(6, 14, 20, 4, rim);
+                canvas.FillCircle(16, 16, 3, Color.white);
+                return canvas.ToSprite(28);
+            });
+        }
+
+        public static Sprite ArrowShot()
+        {
+            return Memo("arrow-shot", () =>
+            {
+                var canvas = new PixelCanvas(32, 12);
+                canvas.Clear(Clear);
+                var shaft = new Color(0.55f, 0.32f, 0.12f);
+                var head = new Color(0.72f, 0.74f, 0.78f);
+                canvas.Fill(2, 5, 22, 2, shaft);
+                canvas.Fill(22, 3, 8, 6, head);
+                canvas.Fill(24, 4, 6, 4, Color.white);
+                canvas.Fill(1, 3, 4, 6, new Color(0.85f, 0.45f, 0.15f));
+                return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
+            });
+        }
+
+        public static Sprite FireballShot()
+        {
+            return Memo("fireball-shot", () =>
+            {
+                var canvas = new PixelCanvas(24);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(12, 12, 10, new Color(1f, 0.35f, 0.05f, 0.55f));
+                canvas.FillCircle(12, 12, 7, new Color(1f, 0.45f, 0.08f));
+                canvas.FillCircle(12, 12, 4, new Color(1f, 0.85f, 0.3f));
+                canvas.FillCircle(13, 11, 2, Color.white);
+                return canvas.ToSprite(22);
+            });
+        }
+
+        static Sprite TileWash(Color color)
+        {
+            return Memo($"tile-wash:{color}", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 16, 13, color);
+                return canvas.ToSprite(32);
             });
         }
 

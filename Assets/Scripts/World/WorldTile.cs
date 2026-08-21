@@ -21,7 +21,9 @@ namespace RuneMagic
 
         SpriteRenderer _renderer;
         SpriteRenderer _overlay;
+        SpriteRenderer _fx;
         Collider2D _collider;
+        int _growth;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -33,6 +35,20 @@ namespace RuneMagic
             ApplyVisual();
             ApplyCollider();
         }
+
+        public float Fire { get; private set; }
+        public float Wet { get; private set; }
+        public float Charge { get; private set; }
+        public int Growth => _growth;
+        public float Flammability => Def.WorldMaterial.Flammability;
+        public float Conductivity => Def.WorldMaterial.Conductivity;
+        public bool IsPlantish =>
+            Material == MaterialId.Plant || Material == MaterialId.Grove ||
+            Material == MaterialId.Moss || Material == MaterialId.Timber;
+        public bool CanTakePlant =>
+            (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
+            Material != MaterialId.Water && Material != MaterialId.Lava &&
+            Material != MaterialId.Void && !IsPlantish;
 
         public bool CanRaiseBarrier =>
             Kind == TileKind.Floor || Kind == TileKind.Bridge;
@@ -57,11 +73,93 @@ namespace RuneMagic
             Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
         }
 
+        public void Ignite(float amount)
+        {
+            if (Kind == TileKind.Pit && Material != MaterialId.Water)
+            {
+                return;
+            }
+
+            Fire = Mathf.Clamp01(Fire + amount);
+            if (Fire > 0.05f)
+            {
+                Wet = Mathf.Max(0f, Wet - amount);
+            }
+
+            RefreshFx();
+        }
+
+        public void Drench(float amount)
+        {
+            Wet = Mathf.Clamp01(Wet + amount);
+            if (Wet > 0.2f)
+            {
+                Fire = Mathf.Max(0f, Fire - amount * 1.4f);
+            }
+
+            RefreshFx();
+        }
+
+        public void Dry(float amount)
+        {
+            Wet = Mathf.Max(0f, Wet - amount);
+            RefreshFx();
+        }
+
+        public void ChargeAt(float amount)
+        {
+            Charge = Mathf.Clamp01(Charge + amount);
+            RefreshFx();
+        }
+
+        public void Grow(int steps)
+        {
+            if (!IsPlantish || steps <= 0)
+            {
+                return;
+            }
+
+            _growth = Mathf.Clamp(_growth + steps, 0, 3);
+            if (_growth >= 2 && Material != MaterialId.Grove)
+            {
+                Reshape(new TileDef(Kind == TileKind.Wall ? TileKind.Wall : TileKind.Floor, MaterialId.Grove));
+            }
+
+            RefreshFx();
+        }
+
+        public void PlantHere()
+        {
+            if (!CanTakePlant)
+            {
+                return;
+            }
+
+            _growth = 0;
+            Reshape(new TileDef(TileKind.Floor, MaterialId.Plant));
+            Wet = Mathf.Max(Wet, 0.4f);
+            RefreshFx();
+        }
+
+        public void BurnDown()
+        {
+            if (!IsPlantish)
+            {
+                return;
+            }
+
+            Fire = 0.15f;
+            _growth = 0;
+            Reshape(new TileDef(Kind == TileKind.Wall ? TileKind.Floor : Kind, MaterialId.Ash));
+            RefreshFx();
+        }
+
         void Reshape(TileDef def)
         {
             Def = def;
             ApplyVisual();
             RefreshCollider();
+            RefreshFx();
             var grid = GetComponentInParent<WorldGrid>();
             grid?.DressLooks();
         }
@@ -188,6 +286,61 @@ namespace RuneMagic
             child.transform.SetParent(transform, false);
             _overlay = child.AddComponent<SpriteRenderer>();
             return _overlay;
+        }
+
+        void RefreshFx()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            if (Fire < 0.08f && Wet < 0.18f && Charge < 0.18f && _growth < 1)
+            {
+                if (_fx != null)
+                {
+                    _fx.enabled = false;
+                }
+
+                return;
+            }
+
+            var fx = EnsureFx();
+            fx.enabled = true;
+            fx.sortingOrder = _renderer.sortingOrder + 2;
+            if (Fire > 0.12f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-fire");
+                fx.color = new Color(1f, 0.55f, 0.12f, 0.35f + Fire * 0.5f);
+            }
+            else if (Charge > 0.18f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-charge");
+                fx.color = new Color(0.75f, 0.9f, 1f, 0.35f + Charge * 0.45f);
+            }
+            else if (Wet > 0.18f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-wet");
+                fx.color = new Color(0.35f, 0.65f, 1f, 0.22f + Wet * 0.35f);
+            }
+            else
+            {
+                fx.sprite = SpriteFactory.Named("tile-grow");
+                fx.color = new Color(0.35f, 0.72f, 0.28f, 0.2f + _growth * 0.12f);
+            }
+        }
+
+        SpriteRenderer EnsureFx()
+        {
+            if (_fx != null)
+            {
+                return _fx;
+            }
+
+            var child = new GameObject("TileFx");
+            child.transform.SetParent(transform, false);
+            _fx = child.AddComponent<SpriteRenderer>();
+            return _fx;
         }
 
         void ApplyCollider()
