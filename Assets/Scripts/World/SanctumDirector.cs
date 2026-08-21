@@ -40,7 +40,8 @@ namespace RuneMagic
         public SpellId PendingSpell { get; private set; }
         public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
-        public bool CanMove => (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming) && !Busy;
+        public bool CanMove =>
+            (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming || Mode == PlayMode.Charter) && !Busy;
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -335,22 +336,38 @@ namespace RuneMagic
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
-                "The screen unrolls. Only runes in view can be drawn. Charter Cast, Store, or Free Cast.",
-                "The screen unrolls. Draw marks from the weave. Right-click a mark to keep it on the wall."));
+                "The screen unrolls. You can walk. Draw only what is in view; what you have already strung stays until you cast or close.",
+                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
         }
 
-        public void CloseCharter()
+        public void CloseCharter(bool releaseString = true)
         {
             if (Mode != PlayMode.Charter)
             {
                 return;
             }
 
+            var released = false;
+            if (releaseString && !Composer.IsEmpty)
+            {
+                Composer.Clear();
+                released = true;
+            }
+
             Mode = PlayMode.Exploring;
-            if (string.IsNullOrEmpty(LastLog) ||
+            if (released)
+            {
+                Log(Held.Occupied
+                    ? GlyphView.Speak(
+                        $"The wall folds. The string is released. You still hold {Held.Name}.",
+                        "The wall folds. The string is released. You still hold a working.")
+                    : "The wall folds. The string is released.");
+            }
+            else if (string.IsNullOrEmpty(LastLog) ||
                 LastLog.StartsWith("The field stands still") ||
                 LastLog.StartsWith("The weave stills") ||
-                LastLog.StartsWith("The room unrolls"))
+                LastLog.StartsWith("The room unrolls") ||
+                LastLog.StartsWith("The screen unrolls"))
             {
                 Log(Held.Occupied
                     ? GlyphView.Speak(
@@ -381,7 +398,11 @@ namespace RuneMagic
                 return;
             }
 
-            if (Mode == PlayMode.Charter || Mode == PlayMode.Inventory)
+            if (Mode == PlayMode.Charter)
+            {
+                CloseCharter();
+            }
+            else if (Mode == PlayMode.Inventory)
             {
                 Mode = PlayMode.Exploring;
             }
@@ -414,7 +435,11 @@ namespace RuneMagic
                 CancelAim();
             }
 
-            if (Mode == PlayMode.Charter || Mode == PlayMode.Grimoire)
+            if (Mode == PlayMode.Charter)
+            {
+                CloseCharter();
+            }
+            else if (Mode == PlayMode.Grimoire)
             {
                 Mode = PlayMode.Exploring;
             }
@@ -685,7 +710,7 @@ namespace RuneMagic
         {
             if (Mode == PlayMode.Charter)
             {
-                CloseCharter();
+                CloseCharter(releaseString: false);
             }
 
             if (composition.Sequence == null || composition.Sequence.Length == 0)
@@ -876,8 +901,8 @@ namespace RuneMagic
         static string OffScreenNote(RuneId rune)
         {
             return GlyphView.Speak(
-                $"{RuneCatalog.NameOf(rune)} is not on the screen. Walk until it is in view.",
-                "That mark is not on the screen. Walk until it is in view.");
+                $"{RuneCatalog.NameOf(rune)} is not on the screen. Walk until it is in view. Marks already in the string stay.",
+                "That mark is not on the screen. Walk until it is in view. Marks already in the string stay.");
         }
 
         static string AimPreview(string name, SpellShape shape)
@@ -973,7 +998,7 @@ namespace RuneMagic
         {
             if (Mode == PlayMode.Charter)
             {
-                CloseCharter();
+                CloseCharter(releaseString: false);
             }
 
             Busy = true;
