@@ -24,7 +24,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Living Thicket** | A pit, a key-door | Water the plants, burn the timber, or hop; grove key opens the west door | Plants grow across gaps. |
 | **The Cistern** | A 3×3 hollow, a key-door | Flood / Douse fills pits smaller than 4×4; hop the long trench | Water · Salt is a floor. |
 | **The Seed of Charge** | A live rod, a key-door | Click Spark, or write Fire · Air | The join is a rune when it already stands. |
-| **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. |
+| **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. Wall the ember adept and they stand a flame-pillar; the floor hungers first. |
 | **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
