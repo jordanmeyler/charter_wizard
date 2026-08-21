@@ -12,6 +12,7 @@ namespace RuneMagic
         readonly HashSet<string> _knownInterpretations = new();
         readonly HashSet<SpellId> _keptSpells = new();
 
+        public WorkingNames Names { get; } = new();
         public IReadOnlyCollection<(RuneId Material, RuneId Aspect, SpellShape Shape)> KnownRecipes => _knownRecipes;
 
         public bool KnowsRecipe(RuneId material, RuneId aspect, SpellShape shape) =>

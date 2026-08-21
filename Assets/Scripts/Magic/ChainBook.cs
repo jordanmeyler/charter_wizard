@@ -561,7 +561,7 @@ namespace RuneMagic
             var parts = new string[take];
             for (var i = 0; i < take; i++)
             {
-                parts[i] = pool[i].Name;
+                parts[i] = WorkingNames.RunePhrase(pool[i].RecipeRunes);
             }
 
             var text = string.Join(", ", parts);
@@ -668,7 +668,7 @@ namespace RuneMagic
             if (TryMatch(composition, shape, out var named))
             {
                 var gate = string.IsNullOrEmpty(named.Gate) ? string.Empty : $" ({named.Gate})";
-                return $"{named.Name}{gate} · {SpellFormations.NameOf(named.Shape)} is written.";
+                return $"{WorkingNames.RunePhrase(composition.Sequence)}{gate} · {SpellFormations.NameOf(named.Shape)} is written.";
             }
 
             return string.Empty;

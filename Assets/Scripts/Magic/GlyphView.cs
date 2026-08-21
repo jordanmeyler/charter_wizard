@@ -70,7 +70,7 @@ namespace RuneMagic
                 return IsDevelop ? "empty" : "nothing held";
             }
 
-            return IsDevelop ? held.Name : "a held working";
+            return held.Name;
         }
 
         public static string WorkLog(CastOutcome outcome)

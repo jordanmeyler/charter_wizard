@@ -9,8 +9,8 @@
       "sprite": "charm",
       "teachesSpell": "Fireball",
       "teachesFormula": "ash-mite",
-      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others.",
-      "look": "An orange twist of Free work. It still smells of the recipe it gave you: Fire · Mercury — hunger sent. The mite was burning matter. You borrowed a key; later you will compose others."
+      "note": "Hunger given a path — Fire · Mercury.",
+      "look": "hunger given a path. Fire that flies."
     },
     {
       "id": "ash-mite",
@@ -18,7 +18,8 @@
       "kind": "mite",
       "sprite": "ash-mite",
       "formula": ["Fire", "Salt", "Life"],
-      "keys": []
+      "keys": [],
+      "look": "a small burning body, still hungry."
     },
     {
       "id": "cold-torch",
@@ -26,7 +27,8 @@
       "kind": "torch",
       "sprite": "torch",
       "spriteLit": "torch-lit",
-      "keys": []
+      "keys": [],
+      "look": "wood that remembers hunger."
     },
     {
       "id": "storm-rod",
@@ -34,135 +36,136 @@
       "kind": "rod",
       "sprite": "rod",
       "spriteLit": "rod-live",
-      "keys": []
+      "keys": [],
+      "look": "metal waiting for fire from the sky."
     },
     {
       "id": "fire-stone",
       "name": "Fire stone",
       "kind": "key",
       "sprite": "stone-fire",
-      "note": "A stone that remembers hunger. The Gate of Elements has a socket for it.",
-      "look": "Warm even at rest. Hunger sleeps in it, waiting to be seated. The Gate of Elements has a socket this size."
+      "note": "Hunger that will not rest.",
+      "look": "hunger that will not rest."
     },
     {
       "id": "water-stone",
       "name": "Water stone",
       "kind": "key",
       "sprite": "stone-water",
-      "note": "A stone that remembers yield. The Gate of Elements has a socket for it.",
-      "look": "It takes the heat of your hand and keeps none of it. Yield, seated. The Gate of Elements will drink it."
+      "note": "Yield, that which becomes what holds it.",
+      "look": "yield, that which becomes what holds it."
     },
     {
       "id": "earth-stone",
       "name": "Earth stone",
       "kind": "key",
       "sprite": "stone-earth",
-      "note": "A stone that remembers rest. The Gate of Elements has a socket for it.",
-      "look": "Heavier than it looks. Rest that will not be hurried. A socket on the Gate of Elements is cut for this weight."
+      "note": "Rest, that which remains.",
+      "look": "rest, that which remains."
     },
     {
       "id": "air-stone",
       "name": "Air stone",
       "kind": "key",
       "sprite": "stone-air",
-      "note": "A stone that remembers breath. The Gate of Elements has a socket for it.",
-      "look": "Almost not there. Breath that will not stay, trapped in a body just long enough to be a key."
+      "note": "Breath, that which will not stay.",
+      "look": "breath, that which will not stay."
     },
     {
       "id": "body-stone",
       "name": "Body stone",
       "kind": "key",
       "sprite": "stone-body",
-      "note": "Salt, seated. The Gate of Aspects wants a standing body.",
-      "look": "Salt, seated. A standing body — the kind that makes a wall stay a wall. The Gate of Aspects wants this."
+      "note": "Material given form, salt of the earth.",
+      "look": "material given form, salt of the earth."
     },
     {
       "id": "spirit-stone",
       "name": "Spirit stone",
       "kind": "key",
       "sprite": "stone-spirit",
-      "note": "Mercury, seated. The Gate of Aspects wants a thing that goes.",
-      "look": "Mercury, seated. A path opening, a thing that goes. Hold it and you remember that a send is not a wall."
+      "note": "The spirit is motion.",
+      "look": "the spirit is motion."
     },
     {
       "id": "mind-stone",
       "name": "Mind stone",
       "kind": "key",
       "sprite": "stone-mind",
-      "note": "Sulphur, seated. The Gate of Aspects wants a mind.",
-      "look": "Sulphur, seated. The wildcard that turns a work toward a mind. The Gate of Aspects has a socket that is not for force."
+      "note": "Thought that turns the work.",
+      "look": "thought that turns the work — the wildcard."
     },
     {
       "id": "grove-key",
       "name": "Grove key",
       "kind": "key",
       "sprite": "key-grove",
-      "note": "A key that remembers a vegetable body. A door in the thicket wants it.",
-      "look": "Green-dark, and still a little wet. A standing plant was asked to become a key. The thicket door is cut for this."
+      "note": "Yield and rest asked to live.",
+      "look": "yield and rest asked to live."
     },
     {
       "id": "grove-stone",
       "name": "Grove stone",
       "kind": "key",
       "sprite": "stone-grove",
-      "note": "A stone that remembers a living plant. The Gate of Joins has a socket for it.",
-      "look": "Yield and rest given a vegetable body, then marked living. The Gate of Joins will seat it."
+      "note": "Yield and rest asked to live.",
+      "look": "yield and rest asked to live."
     },
     {
       "id": "flood-key",
       "name": "Flood key",
       "kind": "key",
       "sprite": "key-flood",
-      "note": "A key that remembers a stood pool. A door in the cistern wants it.",
-      "look": "Cold and sure of its shape. Yield given a body. The cistern door will drink it."
+      "note": "Yield given a floor.",
+      "look": "yield given a floor."
     },
     {
       "id": "flood-stone",
       "name": "Flood stone",
       "kind": "key",
       "sprite": "stone-flood",
-      "note": "A stone that remembers water given a floor. The Gate of Joins has a socket for it.",
-      "look": "Water · Salt, seated. A hollow that learned to hold. The Gate of Joins wants this weight."
+      "note": "Yield given a floor.",
+      "look": "yield given a floor."
     },
     {
       "id": "spark-key",
       "name": "Spark key",
       "kind": "key",
       "sprite": "key-spark",
-      "note": "A key that remembers hunger given breath. A door in the charge cell wants it.",
-      "look": "It stings the palm. Fire and air already met in it. The charge door is waiting."
+      "note": "Fire from the sky.",
+      "look": "fire from the sky."
     },
     {
       "id": "spark-stone",
       "name": "Spark stone",
       "kind": "key",
       "sprite": "stone-spark",
-      "note": "A stone that remembers a seed of charge. The Gate of Joins has a socket for it.",
-      "look": "Hunger given breath, trapped in a body just long enough to be a key. The Gate of Joins has a socket that hums."
+      "note": "Fire from the sky.",
+      "look": "fire from the sky."
     },
     {
       "id": "spare-grove-key",
       "name": "Spare grove key",
       "kind": "key",
       "sprite": "key-spare",
-      "note": "An extra key from a path that was not the door. Keep it. A later secret will want extras.",
-      "look": "The same cut as the grove key, but the metal is older. Someone hopped this way before you. A later lock will remember extras."
+      "note": "Yield and rest asked to live. A spare.",
+      "look": "yield and rest asked to live. A spare from another path."
     },
     {
       "id": "spare-flood-key",
       "name": "Spare flood key",
       "kind": "key",
       "sprite": "key-spare",
-      "note": "An extra key from a hop over a door. Keep it for a later secret.",
-      "look": "Brass that still smells of the cistern. The intended door was not the only way. A later secret will want extras."
+      "note": "Yield given a floor. A spare.",
+      "look": "yield given a floor. A spare from another path."
     },
     {
       "id": "spare-spark-key",
       "name": "Spare spark key",
       "kind": "key",
       "sprite": "key-spare",
-      "note": "An extra key from a leap past the charge door. Keep it for a later secret.",
-      "look": "It ticks against the others. Breath and hunger, taken the long way. A later secret will want extras."
+      "note": "Fire from the sky. A spare.",
+      "look": "fire from the sky. A spare from another path."
     }
   ]
 }

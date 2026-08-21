@@ -66,18 +66,7 @@ namespace RuneMagic
                 return "The pack is empty.";
             }
 
-            if (!string.IsNullOrEmpty(item.look))
-            {
-                return item.look;
-            }
-
-            if (!string.IsNullOrEmpty(item.note))
-            {
-                return item.note;
-            }
-
-            var name = string.IsNullOrEmpty(item.name) ? item.id : item.name;
-            return $"{name} sits in the pack. It has not yet spoken.";
+            return Sight.YouSee(Sight.OfItem(item));
         }
 
         public bool Has(string id)
