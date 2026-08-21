@@ -189,6 +189,13 @@
       ]
     },
     {
+      "rune": "Blizzard",
+      "sources": [
+        "Wind",
+        "Snow"
+      ]
+    },
+    {
       "rune": "Vine",
       "sources": [
         "Grove",
@@ -519,7 +526,10 @@
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "",
-      "work": "Snowfall"
+      "work": "Snowfall",
+      "target": "Area",
+      "status": "Frozen",
+      "statusSeconds": 3.8
     },
     {
       "number": 21,
@@ -803,7 +813,10 @@
       "form": "Spread",
       "outcome": "Kill",
       "gate": "Either",
-      "work": "Blight"
+      "work": "Blight",
+      "target": "Area",
+      "status": "Poisoned",
+      "statusSeconds": 6
     },
     {
       "number": 42,
@@ -1100,7 +1113,7 @@
       "work": "Confuse",
       "target": "Single",
       "status": "Confused",
-      "statusSeconds": 6
+      "statusSeconds": 0
     },
     {
       "number": 63,
@@ -1113,10 +1126,40 @@
       "form": "Pillar",
       "outcome": "Restrain",
       "gate": "",
-      "work": "IceWall",
+      "work": "IceWall"
+    },
+    {
+      "number": 64,
+      "id": "Freeze",
+      "book": "Hold",
+      "name": "Freeze",
+      "want": "Hard water held as a condition. They freeze.",
+      "recipe": "Water · Salt · Earth · Sulphur",
+      "via": "Ice · Sulphur",
+      "form": "Remote",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Freeze",
       "target": "Single",
       "status": "Frozen",
-      "statusSeconds": 3.4
+      "statusSeconds": 5
+    },
+    {
+      "number": 65,
+      "id": "Snowstorm",
+      "book": "Weather",
+      "name": "Snowstorm",
+      "want": "The veil given ice’s story, then driven. They freeze.",
+      "recipe": "Air · Water · Salt · Earth · Air · Mercury",
+      "via": "Snow · Air · Mercury",
+      "form": "Remote",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Snowstorm",
+      "target": "Area",
+      "radius": 3.2,
+      "status": "Frozen",
+      "statusSeconds": 5
     }
   ]
 }

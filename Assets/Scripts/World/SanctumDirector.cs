@@ -1388,7 +1388,9 @@ namespace RuneMagic
                 {
                     if (!outcome.Fizzled && outcome.Spell != SpellId.None)
                     {
-                        var impact = SpellImpact.Apply(Grid, _locks, SpellCodex.WorkOf(outcome.Spell), shape, origin, aim, outcome.Potency);
+                        var work = SpellCodex.WorkOf(outcome.Spell);
+                        FocusLaw.Release(AdeptAvatar.Find(), work, composition, SpellVerb.Of(work, shape).Status);
+                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency);
                         impactNote = impact.Note;
                         if (impact.Locks.Count > 0)
                         {
@@ -1857,6 +1859,26 @@ namespace RuneMagic
 
             CurrentTarget = null;
             Log(flavor);
+            CheckFinished();
+        }
+
+        public void UnmakeLock(ISpellLock encounter, string flavor)
+        {
+            if (!LockAlive(encounter))
+            {
+                return;
+            }
+
+            Grimoire.LearnInterpretation(encounter.FormulaId);
+            encounter.Resolve(SpellId.None);
+            OpenDoorFor(encounter);
+            if (_focus == encounter)
+            {
+                _focus = null;
+            }
+
+            CurrentTarget = null;
+            Log(string.IsNullOrEmpty(flavor) ? "The lock falls." : flavor);
             CheckFinished();
         }
 

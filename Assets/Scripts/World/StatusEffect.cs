@@ -19,7 +19,8 @@ namespace RuneMagic
         Windward,
         Raging,
         Charmed,
-        Confused
+        Confused,
+        Poisoned
     }
 
     public enum StatusKind
@@ -72,6 +73,29 @@ namespace RuneMagic
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
         public bool IsWard => Kind == StatusKind.Ward;
+        public bool NeedsFocus => IsWard || IsMindAilment(Id);
+        public RuneId FocusRune
+        {
+            get
+            {
+                if (IsWard)
+                {
+                    switch (Id)
+                    {
+                        case StatusId.Stoneskin: return RuneId.Earth;
+                        case StatusId.Watershield: return RuneId.Water;
+                        case StatusId.Flameward: return RuneId.Fire;
+                        case StatusId.Windward: return RuneId.Air;
+                    }
+                }
+
+                return IsMindAilment(Id) ? RuneId.Sulphur : RuneId.None;
+            }
+        }
+
+        public const float PoisonKillSeconds = 6f;
+
+        public static bool NeedsFocus(StatusId id) => Of(id).NeedsFocus;
 
         public static StatusSpec Of(StatusId id)
         {
@@ -97,7 +121,9 @@ namespace RuneMagic
                     return new StatusSpec(id, "charmed", StatusKind.Debuff, new Color(0.95f, 0.42f, 0.72f), Essence.Mind, false, false, false);
                 case StatusId.Confused:
                     return new StatusSpec(id, "confused", StatusKind.Debuff, new Color(0.78f, 0.86f, 0.28f), Essence.Mind, false, false, false);
-                case StatusId.Stoneskin,
+                case StatusId.Poisoned:
+                    return new StatusSpec(id, "poisoned", StatusKind.Debuff, new Color(0.42f, 0.82f, 0.22f), Essence.Poison, false, false, false);
+                case StatusId.Stoneskin:
                     return new StatusSpec(id, "stoneskin", StatusKind.Ward, new Color(0.62f, 0.58f, 0.5f), Essence.Earth, false, false, true);
                 case StatusId.Veiled:
                     return new StatusSpec(id, "veiled", StatusKind.Buff, new Color(0.28f, 0.22f, 0.4f), Essence.None, false, false, false);
@@ -143,14 +169,17 @@ namespace RuneMagic
 
     public sealed class StatusInstance
     {
-        public StatusInstance(StatusId id, float seconds)
+        public StatusInstance(StatusId id, float seconds, Component caster = null)
         {
             Id = id;
-            Remaining = Mathf.Max(0.05f, seconds);
+            Remaining = StatusSpec.NeedsFocus(id) ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
+            Caster = caster;
         }
 
         public StatusId Id { get; }
         public float Remaining { get; set; }
+        public Component Caster { get; set; }
         public StatusSpec Spec => StatusSpec.Of(Id);
+        public bool Held => Spec.NeedsFocus;
     }
 }

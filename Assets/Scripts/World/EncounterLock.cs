@@ -73,6 +73,14 @@ namespace RuneMagic
 
             _status = gameObject.AddComponent<StatusHost>();
             _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
+            _status.OnFatal = id =>
+            {
+                if (id == StatusId.Poisoned && !Resolved)
+                {
+                    FindFirstObjectByType<SanctumDirector>()?.UnmakeLock(this,
+                        $"{DisplayName} cannot hold the foul breath. They fall.");
+                }
+            };
             var kind = CombatOf(formulaId, attack);
             var combat = gameObject.AddComponent<CombatActor>();
             combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);

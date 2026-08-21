@@ -73,7 +73,7 @@ Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote 
 
 Walk into a pit — or into water — and you return to the last safe floor. You cannot swim. Ice, a span, hop, or flight crosses the pool. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**, and the work you stood in that room falls. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
 
-**Wards** are `Element · Salt · Sulphur`, held on you. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water, and a wind ward also turns poison fog. Only one ward stands at a time.
+**Wards** are `Element · Salt · Sulphur`, held on you by focusing that element. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water, and a wind ward also turns poison fog. Only one ward stands at a time. Cast another sentence that uses the ward’s rune and the ward fizzles. Mind ailments (sleep, fear, rage, charm, confuse) are held the same way on Sulphur. Ignite, poison, and frozen exist on their own. Ice-spear does not freeze the living; Freeze and Snowstorm do. Poisoned enemies die shortly, or they are immune.
 
 Spells are single-target, area, or self. Status chips name what holds on you and on them. Water a plant and it grows. Fire spreads onto flammable tiles and dies against water and ice. Charge runs metal and wet stone.
 

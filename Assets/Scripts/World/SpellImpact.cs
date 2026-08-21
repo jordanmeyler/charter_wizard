@@ -42,7 +42,7 @@ namespace RuneMagic
                 if (adept != null && verb.Status != StatusId.None)
                 {
                     var host = StatusHost.On(adept) ?? adept.gameObject.AddComponent<StatusHost>();
-                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds));
+                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept));
                 }
 
                 ApplyTiles(grid, verb, origin, radius, notes);
@@ -58,9 +58,9 @@ namespace RuneMagic
                 if (self != null && Vector2.Distance(self.transform.position, center) <= radius && verb.Status != StatusId.None)
                 {
                     var host = StatusHost.On(self);
-                    if (host != null && !ElementalLaw.IsWard(verb.Status))
+                    if (host != null && !ElementalLaw.IsWard(verb.Status) && verb.Status != StatusId.Poisoned)
                     {
-                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds * 0.45f));
+                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds * 0.45f, self));
                     }
                 }
 
@@ -161,7 +161,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                notes.Add(host.Apply(verb.Status, verb.StatusSeconds));
+                notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find()));
             }
         }
 

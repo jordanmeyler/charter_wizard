@@ -45,6 +45,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 | 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
 | 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
+| 64 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
+| 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
 
 ---
 
@@ -158,7 +160,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **No plaques that instruct.** Altars pair a mark with a picture. Locks have names. The situation is the tutorial. Body, spirit, and mind are carved around the crystal.
 - **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
-- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat.
+- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
 - **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits and drowning water use the last safe floor. A better death system waits.
 - **Pits earn their keep.** A hollow is a sequenced crossing — block, then hop, grow across, freeze water — not a random hole beside a stone.
 
