@@ -21,7 +21,7 @@ namespace RuneMagic
         AdeptPack _pack;
         System.Action<string> _log;
         Transform _carrier;
-        Collider2D _hit;
+        CircleCollider2D _hit;
 
         public static GameObject Spawn(Vector3 position, CatalogItem item)
         {
