@@ -54,7 +54,8 @@ namespace RuneMagic
         {
             var view = FieldView.OnScreen();
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var sequence = RoomSentence.Read(grid, locks, strings, view);
+            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var sequence = RoomSentence.Read(grid, locks, strings, view, extras);
             var seen = new List<RuneId>();
             for (var i = 0; i < sequence.Count; i++)
             {
@@ -129,7 +130,8 @@ namespace RuneMagic
             Scroll = 0f;
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var read = RoomSentence.Read(_grid, _locks, strings, view);
+            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var read = RoomSentence.Read(_grid, _locks, strings, view, extras);
             for (var i = 0; i < read.Count; i++)
             {
                 _sequence.Add(read[i]);
@@ -152,10 +154,12 @@ namespace RuneMagic
             for (var i = 0; i < take; i++)
             {
                 var glyph = _sequence[Mod(start + i, _sequence.Count)];
-                parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Shown));
+                parts.Add(glyph.IsTear ? "—" : RuneCatalog.NameOf(glyph.Shown));
             }
 
-            _readingText = "on screen  ·  " + string.Join(" · ", parts);
+            _readingText = GlyphView.IsDevelop
+                ? "on screen  ·  " + string.Join(" · ", parts)
+                : "the weave moves";
         }
 
         void RememberVicinity(RuneId rune)

@@ -68,7 +68,8 @@ namespace RuneMagic
             WorldGrid grid,
             ISpellLock[] locks,
             RuneStringSource[] strings,
-            Rect view)
+            Rect view,
+            IRuneSource[] extras = null)
         {
             var sequence = new List<WeaveGlyph>(64);
             if (grid == null || view.width <= 0f || view.height <= 0f)
@@ -106,7 +107,7 @@ namespace RuneMagic
                     }
 
                     AppendTile(sequence, tile, ref lastMaterial, ref lastWasTear);
-                    AppendHere(sequence, locks, strings, x, y, spokenLocks, spokenStrings);
+                    AppendHere(sequence, locks, strings, extras, x, y, spokenLocks, spokenStrings);
                 }
             }
 
@@ -192,6 +193,7 @@ namespace RuneMagic
             List<WeaveGlyph> sequence,
             ISpellLock[] locks,
             RuneStringSource[] strings,
+            IRuneSource[] extras,
             int x,
             int y,
             HashSet<int> spokenLocks,
@@ -234,34 +236,55 @@ namespace RuneMagic
                 }
             }
 
-            if (strings == null)
+            if (strings != null)
+            {
+                for (var i = 0; i < strings.Length; i++)
+                {
+                    var sentence = strings[i];
+                    if (sentence == null || !sentence.IsEmitting)
+                    {
+                        continue;
+                    }
+
+                    var id = sentence.StringId;
+                    if (spokenStrings.Contains(id) || !AtCell(sentence.WorldOrigin, x, y))
+                    {
+                        continue;
+                    }
+
+                    spokenStrings.Add(id);
+                    var runes = sentence.Sequence;
+                    for (var r = 0; r < runes.Length; r++)
+                    {
+                        if (runes[r] != RuneId.None)
+                        {
+                            AppendRune(sequence, runes[r], MaterialId.None, WeaveKind.String);
+                        }
+                    }
+                }
+            }
+
+            if (extras == null)
             {
                 return;
             }
 
-            for (var i = 0; i < strings.Length; i++)
+            for (var i = 0; i < extras.Length; i++)
             {
-                var sentence = strings[i];
-                if (sentence == null || !sentence.IsEmitting)
+                var extra = extras[i];
+                if (extra == null || !extra.IsEmitting || extra is not MonoBehaviour body || body == null)
                 {
                     continue;
                 }
 
-                var id = sentence.StringId;
-                if (spokenStrings.Contains(id) || !AtCell(sentence.WorldOrigin, x, y))
+                var id = body.GetInstanceID();
+                if (spokenStrings.Contains(id) || !AtCell(extra.WorldOrigin, x, y))
                 {
                     continue;
                 }
 
                 spokenStrings.Add(id);
-                var runes = sentence.Sequence;
-                for (var r = 0; r < runes.Length; r++)
-                {
-                    if (runes[r] != RuneId.None)
-                    {
-                        AppendRune(sequence, runes[r], MaterialId.None, WeaveKind.String);
-                    }
-                }
+                AppendSource(sequence, extra, MaterialId.None, WeaveKind.String);
             }
         }
 

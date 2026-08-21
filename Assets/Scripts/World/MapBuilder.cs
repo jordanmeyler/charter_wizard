@@ -192,6 +192,27 @@ namespace RuneMagic
                 case "runes":
                     RuneStringSource.Spawn(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));
                     break;
+                case "inscription":
+                    {
+                        var carved = FirstRune(prop.runes);
+                        if (carved != RuneId.None)
+                        {
+                            RuneStele.Inscribe(world, carved);
+                        }
+                    }
+
+                    break;
+                case "pillar":
+                case "stele":
+                    {
+                        var raised = FirstRune(prop.runes);
+                        if (raised != RuneId.None)
+                        {
+                            RuneStele.Raise(world, raised);
+                        }
+                    }
+
+                    break;
                 case "charm":
                     charm = new GameObject("FreeCharm");
                     charm.transform.position = world;
@@ -576,6 +597,12 @@ namespace RuneMagic
 
         static string IdOf(MapProp prop, string fallback) =>
             string.IsNullOrEmpty(prop.formulaId) ? fallback : prop.formulaId;
+
+        static RuneId FirstRune(string[] names)
+        {
+            var runes = ParseRunes(names);
+            return runes != null && runes.Length > 0 ? runes[0] : RuneId.None;
+        }
 
         static RuneId[] ParseRunes(string[] names, params RuneId[] fallback)
         {

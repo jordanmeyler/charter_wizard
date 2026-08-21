@@ -65,6 +65,18 @@ namespace RuneMagic
                 case "tile-wet": return TileWash(new Color(0.25f, 0.55f, 0.95f, 0.55f));
                 case "tile-charge": return TileWash(new Color(0.75f, 0.9f, 1f, 0.65f));
                 case "tile-grow": return TileWash(new Color(0.3f, 0.7f, 0.22f, 0.5f));
+                case "nature-fire": return NatureOf(RuneId.Fire);
+                case "nature-water": return NatureOf(RuneId.Water);
+                case "nature-earth": return NatureOf(RuneId.Earth);
+                case "nature-air": return NatureOf(RuneId.Air);
+                case "nature-body":
+                case "nature-salt": return NatureOf(RuneId.Salt);
+                case "nature-spirit":
+                case "nature-mercury": return NatureOf(RuneId.Mercury);
+                case "nature-mind":
+                case "nature-sulphur": return NatureOf(RuneId.Sulphur);
+                case "altar": return AltarBase();
+                case "inscription": return FloorCarve();
                 case "plaque": return Plaque();
                 case "pit": return Pit();
                 case "bridge": return Bridge();
@@ -93,6 +105,11 @@ namespace RuneMagic
         }
 
         public static Sprite MemoPublic(string key, System.Func<Sprite> build) => Memo(key, build);
+
+        public static Sprite RuneMark(RuneId id)
+        {
+            return Memo($"rune-mark:{id}", () => RuneGlyphs.Build(id));
+        }
 
         public static Sprite Circle(Color color, int size = 48)
         {
@@ -908,6 +925,237 @@ namespace RuneMagic
                 canvas.FillCircle(12, 12, 4, new Color(1f, 0.85f, 0.3f));
                 canvas.FillCircle(13, 11, 2, Color.white);
                 return canvas.ToSprite(22);
+            });
+        }
+
+        public static Sprite NatureOf(RuneId rune)
+        {
+            switch (rune)
+            {
+                case RuneId.Fire: return NatureFire();
+                case RuneId.Water: return NatureWater();
+                case RuneId.Earth: return NatureEarth();
+                case RuneId.Air: return NatureAir();
+                case RuneId.Salt: return NatureBody();
+                case RuneId.Mercury: return NatureSpirit();
+                case RuneId.Sulphur: return NatureMind();
+                default: return Burst(RunePalette.Of(rune));
+            }
+        }
+
+        public static bool HasNature(RuneId rune)
+        {
+            switch (rune)
+            {
+                case RuneId.Fire:
+                case RuneId.Water:
+                case RuneId.Earth:
+                case RuneId.Air:
+                case RuneId.Salt:
+                case RuneId.Mercury:
+                case RuneId.Sulphur:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static Sprite AltarBase()
+        {
+            return Memo("altar-base", () =>
+            {
+                var canvas = new PixelCanvas(40, 22);
+                canvas.Clear(Clear);
+                var stone = new Color(0.38f, 0.36f, 0.34f);
+                var dark = new Color(0.2f, 0.18f, 0.16f);
+                var rim = new Color(0.62f, 0.58f, 0.5f);
+                canvas.FillRounded(2, 2, 36, 16, 2, stone);
+                canvas.Rect(2, 2, 36, 16, dark);
+                canvas.Fill(4, 14, 32, 3, rim);
+                canvas.Fill(8, 4, 24, 3, dark);
+                canvas.Highlight(6, 15, 10, 1, 0.2f);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.15f));
+            });
+        }
+
+        public static Sprite FloorCarve()
+        {
+            return Memo("floor-carve", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                var slab = new Color(0.28f, 0.26f, 0.24f, 0.92f);
+                var seam = new Color(0.14f, 0.12f, 0.1f, 0.95f);
+                canvas.FillRounded(1, 1, 30, 30, 3, slab);
+                canvas.Rect(1, 1, 30, 30, seam);
+                canvas.Rect(3, 3, 26, 26, new Color(0.4f, 0.36f, 0.3f, 0.55f));
+                return canvas.ToSprite(32);
+            });
+        }
+
+        public static Sprite AspectColumn()
+        {
+            return Memo("aspect-column", () =>
+            {
+                var canvas = new PixelCanvas(28, 56);
+                canvas.Clear(Clear);
+                var stone = new Color(0.42f, 0.4f, 0.38f);
+                var dark = new Color(0.22f, 0.2f, 0.18f);
+                var rim = new Color(0.7f, 0.66f, 0.56f);
+                canvas.Fill(8, 2, 12, 46, stone);
+                canvas.Fill(10, 4, 8, 42, Color.Lerp(stone, Color.white, 0.12f));
+                canvas.Fill(4, 2, 20, 6, dark);
+                canvas.Fill(6, 44, 16, 6, rim);
+                canvas.FillCircle(14, 50, 7, stone);
+                canvas.FillCircle(14, 50, 4, rim);
+                canvas.Shade(16, 8, 6, 36, 0.18f);
+                return canvas.ToSprite(28, new Vector2(0.5f, 0.08f));
+            });
+        }
+
+        static Sprite NatureFire()
+        {
+            return Memo("nature-fire", () =>
+            {
+                var canvas = new PixelCanvas(32, 40);
+                canvas.Clear(Clear);
+                var coal = new Color(0.22f, 0.08f, 0.04f);
+                var ember = new Color(0.95f, 0.32f, 0.05f);
+                var gold = new Color(1f, 0.78f, 0.18f);
+                var white = new Color(1f, 0.96f, 0.75f);
+                canvas.FillRounded(6, 2, 20, 6, 2, coal);
+                canvas.SoftCircle(16, 16, 14, new Color(1f, 0.35f, 0.05f, 0.35f));
+                canvas.FillCircle(10, 14, 6, ember);
+                canvas.FillCircle(22, 14, 6, ember);
+                canvas.FillCircle(16, 20, 8, ember);
+                canvas.FillCircle(16, 26, 6, gold);
+                canvas.FillCircle(12, 22, 4, gold);
+                canvas.FillCircle(20, 22, 4, gold);
+                canvas.FillCircle(16, 32, 4, white);
+                canvas.FillCircle(16, 18, 3, white);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.12f));
+            });
+        }
+
+        static Sprite NatureWater()
+        {
+            return Memo("nature-water", () =>
+            {
+                var canvas = new PixelCanvas(32, 36);
+                canvas.Clear(Clear);
+                var deep = new Color(0.12f, 0.32f, 0.72f);
+                var mid = new Color(0.28f, 0.58f, 0.92f);
+                var foam = new Color(0.82f, 0.92f, 1f);
+                canvas.FillRounded(3, 4, 26, 12, 4, deep);
+                canvas.Fill(4, 8, 24, 6, mid);
+                canvas.ThickLine(4, 14, 12, 18, foam);
+                canvas.ThickLine(12, 18, 20, 12, foam);
+                canvas.ThickLine(20, 12, 28, 16, foam);
+                canvas.FillCircle(16, 26, 6, mid);
+                canvas.FillCircle(16, 30, 4, deep);
+                canvas.Fill(14, 20, 4, 8, mid);
+                canvas.Set(14, 28, Color.white);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.18f));
+            });
+        }
+
+        static Sprite NatureEarth()
+        {
+            return Memo("nature-earth", () =>
+            {
+                var canvas = new PixelCanvas(36, 28);
+                canvas.Clear(Clear);
+                var rock = new Color(0.48f, 0.36f, 0.22f);
+                var dark = new Color(0.28f, 0.2f, 0.12f);
+                var moss = new Color(0.42f, 0.55f, 0.22f);
+                canvas.FillCircle(10, 10, 8, dark);
+                canvas.FillCircle(10, 11, 7, rock);
+                canvas.FillCircle(24, 10, 7, dark);
+                canvas.FillCircle(24, 11, 6, Color.Lerp(rock, Color.white, 0.08f));
+                canvas.FillCircle(17, 16, 9, dark);
+                canvas.FillCircle(17, 17, 8, rock);
+                canvas.FillCircle(14, 20, 3, moss);
+                canvas.Highlight(12, 18, 4, 2, 0.18f);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.2f));
+            });
+        }
+
+        static Sprite NatureAir()
+        {
+            return Memo("nature-air", () =>
+            {
+                var canvas = new PixelCanvas(36, 32);
+                canvas.Clear(Clear);
+                var wind = new Color(0.78f, 0.9f, 0.96f);
+                var core = new Color(1f, 1f, 1f, 0.85f);
+                canvas.SoftCircle(18, 16, 14, new Color(0.7f, 0.85f, 0.95f, 0.28f));
+                canvas.ThickLine(4, 10, 18, 6, wind);
+                canvas.ThickLine(18, 6, 32, 12, core);
+                canvas.ThickLine(3, 16, 20, 14, core);
+                canvas.ThickLine(20, 14, 33, 18, wind);
+                canvas.ThickLine(6, 24, 16, 20, wind);
+                canvas.ThickLine(16, 20, 30, 26, core);
+                canvas.Circle(18, 16, 5, wind);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.35f));
+            });
+        }
+
+        static Sprite NatureBody()
+        {
+            return Memo("nature-body", () =>
+            {
+                var canvas = new PixelCanvas(28, 40);
+                canvas.Clear(Clear);
+                var flesh = new Color(0.86f, 0.78f, 0.62f);
+                var dark = new Color(0.42f, 0.34f, 0.24f);
+                canvas.FillRounded(6, 2, 16, 6, 2, dark);
+                canvas.Fill(10, 8, 8, 16, flesh);
+                canvas.Fill(4, 18, 6, 10, flesh);
+                canvas.Fill(18, 18, 6, 10, flesh);
+                canvas.Fill(10, 22, 3, 12, flesh);
+                canvas.Fill(15, 22, 3, 12, flesh);
+                canvas.FillCircle(14, 30, 6, flesh);
+                canvas.Circle(14, 30, 6, dark);
+                canvas.Fill(12, 8, 4, 3, dark);
+                return canvas.ToSprite(28, new Vector2(0.5f, 0.08f));
+            });
+        }
+
+        static Sprite NatureSpirit()
+        {
+            return Memo("nature-spirit", () =>
+            {
+                var canvas = new PixelCanvas(36, 32);
+                canvas.Clear(Clear);
+                var path = new Color(0.55f, 0.78f, 0.7f);
+                var glow = new Color(0.82f, 0.95f, 0.88f);
+                canvas.Fill(4, 8, 6, 16, Color.Lerp(path, Color.black, 0.35f));
+                canvas.Fill(26, 8, 6, 16, Color.Lerp(path, Color.black, 0.35f));
+                canvas.ThickLine(10, 16, 26, 16, path);
+                canvas.ThickLine(10, 16, 16, 22, glow);
+                canvas.ThickLine(16, 22, 26, 16, path);
+                canvas.SoftCircle(18, 16, 7, new Color(0.7f, 0.95f, 0.85f, 0.4f));
+                canvas.FillCircle(18, 16, 3, glow);
+                return canvas.ToSprite(32, new Vector2(0.5f, 0.3f));
+            });
+        }
+
+        static Sprite NatureMind()
+        {
+            return Memo("nature-mind", () =>
+            {
+                var canvas = new PixelCanvas(32, 36);
+                canvas.Clear(Clear);
+                var gold = new Color(0.93f, 0.78f, 0.22f);
+                var dark = new Color(0.35f, 0.26f, 0.08f);
+                canvas.FillCircle(16, 14, 9, dark);
+                canvas.FillCircle(16, 15, 8, gold);
+                canvas.FillCircle(16, 16, 4, new Color(1f, 0.95f, 0.7f));
+                canvas.ThickLine(16, 23, 16, 30, gold);
+                canvas.ThickLine(12, 28, 20, 28, dark);
+                canvas.SoftCircle(16, 32, 5, new Color(1f, 0.9f, 0.35f, 0.55f));
+                canvas.FillCircle(16, 32, 2, Color.white);
+                return canvas.ToSprite(28, new Vector2(0.5f, 0.18f));
             });
         }
 

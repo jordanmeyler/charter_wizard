@@ -151,6 +151,77 @@ namespace RuneMagic
             Line(x0, y0 + 1, x1, y1 + 1, color);
         }
 
+        public void FillTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color color)
+        {
+            var minX = Mathf.Max(0, Mathf.Min(x0, Mathf.Min(x1, x2)));
+            var maxX = Mathf.Min(Width - 1, Mathf.Max(x0, Mathf.Max(x1, x2)));
+            var minY = Mathf.Max(0, Mathf.Min(y0, Mathf.Min(y1, y2)));
+            var maxY = Mathf.Min(Height - 1, Mathf.Max(y0, Mathf.Max(y1, y2)));
+            var area = Edge(x0, y0, x1, y1, x2, y2);
+            if (area == 0)
+            {
+                Line(x0, y0, x1, y1, color);
+                Line(x1, y1, x2, y2, color);
+                return;
+            }
+
+            var sign = area > 0 ? 1 : -1;
+            for (var y = minY; y <= maxY; y++)
+            {
+                for (var x = minX; x <= maxX; x++)
+                {
+                    var w0 = Edge(x1, y1, x2, y2, x, y) * sign;
+                    var w1 = Edge(x2, y2, x0, y0, x, y) * sign;
+                    var w2 = Edge(x0, y0, x1, y1, x, y) * sign;
+                    if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+                    {
+                        Set(x, y, color);
+                    }
+                }
+            }
+        }
+
+        public void Outline(Color color)
+        {
+            var extra = new System.Collections.Generic.List<int>(Width * 2);
+            for (var y = 0; y < Height; y++)
+            {
+                for (var x = 0; x < Width; x++)
+                {
+                    if (Get(x, y).a < 0.2f)
+                    {
+                        continue;
+                    }
+
+                    TryOutline(x - 1, y, extra);
+                    TryOutline(x + 1, y, extra);
+                    TryOutline(x, y - 1, extra);
+                    TryOutline(x, y + 1, extra);
+                }
+            }
+
+            for (var i = 0; i < extra.Count; i++)
+            {
+                var packed = extra[i];
+                Set(packed & 0xffff, packed >> 16, color);
+            }
+        }
+
+        void TryOutline(int x, int y, System.Collections.Generic.List<int> extra)
+        {
+            if ((uint)x >= (uint)Width || (uint)y >= (uint)Height || Get(x, y).a >= 0.2f)
+            {
+                return;
+            }
+
+            extra.Add(x | (y << 16));
+        }
+
+        static int Edge(int ax, int ay, int bx, int by, int px, int py)
+        {
+            return (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+        }
+
         public Color Get(int x, int y)
         {
             if ((uint)x >= (uint)Width || (uint)y >= (uint)Height)
@@ -312,8 +383,8 @@ namespace RuneMagic
 
                     MarkOutline(mark, x - 1, y);
                     MarkOutline(mark, x + 1, y);
-                    MarkOutline(mark, x, y - 1);
                     MarkOutline(mark, x, y + 1);
+                    MarkOutline(mark, x, y - 1);
                 }
             }
 
@@ -339,7 +410,7 @@ namespace RuneMagic
             }
         }
 
-        public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
+        public Texture2D ToTexture()
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
             {
@@ -348,6 +419,12 @@ namespace RuneMagic
             };
             texture.SetPixels(_pixels);
             texture.Apply();
+            return texture;
+        }
+
+        public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
+        {
+            var texture = ToTexture();
             var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : Mathf.Max(Width, Height);
             return Sprite.Create(
                 texture,
