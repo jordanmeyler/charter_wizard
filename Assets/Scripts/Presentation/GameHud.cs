@@ -9,6 +9,7 @@ namespace RuneMagic
 
         SanctumDirector _director;
         Vector2 _pauseScroll;
+        Vector2 _packScroll;
 
         public void Bind(SanctumDirector director)
         {
@@ -25,7 +26,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (mode == PlayMode.Grimoire || mode == PlayMode.Paused)
+            if (mode == PlayMode.Grimoire || mode == PlayMode.Paused || mode == PlayMode.Inventory)
             {
                 return true;
             }
@@ -69,6 +70,13 @@ namespace RuneMagic
                 return;
             }
 
+            if (_director.Mode == PlayMode.Inventory)
+            {
+                DrawInventory();
+                DrawSpellBar();
+                return;
+            }
+
             if (_director.Mode == PlayMode.Charter)
             {
                 DrawCharter();
@@ -96,8 +104,117 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
             GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 66, 520, 22), PackLine(), body);
+            GUI.Label(new Rect(28, 66, 400, 22), PackLine(), body);
+            if (DrawAction(new Rect(430, 64, 120, 26), "Look (I)", true, new Color(0.32f, 0.28f, 0.18f)))
+            {
+                _director.OpenInventory();
+            }
+
             GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
+        }
+
+        void DrawInventory()
+        {
+            DrawVeil(new Color(0.03f, 0.03f, 0.05f, 0.8f));
+            var title = Label(28, FontStyle.Bold, Color.white);
+            var subtitle = Label(15, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            var heading = Label(17, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
+            var row = Label(16, FontStyle.Normal, new Color(0.88f, 0.9f, 0.94f));
+            var muted = Label(14, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
+            var look = Label(16, FontStyle.Normal, new Color(0.9f, 0.86f, 0.74f));
+
+            GUI.Label(new Rect(40, 20, 800, 34), "Pack", title);
+            GUI.Label(new Rect(40, 56, 980, 22),
+                "Stones, keys, and what you have borrowed. Click one to look. Arrows move. Esc or I closes.",
+                subtitle);
+
+            var pack = _director.Pack;
+            var list = new Rect(40, 96, 360, Screen.height - BarHeight - 120);
+            var pane = new Rect(420, 96, Screen.width - 460, Screen.height - BarHeight - 120);
+            DrawPanel(list.x, list.y, list.width, list.height);
+            DrawPanel(pane.x, pane.y, pane.width, pane.height);
+
+            if (pack == null || pack.Empty)
+            {
+                GUI.Label(new Rect(list.x + 16, list.y + 16, list.width - 32, 80),
+                    "Nothing sits here yet. Stones are keys. Charms, wards, and mediums will join them.",
+                    muted);
+                GUI.Label(new Rect(pane.x + 24, pane.y + 24, pane.width - 48, 80),
+                    "Pick something up, then look.", muted);
+                return;
+            }
+
+            GUI.Label(new Rect(list.x + 16, list.y + 12, list.width - 32, 22), "Carried", heading);
+            var inner = pack.Held.Count * 64f + 8f;
+            var view = new Rect(list.x + 8, list.y + 40, list.width - 16, list.height - 52);
+            _packScroll = GUI.BeginScrollView(view, _packScroll, new Rect(0, 0, view.width - 18, inner));
+            var y = 0f;
+            for (var i = 0; i < pack.Held.Count; i++)
+            {
+                var item = pack.Held[i];
+                var slot = new Rect(4, y, view.width - 26, 56);
+                var chosen = i == pack.SelectedIndex;
+                var previous = GUI.color;
+                GUI.color = chosen
+                    ? new Color(0.42f, 0.32f, 0.16f, 0.95f)
+                    : new Color(0.12f, 0.13f, 0.18f, 0.9f);
+                GUI.DrawTexture(slot, Texture2D.whiteTexture);
+                GUI.color = previous;
+                DrawItemSprite(new Rect(slot.x + 8, slot.y + 8, 40, 40), item);
+                GUI.Label(new Rect(slot.x + 56, slot.y + 8, slot.width - 68, 22),
+                    string.IsNullOrEmpty(item.name) ? item.id : item.name, row);
+                GUI.Label(new Rect(slot.x + 56, slot.y + 30, slot.width - 68, 20),
+                    AdeptPack.KindLabel(item), muted);
+                var index = i;
+                if (GUI.Button(slot, GUIContent.none, GUIStyle.none))
+                {
+                    _director.SelectPack(index);
+                }
+
+                y += 64;
+            }
+
+            GUI.EndScrollView();
+
+            var selected = pack.Selected;
+            if (selected == null)
+            {
+                GUI.Label(new Rect(pane.x + 24, pane.y + 24, pane.width - 48, 40),
+                    "Click a thing to look at it.", muted);
+                return;
+            }
+
+            DrawItemSprite(new Rect(pane.x + 24, pane.y + 24, 96, 96), selected);
+            GUI.Label(new Rect(pane.x + 136, pane.y + 28, pane.width - 168, 32),
+                string.IsNullOrEmpty(selected.name) ? selected.id : selected.name, title);
+            GUI.Label(new Rect(pane.x + 136, pane.y + 64, pane.width - 168, 22),
+                AdeptPack.KindLabel(selected), heading);
+            if (!string.IsNullOrEmpty(selected.teachesSpell))
+            {
+                GUI.Label(new Rect(pane.x + 136, pane.y + 88, pane.width - 168, 20),
+                    $"Borrowed: {selected.teachesSpell}", muted);
+            }
+
+            GUI.Label(new Rect(pane.x + 24, pane.y + 140, pane.width - 48, pane.height - 164),
+                AdeptPack.LookText(selected), look);
+        }
+
+        static void DrawItemSprite(Rect rect, CatalogItem item)
+        {
+            var sprite = SpriteFactory.Named(item != null ? item.sprite : null);
+            if (sprite == null || sprite.texture == null)
+            {
+                return;
+            }
+
+            var texture = sprite.texture;
+            var source = sprite.textureRect;
+            var uv = new Rect(
+                source.x / texture.width,
+                source.y / texture.height,
+                source.width / texture.width,
+                source.height / texture.height);
+            GUI.DrawTextureWithTexCoords(rect, texture, uv);
         }
 
         void DrawCharter()
@@ -398,16 +515,31 @@ namespace RuneMagic
                     body);
             }
 
-            GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 980f), 64),
-                "WASD move · Space Charter · F Charter Cast · X Free · R Store · Esc / Grimoire",
+            GUI.Label(new Rect(760, y + 16, Mathf.Max(160f, Screen.width - 1140f), 64),
+                "WASD move · Space Charter · F Charter Cast · X Free · R Store · I Pack · Esc / G Grimoire",
                 hint);
 
-            var grim = new Rect(Screen.width - 188, y + 22, 168, 52);
-            var open = _director.Mode == PlayMode.Grimoire;
-            if (DrawAction(grim, open ? "Close book" : "Grimoire", true,
-                    open ? new Color(0.55f, 0.42f, 0.18f) : new Color(0.32f, 0.24f, 0.42f)))
+            var packOpen = _director.Mode == PlayMode.Inventory;
+            var grimOpen = _director.Mode == PlayMode.Grimoire;
+            if (DrawAction(new Rect(Screen.width - 368, y + 22, 168, 52),
+                    packOpen ? "Close pack" : "Pack", true,
+                    packOpen ? new Color(0.42f, 0.32f, 0.16f) : new Color(0.28f, 0.26f, 0.2f)))
             {
-                if (open)
+                if (packOpen)
+                {
+                    _director.CloseInventory();
+                }
+                else
+                {
+                    _director.OpenInventory();
+                }
+            }
+
+            var grim = new Rect(Screen.width - 188, y + 22, 168, 52);
+            if (DrawAction(grim, grimOpen ? "Close book" : "Grimoire", true,
+                    grimOpen ? new Color(0.55f, 0.42f, 0.18f) : new Color(0.32f, 0.24f, 0.42f)))
+            {
+                if (grimOpen)
                 {
                     _director.CloseGrimoire();
                 }
@@ -733,7 +865,7 @@ namespace RuneMagic
         string PackLine()
         {
             var pack = _director.Pack != null ? _director.Pack.Summary() : "no stones";
-            return $"Keys   ·   {pack}";
+            return $"Pack   ·   {pack}";
         }
 
         string TargetAndLog()

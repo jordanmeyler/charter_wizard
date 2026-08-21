@@ -9,7 +9,8 @@
       "sprite": "charm",
       "teachesSpell": "Fireball",
       "teachesFormula": "ash-mite",
-      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others."
+      "note": "The charm unspools. Fire · Mercury → Fireball. The mite is burning matter. You borrowed a key; later you will compose others.",
+      "look": "An orange twist of Free work. It still smells of the recipe it gave you: Fire · Mercury — hunger sent. The mite was burning matter. You borrowed a key; later you will compose others."
     },
     {
       "id": "ash-mite",
@@ -40,49 +41,56 @@
       "name": "Fire stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "A stone that remembers hunger. The Gate of Elements has a socket for it."
+      "note": "A stone that remembers hunger. The Gate of Elements has a socket for it.",
+      "look": "Warm even at rest. Hunger sleeps in it, waiting to be seated. The Gate of Elements has a socket this size."
     },
     {
       "id": "water-stone",
       "name": "Water stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "A stone that remembers yield. The Gate of Elements has a socket for it."
+      "note": "A stone that remembers yield. The Gate of Elements has a socket for it.",
+      "look": "It takes the heat of your hand and keeps none of it. Yield, seated. The Gate of Elements will drink it."
     },
     {
       "id": "earth-stone",
       "name": "Earth stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "A stone that remembers rest. The Gate of Elements has a socket for it."
+      "note": "A stone that remembers rest. The Gate of Elements has a socket for it.",
+      "look": "Heavier than it looks. Rest that will not be hurried. A socket on the Gate of Elements is cut for this weight."
     },
     {
       "id": "air-stone",
       "name": "Air stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "A stone that remembers breath. The Gate of Elements has a socket for it."
+      "note": "A stone that remembers breath. The Gate of Elements has a socket for it.",
+      "look": "Almost not there. Breath that will not stay, trapped in a body just long enough to be a key."
     },
     {
       "id": "body-stone",
       "name": "Body stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "Salt, seated. The Gate of Aspects wants a standing body."
+      "note": "Salt, seated. The Gate of Aspects wants a standing body.",
+      "look": "Salt, seated. A standing body — the kind that makes a wall stay a wall. The Gate of Aspects wants this."
     },
     {
       "id": "spirit-stone",
       "name": "Spirit stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "Mercury, seated. The Gate of Aspects wants a thing that goes."
+      "note": "Mercury, seated. The Gate of Aspects wants a thing that goes.",
+      "look": "Mercury, seated. A path opening, a thing that goes. Hold it and you remember that a send is not a wall."
     },
     {
       "id": "mind-stone",
       "name": "Mind stone",
       "kind": "key",
       "sprite": "charm",
-      "note": "Sulphur, seated. The Gate of Aspects wants a mind."
+      "note": "Sulphur, seated. The Gate of Aspects wants a mind.",
+      "look": "Sulphur, seated. The wildcard that turns a work toward a mind. The Gate of Aspects has a socket that is not for force."
     }
   ]
 }

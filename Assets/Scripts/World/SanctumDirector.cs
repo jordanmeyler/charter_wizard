@@ -9,6 +9,7 @@ namespace RuneMagic
         Charter,
         Aiming,
         Grimoire,
+        Inventory,
         Paused
     }
 
@@ -156,6 +157,10 @@ namespace RuneMagic
                 {
                     CloseGrimoire();
                 }
+                else if (Mode == PlayMode.Inventory)
+                {
+                    CloseInventory();
+                }
                 else if (Mode == PlayMode.Charter)
                 {
                     CloseCharter();
@@ -183,6 +188,26 @@ namespace RuneMagic
                     OpenGrimoire();
                 }
 
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.I) && Mode != PlayMode.Charter && Mode != PlayMode.Aiming)
+            {
+                if (Mode == PlayMode.Inventory)
+                {
+                    CloseInventory();
+                }
+                else if (Mode != PlayMode.Paused)
+                {
+                    OpenInventory();
+                }
+
+                return;
+            }
+
+            if (Mode == PlayMode.Inventory)
+            {
+                HandleInventoryInput();
                 return;
             }
 
@@ -332,7 +357,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Mode == PlayMode.Charter)
+            if (Mode == PlayMode.Charter || Mode == PlayMode.Inventory)
             {
                 Mode = PlayMode.Exploring;
             }
@@ -349,6 +374,79 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
+        }
+
+        public void OpenInventory()
+        {
+            if (Mode == PlayMode.Paused || Busy)
+            {
+                return;
+            }
+
+            if (Mode == PlayMode.Aiming)
+            {
+                CancelAim();
+            }
+
+            if (Mode == PlayMode.Charter || Mode == PlayMode.Grimoire)
+            {
+                Mode = PlayMode.Exploring;
+            }
+
+            Mode = PlayMode.Inventory;
+            if (Pack.Empty)
+            {
+                Log("The pack is empty. Stones and other keys will sit here. Esc or I closes.");
+                return;
+            }
+
+            if (Pack.Selected == null)
+            {
+                Pack.Select(0);
+            }
+
+            Log(AdeptPack.LookText(Pack.Selected));
+        }
+
+        public void CloseInventory()
+        {
+            if (Mode != PlayMode.Inventory)
+            {
+                return;
+            }
+
+            Mode = PlayMode.Exploring;
+        }
+
+        public void SelectPack(int index)
+        {
+            if (!Pack.Select(index))
+            {
+                return;
+            }
+
+            Log(AdeptPack.LookText(Pack.Selected));
+        }
+
+        void HandleInventoryInput()
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                if (Pack.Nudge(-1))
+                {
+                    Log(AdeptPack.LookText(Pack.Selected));
+                }
+
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                if (Pack.Nudge(1))
+                {
+                    Log(AdeptPack.LookText(Pack.Selected));
+                }
+            }
         }
 
         public bool InVicinity(RuneId rune)
@@ -375,7 +473,8 @@ namespace RuneMagic
 
         public void WeaveFromField(RuneId rune)
         {
-            if (Busy || Mode == PlayMode.Aiming || Mode == PlayMode.Paused || Mode == PlayMode.Grimoire)
+            if (Busy || Mode == PlayMode.Aiming || Mode == PlayMode.Paused || Mode == PlayMode.Grimoire ||
+                Mode == PlayMode.Inventory)
             {
                 return;
             }
@@ -1262,7 +1361,8 @@ namespace RuneMagic
                 _targetRing.sortingOrder = 16;
             }
 
-            var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused;
+            var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused && Mode != PlayMode.Inventory &&
+                Mode != PlayMode.Grimoire;
             _targetRing.gameObject.SetActive(show);
             if (!show)
             {

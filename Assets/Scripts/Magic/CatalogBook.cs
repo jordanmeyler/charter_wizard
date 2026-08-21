@@ -59,6 +59,7 @@ namespace RuneMagic
         public string teachesSpell;
         public string teachesFormula;
         public string note;
+        public string look;
     }
 
     [Serializable]

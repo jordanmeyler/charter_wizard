@@ -3,31 +3,86 @@ using System.Collections.Generic;
 namespace RuneMagic
 {
     /// <summary>
-    /// Stones and other keys the adept is holding. Doors gate on
-    /// possession, never on the order the keys were found.
+    /// What the adept is carrying: stones, charms, wards, mediums.
+    /// Doors still gate on possession. I opens the pack to look.
     /// </summary>
     public sealed class AdeptPack
     {
         readonly List<CatalogItem> _held = new();
 
         public IReadOnlyList<CatalogItem> Held => _held;
+        public int Count => _held.Count;
+        public int SelectedIndex { get; private set; } = -1;
+        public bool Empty => _held.Count == 0;
 
-        public bool Has(string id)
+        public CatalogItem Selected =>
+            SelectedIndex >= 0 && SelectedIndex < _held.Count ? _held[SelectedIndex] : null;
+
+        public static bool CanCarry(CatalogItem item)
         {
-            if (string.IsNullOrEmpty(id))
+            if (item == null || string.IsNullOrEmpty(item.id))
             {
                 return false;
             }
 
-            for (var i = 0; i < _held.Count; i++)
+            switch ((item.kind ?? string.Empty).ToLowerInvariant())
             {
-                if (_held[i] != null && _held[i].id == id)
-                {
+                case "mite":
+                case "torch":
+                case "rod":
+                case "chasm":
+                case "barrier":
+                case "gate":
+                case "plaque":
+                    return false;
+                default:
                     return true;
-                }
+            }
+        }
+
+        public static string KindLabel(CatalogItem item)
+        {
+            switch ((item != null ? item.kind : null)?.ToLowerInvariant())
+            {
+                case "key":
+                    return "Key";
+                case "charm":
+                    return "Charm";
+                case "ward":
+                    return "Ward";
+                case "medium":
+                    return "Medium";
+                case "relic":
+                    return "Relic";
+                default:
+                    return "Item";
+            }
+        }
+
+        public static string LookText(CatalogItem item)
+        {
+            if (item == null)
+            {
+                return "The pack is empty.";
             }
 
-            return false;
+            if (!string.IsNullOrEmpty(item.look))
+            {
+                return item.look;
+            }
+
+            if (!string.IsNullOrEmpty(item.note))
+            {
+                return item.note;
+            }
+
+            var name = string.IsNullOrEmpty(item.name) ? item.id : item.name;
+            return $"{name} sits in the pack. It has not yet spoken.";
+        }
+
+        public bool Has(string id)
+        {
+            return IndexOf(id) >= 0;
         }
 
         public bool HasAll(IReadOnlyList<string> ids)
@@ -50,20 +105,52 @@ namespace RuneMagic
 
         public bool Take(CatalogItem item)
         {
-            if (item == null || string.IsNullOrEmpty(item.id) || Has(item.id))
+            if (!CanCarry(item) || Has(item.id))
             {
                 return false;
             }
 
             _held.Add(item);
+            SelectedIndex = _held.Count - 1;
             return true;
+        }
+
+        public bool Select(int index)
+        {
+            if (index < 0 || index >= _held.Count)
+            {
+                return false;
+            }
+
+            SelectedIndex = index;
+            return true;
+        }
+
+        public bool Nudge(int delta)
+        {
+            if (_held.Count == 0)
+            {
+                return false;
+            }
+
+            var next = SelectedIndex < 0 ? 0 : SelectedIndex + delta;
+            if (next < 0)
+            {
+                next = _held.Count - 1;
+            }
+            else if (next >= _held.Count)
+            {
+                next = 0;
+            }
+
+            return Select(next);
         }
 
         public string Summary()
         {
             if (_held.Count == 0)
             {
-                return "no stones";
+                return "empty";
             }
 
             var parts = new string[_held.Count];
@@ -73,6 +160,24 @@ namespace RuneMagic
             }
 
             return string.Join(" · ", parts);
+        }
+
+        int IndexOf(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return -1;
+            }
+
+            for (var i = 0; i < _held.Count; i++)
+            {
+                if (_held[i] != null && _held[i].id == id)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }
