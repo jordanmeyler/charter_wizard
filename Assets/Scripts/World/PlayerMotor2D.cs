@@ -33,6 +33,12 @@ namespace RuneMagic
                 return;
             }
 
+            var host = StatusHost.On(this);
+            if (host != null && host.BlocksMove)
+            {
+                return;
+            }
+
             var input = ReadMove();
             if (input.sqrMagnitude > 1f)
             {

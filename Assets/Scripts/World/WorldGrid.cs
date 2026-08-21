@@ -94,6 +94,45 @@ namespace RuneMagic
             }
         }
 
+        public List<WorldTile> Neighbors(Vector2Int coord)
+        {
+            var list = new List<WorldTile>(4);
+            TryAdd(list, coord.x + 1, coord.y);
+            TryAdd(list, coord.x - 1, coord.y);
+            TryAdd(list, coord.x, coord.y + 1);
+            TryAdd(list, coord.x, coord.y - 1);
+            return list;
+        }
+
+        public List<WorldTile> TilesInRadius(Vector3 world, float radius)
+        {
+            var list = new List<WorldTile>();
+            var center = WorldWork.CoordOf(world);
+            var reach = Mathf.Max(1, Mathf.CeilToInt(radius));
+            for (var y = center.y - reach; y <= center.y + reach; y++)
+            {
+                for (var x = center.x - reach; x <= center.x + reach; x++)
+                {
+                    var tile = Get(x, y);
+                    if (tile != null && Vector2.Distance(world, tile.transform.position) <= radius + 0.15f)
+                    {
+                        list.Add(tile);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        void TryAdd(List<WorldTile> list, int x, int y)
+        {
+            var tile = Get(x, y);
+            if (tile != null)
+            {
+                list.Add(tile);
+            }
+        }
+
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);
     }
 }

@@ -27,6 +27,7 @@ namespace RuneMagic
         float _phase;
         string _grant;
         Collider2D _hit;
+        StatusHost _status;
 
         public void Bind(
             string displayName,
@@ -36,7 +37,9 @@ namespace RuneMagic
             bool ensouled,
             string spriteId = null,
             bool blocking = false,
-            string grantItem = null)
+            string grantItem = null,
+            string attack = null,
+            float castSeconds = 0f)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
@@ -62,11 +65,71 @@ namespace RuneMagic
 
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 0.85f, 0f),
                 new Color(1f, 0.7f, 0.35f));
+
+            _status = gameObject.AddComponent<StatusHost>();
+            _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
+            var kind = CombatOf(formulaId, attack);
+            if (kind != CombatKind.None)
+            {
+                var combat = gameObject.AddComponent<CombatActor>();
+                combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>());
+            }
+        }
+
+        static CreatureNature NatureOf(string formulaId, bool ensouled)
+        {
+            switch ((formulaId ?? string.Empty).ToLowerInvariant())
+            {
+                case "fire-golem":
+                case "ash-mite":
+                    return CreatureNature.Fire;
+                case "ice-thing":
+                    return CreatureNature.Ice;
+                case "stone-man":
+                    return CreatureNature.Earth;
+                case "spirit-warden":
+                    return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
+                default:
+                    return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
+            }
+        }
+
+        static CombatKind CombatOf(string formulaId, string attack)
+        {
+            switch ((attack ?? string.Empty).ToLowerInvariant())
+            {
+                case "golem":
+                case "melee":
+                    return CombatKind.Golem;
+                case "wizard":
+                    return CombatKind.Wizard;
+            }
+
+            switch ((formulaId ?? string.Empty).ToLowerInvariant())
+            {
+                case "fire-golem":
+                    return CombatKind.Golem;
+                case "spirit-warden":
+                    return CombatKind.Wizard;
+                default:
+                    return CombatKind.None;
+            }
         }
 
         void Update()
         {
             if (Resolved || AdeptAvatar.WorldHeld)
+            {
+                return;
+            }
+
+            if (_status != null && _status.BlocksMove)
+            {
+                transform.position = _rest;
+                return;
+            }
+
+            if (GetComponent<CombatActor>() != null)
             {
                 return;
             }

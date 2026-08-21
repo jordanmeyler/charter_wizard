@@ -44,6 +44,7 @@ namespace RuneMagic
         ISpellLock[] _locks;
         RoomInfo[] _rooms;
         Vector3 _safePoint;
+        Vector3 _spawnPoint;
         bool _finished;
         PlayMode _modeBeforePause = PlayMode.Exploring;
         ISpellLock _focus;
@@ -63,6 +64,8 @@ namespace RuneMagic
             _locks = build.Locks;
             _rooms = build.Rooms;
             _safePoint = build.Spawn;
+            _spawnPoint = build.Spawn;
+            SpawnCrystal.Spawn(build.Spawn);
             CurrentRoom = _rooms != null && _rooms.Length > 0 ? _rooms[0] : null;
             var broken = SpellCodex.Validate();
             if (!string.IsNullOrEmpty(broken))
@@ -140,6 +143,15 @@ namespace RuneMagic
             if (Underfoot != null && (Underfoot.Kind == TileKind.Floor || Underfoot.Kind == TileKind.Bridge))
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
+                if (Underfoot.Fire > 0.35f)
+                {
+                    var host = StatusHost.On(player);
+                    host?.Apply(StatusId.Burning, 2.4f);
+                    if (Underfoot.Fire > 0.85f && (host == null || !host.Fends(Essence.Fire)))
+                    {
+                        KillPlayer("The floor is hunger. The crystal calls you back.");
+                    }
+                }
             }
 
             FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
@@ -982,9 +994,50 @@ namespace RuneMagic
                     yield return CarryCaster(SpellCodex.WorkOf(outcome.Spell), origin, requested);
                 }
 
+                var impactNote = string.Empty;
                 try
                 {
-                    if (outcome.Resolved && LockAlive(target))
+                    if (!outcome.Fizzled && outcome.Spell != SpellId.None)
+                    {
+                        var impact = SpellImpact.Apply(Grid, _locks, SpellCodex.WorkOf(outcome.Spell), shape, origin, aim, outcome.Potency);
+                        impactNote = impact.Note;
+                        if (impact.Locks.Count > 0)
+                        {
+                            for (var i = 0; i < impact.Locks.Count; i++)
+                            {
+                                var hit = impact.Locks[i];
+                                if (!LockAlive(hit) || !Accepts(hit, outcome.Spell))
+                                {
+                                    continue;
+                                }
+
+                                Grimoire.LearnInterpretation(hit.FormulaId);
+                                var flavor = hit.Resolve(outcome.Spell);
+                                OpenDoorFor(hit);
+                                if (_focus == hit)
+                                {
+                                    _focus = null;
+                                }
+
+                                CurrentTarget = null;
+                                workNote = FirstNote(flavor, workNote);
+                            }
+                        }
+                        else if (outcome.Resolved && LockAlive(target))
+                        {
+                            Grimoire.LearnInterpretation(target.FormulaId);
+                            var flavor = target.Resolve(outcome.Spell);
+                            OpenDoorFor(target);
+                            if (_focus == target)
+                            {
+                                _focus = null;
+                            }
+
+                            CurrentTarget = null;
+                            workNote = FirstNote(flavor, workNote);
+                        }
+                    }
+                    else if (outcome.Resolved && LockAlive(target))
                     {
                         Grimoire.LearnInterpretation(target.FormulaId);
                         var flavor = target.Resolve(outcome.Spell);
@@ -995,13 +1048,10 @@ namespace RuneMagic
                         }
 
                         CurrentTarget = null;
-                        Log(FirstNote(flavor, workNote, outcome.Log));
-                    }
-                    else
-                    {
-                        Log(FirstNote(workNote, outcome.Log));
+                        workNote = FirstNote(flavor, workNote);
                     }
 
+                    Log(FirstNote(workNote, impactNote, outcome.Log));
                     CheckFinished();
                 }
                 catch (System.Exception exception)
@@ -1414,6 +1464,50 @@ namespace RuneMagic
 
         public void KnockBack(Transform player, string message)
         {
+            PlacePlayer(player, _safePoint, message);
+        }
+
+        public void KillPlayer(string message)
+        {
+            var player = PlayerTransform();
+            if (player == null)
+            {
+                return;
+            }
+
+            StatusHost.On(player)?.Clear();
+            PlacePlayer(player, _spawnPoint, string.IsNullOrEmpty(message)
+                ? "You fall. The crystal calls you back."
+                : message);
+        }
+
+        public string PlayerStatuses()
+        {
+            var player = PlayerTransform();
+            var host = StatusHost.On(player);
+            return host != null ? host.Summary() : string.Empty;
+        }
+
+        static bool Accepts(ISpellLock encounter, SpellId spell)
+        {
+            if (encounter?.AcceptedKeys == null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < encounter.AcceptedKeys.Length; i++)
+            {
+                if (encounter.AcceptedKeys[i] == spell)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        void PlacePlayer(Transform player, Vector3 point, string message)
+        {
             if (player == null)
             {
                 return;
@@ -1422,10 +1516,10 @@ namespace RuneMagic
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {
-                body.position = _safePoint;
+                body.position = point;
             }
 
-            player.position = _safePoint;
+            player.position = point;
             if (!string.IsNullOrEmpty(message))
             {
                 Log(message);

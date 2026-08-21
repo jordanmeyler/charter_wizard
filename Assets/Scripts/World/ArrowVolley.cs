@@ -28,6 +28,7 @@ namespace RuneMagic
         string _resolvedNote;
         float _beat;
         SpriteRenderer _renderer;
+        Vector2 _heading = Vector2.down;
 
         public void Bind(
             string displayName,
@@ -38,7 +39,8 @@ namespace RuneMagic
             IList<Vector2Int> cover,
             IList<Vector2Int> kill,
             string spriteId,
-            string resolvedNote)
+            string resolvedNote,
+            Vector3 heading)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
@@ -46,6 +48,7 @@ namespace RuneMagic
             _formula = formula ?? System.Array.Empty<RuneId>();
             _grid = grid;
             _resolvedNote = resolvedNote;
+            _heading = ((Vector2)heading).sqrMagnitude > 0.01f ? (Vector2)heading : Vector2.down;
             _cover = cover != null ? new Vector2Int[cover.Count] : System.Array.Empty<Vector2Int>();
             if (cover != null)
             {
@@ -129,20 +132,8 @@ namespace RuneMagic
             }
 
             _beat = 0f;
-            var player = AdeptAvatar.Find();
-            if (player == null)
-            {
-                return;
-            }
-
-            var cell = WorldWork.CoordOf(player.transform.position);
-            if (!_kill.Contains(cell))
-            {
-                return;
-            }
-
-            FindFirstObjectByType<SanctumDirector>()?.KnockBack(player.transform,
-                "Arrows find you. Raise a wall or a pillar, then walk around.");
+            var origin = transform.position + (Vector3)(_heading.normalized * 0.4f);
+            WorldProjectile.Spawn(origin, _heading, ProjectileKind.Arrow, _grid, 8.2f);
         }
 
         bool CoverStands()

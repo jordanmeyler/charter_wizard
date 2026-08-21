@@ -98,7 +98,7 @@ namespace RuneMagic
 
         void DrawWorldChrome()
         {
-            DrawPanel(12, 12, 560, 144);
+            DrawPanel(12, 12, 560, 168);
             var title = Label(22, FontStyle.Bold, Color.white);
             var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
 
@@ -110,7 +110,17 @@ namespace RuneMagic
                 _director.OpenInventory();
             }
 
-            GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
+            var statuses = _director.PlayerStatuses();
+            if (!string.IsNullOrEmpty(statuses))
+            {
+                GUI.Label(new Rect(28, 88, 510, 20), "On you: " + statuses,
+                    Label(14, FontStyle.Italic, new Color(0.95f, 0.78f, 0.42f)));
+                GUI.Label(new Rect(28, 108, 510, 44), TargetAndLog(), body);
+            }
+            else
+            {
+                GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
+            }
         }
 
         void DrawInventory()

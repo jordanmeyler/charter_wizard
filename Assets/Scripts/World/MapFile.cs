@@ -60,6 +60,9 @@ namespace RuneMagic
         public string note;
         public bool blocking;
         public bool finishes;
+        public bool ensouled;
+        public string attack;
+        public float castSeconds;
     }
 
     [Serializable]

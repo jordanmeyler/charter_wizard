@@ -80,6 +80,7 @@ namespace RuneMagic
             }
 
             grid.DressLooks();
+            WorldSim.Ensure(grid);
             var spawn = map.spawn != null
                 ? WorldGrid.Center(map.spawn.x, map.spawn.y)
                 : rooms[0].Entrance;
@@ -220,6 +221,10 @@ namespace RuneMagic
                 case "arrows":
                     BindLock(room, locks, SpawnArrows(prop, world, grid, origin));
                     break;
+                case "crystal":
+                case "anchor":
+                    SpawnCrystal.Spawn(world);
+                    break;
             }
         }
 
@@ -233,10 +238,12 @@ namespace RuneMagic
                 IdOf(prop, "ash-mite"),
                 ParseRunes(prop.formula, RuneId.Fire, RuneId.Salt),
                 ParseKeys(prop.keys, MiteKeys),
-                ensouled: false,
+                ensouled: prop.ensouled,
                 spriteId: prop.sprite,
                 blocking: prop.blocking,
-                grantItem: prop.grant);
+                grantItem: prop.grant,
+                attack: prop.attack,
+                castSeconds: prop.castSeconds);
             return encounter;
         }
 
@@ -332,7 +339,8 @@ namespace RuneMagic
                 LocalCells(origin, prop.cover),
                 LocalCells(origin, prop.cells),
                 prop.sprite,
-                prop.note);
+                prop.note,
+                MapFile.HeadingOf(string.IsNullOrEmpty(prop.dir) ? "south" : prop.dir));
             return volley;
         }
 
@@ -528,6 +536,7 @@ namespace RuneMagic
                     case "charm":
                     case "barrier":
                     case "gate":
+                    case "crystal":
                         prop.type = item.kind;
                         break;
                     default:

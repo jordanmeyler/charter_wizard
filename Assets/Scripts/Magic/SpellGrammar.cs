@@ -74,7 +74,11 @@ namespace RuneMagic
         Douse,
         Command,
         Gust,
-        EarthPillar
+        EarthPillar,
+        Stoneskin,
+        Watershield,
+        Flameward,
+        Windward
     }
 
     public readonly struct SpellRecipe
@@ -113,6 +117,7 @@ namespace RuneMagic
             Register(RuneId.Fire, RuneId.Mercury, SpellShape.Shot, SpellId.Fireball, "Fireball", "Compressed. Catalog: Fire · Mercury. Hunger sent.");
             Register(RuneId.Flame, RuneId.Mercury, SpellShape.Remote, SpellId.Melt, "Melt", "Compressed. Catalog: Fire · Salt · Mercury. A stood fire-body into a thing.");
             Register(RuneId.Fire, RuneId.Salt, SpellShape.Pillar, SpellId.FlamePillar, "Flame-pillar", "A standing column of fire.");
+            Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Self, SpellId.Flameward, "Flame ward", "Compressed. Catalog: Fire · Salt · Sulphur. Hunger given a body, then the mind holds it on you.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");
             Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death-work. Hunger marked by the grave, placed on a flame.");
             Register(RuneId.Fire, RuneId.Lumen, SpellShape.Shot, SpellId.SunLance, "Sun-lance", "Light riding fire.");
@@ -121,6 +126,7 @@ namespace RuneMagic
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
             Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Yield given a body and asked to rest. Hard water. No Death.");
+            Register(RuneId.Water, RuneId.Sulphur, SpellShape.Self, SpellId.Watershield, "Water ward", "Compressed. Catalog: Water · Salt · Sulphur. Yield given a body, then the mind holds it on you.");
             Register(RuneId.Water, RuneId.Sulphur, SpellShape.Remote, SpellId.Lull, "Lull", "Mind of water. Sleep, placed elsewhere.");
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
             Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Fog, "Fog", "Dark water as cover around you.");
@@ -135,12 +141,14 @@ namespace RuneMagic
 
             Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
             Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Rest given a body.");
+            Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Self, SpellId.Stoneskin, "Stoneskin", "Compressed. Catalog: Earth · Salt · Sulphur. Rest given a body, then the mind holds it on you.");
             Register(RuneId.Stone, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Stone already stood.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Remote, SpellId.Dread, "Dread", "Weight and fear, placed elsewhere.");
             Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gust, "Gust", "Compressed. Catalog: Air · Mercury. Breath sent.");
+            Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Mercury · Salt. You fly.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");

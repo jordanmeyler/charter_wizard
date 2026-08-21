@@ -84,6 +84,28 @@ Oil, gas, bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grav
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style. Later you can hang collision, spread rules, and reaction tags on the same class without changing how rooms are stamped.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus two tweakable numbers set in `MaterialCatalog.Flag`.
+
+| Flag | Meaning |
+| --- | --- |
+| **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
+| **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
+
+Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
+
+| Material | Flam | Cond | Note |
+| --- | --- | --- | --- |
+| Plant | 1.5 | 0.05 | Catches fast. Burns to Ash. |
+| Grove | 1.35 | 0.1 | Living mass. |
+| Timber | 1.2 | 0 | Wood. |
+| Moss | 1.05 | 0.1 | Soft green. |
+| Ember | 0.35 | 0.15 | Already hot. |
+| Dust | 0.55 | 0 | Rest that lost its weight. |
+| Water | −1.6 | 1.25 | Puts fire out. Carries charge. |
+| Rain | −1.1 | 0.7 | The veil drawn down. |
+| Ice | −0.85 | 0.15 | Hard water. |
+| Damp | −0.7 | 0.35 | Wet rest. |
+| Metal | 0 | 1.6 | The spark’s favourite road. |
+| Vein | 0 | 0.85 | Spark in the stone. |
 
 The Grimoire and pause ledger list this catalog next to the written spells.
