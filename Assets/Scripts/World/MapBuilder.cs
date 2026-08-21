@@ -332,30 +332,81 @@ namespace RuneMagic
                 return;
             }
 
-            if (to.origin.x > from.origin.x)
+            const int half = 1;
+            if (to.origin.x > from.origin.x + from.width - 1)
             {
-                var hallX0 = from.origin.x + from.width;
-                var hallX1 = to.origin.x - 1;
-                var mid = from.origin.y + from.height / 2;
-                grid.Fill(hallX0, from.origin.y, hallX1, from.origin.y + from.height - 1, TileKind.Wall, MaterialId.Stone);
-                grid.Fill(hallX0, mid - 1, hallX1, mid + 1, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid - 1, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid, TileKind.Floor, hall);
-                grid.Set(to.origin.x, mid + 1, TileKind.Floor, hall);
+                var y0 = Mathf.Max(from.origin.y + 1, to.origin.y + 1);
+                var y1 = Mathf.Min(from.origin.y + from.height - 2, to.origin.y + to.height - 2);
+                var mid = y0 <= y1 ? (y0 + y1) / 2 : to.origin.y + to.height / 2;
+                StampHall(grid, from.origin.x + from.width, to.origin.x - 1, mid, half, true, hall);
+                for (var dy = -half; dy <= half; dy++)
+                {
+                    OpenPassage(grid, from.origin.x + from.width - 1, mid + dy, hall);
+                    OpenPassage(grid, to.origin.x, mid + dy, hall);
+                }
+
                 return;
             }
 
-            if (to.origin.y > from.origin.y)
+            if (to.origin.y > from.origin.y + from.height - 1)
             {
-                var hallY0 = from.origin.y + from.height;
-                var hallY1 = to.origin.y - 1;
-                var mid = from.origin.x + from.width / 2;
-                grid.Fill(from.origin.x, hallY0, from.origin.x + from.width - 1, hallY1, TileKind.Wall, MaterialId.Stone);
-                grid.Fill(mid - 1, hallY0, mid + 1, hallY1, TileKind.Floor, hall);
-                grid.Set(mid - 1, to.origin.y, TileKind.Floor, hall);
-                grid.Set(mid, to.origin.y, TileKind.Floor, hall);
-                grid.Set(mid + 1, to.origin.y, TileKind.Floor, hall);
+                var x0 = Mathf.Max(from.origin.x + 1, to.origin.x + 1);
+                var x1 = Mathf.Min(from.origin.x + from.width - 2, to.origin.x + to.width - 2);
+                var mid = x0 <= x1 ? (x0 + x1) / 2 : to.origin.x + to.width / 2;
+                StampHall(grid, from.origin.y + from.height, to.origin.y - 1, mid, half, false, hall);
+                for (var dx = -half; dx <= half; dx++)
+                {
+                    OpenPassage(grid, mid + dx, from.origin.y + from.height - 1, hall);
+                    OpenPassage(grid, mid + dx, to.origin.y, hall);
+                }
             }
+        }
+
+        static void StampHall(WorldGrid grid, int gap0, int gap1, int mid, int half, bool eastWest, MaterialId hall)
+        {
+            if (gap0 > gap1)
+            {
+                return;
+            }
+
+            for (var along = gap0; along <= gap1; along++)
+            {
+                for (var side = -half - 1; side <= half + 1; side++)
+                {
+                    var x = eastWest ? along : mid + side;
+                    var y = eastWest ? mid + side : along;
+                    if (Mathf.Abs(side) <= half)
+                    {
+                        OpenPassage(grid, x, y, hall);
+                    }
+                    else
+                    {
+                        SealHallEdge(grid, x, y);
+                    }
+                }
+            }
+        }
+
+        static void OpenPassage(WorldGrid grid, int x, int y, MaterialId hall)
+        {
+            var tile = grid.Get(x, y);
+            if (tile != null && tile.Kind == TileKind.Door)
+            {
+                return;
+            }
+
+            grid.Set(x, y, TileKind.Floor, hall);
+        }
+
+        static void SealHallEdge(WorldGrid grid, int x, int y)
+        {
+            var tile = grid.Get(x, y);
+            if (tile != null && (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge || tile.Kind == TileKind.Door))
+            {
+                return;
+            }
+
+            grid.Set(x, y, TileKind.Wall, MaterialId.Stone);
         }
 
         static WorldTile[] PlaceExit(WorldGrid grid, Vector2Int origin, int width, int height, string exit, MaterialId material)

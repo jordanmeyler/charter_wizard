@@ -6,21 +6,20 @@ The living design reference is [`DESIGN.md`](DESIGN.md) (v0.15). The eleven basi
 
 ## What is implemented
 
-**The Foundation** is the first floor. An antechamber teaches the verb (read a labelled Fire, send it, burn a rope). A hub opens onto four elemental wings and a staged door; past that door three aspect sanctums teach Salt, Mercury, and Sulphur. Stones are keys. Doors gate on **possession, not sequence** — Door I wants the four element stones, Door II only the three aspect stones — so a player who already knows the grammar can skip the wings by crossing the chasm or the moat beside Door I.
+**The Foundation** is the first floor. You spawn in a hub with four open elemental rooms attached — Fire, Water, Earth, Air. Walk into each, read the labelled altar, use that element’s spells on the obstacle, and take the stone. Door I (the hub’s north door) wants the four element stones. Past it, three aspect sanctums teach Salt, Mercury, and Sulphur. Door II wants only those three stones. Doors gate on **possession, not sequence**.
 
 Tiles are **materials** and each material keeps a full rune sentence. Those glyphs stay folded while you walk. **Space** opens the Charter: the eleven writeable runes, and a sideways-scrolling weave of everything on screen. Enemies and terrain are both locks.
 
 | Room | Lock | Intended keys | What it teaches |
 | --- | --- | --- | --- |
-| **Antechamber** | Rope on the portcullis | Fireball (`Fire · Mercury`) | Read a labelled rune. Hunger sent is the first verb. |
-| **The Frozen Hall** | Ice seal, ice-thing, ice cage | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. The Fire stone sits in the cage. |
-| **The Ember Vault** | Flame curtain, Fire Golem, sunken basin | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. The Water stone rises with the basin. |
-| **The Arrow Gauntlet** | Entry gap, arrow volley | Wall, any pillar, Bridge; Hop / Flight | Earth: block, cover, span. The Earth stone is past the arrows. |
-| **The Sundered Heights** | Rift, poison veil | Hop / Flight / Wall; Gale | Air: leap, glide, gust. The Air stone waits in the cleared chamber. |
-| **Gate of Elements** | Four sockets *or* the flanks | Possession of the four stones; or cross the chasm / moat | Staged door. Skips self-gate by understanding. |
+| **The Cross** | Gate of Elements (north) | The four element stones | Choice. Four labelled roots. |
+| **The Frozen Hall** | Ice cage (ice-thing optional) | Melt, Fireball, Flame-pillar, Ignite | Fire: heat, melt, burn. |
+| **The Ember Vault** | Flame curtain (golem optional) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. |
+| **The Arrow Gauntlet** | Two-tile gap, then an arrow rack | Wall, any pillar, Bridge; Hop / Flight | Earth: block, cover, span. |
+| **The Sundered Heights** | Two-tile rift, then a poison veil | Hop / Flight / Wall; Gale | Air: leap, glide, gust. |
 | **The Standing Stone** | A gap | Wall / pillar / Bridge (Hop if you already know Air) | Salt stands a body. |
-| **The Gallery of Force** | Warden | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. Constructs and mind-work fail here. |
-| **The Silent Court** | Stone men (they block the aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. Force fails on purpose. |
+| **The Gallery of Force** | Warden | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. |
+| **The Silent Court** | Stone men (they block a short aisle) | Rage, Command, Lull, Terror, Jolt | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. The floor opens. |
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
@@ -97,7 +96,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | --- | --- |
 | `Assets/Resources/Maps/` | New maps (JSON). Point `index.json` at the one to boot |
 | `Tools/map-editor.html` | Paint those maps without opening Unity |
-| `FLOOR1.md` | Floor 1 design (hub, wings, staged doors, skips) |
+| `FLOOR1.md` | Floor 1 design (open hub, four elemental rooms, staged doors) |
 | `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if JSON is missing |
 | `Assets/Scripts/World/MaterialCatalog.cs` | New materials, signatures, and tile paints |
 | `MATERIALS.md` | Running material list (beside the spell book) |
