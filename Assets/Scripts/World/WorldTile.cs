@@ -15,6 +15,14 @@ namespace RuneMagic
         public bool IsConjured { get; private set; }
         public RaisedForm RaisedAs { get; private set; }
         public TileDef Foundation { get; private set; }
+        public bool PassageOpen { get; private set; }
+
+        /// <summary>
+        /// Closed masonry and shut doors stop bodies and shots.
+        /// An opened door is a hole in the wall.
+        /// </summary>
+        public bool BlocksTravel =>
+            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen);
 
         public bool IsEmitting => !Def.TearsTapestry && Emission.Count > 0;
         public Vector3 WorldOrigin => transform.position;
@@ -313,6 +321,11 @@ namespace RuneMagic
         void Reshape(TileDef def)
         {
             Def = def;
+            if (def.Kind != TileKind.Door)
+            {
+                PassageOpen = false;
+            }
+
             ApplyVisual();
             RefreshCollider();
             RefreshFx();
@@ -328,6 +341,7 @@ namespace RuneMagic
                 return;
             }
 
+            PassageOpen = true;
             ApplyDoorSprite(open: true);
             if (_collider != null)
             {
@@ -518,7 +532,7 @@ namespace RuneMagic
 
         void RefreshCollider()
         {
-            var solid = Kind == TileKind.Wall || Kind == TileKind.Door;
+            var solid = BlocksTravel;
             var pit = Kind == TileKind.Pit;
             if (!solid && !pit)
             {

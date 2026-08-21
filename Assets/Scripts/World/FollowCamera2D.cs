@@ -7,6 +7,8 @@ namespace RuneMagic
         public Transform Target;
         public float damp = 8f;
         public float lookAhead = 0.85f;
+        public bool pixelSnap = true;
+        public float pixelsPerUnit = 32f;
         bool _snapped;
         Vector3 _look;
 
@@ -31,6 +33,12 @@ namespace RuneMagic
 
             var next = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-damp * Time.deltaTime));
             next.z = -10f;
+            if (pixelSnap && pixelsPerUnit > 0f)
+            {
+                next.x = Mathf.Round(next.x * pixelsPerUnit) / pixelsPerUnit;
+                next.y = Mathf.Round(next.y * pixelsPerUnit) / pixelsPerUnit;
+            }
+
             transform.position = next;
         }
     }

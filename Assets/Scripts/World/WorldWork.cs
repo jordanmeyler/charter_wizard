@@ -28,10 +28,43 @@ namespace RuneMagic
         public static bool IsSkyStrike(SpellId spell) =>
             spell == SpellId.LightningStrike;
 
-        public static bool StopsOnWalls(SpellId spell) =>
-            spell == SpellId.LightningBolt
-            || spell == SpellId.BrilliantArc
-            || spell == SpellId.Blackout;
+        public static bool StopsOnWalls(SpellId spell)
+        {
+            if (spell == SpellId.None || IsSkyStrike(spell) || IsHop(spell) || IsFlight(spell))
+            {
+                return false;
+            }
+
+            if (SpellCodex.TryGet(spell, out var entry) && entry.Shape != SpellShape.None)
+            {
+                return entry.Shape == SpellShape.Shot;
+            }
+
+            switch (spell)
+            {
+                case SpellId.Fireball:
+                case SpellId.SunLance:
+                case SpellId.Drive:
+                case SpellId.WaterJet:
+                case SpellId.Douse:
+                case SpellId.IceSpear:
+                case SpellId.LightningBolt:
+                case SpellId.BrilliantArc:
+                case SpellId.Blackout:
+                case SpellId.HurledStone:
+                case SpellId.Gust:
+                case SpellId.Push:
+                case SpellId.Gale:
+                case SpellId.Scald:
+                case SpellId.ScatterDust:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool BlocksTravel(WorldTile tile) =>
+            tile != null && tile.BlocksTravel;
 
         public static bool IsTimeStop(SpellId spell) =>
             spell == SpellId.TimeStop;
@@ -1020,7 +1053,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (!tile.Def.BlocksMovement)
+                if (!BlocksTravel(tile))
                 {
                     land = path[i];
                     continue;
@@ -1045,7 +1078,7 @@ namespace RuneMagic
             for (var i = 1; i < path.Count; i++)
             {
                 var tile = grid.Get(path[i]);
-                if (tile != null && tile.Def.BlocksMovement)
+                if (BlocksTravel(tile))
                 {
                     return WorldGrid.Center(path[i].x, path[i].y);
                 }
@@ -1077,7 +1110,7 @@ namespace RuneMagic
                 }
 
                 var tile = grid.Get(path[i]);
-                if (tile != null && tile.Def.BlocksMovement)
+                if (BlocksTravel(tile))
                 {
                     return true;
                 }
@@ -1111,7 +1144,7 @@ namespace RuneMagic
                     break;
                 }
 
-                if (tile.Def.BlocksMovement)
+                if (BlocksTravel(tile))
                 {
                     break;
                 }

@@ -46,6 +46,8 @@ namespace RuneMagic
         public int width = 32;
         public int height = 32;
         public float pixelsPerUnit = 32f;
+        public string source;
+        public string pivot;
         public string[] colors;
         public string cells;
     }
@@ -115,6 +117,13 @@ namespace RuneMagic
             EnsureLoaded();
             if (!string.IsNullOrEmpty(id) && Sprites.TryGetValue(id, out sprite) && sprite != null)
             {
+                return true;
+            }
+
+            sprite = LoadSheet(id);
+            if (sprite != null)
+            {
+                Sprites[id] = sprite;
                 return true;
             }
 
@@ -253,7 +262,23 @@ namespace RuneMagic
 
         static Sprite Bake(CatalogSprite def)
         {
-            if (def == null || def.width <= 0 || def.height <= 0 || string.IsNullOrEmpty(def.cells))
+            if (def == null)
+            {
+                return null;
+            }
+
+            var ppu = def.pixelsPerUnit > 0f ? def.pixelsPerUnit : 32f;
+            var pivot = ParsePivot(def.pivot);
+            if (!string.IsNullOrWhiteSpace(def.source))
+            {
+                var sheet = LoadSheet(def.source.Trim(), ppu, pivot);
+                if (sheet != null)
+                {
+                    return sheet;
+                }
+            }
+
+            if (def.width <= 0 || def.height <= 0 || string.IsNullOrEmpty(def.cells))
             {
                 return null;
             }
@@ -280,8 +305,67 @@ namespace RuneMagic
                 }
             }
 
-            var ppu = def.pixelsPerUnit > 0f ? def.pixelsPerUnit : 32f;
-            return canvas.ToSprite(ppu);
+            return canvas.ToSprite(ppu, pivot);
+        }
+
+        static Sprite LoadSheet(string id, float pixelsPerUnit = 32f, Vector2? pivot = null)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return null;
+            }
+
+            var key = id.Trim().Replace('\\', '/');
+            if (key.StartsWith("Assets/Resources/", System.StringComparison.OrdinalIgnoreCase))
+            {
+                key = key.Substring("Assets/Resources/".Length);
+            }
+
+            if (key.StartsWith("Resources/", System.StringComparison.OrdinalIgnoreCase))
+            {
+                key = key.Substring("Resources/".Length);
+            }
+
+            var dot = key.LastIndexOf('.');
+            if (dot > 0)
+            {
+                key = key.Substring(0, dot);
+            }
+
+            var texture = Resources.Load<Texture2D>(key)
+                ?? Resources.Load<Texture2D>("Sprites/" + key)
+                ?? Resources.Load<Texture2D>("Sprites/" + System.IO.Path.GetFileName(key));
+            if (texture == null)
+            {
+                return null;
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.wrapMode = TextureWrapMode.Clamp;
+            var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 32f;
+            return Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                pivot ?? new Vector2(0.5f, 0.5f),
+                ppu);
+        }
+
+        static Vector2 ParsePivot(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return new Vector2(0.5f, 0.5f);
+            }
+
+            var parts = text.Split(new[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2
+                && float.TryParse(parts[0], out var x)
+                && float.TryParse(parts[1], out var y))
+            {
+                return new Vector2(x, y);
+            }
+
+            return new Vector2(0.5f, 0.5f);
         }
 
         static Color[] ParsePalette(string[] colors)

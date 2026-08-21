@@ -733,7 +733,7 @@ namespace RuneMagic
             }
 
             var tile = _grid.TileAtWorld(point);
-            return tile != null && tile.Def.BlocksMovement;
+            return WorldWork.BlocksTravel(tile);
         }
 
         void Face(Vector2 direction)

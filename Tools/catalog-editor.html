@@ -83,7 +83,7 @@
     function addOne() {
       if (tab === "spells") spells.spells.push({ number: spells.spells.length+1, id: "NewSpell", book: "End", name: "New spell", want: "", recipe: "Fire · Salt · Mercury", via: "", form: "Remote", outcome: "Neither", gate: "", work: "Melt" });
       if (tab === "joins") spells.joins.push({ rune: "Spark", sources: ["Fire","Air"] });
-      if (tab === "sprites") art.sprites.push({ id: "new-sprite", width: 32, height: 32, pixelsPerUnit: 32, colors: ["#00000000","#e86a2a","#ffe7a0","#1a1014"], cells: "0".repeat(32*32) });
+      if (tab === "sprites") art.sprites.push({ id: "new-sprite", width: 32, height: 32, pixelsPerUnit: 32, source: "", pivot: "0.5,0.5", colors: ["#00000000","#e86a2a","#ffe7a0","#1a1014"], cells: "0".repeat(32*32) });
       if (tab === "items") art.items.push({ id: "new-item", name: "New item", kind: "item", sprite: "charm", teachesSpell: "Fireball", note: "" });
       index = currentList().length - 1;
       draw();
@@ -138,13 +138,17 @@
         <div class="grid2">
           <label>Id <input name="id" value="${esc(item.id)}"></label>
           <label>Size <input name="width" type="number" value="${w}"></label>
+          <label>Source (Resources path) <input name="source" value="${esc(item.source||"")}" placeholder="Sprites/adept"></label>
+          <label>Pivot <input name="pivot" value="${esc(item.pivot||"0.5,0.5")}"></label>
         </div>
+        <p class="hint">Prefer a real PNG: drop it in <code>Assets/Resources/Sprites/{id}.png</code> or run <code>python3 Tools/import-sprite.py file.png --id ${esc(item.id||"adept")}</code>. The grid below is for small icons only.</p>
+        <label>Import PNG into the grid <input id="pngIn" type="file" accept="image/png,image/gif,image/webp"></label>
         <label>Palette (one hex per line)<textarea name="colors">${colors.join("\n")}</textarea></label>
         <p>Paint index:
           ${colors.map((c,i)=>`<button type="button" class="sw" data-i="${i}" style="background:${c==="#00000000"?"#222":c}">${i}</button>`).join(" ")}
         </p>
         <div id="pix" style="grid-template-columns:repeat(${w},14px)"></div>
-        <p class="hint">Index 0 is clear. Export art.json and keep the id. Assign it on an item or a map prop <code>sprite</code>. Built-ins: adept, ash-mite, charm, torch, rod, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, ice-thing, fire-golem, stone-man, warden.</p>`;
+        <p class="hint">Index 0 is clear. A <code>source</code> PNG overrides painted cells. Built-ins: adept, ash-mite, charm, torch, rod, ice-block, flame-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, ice-thing, fire-golem, stone-man, warden.</p>`;
     }
 
     function bindForm(item) {
@@ -162,6 +166,8 @@
       if (tab === "sprites") {
         $("edit").querySelectorAll(".sw").forEach(btn => btn.onclick = () => paint = +btn.dataset.i);
         paintGrid(item);
+        const png = $("pngIn");
+        if (png) png.onchange = () => importPng(item, png.files[0]);
       }
     }
 
@@ -184,6 +190,42 @@
         }
       }
       window.onmouseup = () => down = false;
+    }
+
+    function importPng(item, file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const w = item.width || 32, h = item.height || 32;
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.imageSmoothingEnabled = false;
+          ctx.clearRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          const data = ctx.getImageData(0, 0, w, h).data;
+          const palette = ["#00000000"];
+          const indexOf = hex => { const i = palette.indexOf(hex); return i < 0 ? palette.push(hex) - 1 : i; };
+          let cells = "";
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              const i = (y * w + x) * 4;
+              const a = data[i+3];
+              const hex = a < 16 ? "#00000000" : "#" + [data[i], data[i+1], data[i+2]].map(n => n.toString(16).padStart(2,"0")).join("");
+              const idx = a < 16 ? 0 : indexOf(hex);
+              cells += encode(Math.min(idx, 61));
+            }
+          }
+          item.colors = palette.slice(0, 62);
+          item.cells = cells;
+          if (!item.source) item.source = "Sprites/" + (item.id || "sprite");
+          draw();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     function padCells(item) {

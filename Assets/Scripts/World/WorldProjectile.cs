@@ -72,10 +72,13 @@ namespace RuneMagic
                 return;
             }
 
-            var next = (Vector2)transform.position + _velocity * Time.deltaTime;
-            if (Blocked(next))
+            var from = (Vector2)transform.position;
+            var step = _velocity * Time.deltaTime;
+            var next = from + step;
+            if (HitSolid(from, next, out var hit))
             {
-                Destroy(gameObject);
+                transform.position = hit;
+                BreakOnBody();
                 return;
             }
 
@@ -87,19 +90,85 @@ namespace RuneMagic
             }
         }
 
-        bool Blocked(Vector2 point)
+        bool HitSolid(Vector2 from, Vector2 to, out Vector2 hit)
         {
+            hit = to;
             if (_grid == null)
             {
                 return false;
             }
 
-            var tile = _grid.TileAtWorld(point);
-            return tile != null && tile.Def.BlocksMovement;
+            var travel = to - from;
+            var distance = travel.magnitude;
+            if (distance < 0.0001f)
+            {
+                return BlocksAt(to);
+            }
+
+            var originTile = _grid.TileAtWorld(from);
+            var samples = Mathf.Max(1, Mathf.CeilToInt(distance / 0.12f));
+            for (var i = 1; i <= samples; i++)
+            {
+                var point = from + travel * (i / (float)samples);
+                if (!BlocksAt(point))
+                {
+                    continue;
+                }
+
+                var tile = _grid.TileAtWorld(point);
+                if (tile == originTile)
+                {
+                    continue;
+                }
+
+                hit = point;
+                return true;
+            }
+
+            return false;
+        }
+
+        bool BlocksAt(Vector2 point)
+        {
+            return WorldWork.BlocksTravel(_grid != null ? _grid.TileAtWorld(point) : null);
+        }
+
+        void BreakOnBody()
+        {
+            try
+            {
+                var color = _kind == ProjectileKind.Fireball
+                    ? new Color(1f, 0.45f, 0.12f, 0.85f)
+                    : new Color(0.85f, 0.78f, 0.62f, 0.8f);
+                var flash = new GameObject("ShotBreak");
+                flash.transform.position = transform.position;
+                var renderer = flash.AddComponent<SpriteRenderer>();
+                renderer.sprite = SpriteFactory.Burst(color);
+                renderer.sortingOrder = 21;
+                flash.transform.localScale = Vector3.one * 0.85f;
+                Destroy(flash, 0.22f);
+            }
+            catch (System.Exception)
+            {
+            }
+
+            Destroy(gameObject);
         }
 
         void OnTriggerEnter2D(Collider2D other)
         {
+            if (other == null)
+            {
+                return;
+            }
+
+            var tile = other.GetComponent<WorldTile>();
+            if (tile != null && tile.BlocksTravel)
+            {
+                BreakOnBody();
+                return;
+            }
+
             if (AdeptAvatar.IsAdept(other))
             {
                 if (_allegiance == ShotAllegiance.Allied)
@@ -122,7 +191,7 @@ namespace RuneMagic
                         ? $"Hunger breaks on the {ward}."
                         : $"The shot breaks on the {ward}.";
                     FindFirstObjectByType<SanctumDirector>()?.Log(note);
-                    Destroy(gameObject);
+                    BreakOnBody();
                     return;
                 }
 

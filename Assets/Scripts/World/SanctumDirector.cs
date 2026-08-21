@@ -1406,10 +1406,19 @@ namespace RuneMagic
                 var workNote = string.Empty;
                 if (!outcome.Fizzled && outcome.Spell != SpellId.None)
                 {
+                    var work = SpellCodex.WorkOf(outcome.Spell);
+                    if (WorldWork.StopsOnWalls(work))
+                    {
+                        aim = WorldWork.ClampShot(Grid, origin, aim);
+                        if (target != null && WorldWork.HasWallBetween(Grid, origin, target.WorldPosition))
+                        {
+                            target = null;
+                        }
+                    }
+
                     var workFrom = spanFrom ?? aim;
                     try
                     {
-                        var work = SpellCodex.WorkOf(outcome.Spell);
                         workNote = WorldWork.Apply(Grid, work, outcome.Material, origin, workFrom, aim);
                         if (work == SpellId.Wall)
                         {

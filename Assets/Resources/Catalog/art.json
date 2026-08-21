@@ -1,5 +1,5 @@
 {
-  "note": "Custom sprites and items. Built-in sprite ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, charge-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, stone-water, stone-earth, stone-air, stone-body, stone-spirit, stone-mind, stone-grove, stone-flood, stone-spark, ice-thing, fire-golem, stone-man, warden. A custom still replaces the generated clip. Walk/idle/cast clips are adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast. Paint new ones in Tools/catalog-editor.html.",
+  "note": "Custom sprites and items. Drop Assets/Resources/Sprites/{id}.png to replace a built-in, or add a sprites[] row with source and optional pivot. Painted cells still work. See ART.md. Built-in ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, charge-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, ice-thing, fire-golem, stone-man, warden. Clips: adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast.",
   "sprites": [],
   "items": [
     {
