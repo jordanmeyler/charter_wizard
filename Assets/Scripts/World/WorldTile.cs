@@ -55,8 +55,15 @@ namespace RuneMagic
         public float Fire { get; private set; }
         public float Wet { get; private set; }
         public float Charge { get; private set; }
+        public float Fog { get; private set; }
+        public float Miasma { get; private set; }
         public bool Kindled { get; private set; }
         public int Growth => _growth;
+        public bool IsBurning => Fire > 0.35f;
+        public bool HasFog => Fog > 0.2f;
+        public bool HasMiasma => Miasma > 0.2f;
+        public bool IsPoisonWater =>
+            Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
         public float Flammability => Def.WorldMaterial.Flammability;
         public float Conductivity => Def.WorldMaterial.Conductivity;
         public bool IsPlantish =>
@@ -303,6 +310,102 @@ namespace RuneMagic
             RefreshFx();
         }
 
+        public void Cloak(float amount)
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            {
+                return;
+            }
+
+            Fog = Mathf.Clamp01(Fog + amount);
+            RefreshFx();
+        }
+
+        public void Foul(float amount)
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            {
+                return;
+            }
+
+            Miasma = Mathf.Clamp01(Miasma + amount);
+            RefreshFx();
+        }
+
+        /// <summary>
+        /// Breath, hunger, or light takes what hangs on this cell.
+        /// Air also dries yield and scours an acid slick.
+        /// </summary>
+        public bool Vent(SpellId spell)
+        {
+            var changed = false;
+            if (Fog > 0.05f && WorldWork.ClearsVeil(spell, VeilKind.Fog))
+            {
+                Fog = 0f;
+                changed = true;
+            }
+
+            if (Miasma > 0.05f && WorldWork.ClearsVeil(spell, VeilKind.Poison))
+            {
+                Miasma = 0f;
+                changed = true;
+            }
+
+            if (WorldWork.IsAirWork(spell) && Wet > 0.05f)
+            {
+                Dry(0.55f);
+                changed = true;
+            }
+
+            if ((WorldWork.IsAirWork(spell) || WorldWork.IsFireWork(spell))
+                && Material == MaterialId.Acid
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge))
+            {
+                Reshape(new TileDef(Kind, MaterialId.Scoured));
+                changed = true;
+            }
+
+            if (changed)
+            {
+                RefreshFx();
+            }
+
+            return changed;
+        }
+
+        /// <summary>
+        /// Heat finds this cell. Ice always yields to fire. Witchfire
+        /// takes glacier and glass. A stood body falls back to what was under it.
+        /// </summary>
+        public bool MeltWith(SpellId spell)
+        {
+            if (Kind == TileKind.Door || !MatterLaw.Melts(spell, Material))
+            {
+                return false;
+            }
+
+            if (IsConjured)
+            {
+                return RestoreFoundation();
+            }
+
+            var leftover = MatterLaw.MeltsTo(Material);
+            if (leftover == MaterialId.None)
+            {
+                leftover = MaterialId.Damp;
+            }
+
+            Wet = Mathf.Max(Wet, 0.55f);
+            if (Fire > 0.05f)
+            {
+                Fire = Mathf.Max(0f, Fire - 0.15f);
+            }
+
+            var kind = Kind == TileKind.Wall ? TileKind.Floor : Kind;
+            Reshape(new TileDef(kind, leftover));
+            return true;
+        }
+
         public void Grow(int steps)
         {
             if (!IsPlantish || steps <= 0)
@@ -504,7 +607,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Fire < 0.08f && Wet < 0.18f && Charge < 0.18f && _growth < 1)
+            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && _growth < 1)
             {
                 if (_fx != null)
                 {
@@ -521,6 +624,16 @@ namespace RuneMagic
             {
                 fx.sprite = SpriteFactory.Named("tile-fire");
                 fx.color = new Color(1f, 0.55f, 0.12f, 0.35f + Fire * 0.5f);
+            }
+            else if (Miasma > 0.18f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-poison");
+                fx.color = new Color(0.42f, 0.88f, 0.2f, 0.28f + Miasma * 0.45f);
+            }
+            else if (Fog > 0.18f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-fog");
+                fx.color = new Color(0.62f, 0.66f, 0.7f, 0.24f + Fog * 0.4f);
             }
             else if (Charge > 0.18f)
             {
@@ -637,7 +750,7 @@ namespace RuneMagic
                 return;
             }
 
-            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Wet > 0.18f || Charge > 0.18f || _growth >= 1 || _telegraph != MaterialId.None;
+            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Miasma > 0.18f || Fog > 0.18f || Wet > 0.18f || Charge > 0.18f || _growth >= 1 || _telegraph != MaterialId.None;
             if (!live)
             {
                 return;
@@ -661,6 +774,14 @@ namespace RuneMagic
                 if (Fire > 0.12f)
                 {
                     _fx.sprite = SpriteFactory.Clip("tile-fire")[frame % 3];
+                }
+                else if (Miasma > 0.18f)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-poison")[frame % 2];
+                }
+                else if (Fog > 0.18f)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-fog")[frame % 2];
                 }
                 else if (Charge > 0.18f)
                 {

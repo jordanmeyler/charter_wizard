@@ -122,7 +122,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
-| **Flame** | Fire · Salt | Hunger given a body. Worked fire, not wild hunger. | A violet standing flame — a hearth, a column, a curtain |
+| **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
 | **Ice** | Water · Salt · Earth | Yield given a body and asked to rest. Hard water. | Solid water that will thaw |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
 | **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life |
@@ -135,7 +135,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Current** | Water · Mercury | Yield going. | A flow |
 | **Metal** | Lava · Earth | Hungry earth given more rest, then stilled. | Hard. The spark’s road |
 | **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
-| **Glacier** | Ice · Stone | Ice given Stone. | Ice that will not thaw easily |
+| **Glacier** | Ice · Stone | Ice given Stone. | Ice that ordinary fire cannot take. Witchfire can |
 | **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
 | **Inferno** | Fire · Fire · Salt | A fire-body taught to travel and keep eating. | Spreading hunger |
 | **Plasma** | Inferno · Spark | Inferno joined to Spark. | Reserved |
@@ -164,8 +164,8 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | # | What you see (no names needed) | Spell | Chain from the eleven | From a join | Form | Does |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Hunger sent. Fire that flies. Water thrown on it ends it. | Fireball | Fire · Mercury | — | Shot | Kill |
-| 2 | Hunger given a standing body and asked to rest. It stands. | Flame-pillar | Fire · Salt · Earth | Flame · Earth | Pillar | Kill / Neither |
-| 3 | A stood fire-body sent *into* a thing. Salt keeps it from flying. | Melt | Fire · Salt · Mercury | Flame · Mercury | Remote | Neither |
+| 2 | Hunger given a standing body and asked to rest. It stands. | Flame-pillar | Fire · Salt · Earth | — | Pillar | Kill / Neither |
+| 3 | A stood fire-body sent *into* a thing. Salt keeps it from flying. | Melt | Fire · Salt · Mercury | — | Remote | Neither |
 | 4 | Hunger needs breath; that breath is withheld. The flame cannot live. | Smother | Fire · Air · Dark | Spark · Dark | Remote | Neither |
 | 5 | Hunger is shown, given breath, and sent as a clean line. | Sun-lance | Fire · Light · Air · Mercury | Spark · Light · Mercury | Shot | Kill |
 | 6 | Hunger’s wildcard given a standing body — a wick that stays. | Ignite | Fire · Sulphur · Salt | — | Remote | Neither |
@@ -269,8 +269,9 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 67 | A spark given form from the air, moving at something. It falls from the sky. Walls will not hide them. | Lightning strike | Fire · Air · Salt · Air · Mercury | Spark · Salt · Air · Mercury | Remote | Kill |
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
 | 69 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
+| 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
 
-Fire is raw hunger (orange). **Flame** is Fire · Salt — hunger given a body. Worked fire shows violet, so a flame-pillar and a flame curtain read as magic flame, not a campfire.
+Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass.
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 

@@ -66,6 +66,8 @@ namespace RuneMagic
         public string teachesFormula;
         public string note;
         public string look;
+        public string matter;
+        public bool fragile;
     }
 
     [Serializable]

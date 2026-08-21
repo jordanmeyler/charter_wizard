@@ -7,7 +7,7 @@ namespace RuneMagic
     /// A terrain lock: ice across a door, a rope on a portcullis,
     /// poison in a chamber. The right spell clears the cells.
     /// </summary>
-    public sealed class BarrierLock : MonoBehaviour, ISpellLock, IRuneSource
+    public sealed class BarrierLock : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -24,6 +24,7 @@ namespace RuneMagic
         WorldGrid _grid;
         Vector2Int[] _cells;
         RuneId[] _formula;
+        MaterialId _matter;
         string _grant;
         string _clearMaterial;
         string _resolvedNote;
@@ -49,6 +50,7 @@ namespace RuneMagic
             _grant = grant;
             _clearMaterial = clearMaterial;
             _resolvedNote = resolvedNote;
+            _matter = MatterLaw.MatterOf(formula);
             _cells = cells != null ? new Vector2Int[cells.Count] : System.Array.Empty<Vector2Int>();
             if (cells != null)
             {
@@ -80,6 +82,28 @@ namespace RuneMagic
                 buffer.Add(_formula[i]);
             }
         }
+
+        public float DistanceTo(Vector3 point) =>
+            CellVolume.DistanceTo(point, transform.position, _cells);
+
+        public Vector3 ClosestPoint(Vector3 point) =>
+            CellVolume.ClosestPoint(point, transform.position, _cells);
+
+        public bool Touches(Vector3 point, float radius) =>
+            CellVolume.Touches(point, radius, transform.position, _cells);
+
+        public bool Crosses(Vector3 from, Vector3 to, float width) =>
+            CellVolume.Crosses(from, to, width, transform.position, _cells);
+
+        public bool OccupiesCell(Vector2Int cell) =>
+            CellVolume.Occupies(_cells, cell, transform.position);
+
+        /// <summary>
+        /// An ice cage yields to any heat that can melt ice, not only
+        /// the spells named on the lock.
+        /// </summary>
+        public bool YieldsTo(SpellId spell) =>
+            MatterLaw.Melts(spell, _matter);
 
         public string FormulaText()
         {

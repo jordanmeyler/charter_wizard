@@ -74,6 +74,26 @@ namespace RuneMagic
                     "hunger holding the walk. Yield given a body, then the mind holds it on you. Yield thrown also forgets the flame.");
             }
 
+            if (tile.HasMiasma)
+            {
+                return "foul breath hanging on this tile. Send air through it.";
+            }
+
+            if (tile.IsBurning)
+            {
+                return "hunger standing on the floor.";
+            }
+
+            if (tile.HasFog)
+            {
+                return "a hanging veil on this tile.";
+            }
+
+            if (tile.IsPoisonWater)
+            {
+                return "poison water. Breath or hunger will take it.";
+            }
+
             var material = tile.Def.WorldMaterial;
             if (material != null && !string.IsNullOrEmpty(material.Note))
             {

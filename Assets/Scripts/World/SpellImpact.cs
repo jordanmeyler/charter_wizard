@@ -35,6 +35,8 @@ namespace RuneMagic
             var notes = new List<string>(4);
             var hits = new List<ISpellLock>();
             var radius = SpellVerb.RadiusOf(spell, shape, potency);
+            var sweep = WorldPhysics.Build(grid, spell, shape, origin, origin, aim, potency);
+            WorldPhysics.BlowFog(locks, sweep);
 
             if (verb.Target == SpellTarget.Self)
             {
@@ -45,14 +47,15 @@ namespace RuneMagic
                     notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept));
                 }
 
-                ApplyTiles(grid, verb, origin, radius, notes);
+                WorldPhysics.Collect(locks, sweep, hits, verb, grid);
+                ApplyTiles(grid, spell, verb, origin, radius, notes);
                 return new SpellImpactResult(First(notes), hits);
             }
 
-            if (verb.Target == SpellTarget.Area || shape == SpellShape.Spread)
+            if (verb.Target == SpellTarget.Area || shape == SpellShape.Spread || WorldPhysics.SweepsPath(spell, shape))
             {
                 var center = shape == SpellShape.Spread ? origin : aim;
-                CollectLocks(locks, center, radius, hits, verb);
+                WorldPhysics.Collect(locks, sweep, hits, verb, grid);
                 ApplyHosts(hits, origin, verb, notes);
                 var self = AdeptAvatar.Find();
                 if (self != null && Vector2.Distance(self.transform.position, center) <= radius && verb.Status != StatusId.None)
@@ -64,18 +67,18 @@ namespace RuneMagic
                     }
                 }
 
-                ApplyTiles(grid, verb, center, radius, notes);
+                ApplyTiles(grid, spell, verb, center, Mathf.Max(radius, sweep.Width), notes);
                 return new SpellImpactResult(First(notes), hits);
             }
 
             if (WorldWork.IsSinglePillar(spell) && (WorldWork.IsFireWork(spell) || spell == SpellId.LavaPillar))
             {
-                CollectLocksOnTile(locks, aim, hits, verb);
+                WorldPhysics.Collect(locks, sweep, hits, verb, grid);
             }
 
             if (hits.Count == 0)
             {
-                var single = Nearest(locks, aim, Mathf.Max(radius, 1.55f), verb, grid, spell, origin);
+                var single = WorldPhysics.Nearest(locks, aim, Mathf.Max(radius, sweep.Width, 1.55f), verb, grid, spell, origin);
                 if (single != null)
                 {
                     hits.Add(single);
@@ -83,109 +86,8 @@ namespace RuneMagic
             }
 
             ApplyHosts(hits, origin, verb, notes);
-            ApplyTiles(grid, verb, aim, Mathf.Max(0.8f, radius), notes);
+            ApplyTiles(grid, spell, verb, aim, Mathf.Max(0.8f, radius, sweep.Width), notes);
             return new SpellImpactResult(First(notes), hits);
-        }
-
-        static void CollectLocks(
-            IReadOnlyList<ISpellLock> locks,
-            Vector3 center,
-            float radius,
-            List<ISpellLock> hits,
-            SpellVerb verb = default)
-        {
-            if (locks == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < locks.Count; i++)
-            {
-                var encounter = locks[i];
-                if (encounter is MonoBehaviour body && body != null && !encounter.Resolved &&
-                    CanTake(encounter, verb) &&
-                    Vector2.Distance(center, encounter.WorldPosition) <= radius)
-                {
-                    hits.Add(encounter);
-                }
-            }
-        }
-
-        static void CollectLocksOnTile(
-            IReadOnlyList<ISpellLock> locks,
-            Vector3 point,
-            List<ISpellLock> hits,
-            SpellVerb verb)
-        {
-            if (locks == null)
-            {
-                return;
-            }
-
-            var tile = WorldWork.CoordOf(point);
-            for (var i = 0; i < locks.Count; i++)
-            {
-                var encounter = locks[i];
-                if (encounter is not MonoBehaviour body || body == null || encounter.Resolved || !CanTake(encounter, verb))
-                {
-                    continue;
-                }
-
-                if (WorldWork.CoordOf(encounter.WorldPosition) == tile && !hits.Contains(encounter))
-                {
-                    hits.Add(encounter);
-                }
-            }
-        }
-
-        static ISpellLock Nearest(
-            IReadOnlyList<ISpellLock> locks,
-            Vector3 point,
-            float radius,
-            SpellVerb verb,
-            WorldGrid grid,
-            SpellId spell,
-            Vector3 origin)
-        {
-            ISpellLock best = null;
-            var bestDistance = radius;
-            if (locks == null)
-            {
-                return null;
-            }
-
-            for (var i = 0; i < locks.Count; i++)
-            {
-                var encounter = locks[i];
-                if (encounter is not MonoBehaviour body || body == null || encounter.Resolved || !CanTake(encounter, verb))
-                {
-                    continue;
-                }
-
-                if (WorldWork.StopsOnWalls(spell) && WorldWork.HasWallBetween(grid, origin, encounter.WorldPosition))
-                {
-                    continue;
-                }
-
-                var distance = Vector2.Distance(point, encounter.WorldPosition);
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    best = encounter;
-                }
-            }
-
-            return best;
-        }
-
-        static bool CanTake(ISpellLock encounter, SpellVerb verb)
-        {
-            if (!StatusSpec.IsMindAilment(verb.Status))
-            {
-                return true;
-            }
-
-            return encounter is MonoBehaviour body && body != null && StatusHost.On(body) != null;
         }
 
         static void ApplyHosts(List<ISpellLock> hits, Vector3 from, SpellVerb verb, List<string> notes)
@@ -212,7 +114,7 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyTiles(WorldGrid grid, SpellVerb verb, Vector3 center, float radius, List<string> notes)
+        static void ApplyTiles(WorldGrid grid, SpellId spell, SpellVerb verb, Vector3 center, float radius, List<string> notes)
         {
             if (grid == null || verb.Tiles == TileVerb.None)
             {
@@ -229,6 +131,11 @@ namespace RuneMagic
                 {
                     case TileVerb.Ignite:
                         tile.Ignite(0.85f);
+                        if (tile.MeltWith(spell))
+                        {
+                            changed++;
+                        }
+
                         changed++;
                         break;
                     case TileVerb.Douse:
@@ -279,6 +186,21 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Cloak:
+                        tile.Cloak(1f);
+                        changed++;
+                        break;
+                    case TileVerb.Foul:
+                        tile.Foul(1f);
+                        changed++;
+                        break;
+                    case TileVerb.Vent:
+                        if (tile.Vent(spell))
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -312,7 +234,13 @@ namespace RuneMagic
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge
                             ? "The seed runs where it can."
-                            : "Yield finds the floor.");
+                            : verb.Tiles == TileVerb.Vent
+                                ? "Breath finds the tile."
+                                : verb.Tiles == TileVerb.Cloak
+                                    ? "The hanging veil is given a body."
+                                    : verb.Tiles == TileVerb.Foul
+                                        ? "A sick mist stands on the floor."
+                                        : "Yield finds the floor.");
             }
         }
 

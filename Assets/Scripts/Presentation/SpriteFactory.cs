@@ -74,6 +74,8 @@ namespace RuneMagic
                 case "tile-wet": return TileWash(new Color(0.25f, 0.55f, 0.95f, 0.55f));
                 case "tile-charge": return TileWash(new Color(0.75f, 0.9f, 1f, 0.65f));
                 case "tile-grow": return TileWash(new Color(0.3f, 0.7f, 0.22f, 0.5f));
+                case "tile-fog": return TileWash(new Color(0.62f, 0.66f, 0.72f, 0.5f));
+                case "tile-poison": return TileWash(new Color(0.4f, 0.86f, 0.18f, 0.55f));
                 case "nature-fire": return NatureOf(RuneId.Fire);
                 case "nature-water": return NatureOf(RuneId.Water);
                 case "nature-earth": return NatureOf(RuneId.Earth);

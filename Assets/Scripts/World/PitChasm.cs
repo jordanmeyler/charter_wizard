@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RuneMagic
 {
-    public sealed class PitChasm : MonoBehaviour, ISpellLock, IRuneSource
+    public sealed class PitChasm : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
@@ -38,6 +38,21 @@ namespace RuneMagic
         public void Collect(System.Collections.Generic.List<RuneId> buffer)
         {
         }
+
+        public float DistanceTo(Vector3 point) =>
+            CellVolume.DistanceTo(point, transform.position, _pits);
+
+        public Vector3 ClosestPoint(Vector3 point) =>
+            CellVolume.ClosestPoint(point, transform.position, _pits);
+
+        public bool Touches(Vector3 point, float radius) =>
+            CellVolume.Touches(point, radius, transform.position, _pits);
+
+        public bool Crosses(Vector3 from, Vector3 to, float width) =>
+            CellVolume.Crosses(from, to, width, transform.position, _pits);
+
+        public bool OccupiesCell(Vector2Int cell) =>
+            CellVolume.Occupies(_pits, cell, transform.position);
 
         public string FormulaText() => "Earth is missing — the weave tears";
 

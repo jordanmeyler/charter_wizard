@@ -99,6 +99,10 @@ namespace RuneMagic
                     return Cache(key, Frames(2, PaintTileCharge));
                 case "tile-grow":
                     return Cache(key, Frames(2, PaintTileGrow));
+                case "tile-fog":
+                    return Cache(key, Frames(2, PaintTileFog));
+                case "tile-poison":
+                    return Cache(key, Frames(2, PaintTilePoison));
                 case "stone-fire":
                     return Cache(key, Frames(2, frame => PaintStone(frame, new Color(0.95f, 0.32f, 0.08f), new Color(1f, 0.78f, 0.28f))));
                 case "stone-water":
@@ -801,6 +805,32 @@ namespace RuneMagic
                 canvas.FillCircle(12, 12 + frame, 4, new Color(0.34f, 0.62f, 0.22f, 0.7f));
                 canvas.FillCircle(20, 16, 5, new Color(0.28f, 0.52f, 0.18f, 0.65f));
                 canvas.Line(16, 8, 16, 20 + frame, new Color(0.18f, 0.36f, 0.12f, 0.7f));
+                return canvas.ToSprite(32);
+            });
+        }
+
+        static Sprite PaintTileFog(int frame)
+        {
+            return Memo($"actor-tilefog-v1:{frame}", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(14 + frame, 16, 13, new Color(0.62f, 0.66f, 0.72f, 0.4f));
+                canvas.SoftCircle(20 - frame, 14, 10, new Color(0.7f, 0.72f, 0.76f, 0.28f));
+                canvas.Line(6, 12 + frame, 26, 18 - frame, new Color(0.82f, 0.84f, 0.88f, 0.22f));
+                return canvas.ToSprite(32);
+            });
+        }
+
+        static Sprite PaintTilePoison(int frame)
+        {
+            return Memo($"actor-tilepoison-v1:{frame}", () =>
+            {
+                var canvas = new PixelCanvas(32);
+                canvas.Clear(Clear);
+                canvas.SoftCircle(16, 15 + frame, 13, new Color(0.38f, 0.82f, 0.16f, 0.45f));
+                canvas.FillCircle(11 + frame, 12, 5, new Color(0.5f, 0.92f, 0.22f, 0.4f));
+                canvas.FillCircle(21, 18 - frame, 4, new Color(0.28f, 0.55f, 0.12f, 0.5f));
                 return canvas.ToSprite(32);
             });
         }

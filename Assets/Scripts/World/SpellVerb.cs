@@ -17,7 +17,10 @@ namespace RuneMagic
         Wet,
         Grow,
         Charge,
-        Freeze
+        Freeze,
+        Cloak,
+        Foul,
+        Vent
     }
 
     /// <summary>
@@ -74,6 +77,7 @@ namespace RuneMagic
                 case SpellId.LavaPillar:
                 case SpellId.Ignite:
                 case SpellId.Melt:
+                case SpellId.Witchfire:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Burning, 5f, TileVerb.Ignite);
                 case SpellId.LiveFloor:
                 case SpellId.LavaFlood:
@@ -84,7 +88,7 @@ namespace RuneMagic
                 case SpellId.LightningStrike:
                     return new SpellVerb(SpellTarget.Single, 1.15f, StatusId.Stunned, 2.6f, TileVerb.Charge);
                 case SpellId.Push:
-                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.None);
+                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Vent);
                 case SpellId.ChainLightning:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2.8f, TileVerb.Charge);
                 case SpellId.Jolt:
@@ -145,14 +149,18 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
                 case SpellId.StormCall:
                     return new SpellVerb(SpellTarget.Area, 3f, StatusId.Soaked, 4f, TileVerb.Wet);
+                case SpellId.Gust:
+                case SpellId.Gale:
+                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Vent);
                 case SpellId.Fog:
-                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.Gloom:
+                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Cloak);
                 case SpellId.TimeStop:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2f, TileVerb.None);
                 case SpellId.Blight:
-                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
                 case SpellId.GraveDust:
-                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.None);
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.Foul);
                 case SpellId.Hop:
                 case SpellId.Flight:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.None, 0f, TileVerb.None);

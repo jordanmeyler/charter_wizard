@@ -34,6 +34,7 @@ namespace RuneMagic
                 case "barrier":
                 case "gate":
                 case "plaque":
+                case "prop":
                     return false;
                 default:
                     return true;

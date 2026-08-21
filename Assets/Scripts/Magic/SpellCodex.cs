@@ -83,8 +83,8 @@ namespace RuneMagic
         static CodexEntry[] BuiltIn() => new[]
         {
             E(1, SpellBook.End, SpellId.Fireball, "Hunger sent. Fire that flies.", "Fireball", "Fire · Mercury", "", "Shot", SpellOutcome.Kill),
-            E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "Flame · Earth", "Pillar", SpellOutcome.Kill),
-            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying.", "Melt", "Fire · Salt · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Neither),
+            E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "", "Pillar", SpellOutcome.Kill),
+            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying.", "Melt", "Fire · Salt · Mercury", "", "Remote", SpellOutcome.Neither),
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
             E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),
@@ -150,7 +150,8 @@ namespace RuneMagic
             E(66, SpellBook.Weather, SpellId.Push, "Breath given a body and sent. Wind that pushes the person.", "Push", "Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain)
+            E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
+            E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -414,6 +415,8 @@ namespace RuneMagic
             {
                 broken.Add("Remote, hop, and stood work must not be treated as flying shots");
             }
+
+            WorldPhysics.Audit(broken);
         }
 
         public static bool TryGet(int number, out CodexEntry entry)

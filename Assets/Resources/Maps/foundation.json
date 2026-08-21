@@ -308,6 +308,7 @@
             "Ignite",
             "SunLance",
             "Scald",
+            "Witchfire",
             "Thaw"
           ],
           "sprite": "ice-thing"
@@ -330,6 +331,7 @@
             "Ignite",
             "SunLance",
             "Scald",
+            "Witchfire",
             "Thaw"
           ],
           "cells": [
@@ -359,6 +361,12 @@
           "x": 3,
           "y": 7,
           "item": "fire-stone"
+        },
+        {
+          "type": "item",
+          "x": 10,
+          "y": 10,
+          "item": "ice-cask"
         }
       ],
       "id": "fire-wing",
@@ -1120,7 +1128,15 @@
             "Gale",
             "Push",
             "StormCall",
-            "Flight"
+            "Flight",
+            "Fireball",
+            "FlamePillar",
+            "Ignite",
+            "Melt",
+            "Witchfire",
+            "SunLance",
+            "DayWake",
+            "BrilliantArc"
           ],
           "cells": [
             1,
