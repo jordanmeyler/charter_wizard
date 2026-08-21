@@ -74,11 +74,8 @@ namespace RuneMagic
             _status = gameObject.AddComponent<StatusHost>();
             _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
             var kind = CombatOf(formulaId, attack);
-            if (kind != CombatKind.None)
-            {
-                var combat = gameObject.AddComponent<CombatActor>();
-                combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
-            }
+            var combat = gameObject.AddComponent<CombatActor>();
+            combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
         }
 
         /// <summary>
@@ -172,14 +169,14 @@ namespace RuneMagic
                 return;
             }
 
-            if (_status != null && _status.BlocksMove)
+            if (GetComponent<CombatActor>() != null)
             {
-                transform.position = _rest;
                 return;
             }
 
-            if (GetComponent<CombatActor>() != null)
+            if (_status != null && _status.BlocksMove)
             {
+                transform.position = _rest;
                 return;
             }
 
@@ -196,41 +193,6 @@ namespace RuneMagic
             }
 
             LockReward.Grant(transform.position, _grant);
-            if (spell == SpellId.Command)
-            {
-                var player = AdeptAvatar.Find();
-                var away = player != null
-                    ? (transform.position - player.transform.position)
-                    : Vector3.right;
-                away.z = 0f;
-                if (away.sqrMagnitude < 0.01f)
-                {
-                    away = Vector3.right;
-                }
-
-                away = away.normalized * 1.35f;
-                _rest += away;
-                transform.position = _rest;
-                if (_renderer != null)
-                {
-                    _renderer.color = new Color(0.75f, 0.85f, 1f, 0.85f);
-                }
-
-                Destroy(gameObject, 2.4f);
-                return $"{DisplayName} obeys. They step aside.";
-            }
-
-            if (spell == SpellId.Lull)
-            {
-                if (_renderer != null)
-                {
-                    _renderer.color = new Color(0.55f, 0.7f, 1f, 0.35f);
-                }
-
-                Destroy(gameObject, 0.8f);
-                return $"{DisplayName} sleeps. The aisle is open.";
-            }
-
             if (_renderer != null)
             {
                 _renderer.color = new Color(1f, 1f, 1f, 0.15f);

@@ -1759,6 +1759,7 @@
             "Lull",
             "Terror",
             "Command",
+            "Confuse",
             "Jolt"
           ],
           "sprite": "stone-man",
@@ -1780,6 +1781,7 @@
             "Lull",
             "Terror",
             "Command",
+            "Confuse",
             "Jolt"
           ],
           "sprite": "stone-man",
@@ -1801,6 +1803,7 @@
             "Lull",
             "Terror",
             "Command",
+            "Confuse",
             "Jolt"
           ],
           "sprite": "stone-man",

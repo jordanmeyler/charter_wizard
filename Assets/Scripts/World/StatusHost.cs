@@ -51,6 +51,38 @@ namespace RuneMagic
             return false;
         }
 
+        public bool YieldsPassage
+        {
+            get
+            {
+                for (var i = 0; i < _effects.Count; i++)
+                {
+                    if (_effects[i].Remaining > 0f && StatusSpec.YieldsPassage(_effects[i].Id))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public StatusId MindAilment
+        {
+            get
+            {
+                for (var i = 0; i < _effects.Count; i++)
+                {
+                    if (_effects[i].Remaining > 0f && StatusSpec.IsMindAilment(_effects[i].Id))
+                    {
+                        return _effects[i].Id;
+                    }
+                }
+
+                return StatusId.None;
+            }
+        }
+
         public bool BlocksAction
         {
             get
@@ -181,9 +213,19 @@ namespace RuneMagic
             }
 
             var held = scale * seconds;
+            if (id == StatusId.Burning || id == StatusId.Stunned || id == StatusId.Frozen)
+            {
+                _effects.RemoveAll(effect => effect.Id == StatusId.Sleeping);
+            }
+
             if (ElementalLaw.IsWard(id))
             {
                 _effects.RemoveAll(effect => ElementalLaw.IsWard(effect.Id) && effect.Id != id);
+            }
+
+            if (StatusSpec.IsMindAilment(id))
+            {
+                _effects.RemoveAll(effect => StatusSpec.IsMindAilment(effect.Id) && effect.Id != id);
             }
 
             for (var i = 0; i < _effects.Count; i++)
@@ -192,13 +234,13 @@ namespace RuneMagic
                 {
                     _effects[i].Remaining = Mathf.Max(_effects[i].Remaining, held);
                     RefreshChip();
-                    return $"{StatusSpec.Of(id).Name} holds.";
+                    return $"{name} is {StatusSpec.Of(id).Name}.";
                 }
             }
 
             _effects.Add(new StatusInstance(id, held));
             RefreshChip();
-            return $"{StatusSpec.Of(id).Name} takes.";
+            return $"{name} is {StatusSpec.Of(id).Name}.";
         }
 
         public void Clear()
@@ -219,6 +261,8 @@ namespace RuneMagic
 
         float Affinity(StatusId id)
         {
+            // Mind ailments land on every nature for the demo.
+            // Later a ward or a nature can return 0 here and shrug them off.
             switch (Nature)
             {
                 case CreatureNature.Fire:
@@ -251,14 +295,14 @@ namespace RuneMagic
                         return 0.25f;
                     }
 
-                    if (id == StatusId.Stunned || id == StatusId.Sleeping || id == StatusId.Frightened)
+                    if (id == StatusId.Stunned || StatusSpec.IsMindAilment(id))
                     {
                         return 1.2f;
                     }
 
                     break;
                 case CreatureNature.Mind:
-                    if (id == StatusId.Stunned || id == StatusId.Sleeping || id == StatusId.Frightened)
+                    if (id == StatusId.Stunned || StatusSpec.IsMindAilment(id))
                     {
                         return 1.35f;
                     }

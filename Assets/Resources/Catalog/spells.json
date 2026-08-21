@@ -716,7 +716,10 @@
       "form": "Remote",
       "outcome": "Neither",
       "gate": "",
-      "work": "Rage"
+      "work": "Rage",
+      "target": "Single",
+      "status": "Raging",
+      "statusSeconds": 8
     },
     {
       "number": 36,
@@ -729,7 +732,10 @@
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "",
-      "work": "Terror"
+      "work": "Terror",
+      "target": "Single",
+      "status": "Frightened",
+      "statusSeconds": 6
     },
     {
       "number": 37,
@@ -742,7 +748,10 @@
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "",
-      "work": "Lull"
+      "work": "Lull",
+      "target": "Single",
+      "status": "Sleeping",
+      "statusSeconds": 6
     },
     {
       "number": 38,
@@ -833,7 +842,10 @@
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "Free",
-      "work": "GraveSleep"
+      "work": "GraveSleep",
+      "target": "Single",
+      "status": "Sleeping",
+      "statusSeconds": 6
     },
     {
       "number": 45,
@@ -950,7 +962,10 @@
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "",
-      "work": "Command"
+      "work": "Command",
+      "target": "Single",
+      "status": "Charmed",
+      "statusSeconds": 10
     },
     {
       "number": 54,
@@ -1070,6 +1085,22 @@
       "outcome": "Neither",
       "gate": "",
       "work": "Shatter"
+    },
+    {
+      "number": 62,
+      "id": "Confuse",
+      "book": "Mind",
+      "name": "Confuse",
+      "want": "Breath turned by Sulphur, into a mind. They lose the thread.",
+      "recipe": "Air · Sulphur · Mercury",
+      "via": "",
+      "form": "Remote",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Confuse",
+      "target": "Single",
+      "status": "Confused",
+      "statusSeconds": 6
     }
   ]
 }

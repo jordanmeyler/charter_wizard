@@ -16,7 +16,10 @@ namespace RuneMagic
         Veiled,
         Watershield,
         Flameward,
-        Windward
+        Windward,
+        Raging,
+        Charmed,
+        Confused
     }
 
     public enum StatusKind
@@ -87,8 +90,14 @@ namespace RuneMagic
                 case StatusId.Rooted:
                     return new StatusSpec(id, "rooted", StatusKind.Debuff, new Color(0.42f, 0.62f, 0.28f), Essence.Earth, false, true, false);
                 case StatusId.Frightened:
-                    return new StatusSpec(id, "frightened", StatusKind.Debuff, new Color(0.42f, 0.18f, 0.55f), Essence.Mind, true, false, false);
-                case StatusId.Stoneskin:
+                    return new StatusSpec(id, "frightened", StatusKind.Debuff, new Color(0.42f, 0.18f, 0.55f), Essence.Mind, false, false, false);
+                case StatusId.Raging:
+                    return new StatusSpec(id, "raging", StatusKind.Debuff, new Color(1f, 0.28f, 0.1f), Essence.Mind, false, false, false);
+                case StatusId.Charmed:
+                    return new StatusSpec(id, "charmed", StatusKind.Debuff, new Color(0.95f, 0.42f, 0.72f), Essence.Mind, false, false, false);
+                case StatusId.Confused:
+                    return new StatusSpec(id, "confused", StatusKind.Debuff, new Color(0.78f, 0.86f, 0.28f), Essence.Mind, false, false, false);
+                case StatusId.Stoneskin,
                     return new StatusSpec(id, "stoneskin", StatusKind.Ward, new Color(0.62f, 0.58f, 0.5f), Essence.Earth, false, false, true);
                 case StatusId.Veiled:
                     return new StatusSpec(id, "veiled", StatusKind.Buff, new Color(0.28f, 0.22f, 0.4f), Essence.None, false, false, false);
@@ -112,6 +121,23 @@ namespace RuneMagic
             }
 
             return System.Enum.TryParse(name, true, out id) && id != StatusId.None;
+        }
+
+        public static bool IsMindAilment(StatusId id)
+        {
+            return id == StatusId.Sleeping
+                || id == StatusId.Frightened
+                || id == StatusId.Raging
+                || id == StatusId.Charmed
+                || id == StatusId.Confused;
+        }
+
+        public static bool YieldsPassage(StatusId id)
+        {
+            return id == StatusId.Sleeping
+                || id == StatusId.Stunned
+                || id == StatusId.Frozen
+                || id == StatusId.Charmed;
         }
     }
 

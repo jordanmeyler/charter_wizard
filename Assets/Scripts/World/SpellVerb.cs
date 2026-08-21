@@ -107,7 +107,19 @@ namespace RuneMagic
                 case SpellId.Lull:
                 case SpellId.GraveSleep:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Sleeping, 6f, TileVerb.None);
+                case SpellId.Rage:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Raging, 8f, TileVerb.None);
+                case SpellId.Frenzy:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Raging, 6f, TileVerb.None);
+                case SpellId.Command:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Charmed, 10f, TileVerb.None);
+                case SpellId.Daze:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Confused, 6f, TileVerb.None);
+                case SpellId.Confuse:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Confused, 6f, TileVerb.None);
                 case SpellId.Terror:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Frightened, 6f, TileVerb.None);
+                case SpellId.Dread:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Frightened, 5f, TileVerb.None);
                 case SpellId.Stoneskin:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Stoneskin, 14f, TileVerb.None);
@@ -134,6 +146,11 @@ namespace RuneMagic
                 default:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
             }
+        }
+
+        public static bool HoldsMind(SpellId spell)
+        {
+            return StatusSpec.IsMindAilment(Of(spell).Status);
         }
 
         public static bool IsArea(SpellId spell, SpellShape shape)

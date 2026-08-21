@@ -80,7 +80,8 @@ namespace RuneMagic
         Flameward,
         Windward,
         LavaPillar,
-        Shatter
+        Shatter,
+        Confuse
     }
 
     public readonly struct SpellRecipe
@@ -154,6 +155,7 @@ namespace RuneMagic
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Mercury · Salt. You fly.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");
+            Register(RuneId.Air, RuneId.Sulphur, SpellShape.Remote, SpellId.Confuse, "Confuse", "Mind of air, placed elsewhere. They lose the thread.");
             Register(RuneId.Air, RuneId.Lumen, SpellShape.Spread, SpellId.DayWake, "Day-wake", "Light blooming from the feet.");
             Register(RuneId.Air, RuneId.Umbra, SpellShape.Spread, SpellId.Gloom, "Gloom", "Dark air around you.");
 

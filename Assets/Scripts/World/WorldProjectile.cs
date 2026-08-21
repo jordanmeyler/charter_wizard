@@ -19,8 +19,17 @@ namespace RuneMagic
         ProjectileKind _kind;
         float _life = 2.8f;
         SpriteRenderer _renderer;
+        CombatActor _source;
+        ShotAllegiance _allegiance = ShotAllegiance.Hostile;
 
-        public static WorldProjectile Spawn(Vector3 from, Vector2 direction, ProjectileKind kind, WorldGrid grid, float speed = 7.2f)
+        public static WorldProjectile Spawn(
+            Vector3 from,
+            Vector2 direction,
+            ProjectileKind kind,
+            WorldGrid grid,
+            float speed = 7.2f,
+            CombatActor source = null,
+            ShotAllegiance allegiance = ShotAllegiance.Hostile)
         {
             if (direction.sqrMagnitude < 0.0001f)
             {
@@ -33,6 +42,8 @@ namespace RuneMagic
             var shot = host.AddComponent<WorldProjectile>();
             shot._grid = grid;
             shot._kind = kind;
+            shot._source = source;
+            shot._allegiance = allegiance;
             shot._velocity = direction * speed;
             var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             host.transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -89,34 +100,57 @@ namespace RuneMagic
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (!AdeptAvatar.IsAdept(other))
+            if (AdeptAvatar.IsAdept(other))
             {
-                return;
-            }
+                if (_allegiance == ShotAllegiance.Allied)
+                {
+                    return;
+                }
 
-            var adept = other.GetComponent<AdeptAvatar>();
-            if (adept != null && adept.IsAirborne)
-            {
-                return;
-            }
+                var adept = other.GetComponent<AdeptAvatar>();
+                if (adept != null && adept.IsAirborne)
+                {
+                    return;
+                }
 
-            var host = StatusHost.On(other);
-            var incoming = ElementalLaw.Of(_kind);
-            if (host != null && host.Fends(incoming))
-            {
-                var ward = host.FendingName(incoming);
-                var note = _kind == ProjectileKind.Fireball
-                    ? $"Hunger breaks on the {ward}."
-                    : $"The shot breaks on the {ward}.";
-                FindFirstObjectByType<SanctumDirector>()?.Log(note);
+                var host = StatusHost.On(other);
+                var incoming = ElementalLaw.Of(_kind);
+                if (host != null && host.Fends(incoming))
+                {
+                    var ward = host.FendingName(incoming);
+                    var note = _kind == ProjectileKind.Fireball
+                        ? $"Hunger breaks on the {ward}."
+                        : $"The shot breaks on the {ward}.";
+                    FindFirstObjectByType<SanctumDirector>()?.Log(note);
+                    Destroy(gameObject);
+                    return;
+                }
+
+                var reason = _kind == ProjectileKind.Arrow
+                    ? "An arrow finds you. The crystal calls you back."
+                    : "Hunger sent finds you. The crystal calls you back.";
+                FindFirstObjectByType<SanctumDirector>()?.KillPlayer(reason);
                 Destroy(gameObject);
                 return;
             }
 
-            var reason = _kind == ProjectileKind.Arrow
-                ? "An arrow finds you. The crystal calls you back."
-                : "Hunger sent finds you. The crystal calls you back.";
-            FindFirstObjectByType<SanctumDirector>()?.KillPlayer(reason);
+            if (_allegiance == ShotAllegiance.Hostile)
+            {
+                return;
+            }
+
+            var encounter = other.GetComponent<EncounterLock>();
+            if (encounter == null || encounter.Resolved)
+            {
+                return;
+            }
+
+            if (_source != null && encounter.gameObject == _source.gameObject)
+            {
+                return;
+            }
+
+            FindFirstObjectByType<SanctumDirector>()?.TurnLock(encounter);
             Destroy(gameObject);
         }
     }
