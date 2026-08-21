@@ -185,7 +185,7 @@ namespace RuneMagic
             var items = Object.FindObjectsByType<WorldItem>(FindObjectsSortMode.None);
             for (var i = 0; i < items.Length; i++)
             {
-                items[i].Bind(director.Grimoire, director.Log);
+                items[i].Bind(director.Grimoire, director.Log, director.Pack);
             }
         }
     }

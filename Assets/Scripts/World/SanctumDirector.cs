@@ -22,6 +22,7 @@ namespace RuneMagic
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
+        public AdeptPack Pack { get; } = new();
         public PlayMode Mode { get; private set; } = PlayMode.Exploring;
         public FreeAttunement Attunement { get; } = new();
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
@@ -1276,6 +1277,26 @@ namespace RuneMagic
                 : new Color(1f, 0.86f, 0.35f, 0.95f);
         }
 
+        public void TurnLock(ISpellLock encounter)
+        {
+            if (!LockAlive(encounter) || Busy)
+            {
+                return;
+            }
+
+            Grimoire.LearnInterpretation(encounter.FormulaId);
+            var flavor = encounter.Resolve(SpellId.None);
+            OpenDoorFor(encounter);
+            if (_focus == encounter)
+            {
+                _focus = null;
+            }
+
+            CurrentTarget = null;
+            Log(flavor);
+            CheckFinished();
+        }
+
         public void FallInPit(Transform player)
         {
             var body = player.GetComponent<Rigidbody2D>();
@@ -1285,12 +1306,35 @@ namespace RuneMagic
             }
 
             player.position = _safePoint;
-            Log("The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
+            var wet = Underfoot != null && Underfoot.Material == MaterialId.Water;
+            Log(wet
+                ? "You cannot swim. Freeze it, span it, dry it, or give breath a body and cross."
+                : "The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
         }
 
         void CheckFinished()
         {
             if (_finished || _locks == null)
+            {
+                return;
+            }
+
+            var hasFloorGate = false;
+            foreach (var encounter in _locks)
+            {
+                if (encounter is SocketGate gate && gate.FinishesFloor)
+                {
+                    hasFloorGate = true;
+                    if (gate.Resolved)
+                    {
+                        _finished = true;
+                        Log("The sockets of this floor are seated. The way down stands open.");
+                        return;
+                    }
+                }
+            }
+
+            if (hasFloorGate)
             {
                 return;
             }

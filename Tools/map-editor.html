@@ -48,6 +48,7 @@
     <div class="grow"></div>
     <button id="newMap">New map</button>
     <button id="loadSanctum">Load sanctum</button>
+    <button id="loadFoundation">Load foundation</button>
     <button id="importBtn">Import JSON</button>
     <button id="exportBtn">Export JSON</button>
     <input id="file" type="file" accept="application/json" hidden />
@@ -90,6 +91,9 @@
         <button class="tool" data-prop="torch">Torch</button>
         <button class="tool" data-prop="rod">Rod</button>
         <button class="tool" data-prop="chasm">Chasm</button>
+        <button class="tool" data-prop="barrier">Barrier</button>
+        <button class="tool" data-prop="gate">Gate</button>
+        <button class="tool" data-prop="item">Item</button>
         <button class="tool" data-prop="spawn">Spawn</button>
       </div>
       <label class="field">Plaque / rune text
@@ -129,7 +133,7 @@
       ["Snow", "#e0e6f0"], ["Glacier", "#b3d1e0"], ["Acid", "#8cb82e"], ["Water", "#2e619e"], ["Plant", "#386b29"] ]
     ];
     const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
-    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", spawn: "S" };
+    const PROP_MARK = { plaque: "P", runes: "R", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", spawn: "S" };
 
     const SANCTUM = {
       id: "sanctum", name: "The Sanctum", spawn: { x: 2, y: 5 },
@@ -392,6 +396,12 @@
       draw();
     };
     loadSanctum.onclick = () => { map = structuredClone(SANCTUM); roomIndex = 0; draw(); };
+    loadFoundation.onclick = () => {
+      fetch("../Assets/Resources/Maps/foundation.json")
+        .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)))
+        .then(next => { map = next; roomIndex = 0; draw(); })
+        .catch(() => alert("Could not fetch foundation.json. Import it instead."));
+    };
     exportBtn.onclick = () => {
       syncRoomFields();
       map.id = (map.name || "map").toLowerCase().replace(/[^a-z0-9]+/g, "-");

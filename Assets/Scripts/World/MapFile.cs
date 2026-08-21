@@ -52,6 +52,13 @@ namespace RuneMagic
         public string[] keys;
         public string sprite;
         public string item;
+        public int[] cells;
+        public string grant;
+        public string[] requires;
+        public string clearMaterial;
+        public string note;
+        public bool blocking;
+        public bool finishes;
     }
 
     [Serializable]

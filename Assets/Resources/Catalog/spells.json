@@ -895,6 +895,32 @@
       "outcome": "Restrain",
       "gate": "Free",
       "work": "TimeStop"
+    },
+    {
+      "number": 52,
+      "id": "Douse",
+      "book": "Weather",
+      "name": "Douse",
+      "want": "Yield sent. Water thrown. Hunger ends.",
+      "recipe": "Water · Mercury",
+      "via": "",
+      "form": "Shot",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Douse"
+    },
+    {
+      "number": 53,
+      "id": "Command",
+      "book": "Mind",
+      "name": "Command",
+      "want": "A standing body given a mind and sent. They obey.",
+      "recipe": "Salt · Sulphur · Mercury",
+      "via": "",
+      "form": "Remote",
+      "outcome": "Restrain",
+      "gate": "",
+      "work": "Command"
     }
   ]
 }

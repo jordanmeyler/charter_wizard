@@ -96,7 +96,7 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 18, 520, 26), "Rune Magic", title);
             GUI.Label(new Rect(28, 44, 520, 22), RoomLine(), body);
-            GUI.Label(new Rect(28, 66, 520, 22), FieldLine(), body);
+            GUI.Label(new Rect(28, 66, 520, 22), PackLine(), body);
             GUI.Label(new Rect(28, 88, 510, 48), TargetAndLog(), body);
         }
 
@@ -730,9 +730,10 @@ namespace RuneMagic
             return $"{room}   ·   underfoot: {tile}";
         }
 
-        string FieldLine()
+        string PackLine()
         {
-            return "The weave waits in the Charter. Only what is on screen can be drawn.";
+            var pack = _director.Pack != null ? _director.Pack.Summary() : "no stones";
+            return $"Keys   ·   {pack}";
         }
 
         string TargetAndLog()
