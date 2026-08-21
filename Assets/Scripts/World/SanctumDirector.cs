@@ -524,8 +524,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. Written chains, and every join — Acid is Steam · Metal, Ice is Water · Salt · Earth. Click a name to string it if those runes are in view. Kept workings are marked.",
-                "The book of workings and joins. Click a page to send it if those marks are in view. Kept pages are marked."));
+                "The Grimoire. Every written chain and join. Click a name to string it if those runes are in view. Kept workings are marked.",
+                "Your book. Workings you have kept. Click a page to send it if those marks are in view."));
         }
 
         public void CloseGrimoire()
@@ -1021,21 +1021,17 @@ namespace RuneMagic
                 return;
             }
 
-            var attempt = Ledger.Recent[index];
-            if (!attempt.Worked || attempt.Runes == null || attempt.Runes.Length == 0)
-            {
-                Log("That working did not hold. There is nothing to send again.");
-                return;
-            }
+            SendWorking(Ledger.Recent[index].Runes, Ledger.Recent[index].Stance, Ledger.Recent[index].Worked);
+        }
 
-            if (TryCastPrepared(attempt.Runes, null, attempt.Stance))
+        public void CastKept(int index)
+        {
+            if (Busy || !Grimoire.TryGetKept(index, out var kept))
             {
                 return;
             }
 
-            Log(GlyphView.Speak(
-                "Those runes are not in this view. Walk until they speak, then send it again.",
-                "Those marks are not in this view."));
+            SendWorking(kept.Runes, kept.Stance, worked: true);
         }
 
         public void KeepRecent(int index, string givenName)
@@ -1047,7 +1043,7 @@ namespace RuneMagic
             }
 
             var attempt = Ledger.Recent[index];
-            Grimoire.Keep(attempt.Spell);
+            Grimoire.KeepWorking(attempt.Stance, attempt.Runes, attempt.Spell, attempt.GivenName);
             Grimoire.Names.Remember(attempt.Runes, attempt.GivenName);
             var label = CallWorking(attempt.Runes);
             if (Held.Occupied && WorkingNames.SameComposition(Held.Composition.Sequence, attempt.Runes))
@@ -1056,8 +1052,26 @@ namespace RuneMagic
             }
 
             Log(GlyphView.Speak(
-                $"{label} is kept for that same writing. Spark is not Fire · Air — only this composition carries the name.",
-                "The working is kept. The name holds for that same writing."));
+                $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.",
+                "The working is kept in your book. The name holds for that same writing."));
+        }
+
+        void SendWorking(IReadOnlyList<RuneId> runes, CastingStance stance, bool worked)
+        {
+            if (!worked || runes == null || runes.Count == 0)
+            {
+                Log("That working did not hold. There is nothing to send again.");
+                return;
+            }
+
+            if (TryCastPrepared(runes, null, stance))
+            {
+                return;
+            }
+
+            Log(GlyphView.Speak(
+                "Those runes are not in this view. Walk until they speak, then send it again.",
+                "Those marks are not in this view."));
         }
 
         bool TryCastPrepared(IReadOnlyList<RuneId> runes, IReadOnlyList<RuneId> via, CastingStance stance)

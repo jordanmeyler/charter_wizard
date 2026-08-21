@@ -3,12 +3,13 @@ using System.Collections.Generic;
 namespace RuneMagic
 {
     /// <summary>
-    /// The last ten attempted casts. Charter keeps the marks.
+    /// The last twenty-five attempted casts. Charter keeps the marks.
     /// Free blocks them — wild work is not written down.
+    /// Workings the adept Keep also live in the Grimoire, past this strip.
     /// </summary>
     public sealed class CastLedger
     {
-        public const int Cap = 10;
+        public const int Cap = 25;
 
         readonly List<CastAttempt> _entries = new();
 
