@@ -84,14 +84,23 @@ namespace RuneMagic
             var parts = new string[_slots.Count];
             for (var i = 0; i < _slots.Count; i++)
             {
-                parts[i] = RuneCatalog.NameOf(_slots[i]);
+                parts[i] = GlyphView.IsDevelop
+                    ? RuneCatalog.NameOf(_slots[i])
+                    : "·";
             }
 
-            return string.Join(" · ", parts);
+            return GlyphView.IsDevelop
+                ? string.Join(" · ", parts)
+                : $"{_slots.Count} mark{(_slots.Count == 1 ? "" : "s")}";
         }
 
         public string Describe()
         {
+            if (GlyphView.IsPlay)
+            {
+                return DescribePlay();
+            }
+
             var composition = Snapshot();
             var preview = ChainBook.Preview(composition);
             if (!string.IsNullOrEmpty(preview))
@@ -124,8 +133,42 @@ namespace RuneMagic
             return $"Charter: {SlotSummary()} — that sentence is not written. Charter will fizzle.";
         }
 
+        string DescribePlay()
+        {
+            if (IsEmpty)
+            {
+                return "The string is empty.";
+            }
+
+            var composition = Snapshot();
+            if (!string.IsNullOrEmpty(ChainBook.Preview(composition)))
+            {
+                return "The sentence holds.";
+            }
+
+            if (!composition.TryFoldMaterials(out _, out _) && composition.MaterialCount >= 2)
+            {
+                return "The sentence does not hold.";
+            }
+
+            return "The sentence is unfinished.";
+        }
+
         public string DescribeFree(FreeAttunement attunement)
         {
+            if (GlyphView.IsPlay)
+            {
+                if (IsEmpty)
+                {
+                    return "Free needs at least one mark.";
+                }
+
+                attunement = attunement ?? new FreeAttunement();
+                return string.IsNullOrEmpty(ChainBook.PreviewFree(Snapshot(), attunement.FillBudget))
+                    ? "Free finds no way through."
+                    : "Free will try to complete this.";
+            }
+
             if (IsEmpty)
             {
                 return "Free: string at least one rune. Wild work cannot be stored.";

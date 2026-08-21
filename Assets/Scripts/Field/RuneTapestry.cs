@@ -155,7 +155,9 @@ namespace RuneMagic
                 parts.Add(glyph.IsTear ? "—" : RuneCatalog.GlyphOf(glyph.Shown));
             }
 
-            _readingText = "on screen  ·  " + string.Join(" · ", parts);
+            _readingText = GlyphView.IsDevelop
+                ? "on screen  ·  " + string.Join(" · ", parts)
+                : "the weave moves";
         }
 
         void RememberVicinity(RuneId rune)

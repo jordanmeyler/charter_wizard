@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.17. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.18. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -209,7 +209,17 @@ A beginner wizard writes a fireball for **two seconds** and commits the facing w
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and, only in the Charter, a **woven grid** of runes spoken by those tiles, by creature formulas, and by world-strings **that are on screen**. Glyphs are not glued to a floor square and they do not follow you while you explore. **Space** opens the **Charter**: the eleven writeable runes on the wall (dim if they are off-camera), and the view’s sentence in a scrolling alternating-row grid. You cannot string a rune that is not in the camera, except that Air is already there wherever the room can be breathed, and **you** are already there as mind · body · soul. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a cell in the weave to draw that rune. Esc lists every *written* recipe and the material catalog (a developer ledger, not a knowledge gate).
+The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and, only in the Charter, a **woven grid** of runes spoken by those tiles, by creature formulas, and by world-strings **that are on screen**. Glyphs are not glued to a floor square and they do not follow you while you explore. **Space** opens the **Charter**. The weave is the room’s sentence. The **wall at the top is not the eleven by default** — it holds only marks the player has **remembered**. For now, remember is a select (right-click / Shift-click a mark in the weave). Later a rune’s depth will ask for a variety of casts and other conditions. You cannot string a rune that is not in the camera, except that Air is already there wherever the room can be breathed, and **you** are already there as mind · body · soul. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a cell in the weave to draw that rune.
+
+**Two sights, toggled in play (F1 or the bar):**
+
+| | **Play** | **Develop** |
+|---|---|---|
+| Marks | Abstract work-signs. No letters, names, or element colours. | Letters, names, birth recipes, and the palette. |
+| Wall | Empty until a mark is kept. | The eleven, named, as a working board. |
+| Book | Kept marks only. | The full written ledger (click a name to string it). |
+
+Play is the game. Part of the fun is learning what a mark *does*. Simple sentences stay worthwhile because you have to find the marks and keep them. Develop is for authoring.
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as Fire · Water · Earth · Salt, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes Spark as Fire · Air.
 2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
@@ -233,8 +243,8 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Free also unscrambles a valid bag of runes. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
-- [ ] **Learning surface** — how known/unknown knowledge is tracked and *felt* (a grimoire?); recording rune-reveals.
-- [ ] **"Reading" creatures** — formula visible by default, or interpreting it requires learned knowledge?
+- [~] **Learning surface** — Play sight hides names; the Charter wall is remembered marks only (select to keep). Later: keep-conditions by rune depth (a variety of casts, and other gates). The Develop ledger remains the full book.
+- [~] **"Reading" creatures** — Play hides formula text on the chrome. The weave still shows the marks. Whether the player *understands* a living recipe is still open.
 - [ ] **Item catalogue** — concrete mythic items and the gates they touch.
 - [ ] **Magnum Opus color meta** — Nigredo → Albedo → Citrinitas → Rubedo as chapter/tier/world-tint.
 

@@ -254,7 +254,7 @@ namespace RuneMagic
             }
         }
 
-        public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
+        public Texture2D ToTexture()
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
             {
@@ -263,6 +263,12 @@ namespace RuneMagic
             };
             texture.SetPixels(_pixels);
             texture.Apply();
+            return texture;
+        }
+
+        public Sprite ToSprite(float pixelsPerUnit = 0f, Vector2? pivot = null)
+        {
+            var texture = ToTexture();
             var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : Mathf.Max(Width, Height);
             return Sprite.Create(
                 texture,
