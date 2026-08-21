@@ -4,9 +4,11 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Work-signs for both sights. The four roots stay triangles in the
-    /// old language, but each mark is cut with its own notches and
-    /// inner strokes so they do not read as the same blank shape.
+    /// Work-signs for both sights. The eleven basics keep the old
+    /// language — triangles, the salt circle, mercury, the sulphur
+    /// cross. Joins use their own strokes, the way Lightning is a
+    /// bolt and not another triangle, so a wrought rune never reads
+    /// as a root.
     /// </summary>
     public static class RuneMark
     {
@@ -128,10 +130,12 @@ namespace RuneMagic
                     canvas.ThickLine(30, 8, 34, 8, ink);
                     break;
                 case RuneId.Sulphur:
-                    Triangle(canvas, c, 6, 10, 26, 38, 26, ink, true);
-                    Triangle(canvas, c, 13, 16, 22, 32, 22, ink, false);
+                    Triangle(canvas, c, 6, 10, 26, 38, 26, ink, false);
+                    canvas.ThickLine(c, 10, c, 20, ink);
                     canvas.ThickLine(c, 26, c, 43, ink);
-                    canvas.ThickLine(15, 36, 33, 36, ink);
+                    canvas.ThickLine(13, 36, 35, 36, ink);
+                    canvas.ThickLine(13, 36, 13, 40, ink);
+                    canvas.ThickLine(35, 36, 35, 40, ink);
                     break;
                 case RuneId.Vita:
                     canvas.Circle(c, 16, 9, ink);
@@ -174,10 +178,12 @@ namespace RuneMagic
                     canvas.Circle(c + 6, c - 2, 8, ink);
                     break;
                 case RuneId.Spark:
-                    Triangle(canvas, c, 10, 12, 32, 36, 32, ink, true);
-                    canvas.ThickLine(14, 22, 34, 22, ink);
-                    canvas.ThickLine(c, 32, 18, 42, ink);
-                    canvas.ThickLine(18, 42, 30, 40, ink);
+                    Triangle(canvas, c, 14, 34, c, 14, c, ink, true);
+                    Triangle(canvas, c, 34, 34, c, 14, c, ink, true);
+                    canvas.ThickLine(c, 14, c, 6, ink);
+                    canvas.ThickLine(34, c, 42, c, ink);
+                    canvas.ThickLine(c, 34, c, 42, ink);
+                    canvas.ThickLine(14, c, 6, c, ink);
                     break;
                 case RuneId.Lightning:
                     canvas.ThickLine(18, 7, 32, 7, ink);
@@ -185,111 +191,145 @@ namespace RuneMagic
                     canvas.ThickLine(16, 23, 30, 23, ink);
                     canvas.ThickLine(30, 23, 14, 42, ink);
                     canvas.ThickLine(14, 42, 22, 42, ink);
+                    canvas.ThickLine(22, 32, 34, 40, ink);
                     break;
                 case RuneId.Thunder:
-                    canvas.ThickLine(18, 8, 32, 8, ink);
-                    canvas.ThickLine(32, 8, 16, 22, ink);
-                    canvas.ThickLine(16, 22, 30, 22, ink);
-                    canvas.ThickLine(30, 22, 16, 36, ink);
-                    canvas.Fill(10, 40, 28, 4, ink);
+                    canvas.ThickLine(20, 6, 30, 6, ink);
+                    canvas.ThickLine(30, 6, 18, 18, ink);
+                    canvas.ThickLine(18, 18, 28, 18, ink);
+                    canvas.ThickLine(28, 18, 22, 28, ink);
+                    canvas.ThickLine(c, 28, c, 38, ink);
+                    canvas.Fill(8, 38, 32, 5, ink);
+                    canvas.ThickLine(10, 32, 6, 26, ink);
+                    canvas.ThickLine(38, 32, 42, 26, ink);
                     break;
                 case RuneId.Cloud:
-                    Triangle(canvas, c, 12, 10, 22, 38, 22, ink, false);
-                    canvas.ThickLine(14, 22, 20, 22, ink);
-                    canvas.ThickLine(28, 22, 34, 22, ink);
-                    Triangle(canvas, c, 42, 12, 28, 36, 28, ink, false);
+                    canvas.Circle(15, 26, 8, ink);
+                    canvas.Circle(24, 18, 9, ink);
+                    canvas.Circle(33, 26, 8, ink);
+                    canvas.ThickLine(10, 33, 38, 33, ink);
                     break;
                 case RuneId.Storm:
-                    Triangle(canvas, c, 10, 10, 20, 38, 20, ink, false);
-                    canvas.ThickLine(14, 20, 34, 20, ink);
-                    Triangle(canvas, c, 40, 12, 26, 36, 26, ink, false);
-                    canvas.ThickLine(c, 26, 18, 38, ink);
-                    canvas.ThickLine(18, 38, 28, 36, ink);
+                    canvas.Circle(15, 16, 7, ink);
+                    canvas.Circle(24, 12, 8, ink);
+                    canvas.Circle(33, 16, 7, ink);
+                    canvas.FillCircle(c, 30, 2, ink);
+                    canvas.ThickLine(c, 24, 20, 36, ink);
+                    canvas.ThickLine(20, 36, 28, 34, ink);
+                    canvas.ThickLine(16, 30, 32, 30, ink);
                     break;
                 case RuneId.Plant:
-                    Triangle(canvas, c, 40, 10, 20, 38, 20, ink, false);
-                    canvas.ThickLine(14, 28, 34, 28, ink);
-                    canvas.ThickLine(c, 20, c, 8, ink);
-                    canvas.Circle(c, 8, 3, ink);
+                    canvas.ThickLine(c, 42, c, 18, ink);
+                    canvas.ThickLine(c, 26, 12, 16, ink);
+                    canvas.ThickLine(c, 26, 36, 16, ink);
+                    canvas.Circle(c, 12, 4, ink);
+                    canvas.ThickLine(16, 38, 32, 38, ink);
                     break;
                 case RuneId.Grove:
-                    Triangle(canvas, c, 40, 10, 22, 38, 22, ink, false);
-                    canvas.ThickLine(14, 28, 34, 28, ink);
-                    canvas.Circle(c, 12, 6, ink);
-                    canvas.ThickLine(c, 18, c, 8, ink);
+                    canvas.ThickLine(14, 42, 14, 22, ink);
+                    canvas.ThickLine(c, 42, c, 16, ink);
+                    canvas.ThickLine(34, 42, 34, 22, ink);
+                    canvas.Circle(14, 18, 3, ink);
+                    canvas.Circle(c, 12, 4, ink);
+                    canvas.Circle(34, 18, 3, ink);
                     break;
                 case RuneId.Flame:
-                    Triangle(canvas, c, 8, 10, 36, 38, 36, ink, true);
-                    canvas.Circle(c, 38, 8, ink);
-                    canvas.ThickLine(14, 38, 34, 38, ink);
+                    canvas.ThickLine(c, 6, 14, 22, ink);
+                    canvas.ThickLine(14, 22, 16, 34, ink);
+                    canvas.ThickLine(c, 6, 34, 22, ink);
+                    canvas.ThickLine(34, 22, 32, 34, ink);
+                    canvas.ThickLine(16, 34, 32, 34, ink);
+                    canvas.ThickLine(c, 14, 20, 26, ink);
+                    canvas.ThickLine(20, 26, c, 30, ink);
+                    canvas.Circle(c, 40, 5, ink);
+                    canvas.ThickLine(16, 40, 32, 40, ink);
                     break;
                 case RuneId.Ice:
-                    Triangle(canvas, c, 40, 10, 12, 38, 12, ink, false);
-                    canvas.ThickLine(c, 12, c, 40, ink);
-                    canvas.ThickLine(14, 26, 34, 26, ink);
-                    canvas.ThickLine(16, 18, 32, 34, ink);
+                    canvas.ThickLine(c, 8, c, 40, ink);
+                    canvas.ThickLine(10, c, 38, c, ink);
+                    canvas.ThickLine(14, 14, 34, 34, ink);
+                    canvas.ThickLine(34, 14, 14, 34, ink);
                     break;
                 case RuneId.Stone:
-                    Triangle(canvas, c, 40, 8, 12, 40, 12, ink, false);
-                    canvas.ThickLine(12, 24, 36, 24, ink);
-                    canvas.Rect(14, 28, 20, 10, ink);
+                    canvas.Rect(12, 16, 24, 20, ink);
+                    canvas.ThickLine(12, 16, c, 8, ink);
+                    canvas.ThickLine(36, 16, c, 8, ink);
+                    canvas.ThickLine(12, 26, 36, 26, ink);
                     break;
                 case RuneId.Ash:
-                    Triangle(canvas, c, 8, 12, 22, 36, 22, ink, false);
-                    canvas.Circle(c, 30, 8, ink);
-                    canvas.ThickLine(16, 24, 32, 36, ink);
-                    canvas.ThickLine(32, 24, 16, 36, ink);
+                    canvas.Circle(c, c, 11, ink);
+                    canvas.ThickLine(14, 14, 34, 34, ink);
+                    canvas.ThickLine(34, 14, 14, 34, ink);
                     break;
                 case RuneId.Lava:
-                    Triangle(canvas, c, 8, 10, 22, 38, 22, ink, true);
-                    Triangle(canvas, c, 42, 10, 26, 38, 26, ink, false);
-                    canvas.ThickLine(14, 32, 34, 32, ink);
+                    canvas.Fill(8, 34, 32, 8, ink);
+                    canvas.ThickLine(10, 34, 14, 18, ink);
+                    canvas.ThickLine(14, 18, 20, 28, ink);
+                    canvas.ThickLine(20, 28, 26, 12, ink);
+                    canvas.ThickLine(26, 12, 32, 24, ink);
+                    canvas.ThickLine(32, 24, 38, 16, ink);
                     break;
                 case RuneId.Steam:
-                    Triangle(canvas, c, 10, 10, 22, 38, 22, ink, true);
-                    Triangle(canvas, c, 42, 10, 26, 38, 26, ink, false);
-                    canvas.ThickLine(c, 18, c, 30, ink);
+                    canvas.ThickLine(14, 36, 34, 36, ink);
+                    canvas.ThickLine(14, 36, 18, 42, ink);
+                    canvas.ThickLine(34, 36, 30, 42, ink);
+                    canvas.ThickLine(18, 42, 30, 42, ink);
+                    canvas.ThickLine(16, 32, 14, 16, ink);
+                    canvas.ThickLine(14, 16, 18, 10, ink);
+                    canvas.ThickLine(c, 30, c, 8, ink);
+                    canvas.ThickLine(32, 32, 34, 16, ink);
+                    canvas.ThickLine(34, 16, 30, 10, ink);
                     break;
                 case RuneId.Dust:
-                    Triangle(canvas, c, 8, 10, 22, 38, 22, ink, false);
-                    canvas.ThickLine(14, 22, 20, 22, ink);
-                    canvas.ThickLine(28, 22, 34, 22, ink);
-                    Triangle(canvas, c, 42, 10, 26, 38, 26, ink, false);
-                    canvas.ThickLine(14, 32, 34, 32, ink);
+                    canvas.FillCircle(14, 16, 2, ink);
+                    canvas.FillCircle(28, 12, 2, ink);
+                    canvas.FillCircle(36, 20, 2, ink);
+                    canvas.FillCircle(18, 28, 2, ink);
+                    canvas.FillCircle(32, 32, 2, ink);
+                    canvas.FillCircle(12, 36, 2, ink);
+                    canvas.ThickLine(20, 18, 26, 16, ink);
+                    canvas.ThickLine(30, 24, 38, 28, ink);
+                    canvas.ThickLine(16, 34, 24, 38, ink);
                     break;
                 case RuneId.Mud:
-                    Triangle(canvas, c, 40, 8, 14, 40, 14, ink, true);
-                    canvas.ThickLine(12, 26, 36, 26, ink);
-                    canvas.Fill(10, 36, 28, 5, ink);
+                    canvas.FillCircle(16, 30, 8, ink);
+                    canvas.FillCircle(c, 28, 10, ink);
+                    canvas.FillCircle(32, 30, 8, ink);
+                    canvas.Fill(10, 34, 28, 8, ink);
                     break;
                 case RuneId.Rain:
-                    Triangle(canvas, c, 14, 10, 20, 38, 20, ink, false);
-                    canvas.ThickLine(14, 20, 20, 20, ink);
-                    canvas.ThickLine(28, 20, 34, 20, ink);
-                    Triangle(canvas, c, 36, 12, 24, 36, 24, ink, true);
-                    canvas.ThickLine(c, 36, c, 42, ink);
+                    canvas.Circle(16, 16, 6, ink);
+                    canvas.Circle(c, 12, 7, ink);
+                    canvas.Circle(32, 16, 6, ink);
+                    canvas.ThickLine(16, 26, 14, 40, ink);
+                    canvas.ThickLine(c, 24, c, 42, ink);
+                    canvas.ThickLine(32, 26, 34, 40, ink);
                     break;
                 case RuneId.Wind:
-                    Triangle(canvas, c, 8, 10, 22, 38, 22, ink, false);
-                    canvas.ThickLine(12, 22, 18, 22, ink);
-                    canvas.ThickLine(30, 22, 36, 22, ink);
-                    canvas.ThickLine(c, 22, c, 40, ink);
-                    canvas.ThickLine(16, 36, 32, 36, ink);
-                    canvas.ThickLine(16, 8, c, 18, ink);
-                    canvas.ThickLine(32, 8, c, 18, ink);
+                    canvas.ThickLine(8, 14, 28, 14, ink);
+                    canvas.ThickLine(28, 14, 36, 10, ink);
+                    canvas.ThickLine(8, 24, 32, 24, ink);
+                    canvas.ThickLine(32, 24, 42, 18, ink);
+                    canvas.ThickLine(8, 34, 26, 34, ink);
+                    canvas.ThickLine(26, 34, 34, 30, ink);
                     break;
                 case RuneId.Current:
-                    Triangle(canvas, c, 40, 8, 12, 40, 12, ink, true);
-                    canvas.ThickLine(c, 12, c, 40, ink);
-                    canvas.ThickLine(16, 36, 32, 36, ink);
-                    canvas.ThickLine(16, 8, c, 16, ink);
-                    canvas.ThickLine(32, 8, c, 16, ink);
+                    canvas.ThickLine(8, 18, 16, 12, ink);
+                    canvas.ThickLine(16, 12, 24, 20, ink);
+                    canvas.ThickLine(24, 20, 32, 14, ink);
+                    canvas.ThickLine(32, 14, 40, 20, ink);
+                    canvas.ThickLine(8, 32, 16, 26, ink);
+                    canvas.ThickLine(16, 26, 24, 34, ink);
+                    canvas.ThickLine(24, 34, 32, 28, ink);
+                    canvas.ThickLine(32, 28, 40, 34, ink);
                     break;
                 case RuneId.Ember:
-                    Triangle(canvas, c, 8, 10, 34, 38, 34, ink, true);
-                    canvas.Circle(c, 16, 8, ink);
-                    canvas.ThickLine(16, 16, 32, 16, ink);
-                    canvas.ThickLine(c, 24, c, 40, ink);
+                    canvas.FillCircle(c, 20, 7, ink);
+                    canvas.Circle(c, 20, 10, ink);
+                    canvas.ThickLine(c, 10, 20, 6, ink);
+                    canvas.ThickLine(16, 20, 32, 20, ink);
+                    canvas.ThickLine(c, 30, c, 42, ink);
+                    canvas.ThickLine(16, 38, 32, 38, ink);
                     break;
                 case RuneId.Shade:
                     canvas.FillCircle(c, c, 12, ink);
@@ -307,10 +347,11 @@ namespace RuneMagic
                     canvas.ThickLine(26, 30, 38, 30, ink);
                     break;
                 case RuneId.Vine:
-                    Triangle(canvas, c, 40, 12, 22, 36, 22, ink, false);
-                    canvas.ThickLine(c, 22, 14, 10, ink);
-                    canvas.ThickLine(14, 10, 34, 8, ink);
-                    canvas.Circle(34, 8, 3, ink);
+                    canvas.ThickLine(c, 42, c, 28, ink);
+                    canvas.ThickLine(c, 28, 14, 20, ink);
+                    canvas.ThickLine(14, 20, 20, 12, ink);
+                    canvas.ThickLine(20, 12, 34, 10, ink);
+                    canvas.Circle(36, 10, 3, ink);
                     break;
                 case RuneId.Crystal:
                     Triangle(canvas, c, 8, 14, 24, 34, 24, ink, false);
@@ -318,21 +359,120 @@ namespace RuneMagic
                     canvas.ThickLine(c, 8, c, 40, ink);
                     break;
                 case RuneId.Metal:
-                    Triangle(canvas, c, 8, 10, 24, 38, 24, ink, false);
-                    canvas.ThickLine(10, 24, 38, 24, ink);
-                    canvas.ThickLine(c, 24, c, 40, ink);
-                    canvas.ThickLine(16, 36, 32, 36, ink);
+                    canvas.ThickLine(12, 16, 36, 16, ink);
+                    canvas.ThickLine(36, 16, 40, 32, ink);
+                    canvas.ThickLine(40, 32, 8, 32, ink);
+                    canvas.ThickLine(8, 32, 12, 16, ink);
+                    canvas.ThickLine(12, 24, 36, 24, ink);
                     break;
                 case RuneId.Obsidian:
-                    Triangle(canvas, c, 8, 10, 22, 38, 22, ink, true);
-                    Triangle(canvas, c, 40, 12, 24, 36, 24, ink, false);
-                    canvas.ThickLine(c, 8, c, 40, ink);
+                    Triangle(canvas, 16, 6, 40, 18, 10, 42, ink, true);
+                    canvas.ThickLine(18, 16, 14, 34, ink);
                     break;
                 case RuneId.Acid:
-                    Triangle(canvas, c, 10, 12, 22, 36, 22, ink, true);
-                    Triangle(canvas, c, 40, 12, 26, 36, 26, ink, true);
+                    canvas.ThickLine(12, 14, 12, 26, ink);
+                    canvas.ThickLine(12, 26, 36, 26, ink);
+                    canvas.ThickLine(36, 26, 36, 14, ink);
+                    canvas.FillCircle(18, 34, 2, ink);
+                    canvas.FillCircle(28, 40, 3, ink);
+                    canvas.FillCircle(34, 32, 2, ink);
+                    break;
+                case RuneId.Glass:
+                    canvas.Rect(14, 10, 20, 28, ink);
+                    canvas.ThickLine(16, 14, 24, 22, ink);
+                    canvas.ThickLine(16, 22, 18, 26, ink);
+                    break;
+                case RuneId.Sand:
+                    canvas.ThickLine(8, 36, 20, 20, ink);
+                    canvas.ThickLine(20, 20, 28, 28, ink);
+                    canvas.ThickLine(28, 28, 40, 16, ink);
+                    canvas.Fill(8, 36, 32, 6, ink);
+                    canvas.FillCircle(16, 30, 1, ink);
+                    canvas.FillCircle(30, 24, 1, ink);
+                    break;
+                case RuneId.Inferno:
+                    canvas.ThickLine(12, 40, 12, 20, ink);
+                    canvas.ThickLine(12, 20, 8, 10, ink);
+                    canvas.ThickLine(c, 42, c, 8, ink);
+                    canvas.ThickLine(c, 8, 18, 16, ink);
+                    canvas.ThickLine(c, 8, 30, 16, ink);
+                    canvas.ThickLine(36, 40, 36, 20, ink);
+                    canvas.ThickLine(36, 20, 40, 10, ink);
+                    canvas.ThickLine(8, 40, 40, 40, ink);
+                    break;
+                case RuneId.Plasma:
+                    canvas.Circle(c, c, 12, ink);
+                    canvas.ThickLine(20, 10, 30, 10, ink);
+                    canvas.ThickLine(30, 10, 16, 24, ink);
                     canvas.ThickLine(16, 24, 32, 24, ink);
-                    canvas.ThickLine(c, 24, c, 40, ink);
+                    canvas.ThickLine(32, 24, 18, 38, ink);
+                    break;
+                case RuneId.Snow:
+                    canvas.ThickLine(c, 10, c, 38, ink);
+                    canvas.ThickLine(12, 18, 36, 30, ink);
+                    canvas.ThickLine(36, 18, 12, 30, ink);
+                    canvas.FillCircle(c, 10, 2, ink);
+                    canvas.FillCircle(c, 38, 2, ink);
+                    canvas.FillCircle(12, 18, 2, ink);
+                    canvas.FillCircle(36, 18, 2, ink);
+                    canvas.FillCircle(12, 30, 2, ink);
+                    canvas.FillCircle(36, 30, 2, ink);
+                    break;
+                case RuneId.Blizzard:
+                    canvas.ThickLine(c, 12, c, 36, ink);
+                    canvas.ThickLine(14, 18, 34, 30, ink);
+                    canvas.ThickLine(34, 18, 14, 30, ink);
+                    canvas.ThickLine(8, 10, 18, 8, ink);
+                    canvas.ThickLine(30, 8, 40, 12, ink);
+                    break;
+                case RuneId.Sandstorm:
+                    canvas.FillCircle(14, 18, 2, ink);
+                    canvas.FillCircle(26, 14, 2, ink);
+                    canvas.FillCircle(36, 20, 2, ink);
+                    canvas.FillCircle(18, 30, 2, ink);
+                    canvas.ThickLine(8, 16, 22, 12, ink);
+                    canvas.ThickLine(10, 26, 28, 22, ink);
+                    canvas.ThickLine(16, 36, 40, 28, ink);
+                    break;
+                case RuneId.Glacier:
+                    canvas.ThickLine(c, 8, 8, 36, ink);
+                    canvas.ThickLine(c, 8, 40, 36, ink);
+                    canvas.ThickLine(8, 36, 40, 36, ink);
+                    canvas.ThickLine(c, 8, c, 36, ink);
+                    canvas.Fill(8, 36, 32, 5, ink);
+                    break;
+                case RuneId.Blight:
+                    canvas.ThickLine(c, 40, c, 20, ink);
+                    canvas.ThickLine(c, 24, 12, 14, ink);
+                    canvas.ThickLine(c, 24, 36, 18, ink);
+                    canvas.ThickLine(12, 14, 10, 20, ink);
+                    canvas.Circle(c, 12, 3, ink);
+                    canvas.ThickLine(16, 16, 32, 32, ink);
+                    break;
+                case RuneId.Hot:
+                    canvas.ThickLine(14, 40, 16, 18, ink);
+                    canvas.ThickLine(16, 18, 12, 10, ink);
+                    canvas.ThickLine(c, 40, c, 8, ink);
+                    canvas.ThickLine(34, 40, 32, 18, ink);
+                    canvas.ThickLine(32, 18, 36, 10, ink);
+                    break;
+                case RuneId.Cold:
+                    canvas.ThickLine(c, 8, c, 40, ink);
+                    canvas.ThickLine(16, 16, 32, 16, ink);
+                    canvas.ThickLine(14, 28, 34, 28, ink);
+                    canvas.ThickLine(18, 40, 30, 40, ink);
+                    break;
+                case RuneId.Wet:
+                    canvas.Circle(c, 16, 6, ink);
+                    canvas.FillCircle(c, 16, 2, ink);
+                    canvas.ThickLine(c, 22, 16, 40, ink);
+                    canvas.ThickLine(c, 22, 32, 40, ink);
+                    canvas.ThickLine(16, 40, 32, 40, ink);
+                    break;
+                case RuneId.Dry:
+                    canvas.Circle(c, c, 13, ink);
+                    canvas.ThickLine(16, 16, 32, 32, ink);
+                    canvas.ThickLine(20, 32, 28, 20, ink);
                     break;
                 case RuneId.Aether:
                     canvas.Circle(c, c, 14, ink);
