@@ -48,7 +48,7 @@ namespace RuneMagic
                 }
 
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
-                ApplyTiles(grid, verb, origin, radius, notes);
+                ApplyTiles(grid, spell, verb, origin, radius, notes);
                 return new SpellImpactResult(First(notes), hits);
             }
 
@@ -67,7 +67,7 @@ namespace RuneMagic
                     }
                 }
 
-                ApplyTiles(grid, verb, center, Mathf.Max(radius, sweep.Width), notes);
+                ApplyTiles(grid, spell, verb, center, Mathf.Max(radius, sweep.Width), notes);
                 return new SpellImpactResult(First(notes), hits);
             }
 
@@ -86,7 +86,7 @@ namespace RuneMagic
             }
 
             ApplyHosts(hits, origin, verb, notes);
-            ApplyTiles(grid, verb, aim, Mathf.Max(0.8f, radius, sweep.Width), notes);
+            ApplyTiles(grid, spell, verb, aim, Mathf.Max(0.8f, radius, sweep.Width), notes);
             return new SpellImpactResult(First(notes), hits);
         }
 
@@ -114,7 +114,7 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyTiles(WorldGrid grid, SpellVerb verb, Vector3 center, float radius, List<string> notes)
+        static void ApplyTiles(WorldGrid grid, SpellId spell, SpellVerb verb, Vector3 center, float radius, List<string> notes)
         {
             if (grid == null || verb.Tiles == TileVerb.None)
             {
@@ -181,6 +181,21 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Cloak:
+                        tile.Cloak(1f);
+                        changed++;
+                        break;
+                    case TileVerb.Foul:
+                        tile.Foul(1f);
+                        changed++;
+                        break;
+                    case TileVerb.Vent:
+                        if (tile.Vent(spell))
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -214,7 +229,13 @@ namespace RuneMagic
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge
                             ? "The seed runs where it can."
-                            : "Yield finds the floor.");
+                            : verb.Tiles == TileVerb.Vent
+                                ? "Breath finds the tile."
+                                : verb.Tiles == TileVerb.Cloak
+                                    ? "The hanging veil is given a body."
+                                    : verb.Tiles == TileVerb.Foul
+                                        ? "A sick mist stands on the floor."
+                                        : "Yield finds the floor.");
             }
         }
 

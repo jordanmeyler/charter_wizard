@@ -395,6 +395,12 @@ namespace RuneMagic
             }
 
             var notes = new List<string>(3);
+            var tileNote = ReactAlong(grid, sweep);
+            if (!string.IsNullOrEmpty(tileNote))
+            {
+                notes.Add(tileNote);
+            }
+
             var cleared = VeilField.ClearAlong(grid, sweep);
             if (cleared > 0)
             {
@@ -412,6 +418,114 @@ namespace RuneMagic
             }
 
             return FirstFilled(notes);
+        }
+
+        public static string ReactAlong(WorldGrid grid, SpellSweep sweep)
+        {
+            if (grid == null || sweep.Cells == null)
+            {
+                return string.Empty;
+            }
+
+            var fog = 0;
+            var poison = 0;
+            var scoured = 0;
+            var burned = 0;
+            for (var i = 0; i < sweep.Cells.Count; i++)
+            {
+                var tile = grid.Get(sweep.Cells[i]);
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                var hadFog = tile.HasFog;
+                var hadMiasma = tile.HasMiasma;
+                var acid = tile.Material == MaterialId.Acid;
+                var burning = tile.IsBurning;
+                if (WorldWork.IsFireWork(sweep.Spell))
+                {
+                    tile.Ignite(0.85f);
+                }
+
+                if (WorldWork.IsWaterWork(sweep.Spell))
+                {
+                    tile.Drench(1f);
+                }
+
+                if (tile.Vent(sweep.Spell))
+                {
+                    if (hadFog && !tile.HasFog)
+                    {
+                        fog++;
+                    }
+
+                    if (hadMiasma && !tile.HasMiasma)
+                    {
+                        poison++;
+                    }
+
+                    if (acid && tile.Material == MaterialId.Scoured)
+                    {
+                        scoured++;
+                    }
+                }
+
+                if (WorldWork.IsFireWork(sweep.Spell) && !burning && tile.Fire > 0.12f)
+                {
+                    burned++;
+                }
+            }
+
+            if (poison > 0)
+            {
+                return WorldWork.IsAirWork(sweep.Spell)
+                    ? "Breath finds the foul tile and takes it."
+                    : "Hunger eats the foul breath on the floor.";
+            }
+
+            if (fog > 0)
+            {
+                return WorldWork.IsLightWork(sweep.Spell)
+                    ? "Light lifts the hanging veil from the floor."
+                    : "The hanging veil leaves the tiles you sent through.";
+            }
+
+            if (scoured > 0)
+            {
+                return WorldWork.IsAirWork(sweep.Spell)
+                    ? "Breath dries the slick. The poison water forgets the tile."
+                    : "Hunger drinks the slick. The poison water is gone.";
+            }
+
+            if (burned > 0)
+            {
+                return "Hunger finds the floor.";
+            }
+
+            return string.Empty;
+        }
+
+        public static bool AuraAt(WorldGrid grid, Vector3 world, out VeilKind kind)
+        {
+            kind = VeilKind.None;
+            var tile = grid != null ? grid.TileAtWorld(world) : null;
+            if (tile != null)
+            {
+                if (tile.HasMiasma)
+                {
+                    kind = VeilKind.Poison;
+                    return true;
+                }
+
+                if (tile.HasFog)
+                {
+                    kind = VeilKind.Fog;
+                    return true;
+                }
+            }
+
+            return VeilField.Covering(world, out kind);
         }
 
         public static int BlowFog(IReadOnlyList<ISpellLock> locks, SpellSweep sweep)
@@ -434,7 +548,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                cleared += fog.BlowAlong(sweep.From, sweep.To, sweep.Width);
+                cleared += fog.BlowAlong(sweep.From, sweep.To, sweep.Width, sweep.Spell);
             }
 
             return cleared;
@@ -492,6 +606,18 @@ namespace RuneMagic
             if (UnmakesMatter(SpellId.Gust, Essence.Earth))
             {
                 broken.Add("Breath must not shatter rest");
+            }
+
+            if (SpellVerb.Of(SpellId.Gust).Tiles != TileVerb.Vent
+                || SpellVerb.Of(SpellId.Gale).Tiles != TileVerb.Vent)
+            {
+                broken.Add("Gust and Gale must vent the tiles they cross");
+            }
+
+            if (SpellVerb.Of(SpellId.Fog).Tiles != TileVerb.Cloak
+                || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
+            {
+                broken.Add("Fog must cloak tiles and Blight must foul them");
             }
         }
 

@@ -470,7 +470,8 @@ namespace RuneMagic
                 return;
             }
 
-            if (VeilField.Covering(transform.position, out var kind) && kind == VeilKind.Poison)
+            var grid = FindFirstObjectByType<WorldGrid>();
+            if (WorldPhysics.AuraAt(grid, transform.position, out var kind) && kind == VeilKind.Poison)
             {
                 Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
             }

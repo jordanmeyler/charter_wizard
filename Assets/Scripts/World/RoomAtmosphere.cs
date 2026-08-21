@@ -40,7 +40,7 @@ namespace RuneMagic
 
             var wash = _background;
             var adept = AdeptAvatar.Find();
-            if (adept != null && VeilField.Covering(adept.transform.position, out var veil))
+            if (adept != null && WorldPhysics.AuraAt(_director.Grid, adept.transform.position, out var veil))
             {
                 wash = Color.Lerp(_background, VeilField.Wash(veil), 0.72f);
             }

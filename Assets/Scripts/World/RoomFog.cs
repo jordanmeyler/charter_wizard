@@ -25,6 +25,7 @@ namespace RuneMagic
         string _resolvedNote;
         Vector3 _retreat;
         Vector2Int[] _cells;
+        WorldGrid _grid;
         readonly List<GameObject> _wisps = new();
         float _pulse;
 
@@ -35,13 +36,15 @@ namespace RuneMagic
             RuneId[] formula,
             IList<Vector2Int> cells,
             string spriteId,
-            string resolvedNote)
+            string resolvedNote,
+            WorldGrid grid = null)
         {
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys ?? System.Array.Empty<SpellId>();
             _formula = formula ?? System.Array.Empty<RuneId>();
             _resolvedNote = resolvedNote;
+            _grid = grid;
             _cells = cells != null ? new Vector2Int[cells.Count] : System.Array.Empty<Vector2Int>();
             if (cells != null)
             {
@@ -74,8 +77,9 @@ namespace RuneMagic
                     var hit = host.AddComponent<BoxCollider2D>();
                     hit.isTrigger = true;
                     hit.size = Vector2.one * 0.92f;
-                    host.AddComponent<FogWisp>().Bind(this);
+                    host.AddComponent<FogWisp>().Bind(this, cells[i]);
                     _wisps.Add(host);
+                    StampCell(cells[i]);
                 }
             }
 
@@ -135,7 +139,7 @@ namespace RuneMagic
         public bool OccupiesCell(Vector2Int cell) =>
             CellVolume.Occupies(_cells, cell, transform.position);
 
-        public int BlowAlong(Vector3 from, Vector3 to, float width)
+        public int BlowAlong(Vector3 from, Vector3 to, float width, SpellId spell = SpellId.Gust)
         {
             if (Resolved)
             {
@@ -157,6 +161,12 @@ namespace RuneMagic
                     continue;
                 }
 
+                var mark = wisp.GetComponent<FogWisp>();
+                if (mark != null)
+                {
+                    VentCell(mark.Cell, spell);
+                }
+
                 Destroy(wisp);
                 _wisps.RemoveAt(i);
                 cleared++;
@@ -165,9 +175,35 @@ namespace RuneMagic
             return cleared;
         }
 
+        void StampCell(Vector2Int cell)
+        {
+            var tile = _grid != null ? _grid.Get(cell) : null;
+            tile?.Foul(1f);
+        }
+
+        void VentCell(Vector2Int cell, SpellId spell)
+        {
+            var tile = _grid != null ? _grid.Get(cell) : null;
+            tile?.Vent(spell);
+        }
+
+        void VentAll(SpellId spell)
+        {
+            if (_cells == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _cells.Length; i++)
+            {
+                VentCell(_cells[i], spell);
+            }
+        }
+
         public string Resolve(SpellId spell)
         {
             Resolved = true;
+            VentAll(spell == SpellId.None ? SpellId.Gust : spell);
             for (var i = 0; i < _wisps.Count; i++)
             {
                 if (_wisps[i] != null)
@@ -238,10 +274,12 @@ namespace RuneMagic
     sealed class FogWisp : MonoBehaviour
     {
         RoomFog _fog;
+        public Vector2Int Cell { get; private set; }
 
-        public void Bind(RoomFog fog)
+        public void Bind(RoomFog fog, Vector2Int cell)
         {
             _fog = fog;
+            Cell = cell;
         }
 
         void OnTriggerEnter2D(Collider2D other)

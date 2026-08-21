@@ -78,6 +78,7 @@ namespace RuneMagic
 
                 if (field.Touches(origin, radius))
                 {
+                    field.VentTiles(SpellId.Gust);
                     Object.Destroy(field.gameObject);
                     cleared++;
                 }
@@ -105,6 +106,7 @@ namespace RuneMagic
 
                 if (WorldWork.ClearsVeil(spell, field.Kind))
                 {
+                    field.VentTiles(spell);
                     Object.Destroy(field.gameObject);
                     cleared++;
                 }
@@ -134,6 +136,7 @@ namespace RuneMagic
                     continue;
                 }
 
+                field.VentAlong(sweep);
                 Object.Destroy(field.gameObject);
                 cleared++;
             }
@@ -157,6 +160,7 @@ namespace RuneMagic
                     continue;
                 }
 
+                field.VentTiles(SpellId.Gust);
                 Object.Destroy(field.gameObject);
                 cleared++;
             }
@@ -250,6 +254,36 @@ namespace RuneMagic
                 }
 
                 _cells.Add(cells[i]);
+                if (Kind == VeilKind.Poison)
+                {
+                    _grid.Get(cells[i])?.Foul(1f);
+                }
+                else
+                {
+                    _grid.Get(cells[i])?.Cloak(1f);
+                }
+            }
+        }
+
+        public void VentTiles(SpellId spell)
+        {
+            foreach (var cell in _cells)
+            {
+                _grid?.Get(cell)?.Vent(spell);
+            }
+        }
+
+        public void VentAlong(SpellSweep sweep)
+        {
+            foreach (var cell in _cells)
+            {
+                if (CellVolume.SegmentDistance(sweep.From, sweep.To, WorldGrid.Center(cell.x, cell.y)) >
+                    sweep.Width + CellVolume.TileRadius)
+                {
+                    continue;
+                }
+
+                _grid?.Get(cell)?.Vent(sweep.Spell);
             }
         }
 

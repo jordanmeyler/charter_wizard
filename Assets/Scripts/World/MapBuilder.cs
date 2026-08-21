@@ -243,7 +243,7 @@ namespace RuneMagic
                     BindLock(room, locks, SpawnGate(prop, world, grid, origin));
                     break;
                 case "fog":
-                    BindLock(room, locks, SpawnFog(prop, world, origin));
+                    BindLock(room, locks, SpawnFog(prop, world, origin, grid));
                     break;
                 case "arrows":
                     BindLock(room, locks, SpawnArrows(prop, world, grid, origin));
@@ -339,7 +339,7 @@ namespace RuneMagic
             return gate;
         }
 
-        static RoomFog SpawnFog(MapProp prop, Vector3 world, Vector2Int origin)
+        static RoomFog SpawnFog(MapProp prop, Vector3 world, Vector2Int origin, WorldGrid grid)
         {
             var actor = new GameObject(NameOf(prop, "Fog"));
             actor.transform.position = world;
@@ -351,7 +351,8 @@ namespace RuneMagic
                 ParseRunes(prop.formula, RuneId.Air),
                 LocalCells(origin, prop.cells),
                 prop.sprite,
-                prop.note);
+                prop.note,
+                grid);
             return fog;
         }
 

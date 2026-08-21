@@ -190,6 +190,18 @@ namespace RuneMagic
                 live.Add(RuneId.Air);
             }
 
+            if (tile.HasFog)
+            {
+                live.Add(RuneId.Air);
+                live.Add(RuneId.Water);
+            }
+
+            if (tile.HasMiasma || tile.IsPoisonWater)
+            {
+                live.Add(RuneId.Air);
+                live.Add(RuneId.Acid);
+            }
+
             if (tile.Growth > 0 || tile.IsPlantish)
             {
                 live.Add(RuneId.Plant);

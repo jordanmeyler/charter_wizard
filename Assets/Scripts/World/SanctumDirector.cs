@@ -181,10 +181,30 @@ namespace RuneMagic
                 FallInPit(player);
             }
 
+            if (Underfoot != null && Underfoot.HasMiasma && (adept == null || !adept.IsAirborne))
+            {
+                var host = StatusHost.On(player);
+                if (host == null || !host.Fends(Essence.Poison))
+                {
+                    PlacePlayer(player, _safePoint, "The breath is foul. Send air through it.");
+                    adept?.TickFlame(false, false);
+                    FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
+                    return;
+                }
+            }
+            else if (Underfoot != null && Underfoot.IsPoisonWater && (adept == null || !adept.IsAirborne))
+            {
+                var host = StatusHost.On(player);
+                if (host == null || !host.Fends(Essence.Poison))
+                {
+                    host?.Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
+                }
+            }
+
             if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 var host = StatusHost.On(player);
-                var inFire = Underfoot.Fire > 0.35f;
+                var inFire = Underfoot.IsBurning;
                 if (inFire)
                 {
                     host?.Apply(StatusId.Burning, 2.4f);
