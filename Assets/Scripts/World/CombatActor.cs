@@ -119,9 +119,9 @@ namespace RuneMagic
             }
 
             var host = StatusHost.On(player);
-            if (host != null && host.BlocksPhysical)
+            if (host != null && host.Fends(Essence.Physical))
             {
-                FindFirstObjectByType<SanctumDirector>()?.Log("Stoneskin takes the blow.");
+                FindFirstObjectByType<SanctumDirector>()?.Log($"{host.FendingName(Essence.Physical)} takes the blow.");
                 return;
             }
 

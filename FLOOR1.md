@@ -1,6 +1,6 @@
 # Floor 1 — The Foundation
 
-*The tutorial floor. Teaches the whole grammar — the four elements (substance) and the three aspects (form & state) — entirely through play. Companion to [`DESIGN.md`](DESIGN.md) (v0.16), [`SPELLS.md`](SPELLS.md), and [`MATERIALS.md`](MATERIALS.md). Playable map: `Assets/Resources/Maps/foundation.json`.*
+*The tutorial floor. Teaches the whole grammar — the four elements (substance) and the three aspects (form & state) — entirely through play. Companion to [`DESIGN.md`](DESIGN.md) (v0.17), [`SPELLS.md`](SPELLS.md), and [`MATERIALS.md`](MATERIALS.md). Playable map: `Assets/Resources/Maps/foundation.json`.*
 
 No text tutorials. Every lesson is a situation. Runes appear **labelled** on altars so the player *sees* Fire, Water, Earth, Air — and later Salt, Mercury, Sulphur — before wielding them. Other runes may sit in the room’s materials; the wing’s own element is always present in its pure form.
 
@@ -35,7 +35,10 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
 | 54 | **Gust** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 | 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
-| 56 | **Stoneskin** | Earth · Salt · Sulphur | Rest given a body, then the mind holds it on you. Arrows and slams break. |
+| 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Arrows and slams break. Hunger sent still finds you. |
+| 57 | **Water ward** | Water · Salt · Sulphur | Hunger breaks. Wear it against the wizard and a burning floor. |
+| 58 | **Flame ward** | Fire · Salt · Sulphur | Rest thrown breaks. |
+| 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. |
 
 ---
 
@@ -66,7 +69,7 @@ You spawn in the **hub**. Four rooms stand open around it — west, east, and tw
 Each room is attached to the hub and **open**. The obstacle sits deeper in, around the stone, not across the doorway.
 
 ### Hub · "The Cross"
-Four labelled pedestals point at the four rooms. A Fire altar stands on the west so the first verb is available before you step into the frozen hall. The Gate of Elements sits against the north wall. A **crystal** stands on the spawn tile — death returns you here. Moss and plant sit beside it so you can water them and watch them grow, or set them alight and watch hunger run.
+Four labelled pedestals point at the four rooms. A Fire altar stands on the west so the first verb is available before you step into the frozen hall. The Gate of Elements sits against the north wall. A **crystal** stands on the spawn tile — death returns you here. Moss and plant sit beside it so you can water them and watch them grow, or set them alight and watch hunger run. You are always Salt · Sulphur · Mercury — stand by a labelled element and `Element · Salt · Sulphur` writes that ward.
 
 ### Fire · "The Frozen Hall" — *heat, melt, burn, light*
 Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wanders the south wall (optional). The Fire stone sits in a small **ice cage** at the back. Melt / Fireball / Flame-pillar / Ignite.
@@ -96,7 +99,7 @@ The elements taught *substance*. This stage teaches the three ways to **apply** 
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, or get behind them and unmake them with any sent element (Fireball, Douse, Hurled stone, Lightning, Ice-spear, Gust, Gale…). Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with any sent element (Fireball, Douse, Hurled stone, Lightning, Ice-spear, Gust, Gale…). Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
@@ -119,7 +122,7 @@ Three sockets: Body, Spirit, Mind. Insert them → the floor opens.
 - **No plaques that instruct.** Altars are labelled. Locks have names. The situation is the tutorial.
 - **The pack holds the stones.** I opens it. Click a stone to look — each one says what it remembers and which gate wants it.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
-- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, stoneskin, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder.
+- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat.
 - **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits still use the last safe floor. A better death system waits.
 
 ---

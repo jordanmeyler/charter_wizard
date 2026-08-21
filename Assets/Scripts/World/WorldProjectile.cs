@@ -97,9 +97,14 @@ namespace RuneMagic
             }
 
             var host = StatusHost.On(other);
-            if (_kind == ProjectileKind.Arrow && host != null && host.BlocksPhysical)
+            var incoming = ElementalLaw.Of(_kind);
+            if (host != null && host.Fends(incoming))
             {
-                FindFirstObjectByType<SanctumDirector>()?.Log("The shot breaks on stoneskin.");
+                var ward = host.FendingName(incoming);
+                var note = _kind == ProjectileKind.Fireball
+                    ? $"Hunger breaks on the {ward}."
+                    : $"The shot breaks on the {ward}.";
+                FindFirstObjectByType<SanctumDirector>()?.Log(note);
                 Destroy(gameObject);
                 return;
             }

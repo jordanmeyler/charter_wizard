@@ -110,6 +110,12 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Frightened, 5f, TileVerb.None);
                 case SpellId.Stoneskin:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Stoneskin, 14f, TileVerb.None);
+                case SpellId.Watershield:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Watershield, 14f, TileVerb.None);
+                case SpellId.Flameward:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Flameward, 14f, TileVerb.None);
+                case SpellId.Windward:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Windward, 14f, TileVerb.None);
                 case SpellId.Veil:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
                 case SpellId.StormCall:

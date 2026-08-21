@@ -13,13 +13,17 @@ namespace RuneMagic
         Rooted,
         Frightened,
         Stoneskin,
-        Veiled
+        Veiled,
+        Watershield,
+        Flameward,
+        Windward
     }
 
     public enum StatusKind
     {
         Debuff,
-        Buff
+        Buff,
+        Ward
     }
 
     public enum CreatureNature
@@ -32,16 +36,25 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// A named condition the world can see. Buffs and debuffs share this.
+    /// A named condition the world can see. Buffs, wards, and debuffs share this.
     /// </summary>
     public readonly struct StatusSpec
     {
-        public StatusSpec(StatusId id, string name, StatusKind kind, Color tint, bool blocksAction, bool blocksMove, bool blocksPhysical)
+        public StatusSpec(
+            StatusId id,
+            string name,
+            StatusKind kind,
+            Color tint,
+            Essence element,
+            bool blocksAction,
+            bool blocksMove,
+            bool blocksPhysical)
         {
             Id = id;
             Name = name;
             Kind = kind;
             Tint = tint;
+            Element = element;
             BlocksAction = blocksAction;
             BlocksMove = blocksMove;
             BlocksPhysical = blocksPhysical;
@@ -51,34 +64,42 @@ namespace RuneMagic
         public string Name { get; }
         public StatusKind Kind { get; }
         public Color Tint { get; }
+        public Essence Element { get; }
         public bool BlocksAction { get; }
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
+        public bool IsWard => Kind == StatusKind.Ward;
 
         public static StatusSpec Of(StatusId id)
         {
             switch (id)
             {
                 case StatusId.Burning:
-                    return new StatusSpec(id, "burning", StatusKind.Debuff, new Color(1f, 0.45f, 0.12f), false, false, false);
+                    return new StatusSpec(id, "burning", StatusKind.Debuff, new Color(1f, 0.45f, 0.12f), Essence.Fire, false, false, false);
                 case StatusId.Frozen:
-                    return new StatusSpec(id, "frozen", StatusKind.Debuff, new Color(0.55f, 0.82f, 1f), true, true, false);
+                    return new StatusSpec(id, "frozen", StatusKind.Debuff, new Color(0.55f, 0.82f, 1f), Essence.Water, true, true, false);
                 case StatusId.Soaked:
-                    return new StatusSpec(id, "soaked", StatusKind.Debuff, new Color(0.35f, 0.62f, 0.95f), false, false, false);
+                    return new StatusSpec(id, "soaked", StatusKind.Debuff, new Color(0.35f, 0.62f, 0.95f), Essence.Water, false, false, false);
                 case StatusId.Stunned:
-                    return new StatusSpec(id, "stunned", StatusKind.Debuff, new Color(0.95f, 0.9f, 0.35f), true, true, false);
+                    return new StatusSpec(id, "stunned", StatusKind.Debuff, new Color(0.95f, 0.9f, 0.35f), Essence.Air, true, true, false);
                 case StatusId.Sleeping:
-                    return new StatusSpec(id, "sleeping", StatusKind.Debuff, new Color(0.62f, 0.72f, 1f), true, true, false);
+                    return new StatusSpec(id, "sleeping", StatusKind.Debuff, new Color(0.62f, 0.72f, 1f), Essence.Mind, true, true, false);
                 case StatusId.Rooted:
-                    return new StatusSpec(id, "rooted", StatusKind.Debuff, new Color(0.42f, 0.62f, 0.28f), false, true, false);
+                    return new StatusSpec(id, "rooted", StatusKind.Debuff, new Color(0.42f, 0.62f, 0.28f), Essence.Earth, false, true, false);
                 case StatusId.Frightened:
-                    return new StatusSpec(id, "frightened", StatusKind.Debuff, new Color(0.42f, 0.18f, 0.55f), true, false, false);
+                    return new StatusSpec(id, "frightened", StatusKind.Debuff, new Color(0.42f, 0.18f, 0.55f), Essence.Mind, true, false, false);
                 case StatusId.Stoneskin:
-                    return new StatusSpec(id, "stoneskin", StatusKind.Buff, new Color(0.62f, 0.58f, 0.5f), false, false, true);
+                    return new StatusSpec(id, "stoneskin", StatusKind.Ward, new Color(0.62f, 0.58f, 0.5f), Essence.Earth, false, false, true);
                 case StatusId.Veiled:
-                    return new StatusSpec(id, "veiled", StatusKind.Buff, new Color(0.28f, 0.22f, 0.4f), false, false, false);
+                    return new StatusSpec(id, "veiled", StatusKind.Buff, new Color(0.28f, 0.22f, 0.4f), Essence.None, false, false, false);
+                case StatusId.Watershield:
+                    return new StatusSpec(id, "water ward", StatusKind.Ward, new Color(0.28f, 0.58f, 0.95f), Essence.Water, false, false, false);
+                case StatusId.Flameward:
+                    return new StatusSpec(id, "flame ward", StatusKind.Ward, new Color(1f, 0.42f, 0.12f), Essence.Fire, false, false, false);
+                case StatusId.Windward:
+                    return new StatusSpec(id, "wind ward", StatusKind.Ward, new Color(0.72f, 0.86f, 0.95f), Essence.Air, false, false, false);
                 default:
-                    return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, false, false, false);
+                    return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, Essence.None, false, false, false);
             }
         }
 

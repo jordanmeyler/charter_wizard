@@ -58,7 +58,7 @@ namespace RuneMagic
                 if (self != null && Vector2.Distance(self.transform.position, center) <= radius && verb.Status != StatusId.None)
                 {
                     var host = StatusHost.On(self);
-                    if (host != null && verb.Status != StatusId.Stoneskin)
+                    if (host != null && !ElementalLaw.IsWard(verb.Status))
                     {
                         notes.Add(host.Apply(verb.Status, verb.StatusSeconds * 0.45f));
                     }

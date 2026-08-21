@@ -99,6 +99,40 @@ namespace RuneMagic
             }
         }
 
+        public bool Fends(Essence incoming)
+        {
+            return !string.IsNullOrEmpty(FendingName(incoming));
+        }
+
+        public string FendingName(Essence incoming)
+        {
+            if (incoming == Essence.None)
+            {
+                return string.Empty;
+            }
+
+            for (var i = 0; i < _effects.Count; i++)
+            {
+                if (_effects[i].Remaining <= 0f)
+                {
+                    continue;
+                }
+
+                var spec = _effects[i].Spec;
+                if (incoming == Essence.Physical && spec.BlocksPhysical)
+                {
+                    return spec.Name;
+                }
+
+                if (spec.IsWard && ElementalLaw.Beats(spec.Element, incoming))
+                {
+                    return spec.Name;
+                }
+            }
+
+            return string.Empty;
+        }
+
         public string Summary()
         {
             if (_effects.Count == 0)
@@ -125,6 +159,16 @@ namespace RuneMagic
                 return string.Empty;
             }
 
+            var incoming = StatusSpec.Of(id).Element;
+            if (!ElementalLaw.IsWard(id) && incoming != Essence.None && incoming != Essence.Mind)
+            {
+                var ward = FendingName(incoming);
+                if (!string.IsNullOrEmpty(ward))
+                {
+                    return $"A {ward} turns {StatusSpec.Of(id).Name}.";
+                }
+            }
+
             var scale = Affinity(id);
             if (scale <= 0f)
             {
@@ -132,6 +176,11 @@ namespace RuneMagic
             }
 
             var held = scale * seconds;
+            if (ElementalLaw.IsWard(id))
+            {
+                _effects.RemoveAll(effect => ElementalLaw.IsWard(effect.Id) && effect.Id != id);
+            }
+
             for (var i = 0; i < _effects.Count; i++)
             {
                 if (_effects[i].Id == id)

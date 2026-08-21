@@ -1,6 +1,6 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.16. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.17. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
 
 ---
 
@@ -76,7 +76,18 @@ There is **no hit-point bar**. A spell kills, restrains, or does neither (traver
 
 **Targeting is written with the spell.** Single-target work finds the nearest lock at the click. Area work (Rain, Live-floor, Thunderclap, Sprout…) offers the key to every lock in the radius and paints the tiles. Self work (Hop, Flight, Stoneskin, Veil) stays on the caster. Spread form widens a single sentence into an area. Runtime table: `SpellVerb`.
 
-**Statuses share one host.** Burning, Frozen, Soaked, Stunned, Sleeping, Rooted, Frightened are debuffs. Stoneskin and Veiled are buffs. A chip over the body names what holds; the HUD repeats it for the adept. Fire-nature will not burn; ice will not freeze; earth shrugs off elemental soak and heat; mind takes stun, sleep, and fear harder. Frozen / stunned / sleeping stop action and movement. Rooted stops movement. Stoneskin (`Earth · Salt · Sulphur`) stops **physical** blows — arrows and a golem slam — not hunger sent as a fireball.
+**Statuses share one host.** Burning, Frozen, Soaked, Stunned, Sleeping, Rooted, Frightened are debuffs. Veiled is a hide buff. **Wards** are the four elements given a body and held on you (`Element · Salt · Sulphur`). Only one ward stands at a time.
+
+The four roots are a square. Adjacent sides have a winner. Opposites do not touch.
+
+| Wear | Sentence | Fends off | Broken through by |
+| --- | --- | --- | --- |
+| **Water ward** | Water · Salt · Sulphur | Fire — fireballs, burning floors | Earth / a physical blow |
+| **Flame ward** | Fire · Salt · Sulphur | Earth — hurled rest, roots | Air |
+| **Stoneskin** | Earth · Salt · Sulphur | Air, and **physical** blows (arrows, a golem slam) | Fire — hunger sent still finds you |
+| **Wind ward** | Air · Salt · Sulphur | Water — ice, soak | Fire |
+
+Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. A chip over the body names what holds; the HUD repeats it for the adept. Fire-nature will not burn; ice will not freeze; earth shrugs off elemental soak and heat; mind takes stun, sleep, and fear harder. Frozen / stunned / sleeping stop action and movement. Rooted stops movement.
 
 A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **Fire · Mercury**. Add breath and the same send is a bolt: **Fire · Air · Mercury** (or **Spark · Mercury** / **Lightning · Mercury** if that join already stands). Melt is the stood fire-body sent *into* a thing: **Fire · Salt · Mercury**. Salt is for work that *stands* — Flame-pillar is **Fire · Salt · Earth**. Sulphur is the wildcard: add it and the sentence is a different spell (Fire · Sulphur · Mercury is Rage; Lightning · Sulphur is Jolt), the way Life makes a plant living. Death is not in the ordinary book. Hop and Flight stay on the caster (Air · Salt · Air, Air · Mercury · Salt) — the same ideas, a different order. Chain is longer because more happened.
 
@@ -88,7 +99,7 @@ A spell is a **chain that tells a story**. **Order is the sentence.** Fire is **
 | Sent *into* a thing, or placed away (a stood body, then Mercury) | **Remote** | Melt: Fire · Salt · **Mercury**. Pit. Rain. |
 | Hunger sent, or breath already in the chain, then sent | **Shot** | Fire: Fire · Mercury. Lightning: Fire · Air · Mercury. Ice-spear. |
 | A body around your feet | **Spread** | Live-floor: Fire · Air · Salt. Fog. Sprout. |
-| Kept on the caster | **Self** | Hop. Flight. Stoneskin. |
+| Kept on the caster | **Self** | Hop. Flight. Wards. |
 
 Cast opens aim for the form the sentence already wrote. Click the world — fly a line, raise a column, release at your feet, or place at a distance. You do not pick the form. **Hop** (Air · Salt · Air, or Air · Salt · Mercury) is Self: click a landing and leap a few tiles, including over a pit. **Flight** (Air · Mercury · Salt) stays on you so pits will not take you for a short while. **Pillar** is one tile — a hollow fills and holds; a floor grows a column. **Wall** is the same rest, but you click a start and a stop: across a pit it is a span, on the floor it is a barrier.
 
@@ -209,7 +220,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56 Stoneskin** (`Earth · Salt · Sulphur`) is the first self buff.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`).
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I (local keys + skip flanks), three aspect sanctums, Door II (aspect keys only). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.16). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences, flammability, and conductivity — are in [`MATERIALS.md`](MATERIALS.md). Floor 1 — the Foundation — is specified in [`FLOOR1.md`](FLOOR1.md) and boots from `Assets/Resources/Maps/foundation.json`. Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences, flammability, and conductivity — are in [`MATERIALS.md`](MATERIALS.md). Floor 1 — the Foundation — is specified in [`FLOOR1.md`](FLOOR1.md) and boots from `Assets/Resources/Maps/foundation.json`. Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
 
 ## What is implemented
 
@@ -61,7 +61,9 @@ You only move and cast. The adept is the hooded figure with a violet glow. A gol
 
 Casts are visible: Shot flies, Pillar rises, Spread wells from the feet, Remote forms at the click. An unwritten or scrambled Charter string fizzles. Free fills a blank or unscrambles a valid bag of runes; used types grow. The right key unmakes the lock and opens the door east.
 
-Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while. Stoneskin (`Earth · Salt · Sulphur`) breaks arrows and slams, not fireballs.
+Walk into a pit and you return to the last safe floor. A slam, an arrow, a wizard’s fireball, or a floor that is already hunger **kills** you — you wake at the **spawn crystal**. A pillar or wall fills a hollow (a wall is start-to-stop: a span over the drop, a barrier on the floor). Hop leaps a few tiles and can clear a shot. Flight lets you walk over pits for a short while.
+
+**Wards** are `Element · Salt · Sulphur`, held on you. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water. Only one ward stands at a time.
 
 Spells are single-target, area, or self. Status chips name what holds on you and on them. Water a plant and it grows. Fire spreads onto flammable tiles and dies against water and ice. Charge runs metal and wet stone.
 
@@ -122,7 +124,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 - Ice bridges over water, gas/oil explosions, and the rest of the later reaction list
 - Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work
 - A real death / last-rites pass (this slice respawns at the crystal)
-- Wards, mediums, and the Primordial-gate item
+- Passive item-wards and mediums, and the Primordial-gate item
 - Overworld, dialogue, and Magnum Opus world-tint
 
 Those stay open threads in `DESIGN.md` until you ratify them.

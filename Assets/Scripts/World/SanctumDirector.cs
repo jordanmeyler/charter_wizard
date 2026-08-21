@@ -147,12 +147,9 @@ namespace RuneMagic
                 {
                     var host = StatusHost.On(player);
                     host?.Apply(StatusId.Burning, 2.4f);
-                    if (host == null || !host.Has(StatusId.Stoneskin))
+                    if (Underfoot.Fire > 0.85f && (host == null || !host.Fends(Essence.Fire)))
                     {
-                        if (Underfoot.Fire > 0.85f)
-                        {
-                            KillPlayer("The floor is hunger. The crystal calls you back.");
-                        }
+                        KillPlayer("The floor is hunger. The crystal calls you back.");
                     }
                 }
             }

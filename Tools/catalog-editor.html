@@ -102,7 +102,7 @@
           <label>Work (existing effect) <input name="work" value="${esc(item.work||item.id)}"></label>
           <label>Target <select name="target">${opts(["","Single","Area","Self"], item.target||"")}</select></label>
           <label>Radius <input name="radius" type="number" step="0.1" value="${item.radius||0}"></label>
-          <label>Status <select name="status">${opts(["","Burning","Frozen","Soaked","Stunned","Sleeping","Rooted","Frightened","Stoneskin","Veiled"], item.status||"")}</select></label>
+          <label>Status <select name="status">${opts(["","Burning","Frozen","Soaked","Stunned","Sleeping","Rooted","Frightened","Stoneskin","Veiled","Watershield","Flameward","Windward"], item.status||"")}</select></label>
           <label>Status seconds <input name="statusSeconds" type="number" step="0.1" value="${item.statusSeconds||0}"></label>
         </div>
         <label>Recipe <input name="recipe" value="${esc(item.recipe)}"></label>
