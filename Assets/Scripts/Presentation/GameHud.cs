@@ -244,7 +244,7 @@ namespace RuneMagic
             GUI.color = GlyphView.Slate;
             GUI.DrawTexture(rect, Texture2D.whiteTexture);
             GUI.color = previous;
-            RuneMark.DrawGui(rect, rune, GlyphView.Ink);
+            RuneMark.DrawGui(rect, rune, RunePalette.MarkInk(rune));
         }
 
         static void DrawBlockedMark(Rect rect)
@@ -997,37 +997,22 @@ namespace RuneMagic
                 DrawWroughtMark(rect);
             }
 
-            if (play)
-            {
-                var ink = available ? GlyphView.Ink : GlyphView.DimInk;
-                RuneMark.DrawGui(rect, rune, ink);
-            }
-            else
-            {
-                var showName = rect.height > 40f;
-                var markPad = rect.height > 56f ? 8f : 4f;
-                var markSide = showName
-                    ? Mathf.Min(rect.width - markPad * 2f, rect.height * 0.58f)
-                    : Mathf.Min(rect.width, rect.height) - markPad * 2f;
-                var mark = new Rect(
-                    rect.x + (rect.width - markSide) * 0.5f,
-                    rect.y + (showName ? 4f : (rect.height - markSide) * 0.5f),
-                    markSide,
-                    markSide);
-                var tint = available ? Color.white : new Color(1f, 1f, 1f, 0.32f);
-                DrawSprite(mark, SpriteFactory.RuneMark(rune), tint);
+            var showName = !play && rect.height > 40f;
+            var markRect = showName
+                ? new Rect(rect.x, rect.y + 2f, rect.width, rect.height * 0.6f)
+                : rect;
+            RuneMark.DrawGui(markRect, rune, RunePalette.MarkInk(rune, available));
 
-                if (showName)
-                {
-                    var captionInk = inChunk
-                        ? InkOn(RunePalette.Of(chunk))
-                        : RunePalette.Caption(rune, available);
-                    var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Bold, captionInk);
-                    name.alignment = TextAnchor.MiddleCenter;
-                    var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
-                    GUI.Label(new Rect(rect.x + 2f, rect.y + rect.height * 0.62f, rect.width - 4f, rect.height * 0.34f),
-                        caption, name);
-                }
+            if (showName)
+            {
+                var captionInk = inChunk
+                    ? InkOn(RunePalette.Of(chunk))
+                    : RunePalette.Caption(rune, available);
+                var name = Label(rect.height > 70f ? 12 : 10, FontStyle.Bold, captionInk);
+                name.alignment = TextAnchor.MiddleCenter;
+                var caption = available ? RuneCatalog.NameOf(rune) : "not in view";
+                GUI.Label(new Rect(rect.x + 2f, rect.y + rect.height * 0.62f, rect.width - 4f, rect.height * 0.34f),
+                    caption, name);
             }
 
             var ev = Event.current;
@@ -1090,7 +1075,8 @@ namespace RuneMagic
             var y = rect.y + (rect.height - slot) * 0.5f;
             for (var i = 0; i < sequence.Length; i++)
             {
-                RuneMark.DrawGui(new Rect(start + i * slot, y, slot, slot), sequence[i], GlyphView.Ink);
+                RuneMark.DrawGui(new Rect(start + i * slot, y, slot, slot), sequence[i],
+                    RunePalette.MarkInk(sequence[i]));
             }
         }
 
