@@ -63,6 +63,26 @@ namespace RuneMagic
                     return new Color(0.03f, 0.03f, 0.05f);
                 case "storm-cell":
                     return new Color(0.04f, 0.05f, 0.09f);
+                case "hub":
+                    return new Color(0.055f, 0.045f, 0.06f);
+                case "fire-wing":
+                    return new Color(0.1f, 0.04f, 0.03f);
+                case "water-wing":
+                    return new Color(0.05f, 0.04f, 0.08f);
+                case "earth-wing":
+                    return new Color(0.06f, 0.05f, 0.035f);
+                case "air-wing":
+                    return new Color(0.05f, 0.06f, 0.08f);
+                case "aspect-foyer":
+                    return new Color(0.07f, 0.055f, 0.04f);
+                case "body-sanctum":
+                    return new Color(0.07f, 0.065f, 0.055f);
+                case "spirit-sanctum":
+                    return new Color(0.06f, 0.04f, 0.09f);
+                case "mind-sanctum":
+                    return new Color(0.08f, 0.06f, 0.03f);
+                case "door-ii":
+                    return new Color(0.035f, 0.03f, 0.05f);
                 default:
                     return new Color(0.04f, 0.045f, 0.07f);
             }

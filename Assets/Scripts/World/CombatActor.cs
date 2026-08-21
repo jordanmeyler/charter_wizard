@@ -26,9 +26,11 @@ namespace RuneMagic
         bool _casting;
         Vector2 _committed;
         SpriteRenderer _sprite;
+        SpriteAnim _anim;
         TextMesh _castChip;
         float _reach = 1.2f;
         float _sight = 8.2f;
+        Vector3 _restScale = Vector3.one;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid)
         {
@@ -38,6 +40,8 @@ namespace RuneMagic
             _lock = GetComponent<ISpellLock>();
             _status = GetComponent<StatusHost>();
             _sprite = GetComponent<SpriteRenderer>();
+            _anim = GetComponent<SpriteAnim>() ?? SpriteAnim.On(gameObject, _sprite);
+            _restScale = transform.localScale;
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
                 new Color(1f, 0.72f, 0.28f), 14);
             if (_castChip != null)
@@ -64,6 +68,7 @@ namespace RuneMagic
             {
                 _casting = false;
                 _windup = 0f;
+                transform.localScale = _restScale;
                 ClearCastChip();
                 return;
             }
@@ -99,18 +104,25 @@ namespace RuneMagic
             if (distance > _reach + 0.15f)
             {
                 _windup = 0f;
+                transform.localScale = _restScale;
+                _anim?.Play("fire-golem", 5f);
                 ClearCastChip();
                 return;
             }
 
             _windup += Time.deltaTime;
             ShowCast("slam…");
+            _anim?.Play("fire-golem-slam", 6f);
+            var wind = Mathf.Clamp01(_windup / CastSeconds);
+            transform.localScale = new Vector3(_restScale.x * (1f + wind * 0.12f), _restScale.y * (1f - wind * 0.12f), 1f);
             if (_windup < CastSeconds)
             {
                 return;
             }
 
             _windup = 0f;
+            transform.localScale = _restScale;
+            _anim?.Play("fire-golem", 5f);
             ClearCastChip();
             if (player.IsAirborne)
             {
@@ -145,6 +157,7 @@ namespace RuneMagic
             _windup += Time.deltaTime;
             var left = Mathf.Max(0f, CastSeconds - _windup);
             ShowCast($"casting… {left:0.0}");
+            _anim?.Play("warden-cast", 5f);
             if (_windup < CastSeconds)
             {
                 return;
@@ -152,6 +165,7 @@ namespace RuneMagic
 
             _casting = false;
             _windup = 0f;
+            _anim?.Play("warden", 4f);
             ClearCastChip();
             var origin = transform.position + (Vector3)(_committed * 0.45f);
             WorldProjectile.Spawn(origin, _committed, ProjectileKind.Fireball, _grid, 6.4f);
