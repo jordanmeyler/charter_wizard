@@ -110,6 +110,9 @@ Four sockets on the hub’s north wall. Walk up holding the four element stones 
 
 The elements taught *substance*. This stage teaches the three ways to **apply** it. The foyer labels **Salt**, **Mercury**, and **Sulphur** before the sanctums. The Silent Court labels those three again, plus Fire and Water, so Rage, Lull, and Command can all be written without leaving the room. You are always Salt · Sulphur · Mercury; Command is the sentence that was already on you.
 
+### Flaming hall · foyer → spirit
+The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the floor until yield is thrown. There is **no water nearby** — Douse still works if you fetch yield, but the intended first ward is written at the mouth: columns show **Water · Salt · Sulphur**, and a Water mark sits beside them so the sentence can be cast here. Wear the ward and walk through. Hop cannot clear the span. The same ward later turns the warden’s fireball.
+
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
 - **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough. Ice-wall is Ice · Salt · Ice.
@@ -167,7 +170,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **Columns teach the sentence.** A row of pillars shows the intended spell. Ice, spark, and plant rooms all work this way.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
 - **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
-- **Death is the crystal.** A slam, a fireball, an arrow, or a floor that is already hunger sends you to spawn. Pits and drowning water use the last safe floor. A better death system waits.
+- **Death is the crystal.** A slam, a fireball, an arrow, a standing flame, or a floor that is already hunger sends you to spawn and **names what found you**. If a spell unmade you, the crystal shows the **marks that wrote it**. Pits and drowning water use the last safe floor.
 - **Pits earn their keep.** A hollow is a sequenced crossing — block, then hop, grow across, freeze water — not a random hole beside a stone.
 
 ---
@@ -181,7 +184,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `water-wing` | The Ember Vault | Water against fire |
 | `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots; side pits keep the stone on the lane |
 | `air-wing` | The Sundered Heights | Air as gust. Fog, not a wall. |
-| `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled |
+| `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled. North mouth writes Water ward before the flaming hall. |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
 | `spirit-sanctum` | The Gallery of Force | Mercury sends |
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |

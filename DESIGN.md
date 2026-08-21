@@ -109,7 +109,7 @@ A combo that *looks* as if it should work can still fizzle if it is not written.
 
 **Charter:** an unwritten, unfinished, or **scrambled** combo **fizzles**. The written order is the sentence. No blanks are filled. **Free:** may **unscramble** the same runes into a valid recipe, and may fill missing runes up to a **fill budget** (1 now; the matcher is written so the budget can rise). A 2-of-3 recipe can still become a spell. Mercury · Fire becomes Fire; Charter would refuse it. If several written chains fit, Free **picks at random, weighted by attunement**. A finished sentence — even a scrambled one Free can read — is never “upgraded” by filling toward a longer one. Free is still never the required key.
 
-The catalog chains now resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. Joins fold (Fire · Air is Spark). The Grimoire lists the full book; click a name to string it for testing. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
+The catalog chains now resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. Joins fold (Fire · Air is Spark). In Develop the Grimoire lists the full book; in Play it holds only workings you Keep. Click a name to string it if those runes are in view. Short tutorial strings still work as a fallback. Charter fizzles Free-only Death-work.
 
 ---
 
@@ -202,12 +202,12 @@ Marquee reactions (each a puzzle key):
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
 - **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
 - **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice wherever it stands. Fire eats vine. Room masonry that is not ice is not a spell-body. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and artifacts stay in the pack.
-- **Standing in hunger.** A burning floor kills in **eight seconds** unless you wear a water ward or put the fire out. Fire-golems die to any water work and to earth work; they only shrug off base fire and wind.
+- **Standing in hunger.** A burning floor kills in **eight seconds** unless you wear a water ward or put the fire out. A **kindled hall** (painted fire that stays until yield is thrown) kills at once without a water ward. Fire-golems die to any water work and to earth work; they only shrug off base fire and wind.
 - **Fog and poison mist linger** as hanging veils. Gale or fire tears them. Light lifts fog, not poison.
 
 Reactions **cascade** (fire spreads, wet grows, charge runs). **Charter** reactions are controlled; **Free** reactions are bigger but can spread to terrain you needed — the free-magic tax made physical.
 
-A beginner wizard writes a fireball for **two seconds** and commits the facing when the sentence starts — hop over it, raise a wall, or get behind them. Golems slam in reach. Arrow racks fire real shots down a heading; a stood body (wall / pillar) breaks them, and so does room masonry. Your own shots break the same way. Stoneskin breaks arrows and slams only. Death is temporary: the adept returns to the **spawn crystal**. Pits still use the last safe floor. A better death system waits.
+A beginner wizard writes a fireball for **two seconds** and commits the facing when the sentence starts — hop over it, raise a wall, or get behind them. Golems slam in reach. Arrow racks fire real shots down a heading; a stood body (wall / pillar) breaks them, and so does room masonry. Your own shots break the same way. Stoneskin breaks arrows and slams only. Death is temporary: the adept returns to the **spawn crystal**, which names what found them and, if a spell unmade them, shows the marks that wrote it. Pits still use the last safe floor.
 
 ---
 
@@ -219,7 +219,7 @@ The player **moves and casts**. Perception is a stance, not a tile overlay. The 
 
 World altars do not teach by writing FIRE. They put the **mark beside a picture** of the thing — flame, water, rock, gale; a standing body, an opening path, a mind. Play hides the name. Develop still writes it.
 
-A **recent-cast strip** (last ten) sits on the Charter and the world. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down.
+A **recent-cast strip** (last twenty-five) sits on the Charter and the world, with a **Grimoire** tab beside it. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down. Keep a working and it stays in the book so you can send it again after it leaves the strip.
 
 **Two sights, toggled in play (F1 or the bar):**
 
@@ -227,7 +227,7 @@ A **recent-cast strip** (last ten) sits on the Charter and the world. ○ the se
 |---|---|---|
 | Marks | Abstract work-signs. No letters, names, or element colours. | Letters, names, birth recipes, and the palette. |
 | Wall | Empty until a mark is kept. | The eleven, named, as a working board. |
-| Book | Kept marks only. | The full written ledger (click a name to string it). |
+| Book | Kept marks and kept workings only. Click a saved page to send it. | The full written ledger (click a name to string it). |
 
 Play is the game. Part of the fun is learning what a mark *does*. Simple sentences stay worthwhile because you have to find the marks and keep them. Develop is for authoring.
 

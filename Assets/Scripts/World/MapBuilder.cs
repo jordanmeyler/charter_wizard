@@ -78,7 +78,7 @@ namespace RuneMagic
                 for (var i = 0; i < map.halls.Length; i++)
                 {
                     Connect(grid, FindRoom(map.rooms, map.halls[i].from), FindRoom(map.rooms, map.halls[i].to),
-                        MapFile.ParseMaterial(map.halls[i].material));
+                        map.halls[i]);
                 }
             }
 
@@ -415,24 +415,31 @@ namespace RuneMagic
             locks.Add(encounter);
         }
 
-        static void Connect(WorldGrid grid, MapRoom from, MapRoom to, MaterialId hall)
+        static void Connect(WorldGrid grid, MapRoom from, MapRoom to, MapHall hall)
         {
-            if (from == null || to == null || from.origin == null || to.origin == null)
+            if (from == null || to == null || from.origin == null || to.origin == null || hall == null)
             {
                 return;
             }
 
+            var material = MapFile.ParseMaterial(hall.material);
+            var kindle = IsFireHall(hall);
             const int half = 1;
             if (to.origin.x > from.origin.x + from.width - 1)
             {
                 var y0 = Mathf.Max(from.origin.y + 1, to.origin.y + 1);
                 var y1 = Mathf.Min(from.origin.y + from.height - 2, to.origin.y + to.height - 2);
                 var mid = y0 <= y1 ? (y0 + y1) / 2 : to.origin.y + to.height / 2;
-                StampHall(grid, from.origin.x + from.width, to.origin.x - 1, mid, half, true, hall);
+                StampHall(grid, from.origin.x + from.width, to.origin.x - 1, mid, half, true, material, kindle);
                 for (var dy = -half; dy <= half; dy++)
                 {
-                    OpenPassage(grid, from.origin.x + from.width - 1, mid + dy, hall);
-                    OpenPassage(grid, to.origin.x, mid + dy, hall);
+                    OpenPassage(grid, from.origin.x + from.width - 1, mid + dy, material, false);
+                    OpenPassage(grid, to.origin.x, mid + dy, material, kindle);
+                }
+
+                if (kindle)
+                {
+                    MarkFlameHall(from.origin.x + from.width - 1, mid);
                 }
 
                 return;
@@ -443,16 +450,33 @@ namespace RuneMagic
                 var x0 = Mathf.Max(from.origin.x + 1, to.origin.x + 1);
                 var x1 = Mathf.Min(from.origin.x + from.width - 2, to.origin.x + to.width - 2);
                 var mid = x0 <= x1 ? (x0 + x1) / 2 : to.origin.x + to.width / 2;
-                StampHall(grid, from.origin.y + from.height, to.origin.y - 1, mid, half, false, hall);
+                StampHall(grid, from.origin.y + from.height, to.origin.y - 1, mid, half, false, material, kindle);
                 for (var dx = -half; dx <= half; dx++)
                 {
-                    OpenPassage(grid, mid + dx, from.origin.y + from.height - 1, hall);
-                    OpenPassage(grid, mid + dx, to.origin.y, hall);
+                    OpenPassage(grid, mid + dx, from.origin.y + from.height - 1, material, false);
+                    OpenPassage(grid, mid + dx, to.origin.y, material, kindle);
+                }
+
+                if (kindle)
+                {
+                    MarkFlameHall(mid, from.origin.y + from.height - 1);
                 }
             }
         }
 
-        static void StampHall(WorldGrid grid, int gap0, int gap1, int mid, int half, bool eastWest, MaterialId hall)
+        static bool IsFireHall(MapHall hall)
+        {
+            var hazard = hall != null ? hall.hazard : string.Empty;
+            return !string.IsNullOrEmpty(hazard)
+                && hazard.Equals("fire", System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        static void MarkFlameHall(int x, int y)
+        {
+            FlameHall.Spawn(WorldGrid.Center(x, y));
+        }
+
+        static void StampHall(WorldGrid grid, int gap0, int gap1, int mid, int half, bool eastWest, MaterialId hall, bool kindle)
         {
             if (gap0 > gap1)
             {
@@ -467,7 +491,7 @@ namespace RuneMagic
                     var y = eastWest ? mid + side : along;
                     if (Mathf.Abs(side) <= half)
                     {
-                        OpenPassage(grid, x, y, hall);
+                        OpenPassage(grid, x, y, hall, kindle);
                     }
                     else
                     {
@@ -477,7 +501,7 @@ namespace RuneMagic
             }
         }
 
-        static void OpenPassage(WorldGrid grid, int x, int y, MaterialId hall)
+        static void OpenPassage(WorldGrid grid, int x, int y, MaterialId hall, bool kindle = false)
         {
             var tile = grid.Get(x, y);
             if (tile != null && tile.Kind == TileKind.Door)
@@ -486,6 +510,10 @@ namespace RuneMagic
             }
 
             grid.Set(x, y, TileKind.Floor, hall);
+            if (kindle)
+            {
+                grid.Get(x, y)?.Kindle();
+            }
         }
 
         static void SealHallEdge(WorldGrid grid, int x, int y)

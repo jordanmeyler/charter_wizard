@@ -40,6 +40,10 @@ namespace RuneMagic
 
         public WorldTile Underfoot { get; private set; }
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
+        public DeathCause LastDeath { get; private set; }
+        public float LastDeathAt { get; private set; }
+        public bool DeathNoticeUp =>
+            LastDeath.Exists && Time.unscaledTime - LastDeathAt < 7.5f;
         public string SightLine { get; private set; } = "You see the room. Space opens the Charter.";
         public float Taint { get; private set; }
         public WorldGrid Grid { get; private set; }
@@ -209,9 +213,15 @@ namespace RuneMagic
                 {
                     host?.Apply(StatusId.Burning, 2.4f);
                     var warded = host != null && host.Fends(Essence.Fire);
-                    if (adept != null && adept.TickFlame(true, warded))
+                    if (Underfoot.Kindled && !warded && (adept == null || !adept.IsAirborne))
                     {
-                        KillPlayer("The floor is hunger. Eight breaths, then the crystal calls you back.");
+                        KillPlayer(DeathCause.Plain(
+                            "The flaming hall finds you. Wear a water ward, or throw yield first."));
+                    }
+                    else if (adept != null && adept.TickFlame(true, warded))
+                    {
+                        KillPlayer(DeathCause.Plain(
+                            "The floor is hunger. Eight breaths without a water ward."));
                     }
                 }
                 else
@@ -221,7 +231,7 @@ namespace RuneMagic
 
                 if (Underfoot.Material == MaterialId.Lava && (host == null || !host.Fends(Essence.Fire)))
                 {
-                    KillPlayer("Hungry earth. The crystal calls you back.");
+                    KillPlayer(DeathCause.Plain("Hungry earth finds you."));
                 }
             }
             else
@@ -234,7 +244,7 @@ namespace RuneMagic
                 var host = StatusHost.On(player);
                 if (host == null || !host.Fends(Essence.Fire))
                 {
-                    KillPlayer("A standing flame finds you. The crystal calls you back.");
+                    KillPlayer(DeathCause.OfSpell(SpellId.FlamePillar, "A standing flame finds you."));
                 }
             }
 
@@ -544,8 +554,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. Written chains, and every join — Acid is Steam · Metal, Ice is Water · Salt · Earth. Click a name to string it if those runes are in view. Kept workings are marked.",
-                "The book of workings and joins. Click a page to send it if those marks are in view. Kept pages are marked."));
+                "The Grimoire. Every written chain and join. Click a name to string it if those runes are in view. Kept workings are marked.",
+                "Your book. Workings you have kept. Click a page to send it if those marks are in view."));
         }
 
         public void CloseGrimoire()
@@ -1041,21 +1051,17 @@ namespace RuneMagic
                 return;
             }
 
-            var attempt = Ledger.Recent[index];
-            if (!attempt.Worked || attempt.Runes == null || attempt.Runes.Length == 0)
-            {
-                Log("That working did not hold. There is nothing to send again.");
-                return;
-            }
+            SendWorking(Ledger.Recent[index].Runes, Ledger.Recent[index].Stance, Ledger.Recent[index].Worked);
+        }
 
-            if (TryCastPrepared(attempt.Runes, null, attempt.Stance))
+        public void CastKept(int index)
+        {
+            if (Busy || !Grimoire.TryGetKept(index, out var kept))
             {
                 return;
             }
 
-            Log(GlyphView.Speak(
-                "Those runes are not in this view. Walk until they speak, then send it again.",
-                "Those marks are not in this view."));
+            SendWorking(kept.Runes, kept.Stance, worked: true);
         }
 
         public void KeepRecent(int index, string givenName)
@@ -1067,7 +1073,7 @@ namespace RuneMagic
             }
 
             var attempt = Ledger.Recent[index];
-            Grimoire.Keep(attempt.Spell);
+            Grimoire.KeepWorking(attempt.Stance, attempt.Runes, attempt.Spell, attempt.GivenName);
             Grimoire.Names.Remember(attempt.Runes, attempt.GivenName);
             var label = CallWorking(attempt.Runes);
             if (Held.Occupied && WorkingNames.SameComposition(Held.Composition.Sequence, attempt.Runes))
@@ -1076,8 +1082,26 @@ namespace RuneMagic
             }
 
             Log(GlyphView.Speak(
-                $"{label} is kept for that same writing. Spark is not Fire · Air — only this composition carries the name.",
-                "The working is kept. The name holds for that same writing."));
+                $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.",
+                "The working is kept in your book. The name holds for that same writing."));
+        }
+
+        void SendWorking(IReadOnlyList<RuneId> runes, CastingStance stance, bool worked)
+        {
+            if (!worked || runes == null || runes.Count == 0)
+            {
+                Log("That working did not hold. There is nothing to send again.");
+                return;
+            }
+
+            if (TryCastPrepared(runes, null, stance))
+            {
+                return;
+            }
+
+            Log(GlyphView.Speak(
+                "Those runes are not in this view. Walk until they speak, then send it again.",
+                "Those marks are not in this view."));
         }
 
         bool TryCastPrepared(IReadOnlyList<RuneId> runes, IReadOnlyList<RuneId> via, CastingStance stance)
@@ -2121,10 +2145,20 @@ namespace RuneMagic
 
         public void KillPlayer(string message)
         {
+            KillPlayer(DeathCause.Plain(message));
+        }
+
+        public void KillPlayer(DeathCause cause)
+        {
             var player = PlayerTransform();
             if (player == null)
             {
                 return;
+            }
+
+            if (!cause.Exists)
+            {
+                cause = DeathCause.Plain("You fall. The work you stood forgets itself.");
             }
 
             SweepOwnWork(CurrentRoom, player.position);
@@ -2135,9 +2169,9 @@ namespace RuneMagic
                 CancelAim();
             }
 
-            PlacePlayer(player, _spawnPoint, string.IsNullOrEmpty(message)
-                ? "You fall. The work you stood forgets itself. The crystal calls you back."
-                : message);
+            LastDeath = cause;
+            LastDeathAt = Time.unscaledTime;
+            PlacePlayer(player, _spawnPoint, cause.LogLine);
         }
 
         public void YieldSelf()

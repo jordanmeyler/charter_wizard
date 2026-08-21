@@ -67,6 +67,13 @@ namespace RuneMagic
                 return "empty air.";
             }
 
+            if (tile.Kindled && tile.Fire > 0.1f)
+            {
+                return GlyphView.Speak(
+                    "hunger holding the walk. Water ward is Water · Salt · Sulphur. Yield thrown also puts it out.",
+                    "hunger holding the walk. Yield given a body, then the mind holds it on you. Yield thrown also forgets the flame.");
+            }
+
             if (tile.HasMiasma)
             {
                 return "foul breath hanging on this tile. Send air through it.";

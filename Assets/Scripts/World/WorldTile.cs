@@ -57,6 +57,7 @@ namespace RuneMagic
         public float Charge { get; private set; }
         public float Fog { get; private set; }
         public float Miasma { get; private set; }
+        public bool Kindled { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
@@ -260,12 +261,38 @@ namespace RuneMagic
             RefreshFx();
         }
 
+        /// <summary>
+        /// A painted hall-fire. It stays hungry until yield is thrown.
+        /// </summary>
+        public void Kindle(float amount = 0.95f)
+        {
+            Kindled = true;
+            Ignite(amount);
+        }
+
+        public void KeepKindled()
+        {
+            if (!Kindled || Wet > 0.15f)
+            {
+                return;
+            }
+
+            if (Fire < 0.85f)
+            {
+                Ignite(0.85f - Fire);
+            }
+        }
+
         public void Drench(float amount)
         {
             Wet = Mathf.Clamp01(Wet + amount);
             if (Wet > 0.2f)
             {
                 Fire = Mathf.Max(0f, Fire - amount * 1.4f);
+                if (Fire <= 0.05f)
+                {
+                    Kindled = false;
+                }
             }
 
             RefreshFx();

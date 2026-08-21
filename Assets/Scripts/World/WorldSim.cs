@@ -68,6 +68,12 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
+                if (tile.Kindled && tile.Wet < 0.15f)
+                {
+                    tile.KeepKindled();
+                    continue;
+                }
+
                 var neighbors = _grid.Neighbors(tile.Coord);
                 var quench = 0f;
                 for (var n = 0; n < neighbors.Count; n++)
