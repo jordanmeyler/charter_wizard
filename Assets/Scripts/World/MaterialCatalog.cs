@@ -342,7 +342,7 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Water, RuneId.Steam, RuneId.Metal, RuneId.Acid),
 
                 new WorldMaterial(MaterialId.Water, "standing water",
-                    "Yield, still holding a vessel. A pool, not weather.",
+                    "Yield, still holding a vessel. A pool, not weather. It drowns until ice gives it a body.",
                     RuneId.Water, MaterialPaint.Water,
                     new Color(0.18f, 0.38f, 0.62f), new Color(0.16f, 0.3f, 0.48f), false,
                     RuneId.Water, RuneId.Salt),

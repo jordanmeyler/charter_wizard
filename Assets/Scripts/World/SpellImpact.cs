@@ -174,6 +174,7 @@ namespace RuneMagic
 
             var cells = grid.TilesInRadius(center, Mathf.Max(0.6f, radius));
             var changed = 0;
+            var frozen = 0;
             for (var i = 0; i < cells.Count; i++)
             {
                 var tile = cells[i];
@@ -220,8 +221,16 @@ namespace RuneMagic
 
                         break;
                     case TileVerb.Freeze:
-                        tile.Drench(0.4f);
-                        changed++;
+                        if (tile.FreezeSolid())
+                        {
+                            frozen++;
+                            changed++;
+                        }
+                        else
+                        {
+                            tile.Drench(0.4f);
+                        }
+
                         break;
                 }
             }
@@ -237,11 +246,18 @@ namespace RuneMagic
                 var filled = WorldWork.FillSmallPits(grid, seeds);
                 if (filled > 0)
                 {
-                    notes.Add("Yield fills a small hollow. Water · Salt stands as a floor.");
+                    notes.Add("Yield fills a small hollow. The water has no floor. Freeze it, or fall.");
                 }
             }
 
-            if (changed > 0)
+            if (frozen > 0)
+            {
+                notes.Add(frozen == 1
+                    ? "Yield given a body. That water is ice."
+                    : "Hard water stands. The pool will hold you.");
+            }
+
+            if (changed > 0 && frozen == 0)
             {
                 notes.Add(verb.Tiles == TileVerb.Grow
                     ? "The vegetable body drinks."

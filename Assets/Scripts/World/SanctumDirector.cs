@@ -144,15 +144,25 @@ namespace RuneMagic
                 }
             }
 
-            if (Underfoot != null && (Underfoot.Kind == TileKind.Floor || Underfoot.Kind == TileKind.Bridge))
+            if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
-                if (Mode == PlayMode.Paused || GameHud.EditingName)
-                {
-                    FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
-                    return;
-                }
+            }
 
+            if (Mode == PlayMode.Paused || GameHud.EditingName)
+            {
+                FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
+                return;
+            }
+
+            var adept = player.GetComponent<AdeptAvatar>();
+            if (Underfoot != null && Underfoot.IsDeepWater && (adept == null || !adept.IsAirborne))
+            {
+                FallInPit(player);
+            }
+
+            if (Underfoot != null && Underfoot.IsSafeStand)
+            {
                 var host = StatusHost.On(player);
                 if (Underfoot.Fire > 0.35f)
                 {

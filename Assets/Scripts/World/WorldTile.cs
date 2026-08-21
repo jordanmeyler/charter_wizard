@@ -56,12 +56,46 @@ namespace RuneMagic
             Material != MaterialId.Water && Material != MaterialId.Lava &&
             Material != MaterialId.Void && !IsPlantish;
 
+        /// <summary>
+        /// Yield holding a vessel with no floor under it. It drowns.
+        /// Ice is how that water is asked to stand.
+        /// </summary>
+        public bool IsDeepWater =>
+            Material == MaterialId.Water &&
+            (Kind == TileKind.Pit || Kind == TileKind.Floor);
+
+        public bool IsSafeStand =>
+            (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
+            !IsDeepWater &&
+            Material != MaterialId.Lava;
+
         public bool CanRaiseBarrier =>
             Kind == TileKind.Floor || Kind == TileKind.Bridge;
 
         public void BecomeBridge()
         {
             BecomeWalkable(MaterialId.Stone);
+        }
+
+        public void BecomeWater()
+        {
+            IsConjured = false;
+            RaisedAs = RaisedForm.None;
+            Reshape(new TileDef(TileKind.Pit, MaterialId.Water));
+            Drench(1f);
+        }
+
+        public bool FreezeSolid()
+        {
+            if (!IsDeepWater)
+            {
+                return false;
+            }
+
+            BecomeWalkable(MaterialId.Ice, conjured: true);
+            Wet = Mathf.Min(Wet, 0.15f);
+            RefreshFx();
+            return true;
         }
 
         public void BecomeWalkable(MaterialId material, bool conjured = false)

@@ -72,6 +72,21 @@ namespace RuneMagic
             }
         }
 
+        public static bool FreezesWater(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.IcePillar:
+                case SpellId.IceWall:
+                case SpellId.IceSpear:
+                case SpellId.Snowfall:
+                case SpellId.GraveIce:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static bool RaisesBarrier(SpellId spell) =>
             IsPillar(spell);
 
@@ -509,12 +524,23 @@ namespace RuneMagic
                     : "The hanging veil is given a body. The room is lost.");
             }
 
-            if (FillsGaps(spell) || RaisesBarrier(spell) || DriesWater(spell))
+            if (FillsGaps(spell) || RaisesBarrier(spell) || DriesWater(spell) || FreezesWater(spell))
             {
                 var built = RaiseBodies(grid, spell, element, origin, from, to);
                 if (!string.IsNullOrEmpty(built))
                 {
                     notes.Add(built);
+                }
+            }
+
+            if (FreezesWater(spell))
+            {
+                var frozen = FreezeWaterAlong(grid, cells);
+                if (frozen > 0)
+                {
+                    notes.Add(frozen == 1
+                        ? "Yield given a body. That water is ice."
+                        : "Hard water stands. The pool will hold you.");
                 }
             }
 
@@ -524,8 +550,8 @@ namespace RuneMagic
                 if (filled > 0)
                 {
                     notes.Add(filled == 1
-                        ? "Yield takes a small hollow and stands as a floor."
-                        : "Yield fills the small hollows. Water · Salt holds as a floor.");
+                        ? "Yield takes a small hollow. It will drown you until ice gives it a body."
+                        : "Yield fills the small hollows. The water has no floor. Freeze it, or fall.");
                 }
             }
 
@@ -535,8 +561,8 @@ namespace RuneMagic
         public const int SmallPitSpan = 4;
 
         /// <summary>
-        /// Water · Salt is a floor. A connected pit smaller than 4×4
-        /// takes that floor when yield finds it.
+        /// Water work fills a connected pit smaller than 4×4. The pool
+        /// drowns until ice asks that water to stand.
         /// </summary>
         public static int FillSmallPits(WorldGrid grid, List<Vector2Int> seeds)
         {
@@ -575,13 +601,32 @@ namespace RuneMagic
                         continue;
                     }
 
-                    pit.BecomeWalkable(MaterialId.Water);
-                    pit.Drench(1f);
+                    pit.BecomeWater();
                     filled++;
                 }
             }
 
             return filled;
+        }
+
+        public static int FreezeWaterAlong(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var frozen = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.FreezeSolid())
+                {
+                    frozen++;
+                }
+            }
+
+            return frozen;
         }
 
         static List<Vector2Int> FloodPits(WorldGrid grid, Vector2Int start, HashSet<Vector2Int> seen)
@@ -681,7 +726,7 @@ namespace RuneMagic
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
                 || spell == SpellId.Gust || spell == SpellId.Scald || spell == SpellId.SunLance
-                || spell == SpellId.HurledStone || spell == SpellId.Douse)
+                || spell == SpellId.HurledStone || spell == SpellId.Douse || spell == SpellId.IceSpear)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }
@@ -691,7 +736,8 @@ namespace RuneMagic
                 return Disk(CoordOf(to), 1);
             }
 
-            if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood)
+            if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
+                || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
             }
@@ -792,11 +838,20 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (tile.Kind == TileKind.Pit && tile.Material == MaterialId.Water &&
-                    DriesWater(spell) && !IsPillar(spell))
+                if (tile.IsDeepWater && DriesWater(spell) && !IsPillar(spell) && !FreezesWater(spell))
                 {
                     tile.BecomeWalkable(MaterialId.Stone);
                     filled++;
+                    continue;
+                }
+
+                if (tile.IsDeepWater && FreezesWater(spell))
+                {
+                    if (tile.FreezeSolid())
+                    {
+                        filled++;
+                    }
+
                     continue;
                 }
 
@@ -826,11 +881,18 @@ namespace RuneMagic
 
             if (filled > 0)
             {
-                if (DriesWater(spell) && !IsPillar(spell))
+                if (DriesWater(spell) && !IsPillar(spell) && !FreezesWater(spell))
                 {
                     return filled == 1
                         ? "Hunger drinks the water. The bed is left."
                         : "The channel boils dry. You can walk the bed.";
+                }
+
+                if (FreezesWater(spell))
+                {
+                    return filled == 1
+                        ? "Yield given a body. That water is ice."
+                        : "Hard water stands. The pool will hold you.";
                 }
 
                 return filled == 1
@@ -924,7 +986,7 @@ namespace RuneMagic
                 for (var x = center.x - radius; x <= center.x + radius; x++)
                 {
                     var tile = grid.Get(x, y);
-                    if (tile != null && tile.Kind == TileKind.Pit && tile.Material == MaterialId.Water)
+                    if (tile != null && tile.IsDeepWater)
                     {
                         cells.Add(new Vector2Int(x, y));
                     }

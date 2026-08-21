@@ -47,7 +47,8 @@ namespace RuneMagic
         public System.Collections.Generic.IReadOnlyList<RuneId> Emission => WorldMaterial.Signature;
 
         public bool BlocksMovement => Kind == TileKind.Wall || Kind == TileKind.Door;
-        public bool IsHazard => Kind == TileKind.Pit;
+        public bool IsHazard =>
+            Kind == TileKind.Pit || (Kind == TileKind.Floor && Material == MaterialId.Water);
         public bool TearsTapestry => Kind == TileKind.Pit || WorldMaterial.TearsTheWeave;
 
         public string DisplayName => MaterialCatalog.DisplayName(Kind, Material);
