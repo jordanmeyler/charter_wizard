@@ -1484,7 +1484,7 @@ namespace RuneMagic
                     {
                         var work = SpellCodex.WorkOf(outcome.Spell);
                         FocusLaw.Release(AdeptAvatar.Find(), work, composition, SpellVerb.Of(work, shape).Status);
-                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency);
+                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency, composition);
                         impactNote = impact.Note;
                         if (impact.Locks.Count > 0)
                         {
@@ -2223,6 +2223,12 @@ namespace RuneMagic
             var player = PlayerTransform();
             var host = StatusHost.On(player);
             return host != null ? host.Summary() : string.Empty;
+        }
+
+        public string ConcentrationLine()
+        {
+            var player = PlayerTransform();
+            return player != null ? StatusHost.HeldBy(player) : string.Empty;
         }
 
         bool PlayerBlocksAction()

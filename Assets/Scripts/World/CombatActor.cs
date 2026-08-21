@@ -62,7 +62,8 @@ namespace RuneMagic
         Transform _confusedMark;
         SanctumDirector _director;
         bool _pillarReply;
-        WorldItem _carried;
+        ICarryable _carried;
+        const float FetchReach = 1.15f;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
@@ -125,10 +126,22 @@ namespace RuneMagic
                 return;
             }
 
-            if (_lock == null || _lock.Resolved || AdeptAvatar.WorldHeld)
+            if (_lock == null || _lock.Resolved)
+            {
+                DropCarried();
+                ClearCastChip();
+                return;
+            }
+
+            if (AdeptAvatar.WorldHeld)
             {
                 ClearCastChip();
                 return;
+            }
+
+            if (_carried != null && (_status == null || !_status.Has(StatusId.Charmed)))
+            {
+                DropCarried();
             }
 
             SyncPassage();
@@ -213,7 +226,7 @@ namespace RuneMagic
 
         void TickCharm(AdeptAvatar player)
         {
-            if (_carried != null && (_carried.Collected || _carried == null))
+            if (_carried != null && _carried.Collected)
             {
                 _carried = null;
             }
@@ -221,9 +234,9 @@ namespace RuneMagic
             if (_carried != null)
             {
                 Follow(player);
-                if (player != null && Vector2.Distance(transform.position, player.transform.position) < 1.55f)
+                if (player != null && Vector2.Distance(transform.position, player.transform.position) < 1.85f)
                 {
-                    var name = _carried.Item != null ? _carried.Item.name : "the prize";
+                    var name = _carried.CarryName;
                     if (_carried.DeliverTo(player))
                     {
                         Director()?.Log($"{(_lock != null ? _lock.DisplayName : "They")} lay {name} at your feet.");
@@ -235,22 +248,10 @@ namespace RuneMagic
                 return;
             }
 
-            var prize = NearestItem();
+            var prize = NearestPrize();
             if (prize != null)
             {
-                var distance = Vector2.Distance(transform.position, prize.transform.position);
-                if (distance <= 0.72f)
-                {
-                    if (prize.TryCarry(transform))
-                    {
-                        _carried = prize;
-                        ShowCast("fetches…");
-                    }
-
-                    return;
-                }
-
-                DriveToward(prize.transform, player, true);
+                Fetch(prize);
                 return;
             }
 
@@ -264,28 +265,63 @@ namespace RuneMagic
             Follow(player);
         }
 
-        WorldItem NearestItem()
+        void Fetch(ICarryable prize)
         {
-            WorldItem best = null;
+            CancelWindup();
+            var to = (Vector2)(prize.WorldPosition - transform.position);
+            var distance = to.magnitude;
+            if (distance > 0.05f)
+            {
+                Face(to);
+            }
+
+            if (distance <= FetchReach)
+            {
+                if (prize.TryCarry(transform))
+                {
+                    _carried = prize;
+                    ShowCast("fetches…");
+                }
+
+                return;
+            }
+
+            StepToward(prize.WorldPosition);
+            ShowCast("fetches…");
+            _anim?.Play(IdleClip(), 5f);
+        }
+
+        ICarryable NearestPrize()
+        {
+            ICarryable best = null;
             var bestDistance = _sight;
-            var found = FindObjectsByType<WorldItem>(FindObjectsSortMode.None);
+            Consider(FindObjectsByType<WorldItem>(FindObjectsSortMode.None), ref best, ref bestDistance);
+            Consider(FindObjectsByType<FreeCharm>(FindObjectsSortMode.None), ref best, ref bestDistance);
+            return best;
+        }
+
+        void Consider<T>(T[] found, ref ICarryable best, ref float bestDistance) where T : Component, ICarryable
+        {
+            if (found == null)
+            {
+                return;
+            }
+
             for (var i = 0; i < found.Length; i++)
             {
                 var item = found[i];
-                if (item == null || !item.Available)
+                if (item == null || !item.CanFetch)
                 {
                     continue;
                 }
 
-                var distance = Vector2.Distance(transform.position, item.transform.position);
+                var distance = Vector2.Distance(transform.position, item.WorldPosition);
                 if (distance < bestDistance)
                 {
                     bestDistance = distance;
                     best = item;
                 }
             }
-
-            return best;
         }
 
         Transform PickMark(StatusId mind, AdeptAvatar player)
@@ -720,6 +756,22 @@ namespace RuneMagic
             var next = (Vector2)transform.position + step;
             if (Blocked(next))
             {
+                var slideX = new Vector2(((Vector2)transform.position).x + step.x, transform.position.y);
+                if (Mathf.Abs(delta.x) > 0.01f && !Blocked(slideX))
+                {
+                    transform.position = slideX;
+                    _idleOrigin = transform.position;
+                    return true;
+                }
+
+                var slideY = new Vector2(transform.position.x, ((Vector2)transform.position).y + step.y);
+                if (Mathf.Abs(delta.y) > 0.01f && !Blocked(slideY))
+                {
+                    transform.position = slideY;
+                    _idleOrigin = transform.position;
+                    return true;
+                }
+
                 return false;
             }
 
@@ -847,6 +899,21 @@ namespace RuneMagic
             }
 
             return gameObject.name.ToLowerInvariant().Contains("stone") ? "stone-man" : "ash-mite";
+        }
+
+        void DropCarried()
+        {
+            if (_carried != null && !_carried.Collected)
+            {
+                _carried.Drop();
+            }
+
+            _carried = null;
+        }
+
+        void OnDisable()
+        {
+            DropCarried();
         }
 
         SanctumDirector Director()
