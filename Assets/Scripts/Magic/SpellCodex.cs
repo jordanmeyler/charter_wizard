@@ -359,17 +359,47 @@ namespace RuneMagic
 
             if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Rage))
             {
-                broken.Add("Rage must drop sleep — both are Sulphur");
+                broken.Add("Rage must drop sleep — both reuse Sulphur and Mercury");
             }
 
-            if (FocusLaw.Breaks(StatusId.Sleeping, SpellId.Fireball))
+            if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Fireball))
             {
-                broken.Add("Fireball must not drop sleep");
+                broken.Add("Fireball must drop sleep — Lull and Fireball both send Mercury");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Sleeping, SpellId.Hop))
+            {
+                broken.Add("Hop must not drop sleep — no shared marks");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Charmed, SpellId.Fireball))
+            {
+                broken.Add("Fireball must drop charm — both send Mercury");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Charmed, SpellId.Command))
+            {
+                broken.Add("Command must drop charm — another mind sentence reuses Sulphur and Mercury");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Charmed, SpellId.Wall))
+            {
+                broken.Add("A wall must not drop charm — earth stands without those marks");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball))
+            {
+                broken.Add("Fireball must not drop stoneskin");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
+            {
+                broken.Add("Wall must drop stoneskin — both use Earth and Salt");
             }
 
             if (FocusLaw.Breaks(StatusId.Burning, SpellId.Douse))
             {
-                broken.Add("Burning is elemental and does not need focus");
+                broken.Add("Burning is elemental and does not need concentration");
             }
 
             if (SpellVerb.Of(SpellId.IceSpear).Status == StatusId.Frozen

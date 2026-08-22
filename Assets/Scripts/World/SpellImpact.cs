@@ -29,13 +29,15 @@ namespace RuneMagic
             SpellShape shape,
             Vector3 origin,
             Vector3 aim,
-            float potency)
+            float potency,
+            Composition composition = default)
         {
             var verb = SpellVerb.Of(spell, shape);
             var notes = new List<string>(4);
             var hits = new List<ISpellLock>();
             var radius = SpellVerb.RadiusOf(spell, shape, potency);
             var sweep = WorldPhysics.Build(grid, spell, shape, origin, origin, aim, potency);
+            var heldRunes = FocusLaw.UsedRunes(spell, composition);
             WorldPhysics.BlowFog(locks, sweep);
 
             if (verb.Target == SpellTarget.Self)
@@ -44,7 +46,7 @@ namespace RuneMagic
                 if (adept != null && verb.Status != StatusId.None)
                 {
                     var host = StatusHost.On(adept) ?? adept.gameObject.AddComponent<StatusHost>();
-                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept));
+                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
                 }
 
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
@@ -56,14 +58,14 @@ namespace RuneMagic
             {
                 var center = shape == SpellShape.Spread ? origin : aim;
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
-                ApplyHosts(hits, origin, verb, notes);
+                ApplyHosts(hits, origin, verb, notes, heldRunes, spell);
                 var self = AdeptAvatar.Find();
                 if (self != null && Vector2.Distance(self.transform.position, center) <= radius && verb.Status != StatusId.None)
                 {
                     var host = StatusHost.On(self);
                     if (host != null && !ElementalLaw.IsWard(verb.Status) && verb.Status != StatusId.Poisoned)
                     {
-                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds * 0.45f, self));
+                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds * 0.45f, self, heldRunes, spell));
                     }
                 }
 
@@ -85,12 +87,18 @@ namespace RuneMagic
                 }
             }
 
-            ApplyHosts(hits, origin, verb, notes);
+            ApplyHosts(hits, origin, verb, notes, heldRunes, spell);
             ApplyTiles(grid, spell, verb, aim, Mathf.Max(0.8f, radius, sweep.Width), notes);
             return new SpellImpactResult(First(notes), hits);
         }
 
-        static void ApplyHosts(List<ISpellLock> hits, Vector3 from, SpellVerb verb, List<string> notes)
+        static void ApplyHosts(
+            List<ISpellLock> hits,
+            Vector3 from,
+            SpellVerb verb,
+            List<string> notes,
+            IReadOnlyList<RuneId> heldRunes,
+            SpellId spell)
         {
             if (verb.Status == StatusId.None)
             {
@@ -110,7 +118,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find()));
+                notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find(), heldRunes, spell));
             }
         }
 

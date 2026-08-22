@@ -275,7 +275,7 @@ Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire,
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 
-Wards and mind ailments (Lull, Terror, Rage, Command, Charm, Confuse) are **held**. They last until you use that rune again — the ward’s element, or Sulphur for a mind. A fizzle shows the hold breaking. Ignite, poison, and frozen do not need that hold. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
+Wards and mind ailments (Lull, Terror, Rage, Command, Charm, Confuse) need **concentration**. They last until you write another sentence that reuses any mark from the held working. Charm is Life · Sulphur · Mercury — a later Fireball (Mercury) lets it go; a wall (Earth · Salt) does not. A fizzle shows the hold breaking. Elemental work stands on its own: a wall does not vanish, a flame does not snuff itself, and burning, poison, and frozen keep their own clocks. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
 
 No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
 

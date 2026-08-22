@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuneMagic
@@ -73,7 +74,8 @@ namespace RuneMagic
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
         public bool IsWard => Kind == StatusKind.Ward;
-        public bool NeedsFocus => IsWard || IsMindAilment(Id);
+        public bool NeedsConcentration => IsWard || IsMindAilment(Id);
+        public bool NeedsFocus => NeedsConcentration;
         public RuneId FocusRune
         {
             get
@@ -167,17 +169,21 @@ namespace RuneMagic
 
     public sealed class StatusInstance
     {
-        public StatusInstance(StatusId id, float seconds, Component caster = null)
+        public StatusInstance(StatusId id, float seconds, Component caster = null, IReadOnlyList<RuneId> heldRunes = null, SpellId source = SpellId.None)
         {
             Id = id;
-            Remaining = StatusSpec.Of(id).NeedsFocus ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
+            Remaining = StatusSpec.Of(id).NeedsConcentration ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
             Caster = caster;
+            HeldRunes = heldRunes ?? System.Array.Empty<RuneId>();
+            SourceSpell = source;
         }
 
         public StatusId Id { get; }
         public float Remaining { get; set; }
         public Component Caster { get; set; }
+        public IReadOnlyList<RuneId> HeldRunes { get; set; }
+        public SpellId SourceSpell { get; set; }
         public StatusSpec Spec => StatusSpec.Of(Id);
-        public bool Held => Spec.NeedsFocus;
+        public bool Held => Spec.NeedsConcentration;
     }
 }

@@ -249,6 +249,14 @@ namespace RuneMagic
                 y += 22f;
             }
 
+            var holding = _director.ConcentrationLine();
+            if (!string.IsNullOrEmpty(holding))
+            {
+                GUI.Label(new Rect(28, y, 510, 20), "Concentrating: " + holding,
+                    Label(14, FontStyle.Italic, new Color(0.82f, 0.68f, 0.95f)));
+                y += 22f;
+            }
+
             GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
             GUI.Label(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
         }

@@ -126,7 +126,7 @@ The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the f
 ### Mind Sanctum (Sulphur) · "The Silent Court"
 **Lesson:** Sulphur reaches the enemy’s *mind.* Taught by taking every other tool away.
 - **Signature — the stone men:** two humanoid rocks, immune to elemental attack and to walls. They block a short aisle. The Mind stone sits behind them.
-- **Intended:** **Charm** (`Life · Sulphur · Mercury`). Columns write that sentence. Charmed bodies fetch nearby artifacts and fight anything you have already marked — the same hold later grave-work will use.
+- **Intended:** **Charm** (`Life · Sulphur · Mercury`). Columns write that sentence. Charmed bodies walk to nearby artifacts, pick them up, and bring them to you — and they fight anything you have already marked. The hold is concentration: reuse Life, Sulphur, or Mercury and they wake. A wall will not break it.
 - **Multiple solutions:** **Command** one aside, **Lull** / **Terror** / **Jolt** the court and slip past, **Rage** them.
 - Force fails on purpose. Mind is discovered as the way through.
 
@@ -169,7 +169,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **The pack holds the stones.** I opens it. Click a stone to look — each one hints at how the rune works (hunger, yield, rest, breath; salt of the earth; the spirit is motion; fire from the sky). They are artifacts, not metal keys. The info box says `You see` that same look when you mouse over the stone in the world.
 - **Columns teach the sentence.** A row of pillars shows the intended spell. Ice, spark, and plant rooms all work this way.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, poison is a veil, each stone has its own colour, and the creatures are no longer all the same mite.
-- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments stay until you reuse their rune; a fizzle shows the hold breaking. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
+- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. Wards and mind ailments are **concentration** — they stay until you write another sentence that shares a mark. A fizzle shows the hold breaking. Walls, fire, ice, burning, and poison stand on their own. Ice-spear does not freeze the living. Poisoned flesh dies shortly; fire, ice, and earth do not take it.
 - **Death is the crystal.** A slam, a fireball, an arrow, a standing flame, or a floor that is already hunger sends you to spawn and **names what found you**. If a spell unmade you, the crystal shows the **marks that wrote it**. Pits and drowning water use the last safe floor.
 - **Pits earn their keep.** A hollow is a sequenced crossing — block, then hop, grow across, freeze water — not a random hole beside a stone.
 

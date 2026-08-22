@@ -205,7 +205,7 @@ namespace RuneMagic
             return string.Join(" · ", parts);
         }
 
-        public string Apply(StatusId id, float seconds, Component caster = null)
+        public string Apply(StatusId id, float seconds, Component caster = null, IReadOnlyList<RuneId> heldRunes = null, SpellId source = SpellId.None)
         {
             if (id == StatusId.None)
             {
@@ -213,10 +213,14 @@ namespace RuneMagic
             }
 
             var spec = StatusSpec.Of(id);
-            if (!spec.NeedsFocus && seconds <= 0f)
+            if (!spec.NeedsConcentration && seconds <= 0f)
             {
                 return string.Empty;
             }
+
+            var runes = heldRunes != null && heldRunes.Count > 0
+                ? heldRunes
+                : spec.NeedsConcentration ? FocusLaw.DefaultRunes(id) : System.Array.Empty<RuneId>();
 
             var incoming = spec.Element;
             if (!spec.IsWard && incoming != Essence.None && incoming != Essence.Mind)
@@ -234,7 +238,7 @@ namespace RuneMagic
                 return $"{name} will not take {spec.Name}.";
             }
 
-            var held = spec.NeedsFocus ? float.PositiveInfinity : scale * seconds;
+            var held = spec.NeedsConcentration ? float.PositiveInfinity : scale * seconds;
             if (id == StatusId.Burning || id == StatusId.Stunned || id == StatusId.Frozen)
             {
                 Drop(StatusId.Sleeping, false);
@@ -254,39 +258,59 @@ namespace RuneMagic
             {
                 if (_effects[i].Id == id)
                 {
-                    _effects[i].Remaining = spec.NeedsFocus
+                    _effects[i].Remaining = spec.NeedsConcentration
                         ? float.PositiveInfinity
                         : Mathf.Max(_effects[i].Remaining, held);
                     _effects[i].Caster = caster ?? _effects[i].Caster;
+                    if (runes.Count > 0)
+                    {
+                        _effects[i].HeldRunes = runes;
+                    }
+
+                    if (source != SpellId.None)
+                    {
+                        _effects[i].SourceSpell = source;
+                    }
+
                     RefreshChip();
                     return $"{name} is {spec.Name}.";
                 }
             }
 
-            _effects.Add(new StatusInstance(id, held, caster));
+            _effects.Add(new StatusInstance(id, held, caster, runes, source));
             RefreshChip();
             return $"{name} is {spec.Name}.";
         }
 
-        public static int ReleaseAll(Component caster, IReadOnlyList<RuneId> used, StatusId keep)
+        public static int ReleaseAll(Component caster, IReadOnlyList<RuneId> used, StatusId keep, SpellId keepSpell = SpellId.None)
         {
             var broken = 0;
             for (var i = Live.Count - 1; i >= 0; i--)
             {
                 if (Live[i] != null)
                 {
-                    broken += Live[i].ReleaseFocus(caster, used, keep);
+                    broken += Live[i].ReleaseFocus(caster, used, keep, keepSpell);
                 }
             }
 
             return broken;
         }
 
-        public int ReleaseFocus(Component caster, IReadOnlyList<RuneId> used, StatusId keep)
+        public int ReleaseFocus(Component caster, IReadOnlyList<RuneId> used, StatusId keep, SpellId keepSpell = SpellId.None)
         {
             return DropWhere(effect =>
             {
-                if (!effect.Held || (keep != StatusId.None && effect.Id == keep))
+                if (!effect.Held)
+                {
+                    return false;
+                }
+
+                if (keepSpell != SpellId.None && effect.SourceSpell == keepSpell)
+                {
+                    return false;
+                }
+
+                if (keepSpell == SpellId.None && keep != StatusId.None && effect.Id == keep)
                 {
                     return false;
                 }
@@ -296,8 +320,56 @@ namespace RuneMagic
                     return false;
                 }
 
-                return FocusLaw.Contains(used, effect.Spec.FocusRune);
-            }, true);
+                var held = effect.HeldRunes != null && effect.HeldRunes.Count > 0
+                    ? effect.HeldRunes
+                    : FocusLaw.DefaultRunes(effect.Id);
+                return FocusLaw.Overlaps(used, held);
+            }, true, keep);
+        }
+
+        public static string HeldBy(Component caster)
+        {
+            if (caster == null)
+            {
+                return string.Empty;
+            }
+
+            var parts = new List<string>(4);
+            for (var i = 0; i < Live.Count; i++)
+            {
+                var host = Live[i];
+                if (host == null)
+                {
+                    continue;
+                }
+
+                for (var e = 0; e < host._effects.Count; e++)
+                {
+                    var effect = host._effects[e];
+                    if (!effect.Held || effect.Remaining <= 0f)
+                    {
+                        continue;
+                    }
+
+                    if (effect.Caster != null && effect.Caster != caster)
+                    {
+                        continue;
+                    }
+
+                    if (effect.Caster == null && host.gameObject != caster.gameObject)
+                    {
+                        continue;
+                    }
+
+                    var label = effect.Spec.Name;
+                    if (!parts.Contains(label))
+                    {
+                        parts.Add(label);
+                    }
+                }
+            }
+
+            return string.Join(" · ", parts);
         }
 
         public void Clear()
@@ -320,7 +392,7 @@ namespace RuneMagic
             return DropWhere(effect => effect.Id == id, fizzle);
         }
 
-        int DropWhere(System.Predicate<StatusInstance> match, bool fizzle)
+        int DropWhere(System.Predicate<StatusInstance> match, bool fizzle, StatusId quiet = StatusId.None)
         {
             var removed = 0;
             StatusSpec shown = default;
@@ -341,7 +413,7 @@ namespace RuneMagic
                 return 0;
             }
 
-            if (fizzle)
+            if (fizzle && shown.Id != quiet)
             {
                 PlayFizzle(shown);
             }
@@ -360,8 +432,8 @@ namespace RuneMagic
             }
 
             director.Log(spec.IsWard
-                ? $"The {spec.Name} loses its hold. That rune was asked to do other work."
-                : $"{name}'s {spec.Name} lifts. The mind turned to another sentence.");
+                ? $"The {spec.Name} loses its hold. A mark from that sentence was asked to do other work."
+                : $"{name}'s {spec.Name} lifts. Concentration broke — a mark from that sentence was reused.");
         }
 
         float Affinity(StatusId id)

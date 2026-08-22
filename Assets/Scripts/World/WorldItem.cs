@@ -3,14 +3,30 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
+    /// Something a charmed body can pick up and bring to the adept.
+    /// </summary>
+    public interface ICarryable
+    {
+        bool Collected { get; }
+        bool CanFetch { get; }
+        Vector3 WorldPosition { get; }
+        string CarryName { get; }
+        bool TryCarry(Transform carrier);
+        bool DeliverTo(AdeptAvatar adept);
+        void Drop();
+    }
+
+    /// <summary>
     /// A pickup from the item catalog. Walking into it teaches a recipe.
     /// Charmed bodies can carry a nearby prize to the adept.
     /// Fragile props do not pick up — they yield to opposed work.
     /// </summary>
-    public sealed class WorldItem : MonoBehaviour, ILookable, IWorldMatter
+    public sealed class WorldItem : MonoBehaviour, ILookable, IWorldMatter, ICarryable
     {
         public bool Collected { get; private set; }
         public bool Available => !Collected && _carrier == null;
+        public bool CanFetch => Available && !Fragile && AdeptPack.CanCarry(_item);
+        public string CarryName => _item != null && !string.IsNullOrEmpty(_item.name) ? _item.name : "the prize";
         public CatalogItem Item => _item;
         public Vector3 WorldPosition => transform.position;
         public float LookRadius => 0.55f;
@@ -125,7 +141,7 @@ namespace RuneMagic
 
         public bool TryCarry(Transform carrier)
         {
-            if (!Available || Fragile || carrier == null)
+            if (!CanFetch || carrier == null)
             {
                 return false;
             }
@@ -148,6 +164,25 @@ namespace RuneMagic
 
             CollectInto();
             return true;
+        }
+
+        public void Drop()
+        {
+            if (Collected)
+            {
+                return;
+            }
+
+            if (_carrier != null)
+            {
+                transform.position = _carrier.position;
+            }
+
+            _carrier = null;
+            if (_hit != null)
+            {
+                _hit.enabled = true;
+            }
         }
 
         void Update()
