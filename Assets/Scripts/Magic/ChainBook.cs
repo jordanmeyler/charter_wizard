@@ -31,6 +31,7 @@ namespace RuneMagic
         static readonly Dictionary<string, SpellShape> Shapes = new();
         static readonly List<Birth> ElementalBirthCache = new();
         static readonly List<Birth> MixedBirthCache = new();
+        static readonly List<Birth> AllBirthCache = new();
         static bool _birthCacheReady;
 
         static ChainBook()
@@ -71,6 +72,7 @@ namespace RuneMagic
             SetBirth(RuneId.Plasma, RuneId.Inferno, RuneId.Spark);
             SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
             SetBirth(RuneId.Sandstorm, RuneId.Wind, RuneId.Dust);
+            SetBirth(RuneId.Aether, RuneId.Lumen, RuneId.Umbra);
 
             Shapes["shot"] = SpellShape.Shot;
             Shapes["pillar"] = SpellShape.Pillar;
@@ -113,6 +115,15 @@ namespace RuneMagic
             }
         }
 
+        public static IReadOnlyList<Birth> AllBirths
+        {
+            get
+            {
+                EnsureBirthCache();
+                return AllBirthCache;
+            }
+        }
+
         public static int BirthCount
         {
             get
@@ -131,6 +142,7 @@ namespace RuneMagic
 
             ElementalBirthCache.Clear();
             MixedBirthCache.Clear();
+            AllBirthCache.Clear();
             foreach (var pair in Births)
             {
                 var birth = DescribeBirth(pair.Key, pair.Value);
@@ -142,10 +154,13 @@ namespace RuneMagic
                 {
                     MixedBirthCache.Add(birth);
                 }
+
+                AllBirthCache.Add(birth);
             }
 
             ElementalBirthCache.Sort(CompareBirthName);
             MixedBirthCache.Sort(CompareBirthName);
+            AllBirthCache.Sort(CompareBirthName);
             _birthCacheReady = true;
         }
 
