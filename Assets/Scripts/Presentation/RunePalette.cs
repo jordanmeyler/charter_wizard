@@ -17,7 +17,7 @@ namespace RuneMagic
                 case RuneId.Air: return new Color(0.38f, 0.86f, 0.96f);
                 case RuneId.Earth: return new Color(0.76f, 0.5f, 0.16f);
                 case RuneId.Water: return new Color(0.12f, 0.4f, 0.96f);
-                case RuneId.Spark: return new Color(1f, 0.9f, 0.12f);
+                case RuneId.Spark: return new Color(1f, 0.96f, 0.72f);
                 case RuneId.Cloud: return new Color(0.58f, 0.66f, 0.86f);
                 case RuneId.Mud: return new Color(0.5f, 0.32f, 0.1f);
                 case RuneId.Lava: return new Color(0.96f, 0.16f, 0.04f);
@@ -26,7 +26,7 @@ namespace RuneMagic
                 case RuneId.Plant: return new Color(0.28f, 0.72f, 0.2f);
                 case RuneId.Salt: return new Color(0.96f, 0.92f, 0.78f);
                 case RuneId.Mercury: return new Color(0.16f, 0.82f, 0.68f);
-                case RuneId.Sulphur: return new Color(0.98f, 0.76f, 0.06f);
+                case RuneId.Sulphur: return new Color(0.92f, 0.56f, 0.08f);
                 case RuneId.Aether: return new Color(0.72f, 0.4f, 0.98f);
                 case RuneId.Vita: return new Color(0.12f, 0.9f, 0.4f);
                 case RuneId.Mors: return new Color(0.68f, 0.1f, 0.3f);
