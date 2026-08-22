@@ -131,7 +131,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Blizzard, RuneFamily.Material, "Blizzard", "Bz", "Wind driving Snow."),
                 new RuneDef(RuneId.Sandstorm, RuneFamily.Material, "Sandstorm", "Ss", "Wind driving Dust."),
                 new RuneDef(RuneId.Obsidian, RuneFamily.Material, "Obsidian", "Ob", "Hungry earth quenched. Melt and Shatter will not take it. Lava · Water · Salt."),
-                new RuneDef(RuneId.Metal, RuneFamily.Material, "Metal", "Mt", "Hungry earth given more rest, then stilled."),
+                new RuneDef(RuneId.Metal, RuneFamily.Material, "Metal", "Mt", "Hungry earth given more rest, then stilled. Lava · Earth. The spark’s road."),
                 new RuneDef(RuneId.Crystal, RuneFamily.Material, "Crystal", "Cr", "Stone grown with Water."),
                 new RuneDef(RuneId.Glacier, RuneFamily.Material, "Glacier", "Gc", "Ice given Stone. Still water that will not thaw easily."),
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
@@ -178,6 +178,10 @@ namespace RuneMagic
         }
 
         public static RuneDef Get(RuneId id) => ById[id];
+
+        public static System.Collections.Generic.IReadOnlyCollection<RuneDef> All => ById.Values;
+
+        public static bool TryGet(RuneId id, out RuneDef def) => ById.TryGetValue(id, out def);
 
         public static bool IsMaterial(RuneId id) =>
             id != RuneId.None && ById.TryGetValue(id, out var def) && def.Family == RuneFamily.Material;
