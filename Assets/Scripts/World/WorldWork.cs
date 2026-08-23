@@ -594,6 +594,17 @@ namespace RuneMagic
                 }
             }
 
+            if (spell == SpellId.Grotto)
+            {
+                var carved = OpenGrotto(grid, cells);
+                if (carved > 0)
+                {
+                    notes.Add(carved == 1
+                        ? "The vegetable body is withheld. A damp cave opens."
+                        : "Rest opens a cave of fiber. The hollow will hold you.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -646,6 +657,31 @@ namespace RuneMagic
             }
 
             return filled;
+        }
+
+        public static bool CanCarveGrotto(MaterialId material)
+        {
+            return IsRockBody(material) || IsBasicEarth(material) || IsPlantBody(material);
+        }
+
+        public static int OpenGrotto(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.OpenGrotto())
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
         }
 
         public static int SlickMud(WorldGrid grid, List<Vector2Int> cells)
@@ -802,6 +838,11 @@ namespace RuneMagic
                 || spell == SpellId.Swamp || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
+            }
+
+            if (spell == SpellId.Grotto)
+            {
+                return Disk(CoordOf(to), 1);
             }
 
             return new List<Vector2Int> { CoordOf(to) };

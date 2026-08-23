@@ -89,7 +89,8 @@ namespace RuneMagic
         LightningStrike,
         Charm,
         Swamp,
-        Witchfire
+        Witchfire,
+        Grotto
     }
 
     public readonly struct SpellRecipe
@@ -177,6 +178,7 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
             Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Water · Earth · Mercury · Salt. A watery swamp from the feet.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "Living plant standing as a column.");
+            Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Water · Earth · Salt · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 

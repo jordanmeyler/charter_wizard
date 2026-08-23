@@ -99,6 +99,11 @@ namespace RuneMagic
                 return ElementFamily.Flame;
             }
 
+            if (spell == SpellId.Grotto)
+            {
+                return ElementFamily.Plant;
+            }
+
             switch (material)
             {
                 case RuneId.Flame:

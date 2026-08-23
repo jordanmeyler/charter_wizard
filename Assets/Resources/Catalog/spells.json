@@ -1247,6 +1247,19 @@
       "target": "Single",
       "status": "Burning",
       "statusSeconds": 5
+    },
+    {
+      "number": 71,
+      "id": "Grotto",
+      "book": "Cross",
+      "name": "Grotto",
+      "want": "The vegetable body is withheld. Rest opens a damp cave.",
+      "recipe": "Water · Earth · Salt · Dark",
+      "via": "Plant · Dark",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Grotto"
     }
   ]
 }

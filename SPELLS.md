@@ -125,7 +125,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
 | **Ice** | Water · Salt · Earth | Yield given a body and asked to rest. Hard water. | Solid water that will thaw |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
-| **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life |
+| **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life. Grotto is the cave-spell (`Plant · Dark`), not a rune |
 | **Grove** | Plant · Life | The vegetable body, marked living. | Growth, vine, thicket |
 | **Sand** | Dust · Salt | Grit given a body. | Grains |
 | **Glass** | Sand · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
@@ -270,6 +270,9 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
 | 69 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
 | 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
+| 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Earth · Salt · Dark | Plant · Dark | Remote | Neither |
+
+**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Earth · Salt`). Dark withholds that body so a cave opens — earth and stone yield a plant-lined hollow. Do not write a Grotto join.
 
 Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Obsidian** refuses almost all of that work. Use it when a wall must stay.
 
