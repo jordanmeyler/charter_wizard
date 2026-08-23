@@ -259,6 +259,13 @@
         "Wind",
         "Dust"
       ]
+    },
+    {
+      "rune": "Aether",
+      "sources": [
+        "Light",
+        "Dark"
+      ]
     }
   ],
   "spells": [
