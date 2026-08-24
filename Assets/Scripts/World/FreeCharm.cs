@@ -17,30 +17,41 @@ namespace RuneMagic
         public string LookText =>
             CatalogBook.TryItem("free-charm", out var item) ? Sight.OfItem(item) : "hunger given a path.";
 
+        [Header("Authoring")]
+        [SerializeField] string spriteId = "charm";
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+
         Grimoire _grimoire;
         System.Action<string> _log;
         Transform _carrier;
         CircleCollider2D _hit;
+        bool _wired;
 
         public void Bind(Grimoire grimoire, System.Action<string> log)
         {
             _grimoire = grimoire;
             _log = log;
-
-            var renderer = gameObject.AddComponent<SpriteRenderer>();
-            var spriteId = "charm";
-            if (CatalogBook.TryItem("free-charm", out var item) && !string.IsNullOrEmpty(item.sprite))
+            if (_wired)
             {
-                spriteId = item.sprite;
+                return;
             }
 
-            renderer.sprite = SpriteFactory.Named(spriteId);
-            renderer.sortingOrder = 5;
-            SpriteAnim.On(gameObject, renderer).Play(spriteId, 5f);
-            PropBob.Attach(transform, 0.08f, 1.6f);
-            FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
+            _wired = true;
+            var art = spriteId;
+            if (string.IsNullOrEmpty(art) && CatalogBook.TryItem("free-charm", out var item) && !string.IsNullOrEmpty(item.sprite))
+            {
+                art = item.sprite;
+            }
 
-            _hit = gameObject.AddComponent<CircleCollider2D>();
+            AuthoringUtil.ApplyLook(gameObject, 5, string.IsNullOrEmpty(art) ? "charm" : art, portrait, idleFrames, 5f);
+            PropBob.Attach(transform, 0.08f, 1.6f);
+            if (GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
+            }
+
+            _hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
             _hit.isTrigger = true;
             _hit.radius = 0.4f;
 

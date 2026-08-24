@@ -81,10 +81,18 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 
 ## Building levels and scenes
 
-You do not place rooms in `Main.unity`. Maps are JSON. Floor 1 is `Assets/Resources/Maps/foundation.json` (regenerate with `python3 Tools/build-foundation.py`). The old four-room slice is `sanctum.json`. `Assets/Resources/Maps/index.json` chooses which map boots (`startup`).
+**Hand-place items in the Unity scene.** `Window → Rune Magic → Authoring` creates prefabs (Item, Mite, Torch, Rod, Gate, Barrier, Plaque, Crystal, Charm, Adept). Drag one in, set catalog id / matter / keys / formula / sprites on the Inspector, optionally snap with `GameObject → Rune Magic → Snap Selection To Grid`. Play keeps scene objects and binds them.
+
+Add a **Level Authoring** object to choose tiles: the JSON startup map (default), a named map, a blank room shell, or a `WorldGrid` already in the scene. Turn **Include JSON Props** off if you want to place every lock yourself on top of Floor 1's tiles.
+
+Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Magic → Sprite Sheet`. Save under `Assets/Resources/SpriteSheets/`. Clips are looked up by id (`adept-walk`, `ice-melt`, `fireball-shot`). Assign sliced Unity sprites on a prefab, or name a **change clip** so melt / explode plays before the object goes.
+
+The JSON maps are still the tile source for Floor 1 (`Assets/Resources/Maps/foundation.json`, `index.json` → `startup`). The browser painter and Map Painter remain for stamping rooms.
 
 | Tool | Use it for |
 | --- | --- |
+| Unity `Window → Rune Magic → Authoring` | Place prefabs, assign interactions, snap to the grid |
+| Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
 | [`Tools/map-editor.html`](Tools/map-editor.html) | Browser painter — rooms, materials, pits, doors, plaques, rune-strings, locks, halls. Export JSON and drop it in `Assets/Resources/Maps/`. |
 | Unity `Window → Rune Magic → Map Painter` | Same JSON inside the editor. Left-click stamps a tile; Shift-click places a prop; Alt-click clears. |
 | `Assets/Scripts/World/MapFile.cs` / `MapBuilder.cs` | The format and the runtime stamp. |

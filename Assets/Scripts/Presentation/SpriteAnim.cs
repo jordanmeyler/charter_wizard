@@ -15,6 +15,7 @@ namespace RuneMagic
         float _age;
         bool _loop = true;
         int _index = -1;
+        System.Action _onComplete;
 
         public bool FreezeWhenWorldHeld { get; set; }
         public string Clip => _clip;
@@ -56,11 +57,17 @@ namespace RuneMagic
 
         public void Play(Sprite[] frames, float fps, bool loop, string clip)
         {
+            Play(frames, fps, loop, clip, null);
+        }
+
+        public void Play(Sprite[] frames, float fps, bool loop, string clip, System.Action onComplete)
+        {
             if (_renderer == null)
             {
                 _renderer = GetComponent<SpriteRenderer>();
             }
 
+            _onComplete = onComplete;
             _frames = frames;
             _fps = Mathf.Max(1f, fps);
             _loop = loop;
@@ -77,8 +84,20 @@ namespace RuneMagic
                 return;
             }
 
-            if (_frames == null || _frames.Length <= 1)
+            if (_frames == null || _frames.Length == 0)
             {
+                return;
+            }
+
+            if (_frames.Length <= 1)
+            {
+                if (!_loop)
+                {
+                    var done = _onComplete;
+                    _onComplete = null;
+                    done?.Invoke();
+                }
+
                 return;
             }
 
@@ -87,12 +106,18 @@ namespace RuneMagic
             if (!_loop)
             {
                 next = Mathf.Min(next, _frames.Length - 1);
-            }
-            else
-            {
-                next %= _frames.Length;
+                Apply(next);
+                if (next >= _frames.Length - 1)
+                {
+                    var done = _onComplete;
+                    _onComplete = null;
+                    done?.Invoke();
+                }
+
+                return;
             }
 
+            next %= _frames.Length;
             Apply(next);
         }
 

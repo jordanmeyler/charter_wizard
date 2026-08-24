@@ -55,7 +55,7 @@ namespace RuneMagic
             SpellId.IcePillar, SpellId.VineRise, SpellId.Menhir, SpellId.Bridge
         };
 
-        public static SanctumBuild Build(MapFile map)
+        public static SanctumBuild Build(MapFile map, bool includeProps = true)
         {
             if (map == null || map.rooms == null || map.rooms.Length == 0)
             {
@@ -70,7 +70,7 @@ namespace RuneMagic
 
             for (var i = 0; i < map.rooms.Length; i++)
             {
-                rooms[i] = BuildRoom(grid, map.rooms[i], locks, ref charm);
+                rooms[i] = BuildRoom(grid, map.rooms[i], locks, ref charm, includeProps);
             }
 
             if (map.halls != null)
@@ -98,7 +98,7 @@ namespace RuneMagic
             };
         }
 
-        static RoomInfo BuildRoom(WorldGrid grid, MapRoom spec, List<ISpellLock> locks, ref GameObject charm)
+        static RoomInfo BuildRoom(WorldGrid grid, MapRoom spec, List<ISpellLock> locks, ref GameObject charm, bool includeProps)
         {
             var origin = spec.origin != null ? spec.origin.Cell : Vector2Int.zero;
             var width = Mathf.Max(3, spec.width);
@@ -119,7 +119,7 @@ namespace RuneMagic
                 room.ExitDoors = PlaceExit(grid, origin, width, height, spec.exit, wall);
             }
 
-            if (spec.props == null)
+            if (!includeProps || spec.props == null)
             {
                 return room;
             }

@@ -22,12 +22,30 @@ namespace RuneMagic
         public float VoiceWeight => 2.4f;
         public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Ash Mite";
+        [SerializeField] string authoredId = "ash-mite";
+        [SerializeField] string spriteId = "ash-mite";
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+        [SerializeField] Sprite[] resolveFrames;
+        [SerializeField] string resolveClip;
+        [SerializeField] string[] formula = { "Fire", "Salt", "Life" };
+        [SerializeField] string[] keys;
+        [SerializeField] bool authoredEnsouled;
+        [SerializeField] bool authoredBlocking;
+        [SerializeField] string grant;
+        [SerializeField] string attack;
+        [SerializeField] float authoredCastSeconds = 2f;
+        [SerializeField] string[] cast;
+
         SpriteRenderer _renderer;
         Vector3 _rest;
         float _phase;
         string _grant;
         Collider2D _hit;
         StatusHost _status;
+        bool _wired;
 
         public void Bind(
             string displayName,
@@ -42,6 +60,12 @@ namespace RuneMagic
             float castSeconds = 0f,
             RuneId[] castRecipe = null)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             Formula = WithLife(formula);
@@ -49,20 +73,20 @@ namespace RuneMagic
             Ensouled = ensouled;
             _grant = grantItem;
 
-            _renderer = gameObject.AddComponent<SpriteRenderer>();
             var art = string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId;
-            _renderer.sprite = SpriteFactory.Named(art);
-            _renderer.sortingOrder = 12;
+            _renderer = AuthoringUtil.ApplyLook(gameObject, 12, art, portrait, idleFrames, FpsFor(art));
             var anim = SpriteAnim.On(gameObject, _renderer);
             anim.FreezeWhenWorldHeld = true;
-            anim.Play(art, FpsFor(art));
-            FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
+            if (GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
+            }
 
-            var body = gameObject.AddComponent<Rigidbody2D>();
+            var body = AuthoringUtil.GetOrAdd<Rigidbody2D>(gameObject);
             body.gravityScale = 0f;
             body.bodyType = RigidbodyType2D.Kinematic;
 
-            var hit = gameObject.AddComponent<CircleCollider2D>();
+            var hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
             hit.radius = blocking ? 0.48f : 0.42f;
             hit.isTrigger = !blocking;
             _hit = hit;
@@ -71,7 +95,7 @@ namespace RuneMagic
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 0.85f, 0f),
                 new Color(1f, 0.7f, 0.35f));
 
-            _status = gameObject.AddComponent<StatusHost>();
+            _status = AuthoringUtil.GetOrAdd<StatusHost>(gameObject);
             _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
             _status.OnFatal = id =>
             {
@@ -82,8 +106,29 @@ namespace RuneMagic
                 }
             };
             var kind = CombatOf(formulaId, attack);
-            var combat = gameObject.AddComponent<CombatActor>();
+            var combat = AuthoringUtil.GetOrAdd<CombatActor>(gameObject);
             combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
+        }
+
+        public void BindFromAuthoring()
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(
+                string.IsNullOrEmpty(authoredName) ? "Ash Mite" : authoredName,
+                string.IsNullOrEmpty(authoredId) ? "ash-mite" : authoredId,
+                AuthoringUtil.ParseRunes(formula, RuneId.Fire, RuneId.Salt, RuneId.Vita),
+                AuthoringUtil.ParseKeys(keys, MapBuilder.MiteKeys),
+                authoredEnsouled,
+                spriteId,
+                authoredBlocking,
+                grant,
+                attack,
+                authoredCastSeconds,
+                AuthoringUtil.ParseRunes(cast));
         }
 
         /// <summary>
@@ -201,12 +246,20 @@ namespace RuneMagic
             }
 
             LockReward.Grant(transform.position, _grant);
-            if (_renderer != null)
+            var hasChange = (resolveFrames != null && resolveFrames.Length > 0) || !string.IsNullOrEmpty(resolveClip);
+            if (hasChange)
             {
-                _renderer.color = new Color(1f, 1f, 1f, 0.15f);
+                AuthoringUtil.PlayChange(gameObject, _renderer, resolveFrames, resolveClip, 8f, () => Destroy(gameObject));
             }
+            else
+            {
+                if (_renderer != null)
+                {
+                    _renderer.color = new Color(1f, 1f, 1f, 0.15f);
+                }
 
-            Destroy(gameObject, 0.35f);
+                Destroy(gameObject, 0.35f);
+            }
             if (spell == SpellId.Rage)
             {
                 return $"{DisplayName} turns on itself. The mind was the lock.";
