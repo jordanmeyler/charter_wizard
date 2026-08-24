@@ -26,7 +26,8 @@ namespace RuneMagic
     {
         None,
         Fog,
-        Poison
+        Poison,
+        Darkness
     }
 
     /// <summary>
@@ -99,7 +100,7 @@ namespace RuneMagic
                 return ElementFamily.Flame;
             }
 
-            if (spell == SpellId.Grove)
+            if (spell == SpellId.Grove || spell == SpellId.Forest)
             {
                 return ElementFamily.Plant;
             }
@@ -114,38 +115,33 @@ namespace RuneMagic
                     return ElementFamily.Fire;
                 case RuneId.Water:
                 case RuneId.Current:
-                case RuneId.Rain:
                     return ElementFamily.Water;
                 case RuneId.Ice:
-                case RuneId.Snow:
                 case RuneId.Glacier:
-                case RuneId.Blizzard:
                     return ElementFamily.Ice;
                 case RuneId.Earth:
                 case RuneId.Stone:
                 case RuneId.Dust:
                 case RuneId.Mud:
                 case RuneId.Sand:
-                case RuneId.Sandstorm:
                     return ElementFamily.Earth;
                 case RuneId.Air:
                 case RuneId.Wind:
                     return ElementFamily.Air;
                 case RuneId.Lightning:
-                case RuneId.Thunder:
                 case RuneId.Plasma:
                     return ElementFamily.Lightning;
                 case RuneId.Spark:
                     return ElementFamily.Spark;
                 case RuneId.Cloud:
                     return ElementFamily.Fog;
-                case RuneId.Blight:
+                case RuneId.Poison:
                 case RuneId.Acid:
+                case RuneId.Miasma:
                     return ElementFamily.Poison;
                 case RuneId.Plant:
-                case RuneId.Grove:
                 case RuneId.Vine:
-                case RuneId.Forest:
+                case RuneId.Oil:
                 case RuneId.Vita:
                     return ElementFamily.Plant;
                 case RuneId.Umbra:

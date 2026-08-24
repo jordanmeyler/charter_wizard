@@ -40,7 +40,11 @@ namespace RuneMagic
         Acid,
         Water,
         Plant,
-        Dirt
+        Dirt,
+        Oil,
+        Miasma,
+        Wardstone,
+        Aegis
     }
 
     public enum MaterialPaint
@@ -73,6 +77,10 @@ namespace RuneMagic
         Acid,
         Water,
         Plant,
+        Oil,
+        Miasma,
+        Wardstone,
+        Aegis,
         Void,
         Dirt
     }
@@ -195,10 +203,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Plant, RuneId.Ash),
 
                 new WorldMaterial(MaterialId.Timber, "timber",
-                    "Yield and rest given a vegetable body. Not living until Life.",
+                    "Hard water given more yield. A vegetable body. Not living until Life.",
                     RuneId.Plant, MaterialPaint.Planks,
                     new Color(0.46f, 0.3f, 0.16f), new Color(0.42f, 0.26f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant),
+                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant),
 
                 new WorldMaterial(MaterialId.Hearth, "hearthstone",
                     "Hunger given a body and asked to stay in stone.",
@@ -213,10 +221,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Ash, RuneId.Ember),
 
                 new WorldMaterial(MaterialId.Damp, "damp stone",
-                    "Rest holding yield. Not yet mud.",
+                    "Wet rest. Not ice, not mud.",
                     RuneId.Water, MaterialPaint.Damp,
                     new Color(0.2f, 0.28f, 0.4f), new Color(0.22f, 0.26f, 0.34f), false,
-                    RuneId.Water, RuneId.Earth),
+                    RuneId.Water, RuneId.Stone),
 
                 new WorldMaterial(MaterialId.Vein, "spark-veined stone",
                     "Hunger given breath, then asked to rest in the wall.",
@@ -231,10 +239,10 @@ namespace RuneMagic
                     RuneId.Air, RuneId.Earth, RuneId.Dust),
 
                 new WorldMaterial(MaterialId.Moss, "moss",
-                    "A vegetable body marked living. Soft grove-work on stone.",
+                    "A vegetable body marked living. Soft cover on stone.",
                     RuneId.Plant, MaterialPaint.Moss,
                     new Color(0.28f, 0.26f, 0.16f), new Color(0.24f, 0.28f, 0.18f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita),
+                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Metal, "iron plate",
                     "Hungry earth given more rest, then stilled.",
@@ -260,16 +268,16 @@ namespace RuneMagic
                     RuneId.Water, RuneId.Earth, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Sand, "sand",
-                    "Mud given breath until it dries. Grit given a body.",
+                    "Grit given a body. Dust · Salt.",
                     RuneId.Sand, MaterialPaint.Sand,
                     new Color(0.72f, 0.6f, 0.38f), new Color(0.58f, 0.48f, 0.3f), false,
-                    RuneId.Earth, RuneId.Water, RuneId.Mud, RuneId.Air, RuneId.Sand),
+                    RuneId.Air, RuneId.Earth, RuneId.Dust, RuneId.Salt, RuneId.Sand),
 
                 new WorldMaterial(MaterialId.Mud, "mud",
-                    "Rest meeting yield. Soft ground.",
+                    "Yield meeting grit. Soft ground.",
                     RuneId.Mud, MaterialPaint.Mud,
                     new Color(0.32f, 0.22f, 0.14f), new Color(0.28f, 0.2f, 0.14f), false,
-                    RuneId.Earth, RuneId.Water, RuneId.Mud),
+                    RuneId.Water, RuneId.Dust, RuneId.Mud),
 
                 new WorldMaterial(MaterialId.Lava, "lava",
                     "Hunger meeting rest. Earth that cannot stay earth.",
@@ -308,10 +316,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Water, RuneId.Salt, RuneId.Obsidian),
 
                 new WorldMaterial(MaterialId.Grove, "grove",
-                    "The vegetable body marked living. Plant · Life. Grove is the spell, not a rune.",
+                    "Living plant as a mass. Forest-work, not a rune.",
                     RuneId.Plant, MaterialPaint.Grove,
                     new Color(0.16f, 0.32f, 0.14f), new Color(0.14f, 0.26f, 0.12f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita),
+                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Cloud, "cloud",
                     "Breath holding yield. A hanging veil.",
@@ -320,16 +328,16 @@ namespace RuneMagic
                     RuneId.Air, RuneId.Water, RuneId.Cloud),
 
                 new WorldMaterial(MaterialId.Rain, "rain-slick stone",
-                    "The hanging veil drawn down.",
-                    RuneId.Rain, MaterialPaint.Rain,
+                    "The hanging veil drawn down. Weather, not a rune.",
+                    RuneId.Cloud, MaterialPaint.Rain,
                     new Color(0.22f, 0.3f, 0.4f), new Color(0.2f, 0.26f, 0.34f), false,
-                    RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Earth, RuneId.Rain),
+                    RuneId.Air, RuneId.Water, RuneId.Cloud),
 
                 new WorldMaterial(MaterialId.Snow, "snow",
-                    "The hanging veil given ice’s story.",
-                    RuneId.Snow, MaterialPaint.Snow,
+                    "The hanging veil given ice’s story. Weather, not a rune.",
+                    RuneId.Ice, MaterialPaint.Snow,
                     new Color(0.88f, 0.9f, 0.94f), new Color(0.7f, 0.74f, 0.8f), false,
-                    RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Ice, RuneId.Snow),
+                    RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Glacier, "glacier",
                     "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
@@ -350,16 +358,40 @@ namespace RuneMagic
                     RuneId.Water, RuneId.Salt),
 
                 new WorldMaterial(MaterialId.Plant, "living plant",
-                    "Vegetable body before Life marks a grove. Green cover.",
+                    "Vegetable body before Life marks a forest. Green cover.",
                     RuneId.Plant, MaterialPaint.Plant,
                     new Color(0.22f, 0.42f, 0.16f), new Color(0.18f, 0.34f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant),
+                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant),
 
                 new WorldMaterial(MaterialId.Dirt, "dirt",
                     "Loose rest, thrown. Earth speaks here. It smothers ground-fire.",
                     RuneId.Earth, MaterialPaint.Dirt,
                     new Color(0.42f, 0.32f, 0.2f), new Color(0.34f, 0.26f, 0.16f), false,
-                    RuneId.Earth)
+                    RuneId.Earth),
+
+                new WorldMaterial(MaterialId.Oil, "oil",
+                    "A vegetable body pressed with hunger and rest. It holds flame.",
+                    RuneId.Oil, MaterialPaint.Oil,
+                    new Color(0.18f, 0.14f, 0.08f), new Color(0.14f, 0.1f, 0.06f), false,
+                    RuneId.Plant, RuneId.Fire, RuneId.Earth, RuneId.Oil),
+
+                new WorldMaterial(MaterialId.Miasma, "miasma",
+                    "The hanging veil forced through acid. Foul breath on the floor.",
+                    RuneId.Miasma, MaterialPaint.Miasma,
+                    new Color(0.28f, 0.42f, 0.12f), new Color(0.22f, 0.32f, 0.1f), false,
+                    RuneId.Cloud, RuneId.Acid, RuneId.Miasma),
+
+                new WorldMaterial(MaterialId.Wardstone, "wardstone",
+                    "Rest given a body, then the mind holds it. Mostly spell-proof.",
+                    RuneId.Stone, MaterialPaint.Wardstone,
+                    new Color(0.42f, 0.36f, 0.52f), new Color(0.32f, 0.26f, 0.4f), false,
+                    RuneId.Earth, RuneId.Salt, RuneId.Sulphur, RuneId.Stone),
+
+                new WorldMaterial(MaterialId.Aegis, "aegis",
+                    "Shown steel. Light seated in metal. Mostly spell-proof.",
+                    RuneId.Metal, MaterialPaint.Aegis,
+                    new Color(0.72f, 0.7f, 0.42f), new Color(0.56f, 0.54f, 0.3f), false,
+                    RuneId.Metal, RuneId.Lumen)
             };
 
             ById = new Dictionary<MaterialId, WorldMaterial>(AllMaterials.Length);
@@ -398,6 +430,10 @@ namespace RuneMagic
             Flag(MaterialId.Water, -1.6f, 1.25f);
             Flag(MaterialId.Plant, 1.5f, 0.05f);
             Flag(MaterialId.Dirt, 0f, 0f);
+            Flag(MaterialId.Oil, 2.2f, 0.05f);
+            Flag(MaterialId.Miasma, 0.1f, 0.2f);
+            Flag(MaterialId.Wardstone, 0f, 0.15f);
+            Flag(MaterialId.Aegis, 0f, 1.1f);
         }
 
         static void Flag(MaterialId id, float flammability, float conductivity)
@@ -477,8 +513,7 @@ namespace RuneMagic
                 case RuneId.Ash: return MaterialId.Ash;
                 case RuneId.Metal: return MaterialId.Metal;
                 case RuneId.Salt: return MaterialId.SaltCrust;
-                case RuneId.Vita:
-                case RuneId.Grove: return MaterialId.Grove;
+                case RuneId.Vita: return MaterialId.Grove;
                 case RuneId.Dust: return MaterialId.Dust;
                 case RuneId.Ice: return MaterialId.Ice;
                 case RuneId.Sand: return MaterialId.Sand;
@@ -489,10 +524,11 @@ namespace RuneMagic
                 case RuneId.Crystal: return MaterialId.Crystal;
                 case RuneId.Obsidian: return MaterialId.Obsidian;
                 case RuneId.Cloud: return MaterialId.Cloud;
-                case RuneId.Rain: return MaterialId.Rain;
-                case RuneId.Snow: return MaterialId.Snow;
                 case RuneId.Glacier: return MaterialId.Glacier;
                 case RuneId.Acid: return MaterialId.Acid;
+                case RuneId.Oil: return MaterialId.Oil;
+                case RuneId.Miasma: return MaterialId.Miasma;
+                case RuneId.Poison: return MaterialId.Miasma;
                 case RuneId.Flame: return MaterialId.Hearth;
                 case RuneId.Ember: return MaterialId.Ember;
                 case RuneId.Stone: return MaterialId.Stone;

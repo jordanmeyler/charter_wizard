@@ -465,7 +465,12 @@ namespace RuneMagic
                 }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
-                    tile.Ignite(0.85f);
+                    var oiled = tile.HasOil || tile.Material == MaterialId.Oil;
+                    tile.Ignite(oiled ? 1.4f : 0.85f);
+                    if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
+                    {
+                        DetonateOil(grid, tile.Coord);
+                    }
                 }
 
                 if (WorldWork.IsWaterWork(sweep.Spell))
@@ -591,6 +596,37 @@ namespace RuneMagic
             }
 
             return cleared;
+        }
+
+        static void DetonateOil(WorldGrid grid, Vector2Int origin)
+        {
+            if (grid == null)
+            {
+                return;
+            }
+
+            var cells = WorldWork.Disk(origin, 2);
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile == null || MatterLaw.ResistsMagic(tile.Material))
+                {
+                    continue;
+                }
+
+                tile.SlickOil(0.85f);
+                tile.Ignite(1.2f);
+                if (tile.IsConjured && tile.Material == MaterialId.Oil && tile.Coord != origin)
+                {
+                    tile.RestoreFoundation();
+                }
+            }
+
+            var core = grid.Get(origin);
+            if (core != null && core.IsConjured && core.Material == MaterialId.Oil)
+            {
+                core.RestoreFoundation();
+            }
         }
 
         public static void Audit(List<string> broken)

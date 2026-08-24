@@ -60,6 +60,9 @@ namespace RuneMagic
                 case RuneId.Ember: return new Color(0.74f, 0.2f, 0.06f);
                 case RuneId.Shade: return new Color(0.22f, 0.1f, 0.32f);
                 case RuneId.Thunder: return new Color(0.64f, 0.52f, 0.96f);
+                case RuneId.Oil: return new Color(0.22f, 0.16f, 0.08f);
+                case RuneId.Miasma: return new Color(0.48f, 0.78f, 0.16f);
+                case RuneId.Poison: return new Color(0.42f, 0.62f, 0.08f);
                 case RuneId.Glass: return new Color(0.78f, 0.9f, 0.92f);
                 case RuneId.Sand: return new Color(0.9f, 0.76f, 0.38f);
                 case RuneId.Hot: return new Color(1f, 0.4f, 0.16f);

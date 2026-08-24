@@ -2,7 +2,7 @@
 
 A running development list, kept beside [`SPELLS.md`](SPELLS.md). Spells are sentences you write. **Materials are sentences the world has already become.** Stamp one on a tile with `MaterialId`; each has its own floor/wall paint and a `WorldMaterial` you can grow later (physics, reactions, map palettes).
 
-The Charter weave reads a material’s **manifestation unfolded to basics** — one rune per column — not a cramped join name. Timber (Plant) is Water | Earth | Salt. Ash is Fire | Water | Earth | Salt.
+The Charter weave reads a material’s **manifestation unfolded to basics** — one rune per column — not a cramped join name. Timber (Plant) is Water | Earth | Water. Ash is Fire | Water | Earth | Water.
 
 Runtime catalog: `Assets/Scripts/World/MaterialCatalog.cs`. Apply with:
 
@@ -18,12 +18,12 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 ## How a material speaks
 
 1. **Signature** is the chain the room writes when you scan across that substance.
-2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Plant…). Layer runes alone are not enough — timber is Water · Earth · Salt · Plant, not “Earth.” Grove is a living-plant spell, not a manifestation rune.
+2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Grove…). Layer runes alone are not enough — timber is Water · Earth · Water · Plant, not “Earth.”
 3. Contiguous runs of the same material collapse to one clause so a floor of ash is one Ash sentence, not eighty copies.
 4. **Void** / pits tear the weave. They contribute a gap, not a rune.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
-Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join unfolds to the full recipe and reads as one coloured chunk — Plant is a green bar of Water, Earth, Salt; Ash is a grey bar of Fire, Water, Earth, Salt. Each ingredient still has its own column. The gold ring and the join’s colour are the combined form. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
+Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join unfolds to the full recipe and reads as one coloured chunk — Plant is a green bar of Water, Earth, Water; Ash is a grey bar of Fire, Water, Earth, Water. Each ingredient still has its own column. The gold ring and the join’s colour are the combined form. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
 
 **Air is ambient.** Anything that still has a floor or a wall is a place that can be breathed. The weave carries Air in almost every view. A screen that is only void — a tear, no room left — has no breath.
 
@@ -39,9 +39,9 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Ash** | Fire · Plant · Ash | Ash | Ash Court floor |
 | **Ember** | Fire · Ash · Ember | Ember | Ash Court bed |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
-| **Timber** | Water · Earth · Salt · Plant | Plant | Wick Chapel, chapel hall |
+| **Timber** | Water · Earth · Water · Plant | Plant | Wick Chapel, chapel hall |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
-| **Moss** | Water · Earth · Salt · Plant · Life | Plant | Chapel corners |
+| **Moss** | Water · Earth · Water · Plant · Life | Plant | Chapel corners |
 | **Void** | — (tear) | — | The Drop pits |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
 | **Scoured** | Air · Earth · Dust | Dust | Storm Cell wind-cut stone |
@@ -55,32 +55,35 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 
 | Material | Signature | Manifestation | Note |
 | --- | --- | --- | --- |
-| **Ice** | Water · Earth · Ice | Ice | Yield meeting rest. Hard water. Thaws. Freeze a pool and you can walk it. |
+| **Ice** | Water · Earth · Ice | Ice | Hard water. Thaws. Not Death. Freeze a pool and you can walk it. |
 | **Water** | Water · Salt | Water | A pool — yield holding a vessel. **It drowns.** Water work fills a connected pit smaller than 4×4 with this water. Ice asks it to stand. |
-| **Mud** | Earth · Water · Mud | Mud | Rest meeting yield. Soft ground |
-| **Sand** | Earth · Water · Mud · Air · Sand | Sand | Mud given breath until it dries |
-| **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight |
+| **Mud** | Water · Dust · Mud | Mud | Soft ground. Yield meeting grit. |
+| **Sand** | Air · Earth · Dust · Salt · Sand | Sand | Grit given a body. |
+| **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight. Sand and mud start here. |
 | **Lava** | Fire · Earth · Lava | Lava | Earth that cannot stay earth |
 | **Steam** | Fire · Water · Steam | Steam | Violent hot veil |
 | **Glass** | Sand · Flame · Earth · Glass | Glass | Grains, hunger, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
 | **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched. Melt, Shatter, and hunger's thaw will not take it |
-| **Grove** | Water · Earth · Salt · Plant · Life | Plant | Living plant as a mass. Grove is the spell, not a rune. |
-| **Plant** | Water · Earth · Salt · Plant | Plant | Green cover, not yet Life |
+| **Grove** | Water · Earth · Water · Plant · Life | Plant | Living plant as a mass. Forest is a spell, not a rune. |
+| **Plant** | Water · Earth · Water · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
-| **Rain** | Air · Water · Cloud · Earth · Rain | Rain | The veil drawn down |
-| **Snow** | Air · Water · Cloud · Ice · Snow | Snow | The veil given ice’s story |
-| **Blizzard** | Air · Water · Cloud · Ice · Snow · Wind · Blizzard | Blizzard | Wind driving Snow |
+| **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
+| **Snow** | Air · Water · Cloud · Ice | Ice | Weather left on the stone, not a rune |
+| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. |
+| **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
+| **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
+| **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
 | **Glacier** | Water · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
-| **Dirt** | Earth | Earth | Loose rest, thrown. Earth speaks here. Smothers ground-fire. |
-| **Damp stone** | Water · Earth | Water | Wet rest, not yet mud |
+| **Damp stone** | Water · Stone | Water | Wet rest, not ice |
+| **Dirt** | Earth | Earth | Loose rest from Dirt toss. Smothers ground-fire. |
 
 ---
 
 ## Not listed yet (open)
 
-Oil, gas, bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Water · Salt · Death), shade-stuff. Add a `MaterialId`, a `WorldMaterial` row, a `MaterialPaint`, and a line here. Joins that birth them still live in `MaterialTree` / [`SPELLS.md`](SPELLS.md).
+Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Water · Salt · Death), shade-stuff. Add a `MaterialId`, a `WorldMaterial` row, a `MaterialPaint`, and a line here. Joins that birth them still live in `MaterialTree` / [`SPELLS.md`](SPELLS.md).
 
 ---
 
@@ -110,4 +113,4 @@ Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs to
 | Metal | 0 | 1.6 | The spark’s favourite road. |
 | Vein | 0 | 0.85 | Spark in the stone. |
 
-The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water).
+The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth. Water · Earth · Salt is water-pillar. Water · Salt · Earth fizzles).

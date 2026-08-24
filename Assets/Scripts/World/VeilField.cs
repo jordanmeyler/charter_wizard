@@ -204,9 +204,17 @@ namespace RuneMagic
 
         public static Color Wash(VeilKind kind)
         {
-            return kind == VeilKind.Poison
-                ? new Color(0.07f, 0.1f, 0.04f)
-                : new Color(0.16f, 0.17f, 0.2f);
+            if (kind == VeilKind.Poison)
+            {
+                return new Color(0.07f, 0.1f, 0.04f);
+            }
+
+            if (kind == VeilKind.Darkness)
+            {
+                return new Color(0.02f, 0.02f, 0.03f);
+            }
+
+            return new Color(0.16f, 0.17f, 0.2f);
         }
 
         static VeilField FindNear(WorldGrid grid, Vector2Int origin, int radius)

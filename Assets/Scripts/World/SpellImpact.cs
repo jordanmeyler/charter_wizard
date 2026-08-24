@@ -100,11 +100,6 @@ namespace RuneMagic
             IReadOnlyList<RuneId> heldRunes,
             SpellId spell)
         {
-            if (verb.Status == StatusId.None)
-            {
-                return;
-            }
-
             for (var i = 0; i < hits.Count; i++)
             {
                 if (hits[i] is not MonoBehaviour body || body == null)
@@ -118,7 +113,17 @@ namespace RuneMagic
                     continue;
                 }
 
-                notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find(), heldRunes, spell));
+                if (verb.Status != StatusId.None)
+                {
+                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find(), heldRunes, spell));
+                }
+
+                if (WorldWork.IsOilWork(spell) && host.Nature == CreatureNature.Fire)
+                {
+                    var actor = body.GetComponent<CombatActor>();
+                    actor?.FeedOil();
+                    notes.Add("The hungering body drinks the fuel and grows.");
+                }
             }
         }
 
@@ -211,6 +216,13 @@ namespace RuneMagic
                         break;
                     case TileVerb.Dirt:
                         if (tile.LayDirt())
+                        {
+                            changed++;
+                        }
+
+                        break;
+                    case TileVerb.Slick:
+                        if (tile.SlickOil())
                         {
                             changed++;
                         }

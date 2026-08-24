@@ -21,7 +21,8 @@ namespace RuneMagic
         Cloak,
         Foul,
         Vent,
-        Dirt
+        Dirt,
+        Slick
     }
 
     /// <summary>
@@ -106,9 +107,12 @@ namespace RuneMagic
                 case SpellId.GraveIce:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Frozen, 3.8f, TileVerb.Freeze);
                 case SpellId.Snowstorm:
+                case SpellId.Blizzard:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.DirtToss:
                     return new SpellVerb(SpellTarget.Single, 2.2f, StatusId.None, 0f, TileVerb.Dirt);
+                case SpellId.Thunder:
+                    return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.Stunned, 1.6f, TileVerb.Charge);
                 case SpellId.Douse:
                 case SpellId.WaterJet:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Soaked, 5f, TileVerb.Wet);
@@ -163,7 +167,24 @@ namespace RuneMagic
                 case SpellId.TimeStop:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2f, TileVerb.None);
                 case SpellId.Blight:
+                case SpellId.Miasma:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
+                case SpellId.Poison:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
+                case SpellId.OilShot:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.OilPillar:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.Plasma:
+                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.Burning, 3f, TileVerb.Ignite);
+                case SpellId.Forest:
+                    return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.None, 0f, TileVerb.Grow);
+                case SpellId.Darkness:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.None, 0f, TileVerb.Cloak);
+                case SpellId.WaterPillar:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Soaked, 4f, TileVerb.Wet);
+                case SpellId.Sandstorm:
+                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Vent);
                 case SpellId.GraveDust:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.Foul);
                 case SpellId.Hop:

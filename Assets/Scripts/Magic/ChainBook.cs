@@ -38,17 +38,14 @@ namespace RuneMagic
         {
             SetBirth(RuneId.Spark, RuneId.Fire, RuneId.Air);
             SetBirth(RuneId.Lightning, RuneId.Spark, RuneId.Air);
-            SetBirth(RuneId.Thunder, RuneId.Lightning, RuneId.Earth);
             SetBirth(RuneId.Cloud, RuneId.Air, RuneId.Water);
-            SetBirth(RuneId.Storm, RuneId.Spark, RuneId.Cloud);
-            SetBirth(RuneId.Rain, RuneId.Cloud, RuneId.Earth);
             SetBirth(RuneId.Steam, RuneId.Fire, RuneId.Water);
             SetBirth(RuneId.Lava, RuneId.Fire, RuneId.Earth);
             SetBirth(RuneId.Dust, RuneId.Air, RuneId.Earth);
-            SetBirth(RuneId.Mud, RuneId.Earth, RuneId.Water);
             SetBirth(RuneId.Ice, RuneId.Water, RuneId.Earth);
+            SetBirth(RuneId.Mud, RuneId.Water, RuneId.Dust);
             SetBirth(RuneId.Stone, RuneId.Earth, RuneId.Salt);
-            SetBirth(RuneId.Plant, RuneId.Water, RuneId.Earth, RuneId.Salt);
+            SetBirth(RuneId.Plant, RuneId.Water, RuneId.Earth, RuneId.Water);
             SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Sulphur, RuneId.Fire);
             SetBirth(RuneId.Ember, RuneId.Fire, RuneId.Mors);
             SetBirth(RuneId.Wind, RuneId.Air, RuneId.Mercury);
@@ -58,18 +55,16 @@ namespace RuneMagic
             SetBirth(RuneId.Obsidian, RuneId.Lava, RuneId.Water, RuneId.Salt);
             SetBirth(RuneId.Sand, RuneId.Dust, RuneId.Salt);
             SetBirth(RuneId.Glass, RuneId.Sand, RuneId.Flame, RuneId.Earth);
-            SetBirth(RuneId.Blight, RuneId.Plant, RuneId.Vita, RuneId.Mors);
-            SetBirth(RuneId.Snow, RuneId.Cloud, RuneId.Ice);
-            SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
-            SetBirth(RuneId.Vine, RuneId.Plant, RuneId.Vita, RuneId.Mercury);
+            SetBirth(RuneId.Poison, RuneId.Plant, RuneId.Mors);
+            SetBirth(RuneId.Vine, RuneId.Plant, RuneId.Mercury);
             SetBirth(RuneId.Metal, RuneId.Lava, RuneId.Earth);
             SetBirth(RuneId.Crystal, RuneId.Stone, RuneId.Water);
             SetBirth(RuneId.Glacier, RuneId.Ice, RuneId.Stone);
             SetBirth(RuneId.Acid, RuneId.Steam, RuneId.Metal);
             SetBirth(RuneId.Inferno, RuneId.Fire, RuneId.Fire, RuneId.Salt);
             SetBirth(RuneId.Plasma, RuneId.Inferno, RuneId.Spark);
-            SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
-            SetBirth(RuneId.Sandstorm, RuneId.Wind, RuneId.Dust);
+            SetBirth(RuneId.Oil, RuneId.Plant, RuneId.Fire, RuneId.Earth);
+            SetBirth(RuneId.Miasma, RuneId.Cloud, RuneId.Acid);
             SetBirth(RuneId.Aether, RuneId.Lumen, RuneId.Umbra);
 
             Shapes["shot"] = SpellShape.Shot;
@@ -248,7 +243,7 @@ namespace RuneMagic
 
         /// <summary>
         /// Unfolds a join to the eleven basics. Plant becomes Water, Earth,
-        /// Salt. Ash becomes Fire, Water, Earth, Salt. Each ingredient is
+        /// Water. Ash becomes Fire, Water, Earth, Water. Each ingredient is
         /// one column in the Charter weave.
         /// </summary>
         public static int ExpandRecipe(RuneId rune, List<RuneId> dest)

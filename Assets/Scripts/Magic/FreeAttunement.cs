@@ -124,20 +124,22 @@ namespace RuneMagic
                 case RuneId.Water:
                 case RuneId.Ice:
                 case RuneId.Current:
-                case RuneId.Rain:
                     return RuneId.Water;
                 case RuneId.Spark:
                 case RuneId.Lightning:
-                case RuneId.Storm:
-                case RuneId.Thunder:
+                case RuneId.Plasma:
                     return RuneId.Spark;
                 case RuneId.Vita:
-                case RuneId.Grove:
                 case RuneId.Plant:
+                case RuneId.Vine:
                     return RuneId.Vita;
                 case RuneId.Mors:
                 case RuneId.Shade:
-                case RuneId.Blight:
+                case RuneId.Poison:
+                    return RuneId.Mors;
+                case RuneId.Oil:
+                    return RuneId.Fire;
+                case RuneId.Miasma:
                     return RuneId.Mors;
                 case RuneId.Sulphur:
                     return RuneId.Sulphur;
