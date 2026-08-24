@@ -49,8 +49,6 @@ namespace RuneMagic
             SetBirth(RuneId.Ice, RuneId.Water, RuneId.Salt, RuneId.Earth);
             SetBirth(RuneId.Stone, RuneId.Earth, RuneId.Salt);
             SetBirth(RuneId.Plant, RuneId.Water, RuneId.Earth, RuneId.Salt);
-            SetBirth(RuneId.Grove, RuneId.Plant, RuneId.Vita);
-            SetBirth(RuneId.Forest, RuneId.Plant, RuneId.Vita);
             SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Sulphur, RuneId.Fire);
             SetBirth(RuneId.Ember, RuneId.Fire, RuneId.Mors);
             SetBirth(RuneId.Wind, RuneId.Air, RuneId.Mercury);
@@ -60,10 +58,10 @@ namespace RuneMagic
             SetBirth(RuneId.Obsidian, RuneId.Lava, RuneId.Water, RuneId.Salt);
             SetBirth(RuneId.Sand, RuneId.Dust, RuneId.Salt);
             SetBirth(RuneId.Glass, RuneId.Sand, RuneId.Flame, RuneId.Earth);
-            SetBirth(RuneId.Blight, RuneId.Grove, RuneId.Mors);
+            SetBirth(RuneId.Blight, RuneId.Plant, RuneId.Vita, RuneId.Mors);
             SetBirth(RuneId.Snow, RuneId.Cloud, RuneId.Ice);
             SetBirth(RuneId.Blizzard, RuneId.Wind, RuneId.Snow);
-            SetBirth(RuneId.Vine, RuneId.Grove, RuneId.Mercury);
+            SetBirth(RuneId.Vine, RuneId.Plant, RuneId.Vita, RuneId.Mercury);
             SetBirth(RuneId.Metal, RuneId.Lava, RuneId.Earth);
             SetBirth(RuneId.Crystal, RuneId.Stone, RuneId.Water);
             SetBirth(RuneId.Glacier, RuneId.Ice, RuneId.Stone);

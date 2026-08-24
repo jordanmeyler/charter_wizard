@@ -125,8 +125,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
 | **Ice** | Water · Salt · Earth | Yield given a body and asked to rest. Hard water. | Solid water that will thaw |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
-| **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life. Grotto is the cave-spell (`Plant · Dark`), not a rune |
-| **Grove** | Plant · Life | The vegetable body, marked living. | Growth, vine, thicket |
+| **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life. Grove is the living-plant spell (`Plant · Life`), not a rune |
 | **Sand** | Dust · Salt | Grit given a body. | Grains |
 | **Glass** | Sand · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
 | **Obsidian** | Lava · Water · Salt | Hungry earth quenched and given a body. | Black glass. A path. Melt, Shatter, and hunger's thaw will not take it |
@@ -139,8 +138,7 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
 | **Inferno** | Fire · Fire · Salt | A fire-body taught to travel and keep eating. | Spreading hunger |
 | **Plasma** | Inferno · Spark | Inferno joined to Spark. | Reserved |
-| **Vine** | Grove · Mercury | Waking plant sent. | Climbing green |
-| **Forest** | Plant · Life | The vegetable body waking as a mass. | Trees as one body |
+| **Vine** | Plant · Life · Mercury | Waking plant sent. | Climbing green |
 | **Blizzard** | Wind · Snow | Wind driving Snow. | Hard-water weather |
 | **Sandstorm** | Wind · Dust | Wind driving Dust. | A grit gale |
 
@@ -152,14 +150,14 @@ These are not in the ordinary book. They exist so Free has somewhere to go.
 | --- | --- | --- | --- |
 | **Grave-ice** | Water · Salt · Death | Yield given a body, then the motion leaves. | Ice that will not thaw like ordinary ice |
 | **Shade** | Dark · Death · Salt | Withheld, given a body, marked by the grave. No Life. | A shape that is not alive |
-| **Blight** | Grove · Death | A living plant, then the grave. | Verdure that rots |
+| **Blight** | Plant · Life · Death | A living plant, then the grave. | Verdure that rots |
 | **Ember** | Fire · Death | Hunger after the grave takes its motion. | Heat without a flame |
 
 ---
 
 ## 4. The ordinary book (1–40)
 
-No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…) is already in the field, start there.
+No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…) is already in the field, start there.
 
 | # | What you see (no names needed) | Spell | Chain from the eleven | From a join | Form | Does |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -192,8 +190,8 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Grove…
 | 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Water · Salt | Lava · Water · Salt | Remote | Neither |
 | 29 | Wet rest given a vegetable body, then marked living, at your feet. | Sprout | Water · Earth · Salt · Life | Plant · Life | Spread | Neither |
-| 30 | That living plant is sent. It holds them, or it climbs. | Vine | Water · Earth · Salt · Life · Mercury | Grove · Mercury | Remote | Restrain / Neither |
-| 31 | That living plant is asked to stand. | Vine-rise | Water · Earth · Salt · Life · Earth | Grove · Earth | Pillar | Neither / Restrain |
+| 30 | That living plant is sent. It holds them, or it climbs. | Vine | Water · Earth · Salt · Life · Mercury | Plant · Life · Mercury | Remote | Restrain / Neither |
+| 31 | That living plant is asked to stand. | Vine-rise | Water · Earth · Salt · Life · Earth | Plant · Life · Earth | Pillar | Neither / Restrain |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |
 | 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
@@ -222,7 +220,7 @@ Death is not “still” as a household verb. Earth already means rest. Death me
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41 | A living plant, then the grave. Verdure rots. No soul. | Blight | Water · Earth · Salt · Life · Death | Grove · Death | Spread | Kill | Either |
+| 41 | A living plant, then the grave. Verdure rots. No soul. | Blight | Water · Earth · Salt · Life · Death | Plant · Life · Death | Spread | Kill | Either |
 | 42 | Withheld, given a body, marked by the grave, and sent. No waking. | Shade | Dark · Death · Salt · Mercury | Shade · Mercury | Remote | Neither | Free |
 | 43 | The grave is sent into a living body. The waking is named so it can be taken. | Unmake | Death · Mercury · Life · Salt | — | Remote | Kill | Free |
 | 44 | The waking passion is given to the grave. They sleep as if dead. | Grave-sleep | Life · Sulphur · Death | — | Remote | Restrain | Free |
@@ -270,9 +268,9 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
 | 69 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
 | 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
-| 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Earth · Salt · Dark | Plant · Dark | Remote | Neither |
+| 71 | The vegetable body marked living. A grove. | Grove | Water · Earth · Salt · Life | Plant · Life | Spread | Neither |
 
-**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Earth · Salt`). Dark withholds that body so a cave opens — earth and stone yield a plant-lined hollow. Do not write a Grotto join.
+**Grove is a spell, not an elemental rune.** Plant is the wrought rune (`Water · Earth · Salt`). Life marks that vegetable body living — the same sentence as Sprout. Do not write a Grove join.
 
 Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Obsidian** refuses almost all of that work. Use it when a wall must stay.
 
