@@ -45,12 +45,12 @@ namespace RuneMagic
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.HelpBox(
                 "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
-                "1. Create tile palette — writes Assets/Tiles (Floor / Wall / Special).\n" +
-                "2. GameObject → Rune Magic → Painted Map (or the button below).\n" +
-                "3. Window → 2D → Tile Palette → open Rune Palette. Select the Tiles object. Paint.\n" +
-                "4. Click a tile asset to change material, kind, aura, or sprite. Paint over a region to reassign.\n" +
-                "5. Create prefabs, then drag Item / Torch / Mite onto the painted cells.\n" +
-                "6. Play. The painted map becomes the live grid; JSON Floor 1 is skipped.",
+                "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
+                "2. Main already has a Map (Grid + Tiles + Cover). Or GameObject → Rune Magic → Painted Map.\n" +
+                "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Cover for ice / fire / aura.\n" +
+                "4. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
+                "5. GameObject → Rune Magic → Item / Decor / Mite / Torch… Set catalog id and material on the Inspector.\n" +
+                "6. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
             if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
@@ -69,7 +69,8 @@ namespace RuneMagic
             }
 
             EditorGUILayout.Space();
-            DrawPlace("Item", "WorldItem — catalog id, matter, keys, change clip");
+            DrawPlace("Item", "WorldItem — catalog id, material, keys, change clip");
+            DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
             DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant");
             DrawPlace("Torch", "TorchFixture — keys, lit frames");
             DrawPlace("Rod", "LightningConduit — spark lock");
@@ -139,6 +140,7 @@ namespace RuneMagic
             }
 
             Write("Item", typeof(WorldItem));
+            Write("Decor", typeof(WorldDecor));
             Write("Mite", typeof(EncounterLock));
             Write("Torch", typeof(TorchFixture));
             Write("Rod", typeof(LightningConduit));

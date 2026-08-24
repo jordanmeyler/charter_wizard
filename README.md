@@ -2,7 +2,7 @@
 
 A 2D top-down puzzle-RPG. You read the runic field, compose a spell, and turn a lock. Combat is not a damage race. Terrain is made of the same materials as spells.
 
-The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences, flammability, and conductivity — are in [`MATERIALS.md`](MATERIALS.md). Floor 1 — the Foundation — is specified in [`FLOOR1.md`](FLOOR1.md) and boots from `Assets/Resources/Maps/foundation.json`. Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
+The living design reference is [`DESIGN.md`](DESIGN.md) (v0.17). The eleven basic runes and the written story-chains are in [`SPELLS.md`](SPELLS.md). World materials — tiles you can stamp, with full rune sentences, flammability, and conductivity — are in [`MATERIALS.md`](MATERIALS.md). Maps are painted with Unity Tilemaps. Floor 1 notes still live in [`FLOOR1.md`](FLOOR1.md). Joins become their own runes (Fire · Air → Spark). Salt stands a body (walls, pillars). Sulphur is the wildcard. Life marks a living recipe. Death is reserved for Free / grave-work. This repository is a Unity 6.3 project.
 
 ## What is implemented
 
@@ -46,7 +46,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 
 1. Install [Unity Hub](https://unity.com/download) and **Unity 6.3 LTS** (`6000.3.22f1` or a nearby 6.3).
 2. Open this folder in Hub (`Assets`, `Packages`, `ProjectSettings`).
-3. Open `Assets/Scenes/Main.unity` and press Play. Leave the scene as the camera and light — the adept, rooms, and locks spawn at runtime from `Assets/Resources/Maps/foundation.json`. Do not place a character in the scene.
+3. Open `Assets/Scenes/Main.unity`. The scene already has a **Map** Grid with **Tiles** and **Cover** Tilemaps. Open **Window → 2D → Tile Palette**, paint, then press Play. Do not place a character in the scene — the adept still spawns at runtime.
 
 ### Controls
 
@@ -83,26 +83,20 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 
 **Paint the map in the Scene view, then drop objects on it** — the usual Unity 2D flow.
 
-1. `Window → Rune Magic → Authoring → Create tile palette`. Tiles land in `Assets/Tiles/Floor`, `Wall`, and `Special`. You can add your own folders there.
-2. `GameObject → Rune Magic → Painted Map`. That adds a Grid + Tilemap.
-3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Each brush is a material (Ice floor, Stone wall, Pit…). Click the tile asset to change material, kind, aura, or sprite. Paint over a region to reassign.
-4. Create prefabs from the same Authoring window and drag Item / Torch / Mite onto the painted cells.
+1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
+2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
+3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell.
+4. `GameObject → Rune Magic → Item / Decor / Mite / Torch / Gate…` places objects. Set catalog id and material (or formula, keys, sprite) on the Inspector.
 
-Play bakes the Tilemap into the live grid and skips the JSON floor when a painted map is present. Folders under `Assets/Tiles` and `Assets/Prefabs` are yours to organize.
+Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
 
 Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Magic → Sprite Sheet`. Save under `Assets/Resources/SpriteSheets/`. Clips are looked up by id (`adept-walk`, `ice-melt`, `fireball-shot`). Assign sliced Unity sprites on a prefab, or name a **change clip** so melt / explode plays before the object goes.
 
-The JSON maps are still the tile source for Floor 1 (`Assets/Resources/Maps/foundation.json`, `index.json` → `startup`). The browser painter and Map Painter remain for stamping rooms.
-
 | Tool | Use it for |
 | --- | --- |
-| Unity `Window → Rune Magic → Authoring` | Place prefabs, assign interactions, snap to the grid |
+| Unity `Window → Rune Magic → Authoring` | Create the palette, add a painted map, place prefabs, snap to the grid |
+| Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
-| [`Tools/map-editor.html`](Tools/map-editor.html) | Browser painter — rooms, materials, pits, doors, plaques, rune-strings, locks, halls. Export JSON and drop it in `Assets/Resources/Maps/`. |
-| Unity `Window → Rune Magic → Map Painter` | Same JSON inside the editor. Left-click stamps a tile; Shift-click places a prop; Alt-click clears. |
-| `Assets/Scripts/World/MapFile.cs` / `MapBuilder.cs` | The format and the runtime stamp. |
-
-A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`, `item`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
 
 Tiles come from the sprite sheets in `Assets/Resources/Sprites/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings, props, or FX that swap onto a base tile. Water ripples. Procedural painters stay as fallback. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. A flying shot — yours or theirs — stops on a wall or a shut door; an opened door is a hole. You can replace the generated actors: drop a PNG in `Assets/Resources/Sprites/{id}.png` or point `art.json` at it. See [`ART.md`](ART.md). A custom still overrides the generated clip.
 
@@ -118,16 +112,16 @@ Tiles come from the sprite sheets in `Assets/Resources/Sprites/` (`TileAtlas` / 
 | [`Tools/import-sprite.py`](Tools/import-sprite.py) | Copy a PNG into `Assets/Resources/Sprites/` and register it in `art.json` |
 | Unity `Window → Rune Magic → Catalog` | Jump to those files |
 
-A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place it on a map with `"type": "item", "item": "your-id"` or set `"sprite"` on a mite/torch.
+A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place a **Item** in the scene and set its catalog id (or sprite) on the Inspector.
 
 ## Where to grow the trees
 
 | File | What to add |
 | --- | --- |
-| `Assets/Resources/Maps/` | New maps (JSON). Point `index.json` at the one to boot |
-| `Tools/map-editor.html` | Paint those maps without opening Unity |
-| `FLOOR1.md` | Floor 1 design (open hub, four elemental rooms, staged doors) |
-| `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if JSON is missing |
+| `Assets/Tiles/` | New tile brushes (material, kind, cover). Paint them on the scene Tilemap |
+| `Assets/Scenes/Main.unity` | The playable map — Grid, Tiles, Cover, and placed objects |
+| `FLOOR1.md` | Floor 1 design notes (the old JSON floor is leftover) |
+| `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if the Tilemap is empty |
 | `Assets/Scripts/World/MaterialCatalog.cs` | New materials, signatures, and tile paints |
 | `MATERIALS.md` | Running material list (beside the spell book) |
 | `Assets/Scripts/Field/RuneTapestry.cs` | Charter-only room weave (scroll + alternating rows) |

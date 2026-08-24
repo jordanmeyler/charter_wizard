@@ -11,10 +11,21 @@ namespace RuneMagic
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile
     {
+        [Tooltip("What the cell is made of. Play bakes this into the live grid.")]
         public MaterialId material = MaterialId.Stone;
+        [Tooltip("Floor, wall, pit, door, or bridge.")]
         public TileKind kind = TileKind.Floor;
-        [Tooltip("fire, miasma, or fog — applied when the tile is baked.")]
-        public string aura;
+        [Tooltip("Fire, miasma, or fog on this cell.")]
+        public TileAura aura;
+        [Tooltip("Ice / fire / lightning / vine over the walk tile.")]
+        public TileCover cover;
+
+        public bool HasOverlay => aura != TileAura.None || cover != TileCover.None;
+
+        public string CoverId()
+        {
+            return cover == TileCover.None ? null : cover.ToString().ToLowerInvariant();
+        }
 
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {

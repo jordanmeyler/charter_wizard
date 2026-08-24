@@ -10,6 +10,32 @@ namespace RuneMagic
     }
 
     /// <summary>
+    /// Atmosphere stamped when a painted cell is baked. Not the walk family.
+    /// </summary>
+    public enum TileAura
+    {
+        None = 0,
+        Fire,
+        Miasma,
+        Fog
+    }
+
+    /// <summary>
+    /// Overlay on a walk tile. Ice / fire / lightning are never the floor itself.
+    /// </summary>
+    public enum TileCover
+    {
+        None = 0,
+        Ice,
+        Fire,
+        Lightning,
+        Water,
+        Vine,
+        Cracks,
+        Seal
+    }
+
+    /// <summary>
     /// How a conjured body stands. Architectural tiles stay None.
     /// A pillar is one column. A wall is masonry. A span is a walkable fill.
     /// </summary>

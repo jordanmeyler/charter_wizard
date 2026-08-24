@@ -297,7 +297,8 @@ namespace RuneMagic
                     material = MaterialId.Obsidian;
                     return true;
                 default:
-                    return false;
+                    return System.Enum.TryParse(matter.Trim(), true, out material)
+                        && material != MaterialId.None;
             }
         }
 

@@ -65,6 +65,11 @@ namespace RuneMagic
             }
         }
 
+        public void PaintCover(TileCover cover)
+        {
+            PaintCover(cover == TileCover.None ? null : cover.ToString().ToLowerInvariant());
+        }
+
         public void PaintCover(string id)
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();

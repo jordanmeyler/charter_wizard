@@ -4,8 +4,9 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Builds a playable floor from JSON tiles, a painted shell, or a
-    /// scene grid, then binds every item and lock you placed by hand.
+    /// Builds a playable floor from a painted Tilemap and scene objects.
+    /// JSON maps are leftover and are not loaded unless you set
+    /// <see cref="LevelAuthoring.tiles"/> to a named map.
     /// </summary>
     public static class SceneLevel
     {
@@ -28,7 +29,9 @@ namespace RuneMagic
                 return FromExistingGrid(null);
             }
 
-            return SanctumLayout.Construct();
+            Debug.LogWarning(
+                "No painted Tilemap in the scene. Add GameObject → Rune Magic → Painted Map, then paint. Using an empty stone court.");
+            return SanctumLayout.FallbackCourt();
         }
 
         static SanctumBuild BuildFrom(LevelAuthoring spec)
@@ -56,15 +59,8 @@ namespace RuneMagic
                     }
                 default:
                     {
-                        var map = string.IsNullOrEmpty(spec.mapId)
-                            ? MapFile.LoadStartup()
-                            : MapFile.Load(spec.mapId);
-                        if (map != null)
-                        {
-                            return MapBuilder.Build(map, spec.includeJsonProps);
-                        }
-
-                        return BuildShell(spec);
+                        var baked = TilemapLevel.Bake(spec);
+                        return baked ?? BuildShell(spec);
                     }
             }
         }
@@ -169,6 +165,12 @@ namespace RuneMagic
             for (var i = 0; i < plaques.Length; i++)
             {
                 plaques[i].EnsureBound();
+            }
+
+            var decors = Object.FindObjectsByType<WorldDecor>(FindObjectsSortMode.None);
+            for (var i = 0; i < decors.Length; i++)
+            {
+                decors[i].BindFromAuthoring();
             }
 
             var locks = new List<ISpellLock>();

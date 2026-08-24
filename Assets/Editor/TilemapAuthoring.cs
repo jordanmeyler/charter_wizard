@@ -14,6 +14,7 @@ namespace RuneMagic
         public const string FloorFolder = "Assets/Tiles/Floor";
         public const string WallFolder = "Assets/Tiles/Wall";
         public const string SpecialFolder = "Assets/Tiles/Special";
+        public const string CoverFolder = "Assets/Tiles/Cover";
         public const string PaletteFolder = "Assets/Tiles/Palettes";
         public const string PalettePath = "Assets/Tiles/Palettes/Rune Palette.prefab";
 
@@ -32,17 +33,52 @@ namespace RuneMagic
             renderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
             renderer.sortingOrder = 0;
 
+            var coverLayer = new GameObject("Cover");
+            coverLayer.transform.SetParent(root.transform, false);
+            var overlays = coverLayer.AddComponent<Tilemap>();
+            overlays.tileAnchor = new Vector3(0.5f, 0.5f, 0f);
+            var coverRenderer = coverLayer.AddComponent<TilemapRenderer>();
+            coverRenderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
+            coverRenderer.sortingOrder = 1;
+
             var authoring = root.AddComponent<LevelAuthoring>();
             authoring.tiles = LevelTileSource.Tilemap;
             authoring.includeJsonProps = false;
             authoring.tilemap = map;
+            authoring.overlays = overlays;
             authoring.roomName = "Painted Map";
             StampShell(map, 13, 11);
+
+            var spawn = new GameObject("Spawn");
+            spawn.transform.SetParent(root.transform, false);
+            spawn.transform.position = WorldGrid.Center(2, 5);
+            authoring.spawnPoint = spawn.transform;
 
             Undo.RegisterCreatedObjectUndo(root, "Painted Map");
             Selection.activeGameObject = layer;
             EditorGUIUtility.PingObject(layer);
-            Debug.Log("Painted Map created. Window → 2D → Tile Palette, open Rune Palette, and paint onto Tiles.");
+            Debug.Log("Painted Map created. Window → 2D → Tile Palette, open Rune Palette, paint walk cells on Tiles, overlays on Cover.");
+        }
+
+        [InitializeOnLoadMethod]
+        static void AutoEnsureTiles()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    return;
+                }
+
+                var stone = AssetDatabase.LoadAssetAtPath<WorldPaintTile>(FloorFolder + "/Floor-Stone.asset");
+                var palette = AssetDatabase.LoadAssetAtPath<GameObject>(PalettePath);
+                if (stone != null && palette != null)
+                {
+                    return;
+                }
+
+                EnsureTiles();
+            };
         }
 
         [MenuItem("Window/Rune Magic/Create Tile Palette")]
@@ -51,10 +87,11 @@ namespace RuneMagic
             EnsureTiles();
             EditorUtility.DisplayDialog(
                 "Tile Palette",
-                "Tiles are in Assets/Tiles (Floor, Wall, Special).\n\n" +
+                "Tiles are in Assets/Tiles (Floor, Wall, Special, Cover).\n\n" +
                 "Window → 2D → Tile Palette → Open Palette → Rune Palette.\n" +
-                "Select the Tiles object in the scene and paint.\n" +
-                "Click a tile asset to change its material, kind, or sprite.",
+                "Select the Tiles object in the scene and paint walk cells.\n" +
+                "Select Cover to paint ice / fire / lightning / aura.\n" +
+                "Click a tile asset to change its material, kind, cover, or sprite.",
                 "OK");
         }
 
@@ -64,6 +101,7 @@ namespace RuneMagic
             EnsureFolder(FloorFolder);
             EnsureFolder(WallFolder);
             EnsureFolder(SpecialFolder);
+            EnsureFolder(CoverFolder);
             EnsureFolder(PaletteFolder);
             TileAtlas.Ensure();
 
@@ -85,6 +123,16 @@ namespace RuneMagic
             painted.Add(WriteTile(SpecialFolder, "Pit", MaterialId.Void, TileKind.Pit));
             painted.Add(WriteTile(SpecialFolder, "Door", MaterialId.Stone, TileKind.Door));
             painted.Add(WriteTile(SpecialFolder, "Bridge", MaterialId.Stone, TileKind.Bridge));
+            painted.Add(WriteTile(CoverFolder, "Cover-Ice", MaterialId.Stone, TileKind.Floor, TileCover.Ice));
+            painted.Add(WriteTile(CoverFolder, "Cover-Fire", MaterialId.Dirt, TileKind.Floor, TileCover.Fire));
+            painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.Floor, TileCover.Lightning));
+            painted.Add(WriteTile(CoverFolder, "Cover-Water", MaterialId.Stone, TileKind.Floor, TileCover.Water));
+            painted.Add(WriteTile(CoverFolder, "Cover-Vine", MaterialId.Dirt, TileKind.Floor, TileCover.Vine));
+            painted.Add(WriteTile(CoverFolder, "Cover-Cracks", MaterialId.Stone, TileKind.Floor, TileCover.Cracks));
+            painted.Add(WriteTile(CoverFolder, "Cover-Seal", MaterialId.Stone, TileKind.Floor, TileCover.Seal));
+            painted.Add(WriteTile(CoverFolder, "Aura-Fire", MaterialId.Stone, TileKind.Floor, TileCover.None, TileAura.Fire));
+            painted.Add(WriteTile(CoverFolder, "Aura-Miasma", MaterialId.Stone, TileKind.Floor, TileCover.None, TileAura.Miasma));
+            painted.Add(WriteTile(CoverFolder, "Aura-Fog", MaterialId.Stone, TileKind.Floor, TileCover.None, TileAura.Fog));
             WritePalette(painted);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -109,7 +157,13 @@ namespace RuneMagic
             }
         }
 
-        static WorldPaintTile WriteTile(string folder, string name, MaterialId material, TileKind kind)
+        static WorldPaintTile WriteTile(
+            string folder,
+            string name,
+            MaterialId material,
+            TileKind kind,
+            TileCover cover = TileCover.None,
+            TileAura aura = TileAura.None)
         {
             var path = folder + "/" + name + ".asset";
             var tile = AssetDatabase.LoadAssetAtPath<WorldPaintTile>(path);
@@ -121,6 +175,8 @@ namespace RuneMagic
 
             tile.material = material;
             tile.kind = kind;
+            tile.cover = cover;
+            tile.aura = aura;
             if (tile.sprite == null)
             {
                 tile.sprite = tile.PreviewSprite();
@@ -198,7 +254,7 @@ namespace RuneMagic
             }
 
             EditorGUILayout.HelpBox(
-                "Paint this from Window → 2D → Tile Palette. Material and kind are what Play bakes into the grid. Drag a sliced sprite onto Sprite to replace the atlas look.",
+                "Paint this from Window → 2D → Tile Palette. Material and kind are the walk cell. Cover and aura are overlays — paint those on the Cover Tilemap so they sit on top of an existing floor. Drag a sliced sprite onto Sprite to replace the atlas look.",
                 MessageType.Info);
             if (GUILayout.Button("Refresh sprite from atlas"))
             {

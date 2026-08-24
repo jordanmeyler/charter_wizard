@@ -1,9 +1,40 @@
 # Tiles
 
-The live dungeon art is the sprite sheets you added under
+Maps are Unity Tilemaps. You paint them in the Scene view. Play bakes
+each `WorldPaintTile` into a live `WorldTile`.
+
+## Authoring
+
+1. Open `Assets/Scenes/Main.unity`. The scene already has **Map** (a
+   Grid), **Tiles**, **Cover**, and **Spawn**.
+2. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
+   If the palette is missing, `Window → Rune Magic → Create Tile Palette`.
+3. Select the **Tiles** object and paint walk cells (stone floor, water,
+   walls, pits, doors).
+4. Select **Cover** and paint ice / fire / lightning / vine / aura over
+   those cells. Overlay brushes do not replace the walk family.
+5. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
+   **cover**, and **aura**. Duplicate an asset to make a new brush.
+   `Create → Rune Magic → Map Tile` also works.
+6. Place objects with `GameObject → Rune Magic → Item / Decor / Mite / Torch…`
+   and set catalog id, material, formula, or sprite on the Inspector.
+
+Play hides the editor Tilemap renderers and builds the live grid from
+what you painted. JSON under `Assets/Resources/Maps/` is leftover and
+is not loaded unless Level Authoring is set to **Named Map**.
+
+| Folder | Brushes |
+|---|---|
+| `Assets/Tiles/Floor` | One floor per `MaterialId` (Stone, Dirt, Water, Ice…) |
+| `Assets/Tiles/Wall` | One wall per material |
+| `Assets/Tiles/Special` | Pit, Door, Bridge |
+| `Assets/Tiles/Cover` | Ice / fire / lightning / vine overlays and fire / miasma / fog auras |
+
+The live dungeon art is the sprite sheets under
 `Assets/Resources/Sprites/`. `tiles.json` names every slice the game
 uses. `TileAtlas` cuts those pixels at runtime (Unity's y-axis starts
-at the bottom of the PNG).
+at the bottom of the PNG). Leave a tile's Sprite blank to use the atlas
+slice for that material.
 
 The old painted `dungeon-atlas.png` is unused now.
 
@@ -88,7 +119,8 @@ Freeze / burn / charge / flood swap the covering, not the walk family.
 | `bench` / `chair` / `table` | Furniture |
 | `water-fountain` | Glowing water altar |
 
-Map stamps: `{ "type": "decor", "sprite": "torch", "blocking": false }`.
+Place decor with `GameObject → Rune Magic → Decor` and set the sprite id
+(`torch`, `brazier`, `pillar`…). The JSON stamp form is leftover.
 
 ## Adding a tile later
 
