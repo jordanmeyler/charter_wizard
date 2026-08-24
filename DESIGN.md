@@ -88,7 +88,7 @@ The four roots are a square. Adjacent sides have a winner. Opposites do not touc
 | **Water ward** | Water · Salt · Sulphur | Fire — fireballs, burning floors | Earth / a physical blow |
 | **Flame ward** | Fire · Salt · Sulphur | Earth — hurled rest, roots | Air |
 | **Stoneskin** | Earth · Salt · Sulphur | Air, and **physical** blows (arrows, a golem slam) | Fire — hunger sent still finds you |
-| **Wind ward** | Air · Salt · Sulphur | Water — ice, soak — and **poison fog / miasma** | Fire |
+| **Wind ward** | Air · Salt · Sulphur | Water — ice, soak — and **miasma** | Fire |
 
 Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. A chip over the body names what holds; the HUD repeats it for the adept. Fire-nature will not burn; ice will not freeze; earth shrugs off elemental soak and heat; mind takes stun, sleep, and fear harder. Frozen / stunned / sleeping stop action and movement. Rooted stops movement.
 

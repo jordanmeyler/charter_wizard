@@ -67,6 +67,7 @@ namespace RuneMagic
                     return Essence.Air;
                 case "poison":
                 case "blight":
+                case "miasma":
                     return Essence.Poison;
                 case "wood":
                 case "plant":

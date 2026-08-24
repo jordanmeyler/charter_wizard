@@ -148,6 +148,7 @@ namespace RuneMagic
                 case "arrow-volley":
                     return "rest cut to fly.";
                 case "poison-fog":
+                case "miasma":
                     return "foul breath hanging still.";
                 case "body-gap":
                 case "chasm":
