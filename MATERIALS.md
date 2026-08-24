@@ -18,7 +18,7 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 ## How a material speaks
 
 1. **Signature** is the chain the room writes when you scan across that substance.
-2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Grove…). Layer runes alone are not enough — timber is Water · Earth · Salt · Plant, not “Earth.”
+2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Plant…). Layer runes alone are not enough — timber is Water · Earth · Salt · Plant, not “Earth.” Grove is a living-plant spell, not a manifestation rune.
 3. Contiguous runs of the same material collapse to one clause so a floor of ash is one Ash sentence, not eighty copies.
 4. **Void** / pits tear the weave. They contribute a gap, not a rune.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
@@ -41,7 +41,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Earth · Salt · Plant | Plant | Wick Chapel, chapel hall |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
-| **Moss** | Water · Earth · Salt · Plant · Life · Grove | Grove | Chapel corners |
+| **Moss** | Water · Earth · Salt · Plant · Life | Plant | Chapel corners |
 | **Void** | — (tear) | — | The Drop pits |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
 | **Scoured** | Air · Earth · Dust | Dust | Storm Cell wind-cut stone |
@@ -65,7 +65,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Glass** | Sand · Flame · Earth · Glass | Glass | Grains, hunger, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
 | **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched. Melt, Shatter, and hunger's thaw will not take it |
-| **Grove** | Water · Earth · Salt · Plant · Life · Grove | Grove | Living plant as a mass |
+| **Grove** | Water · Earth · Salt · Plant · Life | Plant | Living plant as a mass. Grove is the spell, not a rune. |
 | **Plant** | Water · Earth · Salt · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud · Earth · Rain | Rain | The veil drawn down |

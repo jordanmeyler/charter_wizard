@@ -56,8 +56,7 @@ namespace RuneMagic
             Add(RuneId.Ice, RuneId.Stone, RuneId.Glacier, BlendKind.Stable, "Still water given stone. Ice · Stone → Glacier.");
             Add(RuneId.Steam, RuneId.Metal, RuneId.Acid, BlendKind.Violent, "Steam forced through Metal → Acid.");
             Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Hunger leaves a vegetable body as Ash.");
-            Add(RuneId.Plant, RuneId.Vita, RuneId.Forest, BlendKind.Stable, "The vegetable body waking. Plant · Life → Grove.");
-            Add(RuneId.Plant, RuneId.Mors, RuneId.Blight, BlendKind.Stable, "Death-work. A living plant, then the grave. Grove · Death → Blight.");
+            Add(RuneId.Plant, RuneId.Mors, RuneId.Blight, BlendKind.Stable, "Death-work. A living plant, then the grave. Plant · Life · Death → Blight.");
         }
 
         public static IReadOnlyList<(RuneId Left, RuneId Right, BlendResult Result)> All => Canonical;

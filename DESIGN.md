@@ -62,7 +62,7 @@ A chain is a sentence, left to right. Two roots meeting become a third:
 | Fire · Water | **Steam** | Hunger forced through yield. |
 | Air · Earth | **Dust** | Breath forced through rest. |
 
-Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**, **Steam · Metal → Acid**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest — Body, not Death). Death is not how you freeze water. Plant is **Water · Earth · Salt**; Grove is Plant · Life. **Grotto** is the cave-spell (`Plant · Dark`), not a rune. The Grimoire lists every birth: elemental joins in one page, joins that also take Body / Spirit / Life / Death in the next.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**, **Steam · Metal → Acid**. Ice is **Water · Salt · Earth** (yield given a body and asked to rest — Body, not Death). Death is not how you freeze water. Plant is **Water · Earth · Salt**. **Grove** is the living-plant spell (`Plant · Life`), not an elemental rune. The Grimoire lists every birth: elemental joins in one page, joins that also take Body / Spirit / Life / Death in the next.
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 
@@ -242,7 +242,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Push. **67** Lightning strike. **68** Charm. **69** Swamp. **70** Witchfire. **71** Grotto (`Plant · Dark`) — a spell, not a rune; Plant stays the vegetable-body join. Wards and mind ailments are **concentration**: another sentence that reuses any of those marks lets them go. Elemental work (walls, fire, ice) persists. Charmed bodies walk to nearby artifacts, carry them, and fight what you have marked.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Push. **67** Lightning strike. **68** Charm. **69** Swamp. **70** Witchfire. **71** Grove (`Plant · Life`) — a spell, not an elemental rune; Plant stays the vegetable-body join. Wards and mind ailments are **concentration**: another sentence that reuses any of those marks lets them go. Elemental work (walls, fire, ice) persists. Charmed bodies walk to nearby artifacts, carry them, and fight what you have marked.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

@@ -135,9 +135,9 @@ namespace RuneMagic
                 new RuneDef(RuneId.Crystal, RuneFamily.Material, "Crystal", "Cr", "Stone grown with Water."),
                 new RuneDef(RuneId.Glacier, RuneFamily.Material, "Glacier", "Gc", "Ice given Stone. Still water that will not thaw easily."),
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
-                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "Waking plant sent. Grove · Mercury."),
+                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "Waking plant sent. Plant · Life · Mercury."),
                 new RuneDef(RuneId.Forest, RuneFamily.Material, "Forest", "Fr", "Waking plant asked to rest as a mass."),
-                new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "A living plant, then the grave. Grove · Death. Death-work."),
+                new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "A living plant, then the grave. Plant · Life · Death. Death-work."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
 
                 new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body. A standing manifestation — walls, pillars, and the flesh of a creature."),
@@ -162,7 +162,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn."),
 
                 new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Witchfire. Fire of the mind, made fire. Fire · Sulphur · Fire."),
-                new RuneDef(RuneId.Grove, RuneFamily.Material, "Grove", "Gv", "The vegetable body marked living. Plant · Life."),
+                new RuneDef(RuneId.Grove, RuneFamily.Material, "Grove", "Gv", "A living thicket. This is a spell (Plant · Life), not a wrought rune."),
                 new RuneDef(RuneId.Wind, RuneFamily.Material, "Wind", "Wn", "Breath going. Air · Mercury."),
                 new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),
                 new RuneDef(RuneId.Ember, RuneFamily.Material, "Ember", "Em", "Hunger after the grave takes its motion. Fire · Death."),
@@ -270,13 +270,16 @@ namespace RuneMagic
                     id = RuneId.Umbra;
                     return true;
                 case "grove":
-                case "forest":
-                    id = RuneId.Grove;
-                    return true;
+                    return false;
             }
 
             foreach (var def in ById.Values)
             {
+                if (def.Id == RuneId.Grove)
+                {
+                    continue;
+                }
+
                 if (string.Equals(def.Name, name, System.StringComparison.OrdinalIgnoreCase))
                 {
                     id = def.Id;
