@@ -23,7 +23,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Water the plants across the gap (columns write Sprout); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |
-| **The Cistern** | A drowning channel | Ice-pillar / Ice-wall / Ice-spear freezes the water; columns write Water · Earth · Salt | Water drowns. Ice is a floor. |
+| **The Cistern** | A drowning channel | Ice-pillar / Ice-wall / Ice-spear freezes the water; columns write Ice · Salt · Earth | Water drowns. Ice is a floor. |
 | **The Seed of Charge** | A charge veil, a live rod | Lightning or Spark · Mercury drops the veil; columns write Fire · Air · Spark | The join is a rune when it already stands. |
 | **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. Wall the ember adept and they stand a flame-pillar; the floor hungers first. |
 | **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
@@ -35,11 +35,11 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | Design rule | In this slice |
 | --- | --- |
 | Casting is perception, not position | Runes live on their own layer, visible only in the Charter. The weave is what is on screen, alternating rows, scrolled sideways. You cannot draw a rune that is off-camera. Click a cell to draw it. |
-| The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Salt · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
+| The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Salt · Earth · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
 | Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
-| Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Earth · Water. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
+| Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Water · Dust. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
 ## Open and play
@@ -141,7 +141,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 ## Not in this slice (on purpose)
 
 - Full material tree, ternary nodes, and `material-codex.html`
-- Gas/oil explosions, and the rest of the later reaction list
+- The rest of the later reaction list. Oil-pillar is the first amateur bomb.
 - Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work
 - A real death / last-rites pass (this slice respawns at the crystal)
 - Passive item-wards and mediums, and the Primordial-gate item

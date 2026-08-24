@@ -52,6 +52,7 @@ namespace RuneMagic
         RuneId[] _castRecipe = System.Array.Empty<RuneId>();
         float _reach = 1.2f;
         float _sight = 8.2f;
+        float _oilBulk;
         float _walk = 2.6f;
         Vector3 _restScale = Vector3.one;
         Vector3 _idleOrigin;
@@ -77,6 +78,7 @@ namespace RuneMagic
             _baseTrigger = _hit != null && _hit.isTrigger;
             _anim = GetComponent<SpriteAnim>() ?? SpriteAnim.On(gameObject, _sprite);
             _restScale = transform.localScale;
+            _oilBulk = 0f;
             _idleOrigin = transform.position;
             _castRecipe = RecipeOf(kind, castRecipe);
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
@@ -99,6 +101,29 @@ namespace RuneMagic
             {
                 CastSeconds = Mathf.Max(0.45f, castSeconds <= 2.01f ? 1.15f : castSeconds);
             }
+        }
+
+        public void FeedOil()
+        {
+            if (_status == null || _status.Nature != CreatureNature.Fire)
+            {
+                return;
+            }
+
+            _oilBulk = Mathf.Min(1.6f, _oilBulk + 0.35f);
+            _restScale = Vector3.one * (1f + _oilBulk * 0.45f);
+            _reach = 1.25f + _oilBulk * 0.55f;
+            transform.localScale = _restScale;
+        }
+
+        float SightNow()
+        {
+            if (_grid != null && WorldPhysics.AuraAt(_grid, transform.position, out var kind) && kind == VeilKind.Darkness)
+            {
+                return 0.35f;
+            }
+
+            return _sight;
         }
 
         static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
@@ -294,7 +319,7 @@ namespace RuneMagic
         ICarryable NearestPrize()
         {
             ICarryable best = null;
-            var bestDistance = _sight;
+            var bestDistance = SightNow();
             Consider(FindObjectsByType<WorldItem>(FindObjectsSortMode.None), ref best, ref bestDistance);
             Consider(FindObjectsByType<FreeCharm>(FindObjectsSortMode.None), ref best, ref bestDistance);
             return best;
@@ -404,7 +429,7 @@ namespace RuneMagic
         Transform NearestLock(bool includeCharmed)
         {
             EncounterLock best = null;
-            var bestDistance = _sight;
+            var bestDistance = SightNow();
             var found = FindObjectsByType<EncounterLock>(FindObjectsSortMode.None);
             for (var i = 0; i < found.Length; i++)
             {
@@ -498,7 +523,7 @@ namespace RuneMagic
         {
             if (!_casting)
             {
-                if (distance > _sight)
+                if (distance > SightNow())
                 {
                     return;
                 }

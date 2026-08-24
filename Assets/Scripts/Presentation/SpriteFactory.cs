@@ -1453,6 +1453,26 @@ namespace RuneMagic
                     canvas.FillCircle(rng.Range(16, 24), rng.Range(16, 24), 4, Color.Lerp(tone, Color.black, 0.15f));
                     canvas.Line(16, 8, 16, 22, new Color(0.18f, 0.32f, 0.1f, 0.7f));
                     break;
+                case MaterialPaint.Oil:
+                    PaintCobble(canvas, tone, rng);
+                    canvas.SoftCircle(rng.Range(8, 22), rng.Range(8, 22), 7, new Color(0.08f, 0.06f, 0.03f, 0.55f));
+                    canvas.SoftCircle(18, 14, 4, new Color(0.35f, 0.28f, 0.08f, 0.25f));
+                    break;
+                case MaterialPaint.Miasma:
+                    PaintCobble(canvas, tone, rng);
+                    canvas.SoftCircle(12, 14, 8, new Color(0.42f, 0.72f, 0.12f, 0.35f));
+                    canvas.SoftCircle(20, 18, 6, new Color(0.28f, 0.48f, 0.08f, 0.3f));
+                    break;
+                case MaterialPaint.Wardstone:
+                    PaintCobble(canvas, tone, rng);
+                    PaintVein(canvas, new Color(0.72f, 0.55f, 0.95f, 0.4f), rng);
+                    canvas.SoftCircle(16, 16, 5, new Color(0.55f, 0.42f, 0.82f, 0.22f));
+                    break;
+                case MaterialPaint.Aegis:
+                    PaintCobble(canvas, tone, rng);
+                    PaintVein(canvas, new Color(0.95f, 0.9f, 0.45f, 0.5f), rng);
+                    canvas.SoftCircle(16, 12, 4, new Color(1f, 0.95f, 0.55f, 0.28f));
+                    break;
                 case MaterialPaint.Void:
                     canvas.Clear(tone);
                     canvas.FillCircle(16, 16, 10, Color.black);

@@ -442,12 +442,27 @@ namespace RuneMagic
                     canvas.Fill(8, 36, 32, 5, ink);
                     break;
                 case RuneId.Blight:
+                case RuneId.Poison:
                     canvas.ThickLine(c, 40, c, 20, ink);
                     canvas.ThickLine(c, 24, 12, 14, ink);
                     canvas.ThickLine(c, 24, 36, 18, ink);
                     canvas.ThickLine(12, 14, 10, 20, ink);
                     canvas.Circle(c, 12, 3, ink);
                     canvas.ThickLine(16, 16, 32, 32, ink);
+                    break;
+                case RuneId.Oil:
+                    canvas.FillCircle(c, 28, 10, ink);
+                    canvas.ThickLine(c, 18, c, 8, ink);
+                    canvas.ThickLine(16, 36, 32, 36, ink);
+                    canvas.FillCircle(18, 14, 2, ink);
+                    break;
+                case RuneId.Miasma:
+                    canvas.Circle(16, 18, 7, ink);
+                    canvas.Circle(c, 14, 8, ink);
+                    canvas.Circle(32, 18, 7, ink);
+                    canvas.FillCircle(18, 34, 2, ink);
+                    canvas.FillCircle(28, 38, 2, ink);
+                    canvas.FillCircle(34, 32, 2, ink);
                     break;
                 case RuneId.Hot:
                     canvas.ThickLine(14, 40, 16, 18, ink);

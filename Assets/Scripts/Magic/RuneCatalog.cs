@@ -74,7 +74,10 @@ namespace RuneMagic
         Current,
         Ember,
         Shade,
-        Thunder
+        Thunder,
+        Oil,
+        Miasma,
+        Poison
     }
 
     public readonly struct RuneDef
@@ -113,32 +116,28 @@ namespace RuneMagic
                 new RuneDef(RuneId.Water, RuneFamily.Material, "Water", "W", "Yield. Mercy. That which becomes what holds it."),
                 new RuneDef(RuneId.Spark, RuneFamily.Material, "Spark", "Sp", "Hunger given breath. Fire · Air. A seed of charge."),
                 new RuneDef(RuneId.Cloud, RuneFamily.Material, "Cloud", "Cl", "Breath holding yield. Air · Water. A hanging veil."),
-                new RuneDef(RuneId.Mud, RuneFamily.Material, "Mud", "Md", "Rest meeting yield. Earth · Water. Soft ground."),
+                new RuneDef(RuneId.Mud, RuneFamily.Material, "Mud", "Md", "Yield meeting grit. Water · Dust. Soft ground."),
                 new RuneDef(RuneId.Lava, RuneFamily.Material, "Lava", "Lv", "Hunger meeting rest. Fire · Earth. Earth that cannot stay earth."),
                 new RuneDef(RuneId.Steam, RuneFamily.Material, "Steam", "St", "Hunger forced through yield. Fire · Water. Water that cannot stay water."),
-                new RuneDef(RuneId.Dust, RuneFamily.Material, "Dust", "Ds", "Breath forced through rest. Air · Earth. Rest that has lost its weight."),
-                new RuneDef(RuneId.Storm, RuneFamily.Material, "Storm", "Sr", "The seed inside the hanging veil. Spark · Cloud."),
+                new RuneDef(RuneId.Dust, RuneFamily.Material, "Dust", "Ds", "Breath forced through rest. Air · Earth. Rest that has lost its weight. Sand and mud start here."),
                 new RuneDef(RuneId.Ice, RuneFamily.Material, "Ice", "Ic", "Yield meeting rest. Water · Earth. Hard water. It will thaw."),
                 new RuneDef(RuneId.Stone, RuneFamily.Material, "Stone", "Sn", "Rest given a body. Earth · Salt."),
                 new RuneDef(RuneId.Glass, RuneFamily.Material, "Glass", "Gl", "Grains, a fire-body, asked to rest. Sand · Flame · Earth."),
                 new RuneDef(RuneId.Sand, RuneFamily.Material, "Sand", "Sd", "Grit given a body. Dust · Salt. Also mud given breath until it dries."),
-                new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Yield and rest given a vegetable body. Water · Earth · Salt. Not living until Life."),
+                new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Yield given a body, then rest. Water · Salt · Earth. Fiber, a seed. Not living until Life."),
                 new RuneDef(RuneId.Lightning, RuneFamily.Material, "Lightning", "Ln", "The seed stretched through more breath. Spark · Air. A path, not a body."),
                 new RuneDef(RuneId.Inferno, RuneFamily.Material, "Inferno", "In", "A fire-body taught to travel and keep eating."),
-                new RuneDef(RuneId.Plasma, RuneFamily.Material, "Plasma", "Pm", "Inferno joined to Spark. Reserved."),
-                new RuneDef(RuneId.Rain, RuneFamily.Material, "Rain", "Rn", "The hanging veil drawn down. Cloud · Earth."),
-                new RuneDef(RuneId.Snow, RuneFamily.Material, "Snow", "Sw", "The hanging veil given ice’s story. Cloud · Ice."),
-                new RuneDef(RuneId.Blizzard, RuneFamily.Material, "Blizzard", "Bz", "Wind driving Snow."),
-                new RuneDef(RuneId.Sandstorm, RuneFamily.Material, "Sandstorm", "Ss", "Wind driving Dust."),
+                new RuneDef(RuneId.Plasma, RuneFamily.Material, "Plasma", "Pm", "Inferno joined to Spark. Eats ordinary matter. Obsidian and warded stone refuse it."),
                 new RuneDef(RuneId.Obsidian, RuneFamily.Material, "Obsidian", "Ob", "Hungry earth quenched. Melt and Shatter will not take it. Lava · Water · Salt."),
                 new RuneDef(RuneId.Metal, RuneFamily.Material, "Metal", "Mt", "Hungry earth given more rest, then stilled. Lava · Earth. The spark’s road."),
                 new RuneDef(RuneId.Crystal, RuneFamily.Material, "Crystal", "Cr", "Stone grown with Water."),
                 new RuneDef(RuneId.Glacier, RuneFamily.Material, "Glacier", "Gc", "Ice given Stone. Still water that will not thaw easily."),
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
-                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "Waking plant sent. Plant · Life · Mercury."),
-                new RuneDef(RuneId.Forest, RuneFamily.Material, "Forest", "Fr", "Waking plant asked to rest as a mass."),
-                new RuneDef(RuneId.Blight, RuneFamily.Material, "Blight", "Bl", "A living plant, then the grave. Plant · Life · Death. Death-work."),
+                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "The vegetable body sent. Plant · Mercury."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
+                new RuneDef(RuneId.Oil, RuneFamily.Material, "Oil", "Ol", "A vegetable body pressed with hunger and rest. Plant · Fire · Earth. It holds flame."),
+                new RuneDef(RuneId.Miasma, RuneFamily.Material, "Miasma", "Mi", "The hanging veil forced through acid. Cloud · Acid. Foul breath."),
+                new RuneDef(RuneId.Poison, RuneFamily.Material, "Poison", "Po", "The vegetable body, then the grave. Plant · Death."),
 
                 new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body. A standing manifestation — walls, pillars, and the flesh of a creature."),
                 new RuneDef(RuneId.Mercury, RuneFamily.Aspect, "Mercury", "Hg", "Soul / going. A path opening. The adept’s soul is always in the field."),
@@ -162,12 +161,10 @@ namespace RuneMagic
                 new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn."),
 
                 new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Witchfire. Fire of the mind, made fire. Fire · Sulphur · Fire."),
-                new RuneDef(RuneId.Grove, RuneFamily.Material, "Grove", "Gv", "A living thicket. This is a spell (Plant · Life), not a wrought rune."),
                 new RuneDef(RuneId.Wind, RuneFamily.Material, "Wind", "Wn", "Breath going. Air · Mercury."),
                 new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),
                 new RuneDef(RuneId.Ember, RuneFamily.Material, "Ember", "Em", "Hunger after the grave takes its motion. Fire · Death."),
-                new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt."),
-                new RuneDef(RuneId.Thunder, RuneFamily.Material, "Thunder", "Th", "The arc meeting rest. Lightning · Earth.")
+                new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt.")
             };
 
             ById = new System.Collections.Generic.Dictionary<RuneId, RuneDef>(defs.Length);
@@ -270,16 +267,17 @@ namespace RuneMagic
                     id = RuneId.Umbra;
                     return true;
                 case "grove":
-                    return false;
+                case "forest":
+                    id = RuneId.Plant;
+                    return true;
+                case "poison":
+                case "blight":
+                    id = RuneId.Poison;
+                    return true;
             }
 
             foreach (var def in ById.Values)
             {
-                if (def.Id == RuneId.Grove)
-                {
-                    continue;
-                }
-
                 if (string.Equals(def.Name, name, System.StringComparison.OrdinalIgnoreCase))
                 {
                     id = def.Id;

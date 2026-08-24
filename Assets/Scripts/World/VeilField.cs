@@ -46,7 +46,10 @@ namespace RuneMagic
                 return existing;
             }
 
-            var host = new GameObject(kind == VeilKind.Poison ? "PoisonMist" : "FogVeil");
+            var host = new GameObject(
+                kind == VeilKind.Poison ? "PoisonMist"
+                : kind == VeilKind.Darkness ? "DarknessVeil"
+                : "FogVeil");
             host.transform.SetParent(grid.transform, false);
             host.transform.position = WorldGrid.Center(origin.x, origin.y);
             var field = host.AddComponent<VeilField>();
@@ -204,9 +207,17 @@ namespace RuneMagic
 
         public static Color Wash(VeilKind kind)
         {
-            return kind == VeilKind.Poison
-                ? new Color(0.07f, 0.1f, 0.04f)
-                : new Color(0.16f, 0.17f, 0.2f);
+            if (kind == VeilKind.Poison)
+            {
+                return new Color(0.07f, 0.1f, 0.04f);
+            }
+
+            if (kind == VeilKind.Darkness)
+            {
+                return new Color(0.02f, 0.02f, 0.03f);
+            }
+
+            return new Color(0.16f, 0.17f, 0.2f);
         }
 
         static VeilField FindNear(WorldGrid grid, Vector2Int origin, int radius)
@@ -294,7 +305,23 @@ namespace RuneMagic
                 Destroy(transform.GetChild(i).gameObject);
             }
 
-            var look = ElementLook.Of(Kind == VeilKind.Poison ? ElementFamily.Poison : ElementFamily.Fog);
+            var look = Kind == VeilKind.Poison
+                ? ElementLook.Of(ElementFamily.Poison)
+                : Kind == VeilKind.Darkness
+                    ? ElementLook.Of(ElementFamily.Dark)
+                    : ElementLook.Of(ElementFamily.Fog);
+            if (Kind == VeilKind.Darkness)
+            {
+                look = new ElementLook(
+                    ElementFamily.Dark,
+                    new Color(0.04f, 0.03f, 0.05f),
+                    new Color(0.02f, 0.02f, 0.03f, 0.85f),
+                    new Color(0.02f, 0.02f, 0.03f, 0.92f),
+                    false,
+                    false,
+                    0f);
+            }
+
             ElementFx.VeilCloud(transform, look, Radius + 0.4f);
 
             foreach (var cell in _cells)

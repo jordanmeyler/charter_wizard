@@ -26,7 +26,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
 | An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Dirt toss). A body of rest sent is **Earth · Salt · Mercury** (Hurled stone). |
-| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Ice-pillar) |
+| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Water-pillar), **Water · Earth · Salt · Earth** (Ice-pillar) |
 | A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
@@ -50,11 +50,13 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
-| 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
+| 69 | **Swamp** | Water · Dust · Mercury · Salt | A watery swamp from your feet. Yield meeting grit, going, then stood. |
 | 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
-| 71 | **Grove** | Water · Earth · Salt · Life | The vegetable body marked living. Plant is the rune; Grove is the spell. |
-| 72 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
-| 73 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
+| 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
+| 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
+| 82 | **Forest** | Water · Salt · Earth · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
+| 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
+| 84 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
 
 ---
 
@@ -147,10 +149,10 @@ The aspects taught *how a sentence stands or goes.* This stage is more open: key
 Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off it. The north hall leads to Door III.
 
 ### Grove Court · "The Living Thicket" — *grow, then burn*
-A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Earth · Salt · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
+A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Salt · Earth · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
 
 ### Cistern · "The Cistern" — *water drowns; ice is a floor*
-A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Water · Earth · Salt** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
+A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Ice · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
 
 ### Spark Cell · "The Seed of Charge" — *the join as a rune*
 Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air · Mercury. A **charge veil** holds the **spark stone**. Lightning unmakes the veil. The live rod still waits in the plate.

@@ -24,14 +24,40 @@ namespace RuneMagic
                 return Heat.None;
             }
 
-            return SpellCodex.TryGet(spell, out var entry)
-                ? HeatOf(entry.RecipeRunes)
-                : Heat.None;
+            if (!SpellCodex.TryGet(spell, out var entry))
+            {
+                return Heat.None;
+            }
+
+            // Unfolded Oil recipes still contain Fire. The via mark is
+            // the fuel rune; without it, standing a wick would be hunger.
+            if (entry.ViaRunes.Count == 0)
+            {
+                return HeatOf(entry.RecipeRunes);
+            }
+
+            var marks = new List<RuneId>(entry.RecipeRunes.Count + entry.ViaRunes.Count);
+            for (var i = 0; i < entry.RecipeRunes.Count; i++)
+            {
+                marks.Add(entry.RecipeRunes[i]);
+            }
+
+            for (var i = 0; i < entry.ViaRunes.Count; i++)
+            {
+                marks.Add(entry.ViaRunes[i]);
+            }
+
+            return HeatOf(marks);
         }
 
         public static Heat HeatOf(IReadOnlyList<RuneId> recipe)
         {
             if (recipe == null || recipe.Count == 0)
+            {
+                return Heat.None;
+            }
+
+            if (Has(recipe, RuneId.Oil) && !Has(recipe, RuneId.Plasma) && !Has(recipe, RuneId.Flame) && !Has(recipe, RuneId.Inferno))
             {
                 return Heat.None;
             }
@@ -128,7 +154,22 @@ namespace RuneMagic
         /// or water eating rest. Use it when a wall must stay a wall.
         /// </summary>
         public static bool ResistsMagic(MaterialId material) =>
-            material == MaterialId.Obsidian;
+            material == MaterialId.Obsidian
+            || material == MaterialId.Wardstone
+            || material == MaterialId.Aegis;
+
+        public static bool IsPlasmaWork(SpellId spell) =>
+            spell == SpellId.Plasma;
+
+        public static bool IsAnnihilable(MaterialId material)
+        {
+            if (material == MaterialId.None || material == MaterialId.Void || ResistsMagic(material))
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         public static bool Melts(SpellId spell, MaterialId material)
         {
@@ -186,9 +227,9 @@ namespace RuneMagic
                     return MaterialId.Stone;
                 }
 
-                if (rune == RuneId.Ice || rune == RuneId.Snow)
+                if (rune == RuneId.Ice)
                 {
-                    return rune == RuneId.Snow ? MaterialId.Snow : MaterialId.Ice;
+                    return MaterialId.Ice;
                 }
 
                 if (rune == RuneId.Mud)
@@ -208,7 +249,7 @@ namespace RuneMagic
                 hasVita |= rune == RuneId.Vita;
             }
 
-            if (hasWater && hasEarth && !hasPlant && !(hasVita && hasSalt))
+            if (hasWater && hasEarth && !hasSalt && !hasPlant)
             {
                 return hasStone ? MaterialId.Glacier : MaterialId.Ice;
             }
@@ -284,9 +325,17 @@ namespace RuneMagic
 
         public static string ResistNote(MaterialId material)
         {
-            return material == MaterialId.Obsidian
-                ? "The black glass will not take the work. Obsidian was already quenched."
-                : "This will not take the work.";
+            switch (material)
+            {
+                case MaterialId.Obsidian:
+                    return "The black glass will not take the work. Obsidian was already quenched.";
+                case MaterialId.Wardstone:
+                    return "The mind-bound stone will not take the work.";
+                case MaterialId.Aegis:
+                    return "The shown steel will not take the work.";
+                default:
+                    return "This will not take the work.";
+            }
         }
 
         public static void Audit(List<string> broken)
@@ -312,9 +361,11 @@ namespace RuneMagic
 
             if (HeatOf(SpellId.Rage) != Heat.None
                 || HeatOf(SpellId.Frenzy) != Heat.None
-                || HeatOf(SpellId.Gust) != Heat.None)
+                || HeatOf(SpellId.Gust) != Heat.None
+                || HeatOf(SpellId.OilShot) != Heat.None
+                || HeatOf(SpellId.OilPillar) != Heat.None)
             {
-                broken.Add("Mind-fire and breath must not count as heat");
+                broken.Add("Mind-fire, breath, and oil fuel must not count as heat");
             }
 
             if (!Melts(SpellId.Fireball, MaterialId.Ice)
@@ -342,9 +393,20 @@ namespace RuneMagic
                 || Melts(SpellId.Melt, MaterialId.Obsidian)
                 || Melts(SpellId.Fireball, MaterialId.Obsidian)
                 || !ResistsMagic(MaterialId.Obsidian)
+                || !ResistsMagic(MaterialId.Wardstone)
+                || !ResistsMagic(MaterialId.Aegis)
                 || ResistsMagic(MaterialId.Stone))
             {
-                broken.Add("Melt must bore stone and steel; fireball must not; obsidian must refuse the work");
+                broken.Add("Melt must bore stone and steel; fireball must not; obsidian and warded matter must refuse the work");
+            }
+
+            if (!IsAnnihilable(MaterialId.Stone)
+                || !IsAnnihilable(MaterialId.Ice)
+                || IsAnnihilable(MaterialId.Obsidian)
+                || IsAnnihilable(MaterialId.Wardstone)
+                || IsAnnihilable(MaterialId.Aegis))
+            {
+                broken.Add("Plasma must eat ordinary matter and spare obsidian, wardstone, and aegis");
             }
 
             if (!WorldWork.IsFireWork(SpellId.Fireball)

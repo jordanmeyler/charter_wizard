@@ -154,7 +154,7 @@ namespace RuneMagic
             {
                 case SpellShape.Pillar:
                     return IsAny(material, RuneId.Fire, RuneId.Earth, RuneId.Water, RuneId.Ice,
-                        RuneId.Stone, RuneId.Plant, RuneId.Mud, RuneId.Lava, RuneId.Spark);
+                        RuneId.Stone, RuneId.Plant, RuneId.Mud, RuneId.Lava, RuneId.Spark, RuneId.Oil);
                 case SpellShape.Spread:
                     return IsAny(material, RuneId.Fire, RuneId.Water, RuneId.Spark, RuneId.Plant, RuneId.Mud);
                 case SpellShape.Remote:

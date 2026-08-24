@@ -58,16 +58,15 @@ A chain is a sentence, left to right. Two roots meeting become a third:
 | Fire · Air | **Spark** | Hunger given breath. A seed of charge. |
 | Air · Water | **Cloud** | Breath holding yield. A hanging veil. |
 | Water · Earth | **Ice** | Yield meeting rest. Hard water. |
-| Earth · Water | **Mud** | Rest meeting yield. Soft ground. |
 | Fire · Earth | **Lava** | Hunger meeting rest. |
 | Fire · Water | **Steam** | Hunger forced through yield. |
-| Air · Earth | **Dust** | Breath forced through rest. |
+| Air · Earth | **Dust** | Breath forced through rest. Grit. Sand and mud start here. |
 
-Then the wrought rune combines again: **Spark · Air → Lightning**, **Spark · Cloud → Storm**, **Cloud · Earth → Rain**, **Steam · Metal → Acid**. Ice is **Water · Earth** (yield meeting rest). Mud is the other order: **Earth · Water**. Death is not how you freeze water. Plant is **Water · Earth · Salt** — that hard water given a vegetable body. Writing those three marks without Life is Ice-pillar (`Ice · Salt`). **Grove** is the living-plant spell (`Plant · Life`), not an elemental rune. The Grimoire lists every birth: elemental joins in one page, joins that also take Body / Spirit / Life / Death in the next.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Steam · Metal → Acid**, **Cloud · Acid → Miasma**, **Plant · Fire · Earth → Oil**. Ice is **Water · Earth**. **Water · Earth · Salt** is water-pillar. **Water · Salt · Earth** is Plant. Forest is a spell (Plant · Life · Earth), not a rune. **Grotto** is the cave-spell (`Plant · Dark`), not a rune. Weather is Cloud written as a sentence. The Grimoire lists every birth.
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 
-Full wrought list and the written story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. 51 Time-stop (Life · Death · mind · Dark · Earth · Water, no Light, no Mercury). Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
+Full wrought list and the written story-chains: **[`SPELLS.md`](SPELLS.md)**. 1–40 ordinary (no Death). 41–50 Death / Free. 51 Time-stop (Life · Death · mind · Dark · Water · Earth, no Light, no Mercury). Each combination law is also an **environmental reaction** (section 10) — terrain is made of the same materials.
 
 ---
 
@@ -199,9 +198,9 @@ Marquee reactions (each a puzzle key):
 - **Water + Plant → growth** — wet vegetable bodies climb toward Grove and **across adjacent pits**.
 - **Water drowns** — yield holding a vessel has no floor. Walking a water tile (or a water-filled pit) sends you back. Flight and hop still clear it.
 - **Water work fills a connected pit smaller than 4×4** with drowning water. Larger hollows stay open. Ice is how that water is asked to stand.
-- **Water · Earth → Ice** — hard water that thaws, and **a walkable freeze over a pool**. Ice-pillar (`Water · Earth · Salt` / `Ice · Salt`), Ice-wall, Ice-spear, and Snowfall freeze water tiles. **Flood** is Ice at your feet; **Monsoon** (`Water · Salt · Mercury`) is that flood sent elsewhere. **Heat lives on the recipe** (`MatterLaw`): any fire-bearing sentence melts ice it crosses, including room ice, not only a conjured pillar. Glacier and glass need **witchfire** (`Flame` = Fire · Sulphur · Fire). **Melt** (`Fire · Salt · Mercury`) bores stone and steel masonry — a wall at the map edge opens, and you can tunnel if you know the sentence. **Obsidian** refuses Melt, Shatter, hunger's thaw, and water eating rest. Grave-ice (Water · Salt · Death) is Free/arcane.
+- **Water · Earth → Ice** — hard water that thaws, and **a walkable freeze over a pool**. **Water · Earth · Salt** is a water-pillar. **Water · Salt · Earth** is Plant. Ice-pillar, Ice-wall, Ice-spear, and Snowfall freeze water tiles. **Heat lives on the recipe** (`MatterLaw`): any fire-bearing sentence melts ice it crosses, including room ice, not only a conjured pillar. Glacier and glass need **witchfire** (`Flame` = Fire · Sulphur · Fire). **Melt** (`Fire · Salt · Mercury`) bores stone and steel masonry — a wall at the map edge opens, and you can tunnel if you know the sentence. **Plasma** eats ordinary matter. **Obsidian**, **wardstone**, and **aegis** refuse Melt, Shatter, plasma, and hunger's thaw. Grave-ice (Water · Salt · Death) is Free/arcane.
 - **Water + Lava → Obsidian** — instant bridge over a hazard.
-- **Fire + Gas/Oil → explosion**; **Wind + Fire → firestorm** (can blow back); **Earth + Water → Mud** (bogs movement). Still later.
+- **Oil shot** slicks a surface so it can hold flame, and grows a fire already standing (including a fire-golem). **Oil-pillar** is a stood wick. A later fire sentence — a separate recipe — makes it a bomb. **Wind + Fire → firestorm** (can blow back) still later.
 - **Conjured walls and pillars stay.** A stood body is masonry or a column, not a flash. It yields to an opposed element, or to matter-breaking work. **Water melts a basic earth wall and puts out a flame wall.** Water cools a lava wall into rock; a hurled stone or **Shatter** (`Earth · Salt · Earth · Air · Mercury`) then breaks that rock. Fire thaws ice wherever it stands. **Melt** bores stone and steel, including the room's own walls. Fire eats vine. **Obsidian** will not take the work. Death (or yielding yourself with **K**) drops every pillar, wall, and hanging veil you stood in the room; stones and artifacts stay in the pack.
 - **Standing in hunger.** A burning floor kills in **eight seconds** unless you wear a water ward or put the fire out. A **kindled hall** (painted fire that stays until yield is thrown) kills at once without a water ward. Fire-golems die to any water work and to earth work; they only shrug off base fire and wind.
 - **Fog and poison mist linger** as hanging veils. Gale or fire tears them. Light lifts fog, not poison.
@@ -243,7 +242,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. 1–40 ordinary (no Death). 41–50 reserved for Death / Free. 51 Time-stop. 52–55 are Floor 1 sentences. **56–59** are the four wards (`Element · Salt · Sulphur`). **60** Lava-pillar. **61** Shatter. **62** Confuse. **63** Ice-wall. **64** Freeze. **65** Snowstorm. **66** Push. **67** Lightning strike. **68** Charm. **69** Swamp. **70** Witchfire. **71** Grove (`Plant · Life`) — a spell, not an elemental rune; Plant stays the vegetable-body join. **72** Monsoon (`Water · Salt · Mercury`) — a remote flood. **73** Dirt toss (`Earth · Mercury`) — loose dirt; smothers ground-fire; Earth speaks where it lands. Hurled stone is `Earth · Salt · Mercury`. Ice is `Water · Earth`; Mud is `Earth · Water`. Wards and mind ailments are **concentration**: another sentence that reuses any of those marks lets them go. Elemental work (walls, fire, ice) persists. Charmed bodies walk to nearby artifacts, carry them, and fight what you have marked.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. Weather is spells (Storm, Fog, Darkness, Thunder, Blizzard), not runes. **76** Water-pillar. **77–78** Oil. **79–80** Poison / Miasma. **81** Plasma. **82** Forest (a spell; Grove is gone). **71** Grotto (`Plant · Dark`). **83** Monsoon. **84** Dirt toss. Wards and mind ailments are **concentration**. Elemental work persists.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

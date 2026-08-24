@@ -439,6 +439,7 @@ namespace RuneMagic
             var scoured = 0;
             var burned = 0;
             var melted = 0;
+            var detonated = 0;
             var meltMatter = MaterialId.None;
             var resisted = MaterialId.None;
             for (var i = 0; i < sweep.Cells.Count; i++)
@@ -465,7 +466,13 @@ namespace RuneMagic
                 }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
-                    tile.Ignite(0.85f);
+                    var oiled = tile.HasOil || tile.Material == MaterialId.Oil;
+                    tile.Ignite(oiled ? 1.4f : 0.85f);
+                    if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
+                    {
+                        DetonateOil(grid, tile.Coord);
+                        detonated++;
+                    }
                 }
 
                 if (WorldWork.IsWaterWork(sweep.Spell))
@@ -537,6 +544,11 @@ namespace RuneMagic
                 return MatterLaw.ResistNote(resisted);
             }
 
+            if (detonated > 0)
+            {
+                return "The stood wick takes a fire sentence. The column becomes a bomb.";
+            }
+
             if (burned > 0)
             {
                 return "Hunger finds the floor.";
@@ -547,24 +559,36 @@ namespace RuneMagic
 
         public static bool AuraAt(WorldGrid grid, Vector3 world, out VeilKind kind)
         {
-            kind = VeilKind.None;
+            var field = VeilKind.None;
+            var covered = VeilField.Covering(world, out field);
             var tile = grid != null ? grid.TileAtWorld(world) : null;
-            if (tile != null)
-            {
-                if (tile.HasMiasma)
-                {
-                    kind = VeilKind.Poison;
-                    return true;
-                }
+            kind = DominantAura(field, tile != null && tile.HasMiasma, tile != null && tile.HasFog);
+            return kind != VeilKind.None || covered;
+        }
 
-                if (tile.HasFog)
-                {
-                    kind = VeilKind.Fog;
-                    return true;
-                }
+        /// <summary>
+        /// A Darkness or poison field wins over leftover cloak on the
+        /// tile. Cloak is how fog and darkness both stain the floor;
+        /// the field is what the room is actually doing.
+        /// </summary>
+        public static VeilKind DominantAura(VeilKind field, bool hasMiasma, bool hasFog)
+        {
+            if (field == VeilKind.Darkness || field == VeilKind.Poison)
+            {
+                return field;
             }
 
-            return VeilField.Covering(world, out kind);
+            if (hasMiasma)
+            {
+                return VeilKind.Poison;
+            }
+
+            if (hasFog)
+            {
+                return VeilKind.Fog;
+            }
+
+            return field;
         }
 
         public static int BlowFog(IReadOnlyList<ISpellLock> locks, SpellSweep sweep)
@@ -591,6 +615,37 @@ namespace RuneMagic
             }
 
             return cleared;
+        }
+
+        static void DetonateOil(WorldGrid grid, Vector2Int origin)
+        {
+            if (grid == null)
+            {
+                return;
+            }
+
+            var cells = WorldWork.Disk(origin, 2);
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile == null || MatterLaw.ResistsMagic(tile.Material))
+                {
+                    continue;
+                }
+
+                tile.SlickOil(0.85f);
+                tile.Ignite(1.2f);
+                if (tile.IsConjured && tile.Material == MaterialId.Oil && tile.Coord != origin)
+                {
+                    tile.RestoreFoundation();
+                }
+            }
+
+            var core = grid.Get(origin);
+            if (core != null && core.IsConjured && core.Material == MaterialId.Oil)
+            {
+                core.RestoreFoundation();
+            }
         }
 
         public static void Audit(List<string> broken)
@@ -657,6 +712,25 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
             {
                 broken.Add("Fog must cloak tiles and Blight must foul them");
+            }
+
+            if (WorldWork.IsOilWork(SpellId.OilPillar)
+                || WorldWork.IsFireWork(SpellId.OilPillar)
+                || SpellVerb.Of(SpellId.OilPillar).Tiles != TileVerb.None)
+            {
+                broken.Add("Oil-pillar is a stood wick. A later fire sentence makes it a bomb");
+            }
+
+            if (!WorldWork.IsOilWork(SpellId.OilShot) || WorldWork.IsFireWork(SpellId.OilShot))
+            {
+                broken.Add("Oil shot must slick and grow fire, not detonate a wick");
+            }
+
+            if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
+                || DominantAura(VeilKind.None, false, true) != VeilKind.Fog
+                || SpellVerb.Of(SpellId.Darkness).Tiles != TileVerb.Cloak)
+            {
+                broken.Add("Darkness must withhold sight even when the floor is cloaked");
             }
 
             MatterLaw.Audit(broken);

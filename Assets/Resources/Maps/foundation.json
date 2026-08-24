@@ -320,8 +320,7 @@
           "formulaId": "ice-cage",
           "formula": [
             "Water",
-            "Earth",
-            "Salt"
+            "Earth"
           ],
           "keys": [
             "Fireball",
@@ -2462,8 +2461,8 @@
           "y": 3,
           "runes": [
             "Water",
-            "Earth",
             "Salt",
+            "Earth",
             "Life"
           ],
           "dir": "left"
@@ -2636,9 +2635,9 @@
           "x": 2,
           "y": 10,
           "runes": [
-            "Water",
-            "Earth",
-            "Salt"
+            "Ice",
+            "Salt",
+            "Earth"
           ],
           "dir": "up"
         },
@@ -3139,6 +3138,7 @@
           "formulaId": "arrow-adept",
           "formula": [
             "Earth",
+            "Salt",
             "Mercury"
           ],
           "keys": [
@@ -3161,6 +3161,7 @@
           "castSeconds": 1.15,
           "cast": [
             "Earth",
+            "Salt",
             "Mercury"
           ]
         }

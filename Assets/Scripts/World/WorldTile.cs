@@ -57,14 +57,17 @@ namespace RuneMagic
         public float Charge { get; private set; }
         public float Fog { get; private set; }
         public float Miasma { get; private set; }
+        public float Oil { get; private set; }
         public bool Kindled { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
         public bool HasMiasma => Miasma > 0.2f;
+        public bool HasOil => Oil > 0.2f || Material == MaterialId.Oil;
         public bool IsPoisonWater =>
             Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
-        public float Flammability => Def.WorldMaterial.Flammability;
+        public float Flammability =>
+            Def.WorldMaterial.Flammability + (HasOil ? 1.6f : 0f);
         public float Conductivity => Def.WorldMaterial.Conductivity;
         public bool IsPlantish =>
             Material == MaterialId.Plant || Material == MaterialId.Grove ||
@@ -291,13 +294,39 @@ namespace RuneMagic
                 return;
             }
 
-            Fire = Mathf.Clamp01(Fire + amount);
+            var boost = HasOil ? 1.55f : 1f;
+            Fire = Mathf.Clamp01(Fire + amount * boost);
             if (Fire > 0.05f)
             {
                 Wet = Mathf.Max(0f, Wet - amount);
             }
 
+            if (HasOil && amount > 0f)
+            {
+                Fire = Mathf.Clamp01(Fire + 0.35f);
+            }
+
             RefreshFx();
+        }
+
+        public bool SlickOil(float amount = 1f)
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            Oil = Mathf.Clamp01(Oil + amount);
+            if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+            {
+                if (IsBurning)
+                {
+                    Ignite(0.7f);
+                }
+            }
+
+            RefreshFx();
+            return true;
         }
 
         /// <summary>
@@ -420,9 +449,17 @@ namespace RuneMagic
         /// </summary>
         public bool MeltWith(SpellId spell)
         {
-            if (Kind == TileKind.Door
-                || MatterLaw.ResistsMagic(Material)
-                || !MatterLaw.Melts(spell, Material))
+            if (Kind == TileKind.Door || MatterLaw.ResistsMagic(Material))
+            {
+                return false;
+            }
+
+            if (MatterLaw.IsPlasmaWork(spell) && MatterLaw.IsAnnihilable(Material))
+            {
+                return Annihilate();
+            }
+
+            if (!MatterLaw.Melts(spell, Material))
             {
                 return false;
             }
@@ -456,6 +493,35 @@ namespace RuneMagic
             var kind = Kind == TileKind.Wall ? TileKind.Floor : Kind;
             Reshape(new TileDef(kind, leftover));
             return true;
+        }
+
+        public bool Annihilate()
+        {
+            if (MatterLaw.ResistsMagic(Material) || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            Oil = 0f;
+            Fire = 0f;
+            if (IsConjured)
+            {
+                return RestoreFoundation();
+            }
+
+            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            {
+                Reshape(new TileDef(TileKind.Floor, MaterialId.Scoured));
+                return true;
+            }
+
+            if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+            {
+                Reshape(new TileDef(Kind, MaterialId.Scoured));
+                return true;
+            }
+
+            return false;
         }
 
         public void Grow(int steps)
@@ -659,7 +725,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && _growth < 1)
+            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && _growth < 1)
             {
                 if (_fx != null)
                 {
@@ -696,6 +762,11 @@ namespace RuneMagic
             {
                 fx.sprite = SpriteFactory.Named("tile-wet");
                 fx.color = new Color(0.35f, 0.65f, 1f, 0.22f + Wet * 0.35f);
+            }
+            else if (Oil > 0.18f)
+            {
+                fx.sprite = SpriteFactory.Named("tile-wet");
+                fx.color = new Color(0.18f, 0.12f, 0.05f, 0.28f + Oil * 0.4f);
             }
             else
             {

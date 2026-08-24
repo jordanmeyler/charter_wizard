@@ -58,6 +58,9 @@ namespace RuneMagic
                 case SpellId.Gale:
                 case SpellId.Scald:
                 case SpellId.ScatterDust:
+                case SpellId.OilShot:
+                case SpellId.Poison:
+                case SpellId.Plasma:
                     return true;
                 default:
                     return false;
@@ -86,6 +89,8 @@ namespace RuneMagic
                 case SpellId.EarthPillar:
                 case SpellId.Menhir:
                 case SpellId.LavaPillar:
+                case SpellId.WaterPillar:
+                case SpellId.OilPillar:
                     return true;
                 default:
                     return false;
@@ -112,6 +117,7 @@ namespace RuneMagic
                 case SpellId.IceSpear:
                 case SpellId.Snowfall:
                 case SpellId.GraveIce:
+                case SpellId.Blizzard:
                     return true;
                 default:
                     return false;
@@ -131,6 +137,7 @@ namespace RuneMagic
                 case SpellId.Fog:
                 case SpellId.Gloom:
                 case SpellId.Veil:
+                case SpellId.Darkness:
                     return true;
                 default:
                     return false;
@@ -143,6 +150,8 @@ namespace RuneMagic
             {
                 case SpellId.Blight:
                 case SpellId.GraveDust:
+                case SpellId.Miasma:
+                case SpellId.Poison:
                     return true;
                 default:
                     return false;
@@ -157,6 +166,11 @@ namespace RuneMagic
             if (IsPoisonVeil(spell))
             {
                 return VeilKind.Poison;
+            }
+
+            if (spell == SpellId.Darkness)
+            {
+                return VeilKind.Darkness;
             }
 
             return IsSightVeil(spell) ? VeilKind.Fog : VeilKind.None;
@@ -174,6 +188,7 @@ namespace RuneMagic
                 case SpellId.Spring:
                 case SpellId.Douse:
                 case SpellId.Swamp:
+                case SpellId.WaterPillar:
                     return true;
                 default:
                     return false;
@@ -182,6 +197,12 @@ namespace RuneMagic
 
         public static bool IsFireWork(SpellId spell) =>
             MatterLaw.HeatOf(spell) >= Heat.Fire;
+
+        public static bool IsOilWork(SpellId spell) =>
+            spell == SpellId.OilShot;
+
+        public static bool IsPlasmaWork(SpellId spell) =>
+            MatterLaw.IsPlasmaWork(spell);
 
         public static bool IsAirWork(SpellId spell)
         {
@@ -225,7 +246,7 @@ namespace RuneMagic
                 return true;
             }
 
-            return kind == VeilKind.Fog && IsLightWork(spell);
+            return (kind == VeilKind.Fog || kind == VeilKind.Darkness) && IsLightWork(spell);
         }
 
         public static bool IsBasicEarth(MaterialId material)
@@ -320,6 +341,11 @@ namespace RuneMagic
             if (tile == null || MatterLaw.ResistsMagic(tile.Material))
             {
                 return false;
+            }
+
+            if (IsPlasmaWork(spell) && MatterLaw.IsAnnihilable(tile.Material))
+            {
+                return true;
             }
 
             if (!tile.IsConjured)
@@ -437,6 +463,16 @@ namespace RuneMagic
             if (spell == SpellId.VineRise)
             {
                 return MaterialId.Grove;
+            }
+
+            if (spell == SpellId.WaterPillar)
+            {
+                return MaterialId.Water;
+            }
+
+            if (spell == SpellId.OilPillar)
+            {
+                return MaterialId.Oil;
             }
 
             var fromElement = MaterialCatalog.FromElement(element);
@@ -605,6 +641,24 @@ namespace RuneMagic
                 }
             }
 
+            if (IsOilWork(spell))
+            {
+                var oiled = SlickOil(grid, cells);
+                if (oiled > 0)
+                {
+                    notes.Add("Fuel finds the floor. Hunger will hold here.");
+                }
+            }
+
+            if (spell == SpellId.Forest)
+            {
+                var grown = GrowForest(grid, cells);
+                if (grown > 0)
+                {
+                    notes.Add("The vegetable body wakes as a mass.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -699,6 +753,26 @@ namespace RuneMagic
             return changed;
         }
 
+        public static int SlickOil(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.SlickOil())
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
+        }
+
         static List<Vector2Int> Merge(List<Vector2Int> left, List<Vector2Int> right)
         {
             var cells = left ?? new List<Vector2Int>();
@@ -716,6 +790,38 @@ namespace RuneMagic
             }
 
             return cells;
+        }
+
+        public static int GrowForest(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                if (tile.CanTakePlant)
+                {
+                    tile.PlantHere();
+                    changed++;
+                }
+                else if (tile.IsPlantish)
+                {
+                    tile.Grow(2);
+                    grid.SpreadPlant(tile);
+                    changed++;
+                }
+            }
+
+            return changed;
         }
 
         public static int FreezeWaterAlong(WorldGrid grid, List<Vector2Int> cells)
@@ -814,6 +920,11 @@ namespace RuneMagic
                 case SpellId.LiveFloor:
                 case SpellId.Quagmire:
                 case SpellId.Sprout:
+                case SpellId.Grove:
+                case SpellId.Forest:
+                case SpellId.Darkness:
+                case SpellId.Miasma:
+                case SpellId.Monsoon:
                 case SpellId.Thunderclap:
                 case SpellId.DayWake:
                     return true;
@@ -919,10 +1030,12 @@ namespace RuneMagic
 
                 if (string.IsNullOrEmpty(note))
                 {
-                    note = UnmakeNote(spell, tile);
+                    note = IsPlasmaWork(spell)
+                        ? "The work eats the ordinary matter."
+                        : UnmakeNote(spell, tile);
                 }
 
-                if (tile.RestoreFoundation())
+                if (IsPlasmaWork(spell) ? tile.Annihilate() : tile.RestoreFoundation())
                 {
                     undone++;
                 }
@@ -1009,11 +1122,18 @@ namespace RuneMagic
 
             if (filled > 0 && barred > 0)
             {
-                return "Rest stands where the floor was, and fills the hollow.";
+                return spell == SpellId.OilPillar
+                    ? "A stood wick. A later fire sentence would make it a bomb."
+                    : "Rest stands where the floor was, and fills the hollow.";
             }
 
             if (filled > 0)
             {
+                if (spell == SpellId.OilPillar)
+                {
+                    return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
                 if (DriesWater(spell) && !IsPillar(spell) && !FreezesWater(spell))
                 {
                     return filled == 1
@@ -1035,6 +1155,11 @@ namespace RuneMagic
 
             if (barred > 0)
             {
+                if (spell == SpellId.OilPillar)
+                {
+                    return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
                 if (form == RaisedForm.Pillar)
                 {
                     return "A column stands in the way.";
