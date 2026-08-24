@@ -231,6 +231,9 @@ namespace RuneMagic
                     live.Add(RuneId.Fire);
                     live.Add(RuneId.Earth);
                     break;
+                case MaterialId.Dirt:
+                    live.Add(RuneId.Earth);
+                    break;
                 case MaterialId.Vein:
                 case MaterialId.Metal:
                     live.Add(RuneId.Spark);

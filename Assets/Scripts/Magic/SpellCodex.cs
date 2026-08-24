@@ -103,7 +103,7 @@ namespace RuneMagic
             E(19, SpellBook.Hold, SpellId.IceSpear, "That hard water-body is sent.", "Ice-spear", "Water · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
             E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Water · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
             E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
-            E(22, SpellBook.End, SpellId.HurledStone, "Rest asked to go. Earth flies.", "Hurled stone", "Earth · Mercury", "", "Shot", SpellOutcome.Kill),
+            E(22, SpellBook.End, SpellId.HurledStone, "Rest given a body and sent. Earth flies.", "Hurled stone", "Earth · Salt · Mercury", "Stone · Mercury", "Shot", SpellOutcome.Kill),
             E(23, SpellBook.Cross, SpellId.Wall, "A body of rest asked to rest as more rest. A wall.", "Wall", "Earth · Salt · Earth", "Stone · Earth", "Pillar", SpellOutcome.Neither),
             E(24, SpellBook.Cross, SpellId.Pit, "Rest asked to go, given breath so it leaves a hollow.", "Pit", "Earth · Mercury · Air", "", "Remote", SpellOutcome.Neither),
             E(25, SpellBook.Cross, SpellId.Bridge, "A body of rest given breath and sent across.", "Bridge", "Earth · Salt · Air · Mercury", "Stone · Air · Mercury", "Remote", SpellOutcome.Neither),
@@ -153,7 +153,8 @@ namespace RuneMagic
             E(69, SpellBook.Hold, SpellId.Swamp, "Rest meeting yield, going, given a body around your feet. A watery swamp.", "Swamp", "Earth · Water · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
             E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
             E(71, SpellBook.GrowHeal, SpellId.Grove, "The vegetable body marked living. A grove. Plant is the rune; Grove is the spell.", "Grove", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither, "", SpellId.Sprout),
-            E(72, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain)
+            E(72, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
+            E(73, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -455,6 +456,7 @@ namespace RuneMagic
             if (!WorldWork.StopsOnWalls(SpellId.Fireball)
                 || !WorldWork.StopsOnWalls(SpellId.IceSpear)
                 || !WorldWork.StopsOnWalls(SpellId.HurledStone)
+                || !WorldWork.StopsOnWalls(SpellId.DirtToss)
                 || !WorldWork.StopsOnWalls(SpellId.WaterJet)
                 || !WorldWork.StopsOnWalls(SpellId.Douse)
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
@@ -462,6 +464,26 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.LightningBolt))
             {
                 broken.Add("A flying shot must stop on a wall");
+            }
+
+            var dirtToss = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Mercury });
+            var dirtExact = ChainBook.CollectExact(dirtToss, SpellShape.None);
+            if (dirtExact.Count == 0 || dirtExact[0].Spell != SpellId.DirtToss)
+            {
+                broken.Add("Earth · Mercury should be Dirt toss");
+            }
+
+            if (SpellVerb.Of(SpellId.DirtToss).Status != StatusId.None
+                || (TryGet(SpellId.DirtToss, out var dirtEntry) && dirtEntry.Outcome != SpellOutcome.Neither))
+            {
+                broken.Add("Dirt toss must not harm a living body");
+            }
+
+            var hurled = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Salt, RuneId.Mercury });
+            var hurledExact = ChainBook.CollectExact(hurled, SpellShape.None);
+            if (hurledExact.Count == 0 || hurledExact[0].Spell != SpellId.HurledStone)
+            {
+                broken.Add("Earth · Salt · Mercury should be Hurled stone");
             }
 
             if (WorldWork.StopsOnWalls(SpellId.LightningStrike))

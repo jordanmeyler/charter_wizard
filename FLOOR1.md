@@ -25,7 +25,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
-| An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Hurled stone) |
+| An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Dirt toss). A body of rest sent is **Earth · Salt · Mercury** (Hurled stone). |
 | An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Ice-pillar) |
 | A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
@@ -54,6 +54,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
 | 71 | **Grove** | Water · Earth · Salt · Life | The vegetable body marked living. Plant is the rune; Grove is the spell. |
 | 72 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
+| 73 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
 
 ---
 
@@ -155,7 +156,7 @@ A **water channel** cuts the room wall-to-wall. Yield has no floor — walking i
 Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air · Mercury. A **charge veil** holds the **spark stone**. Lightning unmakes the veil. The live rod still waits in the plate.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
-Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
+Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Salt · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
 
 ### Door III · Gate of Joins
 Three sockets: Grove, Flood, Spark. Insert them → the floor opens.

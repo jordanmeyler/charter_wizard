@@ -1266,6 +1266,21 @@
       "radius": 2.8,
       "status": "Soaked",
       "statusSeconds": 6
+    },
+    {
+      "number": 73,
+      "id": "DirtToss",
+      "book": "Cross",
+      "name": "Dirt toss",
+      "want": "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.",
+      "recipe": "Earth · Mercury",
+      "via": "",
+      "form": "Shot",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "DirtToss",
+      "target": "Area",
+      "radius": 2.2
     }
   ]
 }

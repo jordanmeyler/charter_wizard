@@ -1358,6 +1358,12 @@ namespace RuneMagic
                     canvas.SoftCircle(rng.Range(6, 20), rng.Range(8, 22), 6, new Color(0.18f, 0.12f, 0.08f, 0.4f));
                     canvas.Line(4, 18, 16, 16, new Color(0.15f, 0.1f, 0.06f, 0.5f));
                     break;
+                case MaterialPaint.Dirt:
+                    canvas.Clear(Color.Lerp(tone, Color.black, 0.2f));
+                    PaintCobble(canvas, tone, rng);
+                    canvas.Noise(rng, new Color(0.55f, 0.4f, 0.22f, 0.65f), 18);
+                    canvas.SoftCircle(rng.Range(8, 22), rng.Range(8, 22), 4, new Color(0.28f, 0.2f, 0.12f, 0.35f));
+                    break;
                 case MaterialPaint.Lava:
                     PaintCobble(canvas, Color.Lerp(tone, Color.black, 0.45f), rng);
                     PaintVein(canvas, new Color(1f, 0.45f, 0.08f, 0.85f), rng);

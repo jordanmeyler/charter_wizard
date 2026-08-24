@@ -73,6 +73,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Blizzard** | Air · Water · Cloud · Ice · Snow · Wind · Blizzard | Blizzard | Wind driving Snow |
 | **Glacier** | Water · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
+| **Dirt** | Earth | Earth | Loose rest, thrown. Earth speaks here. Smothers ground-fire. |
 | **Damp stone** | Water · Earth | Water | Wet rest, not yet mud |
 
 ---

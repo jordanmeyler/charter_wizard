@@ -352,7 +352,8 @@ namespace RuneMagic
                 return Essence.Water;
             }
 
-            if (WorldWork.IsShatterWork(spell) || WorldWork.IsBoulderWork(spell) || WorldWork.IsPillar(spell))
+            if (WorldWork.IsShatterWork(spell) || WorldWork.IsBoulderWork(spell) || WorldWork.IsPillar(spell)
+                || spell == SpellId.DirtToss)
             {
                 return Essence.Earth;
             }

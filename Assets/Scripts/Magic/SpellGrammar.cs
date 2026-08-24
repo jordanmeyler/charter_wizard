@@ -91,7 +91,8 @@ namespace RuneMagic
         Swamp,
         Witchfire,
         Grove,
-        Monsoon
+        Monsoon,
+        DirtToss
     }
 
     public readonly struct SpellRecipe
@@ -158,7 +159,8 @@ namespace RuneMagic
             Register(RuneId.Spark, RuneId.Lumen, SpellShape.Shot, SpellId.BrilliantArc, "Brilliant-arc", "Spark with Light riding it.");
             Register(RuneId.Spark, RuneId.Mors, SpellShape.Shot, SpellId.Blackout, "Blackout", "Death-work. The seed marked by the grave.");
 
-            Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Earth given motion.");
+            Register(RuneId.Earth, RuneId.Mercury, SpellShape.Shot, SpellId.DirtToss, "Dirt toss", "Compressed. Catalog: Earth · Mercury. Rest sent as loose dirt. It smothers ground-fire and leaves Earth speaking.");
+            Register(RuneId.Stone, RuneId.Mercury, SpellShape.Shot, SpellId.HurledStone, "Hurled stone", "Compressed. Catalog: Earth · Salt · Mercury. Rest given a body and sent.");
             Register(RuneId.Earth, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Rest given a body.");
             Register(RuneId.Earth, RuneId.Sulphur, SpellShape.Self, SpellId.Stoneskin, "Stoneskin", "Compressed. Catalog: Earth · Salt · Sulphur. Rest given a body, then the mind holds it on you.");
             Register(RuneId.Stone, RuneId.Salt, SpellShape.Pillar, SpellId.EarthPillar, "Earth-pillar", "Compressed. Catalog: Earth · Salt. Stone already stood.");

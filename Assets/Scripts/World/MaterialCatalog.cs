@@ -39,7 +39,8 @@ namespace RuneMagic
         Glacier,
         Acid,
         Water,
-        Plant
+        Plant,
+        Dirt
     }
 
     public enum MaterialPaint
@@ -72,7 +73,8 @@ namespace RuneMagic
         Acid,
         Water,
         Plant,
-        Void
+        Void,
+        Dirt
     }
 
     /// <summary>
@@ -351,7 +353,13 @@ namespace RuneMagic
                     "Vegetable body before Life marks a grove. Green cover.",
                     RuneId.Plant, MaterialPaint.Plant,
                     new Color(0.22f, 0.42f, 0.16f), new Color(0.18f, 0.34f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant)
+                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant),
+
+                new WorldMaterial(MaterialId.Dirt, "dirt",
+                    "Loose rest, thrown. Earth speaks here. It smothers ground-fire.",
+                    RuneId.Earth, MaterialPaint.Dirt,
+                    new Color(0.42f, 0.32f, 0.2f), new Color(0.34f, 0.26f, 0.16f), false,
+                    RuneId.Earth)
             };
 
             ById = new Dictionary<MaterialId, WorldMaterial>(AllMaterials.Length);
@@ -389,6 +397,7 @@ namespace RuneMagic
             Flag(MaterialId.Acid, 0.15f, 0.45f);
             Flag(MaterialId.Water, -1.6f, 1.25f);
             Flag(MaterialId.Plant, 1.5f, 0.05f);
+            Flag(MaterialId.Dirt, 0f, 0f);
         }
 
         static void Flag(MaterialId id, float flammability, float conductivity)
@@ -462,7 +471,7 @@ namespace RuneMagic
                 case RuneId.Fire: return MaterialId.Hearth;
                 case RuneId.Air: return MaterialId.Scoured;
                 case RuneId.Water: return MaterialId.Water;
-                case RuneId.Earth: return MaterialId.Stone;
+                case RuneId.Earth: return MaterialId.Dirt;
                 case RuneId.Plant: return MaterialId.Timber;
                 case RuneId.Spark: return MaterialId.Vein;
                 case RuneId.Ash: return MaterialId.Ash;
