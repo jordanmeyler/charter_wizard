@@ -34,6 +34,7 @@ namespace RuneMagic
     {
         public string kind;
         public string material;
+        public string aura;
         public int[] cells;
     }
 

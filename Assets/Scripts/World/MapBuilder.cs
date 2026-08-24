@@ -151,8 +151,31 @@ namespace RuneMagic
                 var material = MapFile.ParseMaterial(stamp.material);
                 for (var c = 0; c + 1 < stamp.cells.Length; c += 2)
                 {
-                    grid.Set(origin.x + stamp.cells[c], origin.y + stamp.cells[c + 1], kind, material);
+                    var tile = grid.Set(origin.x + stamp.cells[c], origin.y + stamp.cells[c + 1], kind, material);
+                    ApplyAura(tile, stamp.aura);
                 }
+            }
+        }
+
+        static void ApplyAura(WorldTile tile, string aura)
+        {
+            if (tile == null || string.IsNullOrEmpty(aura))
+            {
+                return;
+            }
+
+            switch (aura.Trim().ToLowerInvariant())
+            {
+                case "miasma":
+                case "poison":
+                    tile.Foul(1f);
+                    break;
+                case "fog":
+                    tile.Cloak(1f);
+                    break;
+                case "fire":
+                    tile.Kindle();
+                    break;
             }
         }
 

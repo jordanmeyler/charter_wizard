@@ -49,21 +49,6 @@ PITS = [
     "HurledStone",
 ]
 ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
-WIND = [
-    "Gust",
-    "Gale",
-    "Push",
-    "StormCall",
-    "Flight",
-    "Fireball",
-    "FlamePillar",
-    "Ignite",
-    "Melt",
-    "Witchfire",
-    "SunLance",
-    "DayWake",
-    "BrilliantArc",
-]
 MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",
@@ -107,8 +92,11 @@ def rect(x0, y0, x1, y1):
     return out
 
 
-def stamp(kind, material, coords):
-    return {"kind": kind, "material": material, "cells": coords}
+def stamp(kind, material, coords, aura=""):
+    mark = {"kind": kind, "material": material, "cells": coords}
+    if aura:
+        mark["aura"] = aura
+    return mark
 
 
 def lesson(x, y, runes, dir="right"):
@@ -199,7 +187,12 @@ def assert_walkable(data):
     must_not(closed, "earth left bypass", world("earth-wing", rooms, 3, 6))
     must_not(closed, "earth right bypass", world("earth-wing", rooms, 10, 6))
     must(closed, "air altar", world("air-wing", rooms, 7, 12))
-    must(closed, "air fog lip", world("air-wing", rooms, 7, 9))
+    must(closed, "air miasma lip", world("air-wing", rooms, 7, 9))
+    air = next(r for r in rooms if r["id"] == "air-wing")
+    if any(p.get("type") == "fog" for p in air.get("props") or []):
+        raise SystemExit("air-wing should be tile miasma, not a fog lock")
+    if not any(s.get("aura") == "miasma" for s in air.get("stamps") or []):
+        raise SystemExit("air-wing is missing a miasma stamp")
     must(closed, "door I", world("hub", rooms, 23, 13))
 
     foyer = world("aspect-foyer", rooms, 15, 6)
@@ -513,23 +506,11 @@ def main():
             floor="Scoured",
             stamps=[
                 stamp("Floor", "Vein", cells((7, 12), (7, 2))),
-                stamp("Floor", "Acid", rect(1, 1, 12, 8)),
+                stamp("Floor", "Scoured", rect(1, 1, 12, 8), aura="miasma"),
             ],
             props=[
                 {"type": "runes", "x": 7, "y": 12, "runes": ["Air"], "dir": "up"},
                 lesson(4, 12, ["Air", "Mercury"], "right"),
-                {
-                    "type": "fog",
-                    "x": 7,
-                    "y": 5,
-                    "displayName": "Poison fog",
-                    "formulaId": "poison-fog",
-                    "formula": ["Air"],
-                    "keys": WIND,
-                    "cells": rect(1, 1, 12, 8),
-                    "sprite": "poison-fog",
-                    "note": "Breath sent. The foul air forgets the room.",
-                },
                 {"type": "item", "x": 7, "y": 2, "item": "air-stone"},
             ],
         ),
