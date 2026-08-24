@@ -21,6 +21,11 @@ namespace RuneMagic
                 return custom;
             }
 
+            if (TileAtlas.TryGet(id, out var atlas) && atlas != null)
+            {
+                return atlas;
+            }
+
             var painted = SpriteActors.Still(id);
             if (painted != null)
             {
@@ -177,6 +182,12 @@ namespace RuneMagic
 
         public static Sprite Floor(MaterialId material, int x, int y, int frame = 0)
         {
+            var atlas = TileAtlas.Floor(material, x, y, frame);
+            if (atlas != null)
+            {
+                return atlas;
+            }
+
             var seed = Hash(x, y, (int)material);
             var wave = Animates(material) ? frame & 3 : 0;
             return Memo($"floor:{material}:{seed}:{wave}", () => PaintFloor(MaterialCatalog.Of(material), seed, wave));
@@ -211,6 +222,12 @@ namespace RuneMagic
 
         public static Sprite Wall(MaterialId material, int x, int y)
         {
+            var atlas = TileAtlas.Wall(material, x, y);
+            if (atlas != null)
+            {
+                return atlas;
+            }
+
             var seed = Hash(x, y, (int)material + 17);
             return Memo($"wall:{material}:{seed}", () => PaintWall(MaterialCatalog.Of(material), seed));
         }
@@ -222,6 +239,11 @@ namespace RuneMagic
 
         public static Sprite Pit(int x, int y)
         {
+            if (TileAtlas.TryGet("pit", out var atlas) && atlas != null)
+            {
+                return atlas;
+            }
+
             var seed = Hash(x, y, 91);
             return Memo($"pit:{seed}", () =>
             {
@@ -267,9 +289,17 @@ namespace RuneMagic
             });
         }
 
-        public static Sprite Door(bool open)
+        public static Sprite Door(bool open) => Door(open, leaf: true);
+
+        public static Sprite Door(bool open, bool leaf)
         {
-            return Memo($"door-v2:{open}", () =>
+            var atlas = TileAtlas.Door(open, leaf);
+            if (atlas != null)
+            {
+                return atlas;
+            }
+
+            return Memo($"door-v2:{open}:{leaf}", () =>
             {
                 var canvas = new PixelCanvas(32, 40);
                 var frame = new Color(0.18f, 0.13f, 0.11f);
@@ -504,6 +534,12 @@ namespace RuneMagic
 
         public static Sprite Column(MaterialId material, int x, int y)
         {
+            var atlas = TileAtlas.Column(material);
+            if (atlas != null)
+            {
+                return atlas;
+            }
+
             var seed = Hash(x, y, (int)material + 41);
             return Memo($"column:{material}:{seed}", () => PaintColumn(MaterialCatalog.Of(material), seed));
         }

@@ -91,7 +91,7 @@ You do not place rooms in `Main.unity`. Maps are JSON. Floor 1 is `Assets/Resour
 
 A room is a shell (wall + floor) plus stamps (any cell that is not the default) plus props (`plaque`, `runes`, `charm`, `mite`, `torch`, `rod`, `chasm`, `item`). Halls connect two room ids. Lock keys can be omitted — the builder uses the tutorial presets.
 
-Tiles are still painted in code (`SpriteFactory` / `SpriteActors`): each material has its own cobble/plank/vein treatment, and floors vary by world position. Water, lava, ice, and ember tiles ripple. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. A flying shot — yours or theirs — stops on a wall or a shut door; an opened door is a hole. You can replace the generated actors: drop a PNG in `Assets/Resources/Sprites/{id}.png` or point `art.json` at it. See [`ART.md`](ART.md). A custom still overrides the generated clip.
+Tiles come from the dungeon atlas (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings, props, or FX that swap onto a base tile. Water ripples. Procedural painters stay as fallback. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. A flying shot — yours or theirs — stops on a wall or a shut door; an opened door is a hole. You can replace the generated actors: drop a PNG in `Assets/Resources/Sprites/{id}.png` or point `art.json` at it. See [`ART.md`](ART.md). A custom still overrides the generated clip.
 
 ## Catalog — recipes, sprites, items
 
@@ -132,6 +132,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Resources/Catalog/art.json` | Custom sprites and items |
 | `Assets/Resources/Sprites/` | Drop-in PNG replacements (`adept.png`, `fire-golem.png`…) |
 | `ART.md` | How to get or generate better sprites, and why the painters have a ceiling |
+| `TILES.md` | Named dungeon atlas: stone / dirt / water floors, coverings, one door |
 | `Tools/catalog-editor.html` | Paint sprites and rewrite recipes without opening C# |
 | `Assets/Scripts/Magic/SpellGrammar.cs` | Legacy compressed pair recipes (fallback only) |
 | `Assets/Scripts/Magic/SpellShape.cs` | How a written form is aimed (range, lock radius) |

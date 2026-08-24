@@ -13,6 +13,8 @@ grid.RoomShell(x0, y0, x1, y1, MaterialId.Stone, MaterialId.Ash);
 
 `TileSubstance` still names the first sanctum slice (ash, timber, void…). New maps should use `MaterialId`.
 
+Paint: the atlas draws **stone, dirt, or water** as the walk. Ice, fire, and lightning are coverings, props, or FX (`TILES.md`). A freeze, a burn, or a spark **swaps** the covering and adds the effect — they are not room floors.
+
 ---
 
 ## How a material speaks

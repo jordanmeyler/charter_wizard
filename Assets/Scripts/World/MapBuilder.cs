@@ -153,6 +153,7 @@ namespace RuneMagic
                 {
                     var tile = grid.Set(origin.x + stamp.cells[c], origin.y + stamp.cells[c + 1], kind, material);
                     ApplyAura(tile, stamp.aura);
+                    ApplyCover(tile, stamp.cover);
                 }
             }
         }
@@ -177,6 +178,11 @@ namespace RuneMagic
                     tile.Kindle();
                     break;
             }
+        }
+
+        static void ApplyCover(WorldTile tile, string cover)
+        {
+            tile?.PaintCover(cover);
         }
 
         static void PlaceProp(
@@ -274,6 +280,10 @@ namespace RuneMagic
                 case "crystal":
                 case "anchor":
                     SpawnCrystal.Spawn(world);
+                    break;
+                case "decor":
+                case "prop":
+                    WorldDecor.Spawn(world, prop.sprite, prop.blocking, prop.note);
                     break;
             }
         }
@@ -554,37 +564,37 @@ namespace RuneMagic
         {
             var midX = origin.x + width / 2;
             var midY = origin.y + height / 2;
+            WorldTile left;
+            WorldTile leaf;
+            WorldTile right;
             switch ((exit ?? "east").ToLowerInvariant())
             {
                 case "west":
-                    return new[]
-                    {
-                        grid.Set(origin.x, midY - 1, TileKind.Door, material),
-                        grid.Set(origin.x, midY, TileKind.Door, material),
-                        grid.Set(origin.x, midY + 1, TileKind.Door, material)
-                    };
+                    left = grid.Set(origin.x, midY - 1, TileKind.Door, material);
+                    leaf = grid.Set(origin.x, midY, TileKind.Door, material);
+                    right = grid.Set(origin.x, midY + 1, TileKind.Door, material);
+                    break;
                 case "north":
-                    return new[]
-                    {
-                        grid.Set(midX - 1, origin.y + height - 1, TileKind.Door, material),
-                        grid.Set(midX, origin.y + height - 1, TileKind.Door, material),
-                        grid.Set(midX + 1, origin.y + height - 1, TileKind.Door, material)
-                    };
+                    left = grid.Set(midX - 1, origin.y + height - 1, TileKind.Door, material);
+                    leaf = grid.Set(midX, origin.y + height - 1, TileKind.Door, material);
+                    right = grid.Set(midX + 1, origin.y + height - 1, TileKind.Door, material);
+                    break;
                 case "south":
-                    return new[]
-                    {
-                        grid.Set(midX - 1, origin.y, TileKind.Door, material),
-                        grid.Set(midX, origin.y, TileKind.Door, material),
-                        grid.Set(midX + 1, origin.y, TileKind.Door, material)
-                    };
+                    left = grid.Set(midX - 1, origin.y, TileKind.Door, material);
+                    leaf = grid.Set(midX, origin.y, TileKind.Door, material);
+                    right = grid.Set(midX + 1, origin.y, TileKind.Door, material);
+                    break;
                 default:
-                    return new[]
-                    {
-                        grid.Set(origin.x + width - 1, midY - 1, TileKind.Door, material),
-                        grid.Set(origin.x + width - 1, midY, TileKind.Door, material),
-                        grid.Set(origin.x + width - 1, midY + 1, TileKind.Door, material)
-                    };
+                    left = grid.Set(origin.x + width - 1, midY - 1, TileKind.Door, material);
+                    leaf = grid.Set(origin.x + width - 1, midY, TileKind.Door, material);
+                    right = grid.Set(origin.x + width - 1, midY + 1, TileKind.Door, material);
+                    break;
             }
+
+            left.MarkDoor(DoorFace.Jamb);
+            leaf.MarkDoor(DoorFace.Leaf);
+            right.MarkDoor(DoorFace.Jamb);
+            return new[] { left, leaf, right };
         }
 
         static MapRoom FindRoom(MapRoom[] rooms, string id)
