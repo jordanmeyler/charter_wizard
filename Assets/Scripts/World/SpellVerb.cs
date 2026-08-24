@@ -111,6 +111,7 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Soaked, 5f, TileVerb.Wet);
                 case SpellId.Rain:
                 case SpellId.Flood:
+                case SpellId.Monsoon:
                 case SpellId.Swamp:
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.Soaked, 6f, TileVerb.Wet);
                 case SpellId.Sprout:

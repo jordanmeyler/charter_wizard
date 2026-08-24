@@ -55,10 +55,10 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 
 | Material | Signature | Manifestation | Note |
 | --- | --- | --- | --- |
-| **Ice** | Water · Salt · Earth · Ice | Ice | Hard water. Thaws. Not Death. Freeze a pool and you can walk it. |
+| **Ice** | Water · Earth · Ice | Ice | Yield meeting rest. Hard water. Thaws. Freeze a pool and you can walk it. |
 | **Water** | Water · Salt | Water | A pool — yield holding a vessel. **It drowns.** Water work fills a connected pit smaller than 4×4 with this water. Ice asks it to stand. |
-| **Mud** | Water · Earth · Mud | Mud | Soft ground |
-| **Sand** | Water · Earth · Mud · Air · Sand | Sand | Mud given breath until it dries |
+| **Mud** | Earth · Water · Mud | Mud | Rest meeting yield. Soft ground |
+| **Sand** | Earth · Water · Mud · Air · Sand | Sand | Mud given breath until it dries |
 | **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight |
 | **Lava** | Fire · Earth · Lava | Lava | Earth that cannot stay earth |
 | **Steam** | Fire · Water · Steam | Steam | Violent hot veil |
@@ -71,7 +71,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Rain** | Air · Water · Cloud · Earth · Rain | Rain | The veil drawn down |
 | **Snow** | Air · Water · Cloud · Ice · Snow | Snow | The veil given ice’s story |
 | **Blizzard** | Air · Water · Cloud · Ice · Snow · Wind · Blizzard | Blizzard | Wind driving Snow |
-| **Glacier** | Water · Salt · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
+| **Glacier** | Water · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
 | **Damp stone** | Water · Earth | Water | Wet rest, not yet mud |
 
@@ -109,4 +109,4 @@ Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs to
 | Metal | 0 | 1.6 | The spark’s favourite road. |
 | Vein | 0 | 0.85 | Spark in the stone. |
 
-The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Salt · Earth — Body, not Death).
+The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water).

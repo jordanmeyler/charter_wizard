@@ -104,6 +104,11 @@ namespace RuneMagic
 
         public static SpellShape ShapeOf(SpellId spell)
         {
+            if (spell == SpellId.Monsoon || spell == SpellId.Rain || spell == SpellId.StormCall)
+            {
+                return SpellShape.Remote;
+            }
+
             if (WorldWork.IsSpreadWork(spell) || WorldWork.IsSightVeil(spell) || WorldWork.IsPoisonVeil(spell))
             {
                 return SpellShape.Spread;

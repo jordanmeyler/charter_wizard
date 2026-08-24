@@ -252,22 +252,22 @@ namespace RuneMagic
                     new Color(0.03f, 0.02f, 0.03f), new Color(0.06f, 0.05f, 0.06f), true),
 
                 new WorldMaterial(MaterialId.Ice, "ice",
-                    "Yield given a body and asked to rest. It will thaw.",
+                    "Yield meeting rest. Hard water. It will thaw.",
                     RuneId.Ice, MaterialPaint.Ice,
                     new Color(0.62f, 0.78f, 0.9f), new Color(0.48f, 0.62f, 0.76f), false,
-                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Ice),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Sand, "sand",
                     "Mud given breath until it dries. Grit given a body.",
                     RuneId.Sand, MaterialPaint.Sand,
                     new Color(0.72f, 0.6f, 0.38f), new Color(0.58f, 0.48f, 0.3f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Mud, RuneId.Air, RuneId.Sand),
+                    RuneId.Earth, RuneId.Water, RuneId.Mud, RuneId.Air, RuneId.Sand),
 
                 new WorldMaterial(MaterialId.Mud, "mud",
-                    "Yield meeting rest. Soft ground.",
+                    "Rest meeting yield. Soft ground.",
                     RuneId.Mud, MaterialPaint.Mud,
                     new Color(0.32f, 0.22f, 0.14f), new Color(0.28f, 0.2f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Mud),
+                    RuneId.Earth, RuneId.Water, RuneId.Mud),
 
                 new WorldMaterial(MaterialId.Lava, "lava",
                     "Hunger meeting rest. Earth that cannot stay earth.",
@@ -333,7 +333,7 @@ namespace RuneMagic
                     "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
                     RuneId.Glacier, MaterialPaint.Glacier,
                     new Color(0.7f, 0.82f, 0.88f), new Color(0.48f, 0.58f, 0.66f), false,
-                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
 
                 new WorldMaterial(MaterialId.Acid, "acid slick",
                     "Steam forced through Metal.",

@@ -90,7 +90,8 @@ namespace RuneMagic
         Charm,
         Swamp,
         Witchfire,
-        Grove
+        Grove,
+        Monsoon
     }
 
     public readonly struct SpellRecipe
@@ -137,7 +138,10 @@ namespace RuneMagic
             Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
-            Register(RuneId.Water, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Yield given a body and asked to rest. Hard water. No Death.");
+            Register(RuneId.Water, RuneId.Earth, SpellShape.Spread, SpellId.Flood, "Flood", "Compressed. Catalog: Water · Earth. Yield meeting rest as a flood at your feet.");
+            Register(RuneId.Water, RuneId.Salt, SpellShape.Remote, SpellId.Monsoon, "Monsoon", "Compressed. Catalog: Water · Salt · Mercury. A remote flood. Yield given a body and sent.");
+            Register(RuneId.Ice, RuneId.Salt, SpellShape.Pillar, SpellId.IcePillar, "Ice-pillar", "Compressed. Catalog: Water · Earth · Salt. Ice given a body. Hard water stands.");
+            Register(RuneId.Ice, RuneId.Mercury, SpellShape.Shot, SpellId.IceSpear, "Ice-spear", "Compressed. Catalog: Ice · Mercury. That hard water-body is sent.");
             Register(RuneId.Ice, RuneId.Sulphur, SpellShape.Remote, SpellId.Freeze, "Freeze", "Hard water held as a condition. They freeze.");
             Register(RuneId.Snow, RuneId.Air, SpellShape.Remote, SpellId.Snowstorm, "Snowstorm", "The veil given ice’s story, then driven. They freeze.");
             Register(RuneId.Blizzard, RuneId.Mercury, SpellShape.Remote, SpellId.Snowstorm, "Snowstorm", "Wind driving Snow, sent.");
@@ -176,7 +180,8 @@ namespace RuneMagic
             Register(RuneId.Steam, RuneId.Mercury, SpellShape.Shot, SpellId.Scald, "Scald", "Violent Fire+Water in motion.");
             Register(RuneId.Dust, RuneId.Mercury, SpellShape.Shot, SpellId.ScatterDust, "Scatter-dust", "Violent Air+Earth in motion.");
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
-            Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Water · Earth · Mercury · Salt. A watery swamp from the feet.");
+            Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Earth · Water · Mercury · Salt. Rest meeting yield, going, then stood.");
+            Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Mud given a body.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Grove, "Grove", "Compressed. Catalog: Water · Earth · Salt · Life. The vegetable body marked living. A grove. Not a rune.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "Living plant standing as a column.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");

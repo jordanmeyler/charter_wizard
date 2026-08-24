@@ -156,6 +156,8 @@ namespace RuneMagic
             var hasSalt = false;
             var hasEarth = false;
             var hasStone = false;
+            var hasVita = false;
+            var hasPlant = false;
             for (var i = 0; i < formula.Count; i++)
             {
                 var rune = formula[i];
@@ -189,13 +191,24 @@ namespace RuneMagic
                     return rune == RuneId.Snow ? MaterialId.Snow : MaterialId.Ice;
                 }
 
+                if (rune == RuneId.Mud)
+                {
+                    return MaterialId.Mud;
+                }
+
+                if (rune == RuneId.Plant)
+                {
+                    hasPlant = true;
+                }
+
                 hasWater |= rune == RuneId.Water;
                 hasSalt |= rune == RuneId.Salt;
                 hasEarth |= rune == RuneId.Earth;
                 hasStone |= rune == RuneId.Stone;
+                hasVita |= rune == RuneId.Vita;
             }
 
-            if (hasWater && hasSalt && hasEarth)
+            if (hasWater && hasEarth && !hasPlant && !(hasVita && hasSalt))
             {
                 return hasStone ? MaterialId.Glacier : MaterialId.Ice;
             }

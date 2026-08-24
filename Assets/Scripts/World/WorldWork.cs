@@ -167,6 +167,7 @@ namespace RuneMagic
             {
                 case SpellId.WaterJet:
                 case SpellId.Flood:
+                case SpellId.Monsoon:
                 case SpellId.Rain:
                 case SpellId.Scald:
                 case SpellId.Spring:
@@ -799,7 +800,8 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
-                || spell == SpellId.Swamp || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
+                || spell == SpellId.Monsoon || spell == SpellId.Swamp || spell == SpellId.Snowfall
+                || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
             }
