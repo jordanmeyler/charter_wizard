@@ -63,6 +63,10 @@ namespace RuneMagic
                     maxY = Mathf.Max(maxY, y);
                     var tile = grid.Set(x, y, paint.kind, paint.material);
                     ApplyAura(tile, paint.aura);
+                    if (!string.IsNullOrEmpty(paint.cover))
+                    {
+                        tile.PaintCover(paint.cover);
+                    }
                 }
             }
 

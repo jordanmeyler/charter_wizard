@@ -15,6 +15,8 @@ namespace RuneMagic
         public TileKind kind = TileKind.Floor;
         [Tooltip("fire, miasma, or fog — applied when the tile is baked.")]
         public string aura;
+        [Tooltip("ice, fire, lightning, water, vine — covering, not the walk family.")]
+        public string cover;
 
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {

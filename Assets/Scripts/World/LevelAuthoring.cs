@@ -5,24 +5,23 @@ namespace RuneMagic
 {
     public enum LevelTileSource
     {
-        StartupMap,
+        Tilemap = 0,
         NamedMap,
         RoomShell,
-        SceneGrid,
-        Tilemap
+        SceneGrid
     }
 
     /// <summary>
     /// Drop this in the scene to control how Play builds the floor.
-    /// Leave it off to keep the JSON startup map and still pick up
-    /// any items / locks you placed by hand.
+    /// Default is the painted Tilemap. Named JSON maps are leftover.
+    /// Scene objects (items, locks, plaques) are always picked up.
     /// </summary>
     public sealed class LevelAuthoring : MonoBehaviour
     {
         [Header("Tiles")]
-        public LevelTileSource tiles = LevelTileSource.StartupMap;
+        public LevelTileSource tiles = LevelTileSource.Tilemap;
         public string mapId;
-        public bool includeJsonProps = true;
+        public bool includeJsonProps;
         public Tilemap tilemap;
 
         [Header("Spawn")]

@@ -39,10 +39,34 @@ namespace RuneMagic
             authoring.roomName = "Painted Map";
             StampShell(map, 13, 11);
 
+            var spawn = new GameObject("Spawn");
+            spawn.transform.SetParent(root.transform, false);
+            spawn.transform.position = WorldGrid.Center(2, 5);
+            authoring.spawnPoint = spawn.transform;
+
             Undo.RegisterCreatedObjectUndo(root, "Painted Map");
             Selection.activeGameObject = layer;
             EditorGUIUtility.PingObject(layer);
             Debug.Log("Painted Map created. Window → 2D → Tile Palette, open Rune Palette, and paint onto Tiles.");
+        }
+
+        [InitializeOnLoadMethod]
+        static void AutoEnsureTiles()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    return;
+                }
+
+                if (AssetDatabase.LoadAssetAtPath<WorldPaintTile>(FloorFolder + "/Floor-Stone.asset") != null)
+                {
+                    return;
+                }
+
+                EnsureTiles();
+            };
         }
 
         [MenuItem("Window/Rune Magic/Create Tile Palette")]
@@ -198,7 +222,7 @@ namespace RuneMagic
             }
 
             EditorGUILayout.HelpBox(
-                "Paint this from Window → 2D → Tile Palette. Material and kind are what Play bakes into the grid. Drag a sliced sprite onto Sprite to replace the atlas look.",
+                "Paint this from Window → 2D → Tile Palette. Material and kind are what Play bakes into the grid. Cover is ice / fire / lightning over the walk tile. Drag a sliced sprite onto Sprite to replace the atlas look.",
                 MessageType.Info);
             if (GUILayout.Button("Refresh sprite from atlas"))
             {

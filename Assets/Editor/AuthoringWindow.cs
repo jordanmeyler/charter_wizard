@@ -50,7 +50,7 @@ namespace RuneMagic
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select the Tiles object. Paint.\n" +
                 "4. Click a tile asset to change material, kind, aura, or sprite. Paint over a region to reassign.\n" +
                 "5. Create prefabs, then drag Item / Torch / Mite onto the painted cells.\n" +
-                "6. Play. The painted map becomes the live grid; JSON Floor 1 is skipped.",
+                "6. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
             if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
