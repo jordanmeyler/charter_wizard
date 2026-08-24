@@ -16,6 +16,8 @@ namespace RuneMagic
         public RaisedForm RaisedAs { get; private set; }
         public TileDef Foundation { get; private set; }
         public bool PassageOpen { get; private set; }
+        public DoorFace DoorFace { get; private set; }
+        string _coverId;
 
         /// <summary>
         /// Closed masonry and shut doors stop bodies and shots.
@@ -32,6 +34,7 @@ namespace RuneMagic
 
         SpriteRenderer _renderer;
         SpriteRenderer _overlay;
+        SpriteRenderer _cover;
         SpriteRenderer _fx;
         Collider2D _collider;
         int _growth;
@@ -49,7 +52,23 @@ namespace RuneMagic
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
             ApplyVisual();
+            ApplyCover();
             ApplyCollider();
+        }
+
+        public void MarkDoor(DoorFace face)
+        {
+            DoorFace = face;
+            if (Kind == TileKind.Door)
+            {
+                ApplyDoorSprite(PassageOpen);
+            }
+        }
+
+        public void PaintCover(string id)
+        {
+            _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
+            ApplyCover();
         }
 
         public float Fire { get; private set; }
@@ -110,6 +129,7 @@ namespace RuneMagic
             }
 
             ApplyVisual();
+            ApplyCover();
         }
 
         public void EndTelegraph()
@@ -127,6 +147,7 @@ namespace RuneMagic
 
             _telegraph = MaterialId.None;
             ApplyVisual();
+            ApplyCover();
         }
 
         public void BecomeBridge()
@@ -575,6 +596,7 @@ namespace RuneMagic
             }
 
             ApplyVisual();
+            ApplyCover();
             RefreshCollider();
             RefreshFx();
             RefreshLinger();
@@ -661,8 +683,77 @@ namespace RuneMagic
 
         void ApplyDoorSprite(bool open)
         {
-            _renderer.sprite = SpriteFactory.Door(open);
+            _renderer.sprite = SpriteFactory.Door(open, DoorFace != DoorFace.Jamb);
             _renderer.sortingOrder = 4;
+        }
+
+        void ApplyCover()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            if (Kind == TileKind.Pit && Material != MaterialId.Water)
+            {
+                if (_cover != null)
+                {
+                    _cover.enabled = false;
+                }
+
+                return;
+            }
+
+            var cover = ResolveCoverSprite();
+            if (cover == null)
+            {
+                if (_cover != null)
+                {
+                    _cover.enabled = false;
+                }
+
+                return;
+            }
+
+            var view = EnsureCover();
+            view.sprite = cover;
+            view.sortingOrder = _renderer.sortingOrder + 1;
+            view.enabled = true;
+        }
+
+        Sprite ResolveCoverSprite()
+        {
+            if (!string.IsNullOrEmpty(_coverId))
+            {
+                var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||
+                            _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
+                    ? _coverId
+                    : "cover-" + _coverId;
+                if (TileAtlas.TryGet(named, out var painted) && painted != null)
+                {
+                    return painted;
+                }
+
+                if (TileAtlas.TryGet(_coverId, out painted) && painted != null)
+                {
+                    return painted;
+                }
+            }
+
+            return TileAtlas.Cover(ShownMaterial, Coord.x, Coord.y);
+        }
+
+        SpriteRenderer EnsureCover()
+        {
+            if (_cover != null)
+            {
+                return _cover;
+            }
+
+            var child = new GameObject("TileCover");
+            child.transform.SetParent(transform, false);
+            _cover = child.AddComponent<SpriteRenderer>();
+            return _cover;
         }
 
         public void DressNeighborhood(WorldGrid grid)
@@ -678,7 +769,7 @@ namespace RuneMagic
                 if (north != null && (north.Kind == TileKind.Wall || north.Kind == TileKind.Door))
                 {
                     EnsureOverlay().sprite = SpriteFactory.WallShadow();
-                    _overlay.sortingOrder = _renderer.sortingOrder + 1;
+                    _overlay.sortingOrder = _renderer.sortingOrder + 2;
                     _overlay.enabled = true;
                     return;
                 }
@@ -691,7 +782,7 @@ namespace RuneMagic
                 if (mask != 0)
                 {
                     EnsureOverlay().sprite = SpriteFactory.PitRim(mask);
-                    _overlay.sortingOrder = _renderer.sortingOrder + 1;
+                    _overlay.sortingOrder = _renderer.sortingOrder + 2;
                     _overlay.enabled = true;
                     return;
                 }
@@ -737,7 +828,7 @@ namespace RuneMagic
 
             var fx = EnsureFx();
             fx.enabled = true;
-            fx.sortingOrder = _renderer.sortingOrder + 2;
+            fx.sortingOrder = _renderer.sortingOrder + 3;
             if (Fire > 0.12f)
             {
                 fx.sprite = SpriteFactory.Named("tile-fire");

@@ -5,8 +5,9 @@ The world is still painted in code (`SpriteFactory` / `SpriteActors`): 32–64px
 A custom still **overrides** a generated clip. The game looks up art in this order:
 
 1. A row in [`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) (`source` PNG or painted `cells`)
-2. A file at `Assets/Resources/Sprites/{id}.png`
-3. The built-in painter
+2. A named slice in [`Assets/Resources/Catalog/tiles.json`](Assets/Resources/Catalog/tiles.json) (the dungeon atlas)
+3. A file at `Assets/Resources/Sprites/{id}.png`
+4. The built-in painter
 
 ## What to drop in
 
@@ -20,7 +21,7 @@ A custom still **overrides** a generated clip. The game looks up art in this ord
 | `arrow-shot`, `fireball-shot` | Projectiles | 16–32 | `0.5,0.5` |
 | `stone-fire` … `key-spark` | Pack items | 32 | `0.5,0.5` |
 
-Tiles (`SpriteFactory.Floor` / `Wall`) stay generated until a tileset pass. Actors and props are the first replacements that change how the game *feels*.
+Floors, walls, the door, and dungeon props now come from the atlas (`TileAtlas`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings, props, or FX — they swap onto a base tile when an element lands. One wooden door (`door` / `door-open`), 32×64, so the adept fits. Named ids and the grid are in [`TILES.md`](TILES.md). Replace `Assets/Resources/Sprites/dungeon-atlas.png` on the same 32px grid and keep the catalog.
 
 ## Ways to get the pictures
 

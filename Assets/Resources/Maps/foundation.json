@@ -11,7 +11,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             4,
             8,
@@ -25,7 +25,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Dirt",
           "cells": [
             10,
             3,
@@ -35,7 +35,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Scoured",
+          "material": "Dirt",
           "cells": [
             32,
             3,
@@ -45,7 +45,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Crystal",
+          "material": "Stone",
           "cells": [
             21,
             12,
@@ -67,7 +67,8 @@
             13,
             25,
             13
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
@@ -95,30 +96,61 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Stone",
           "cells": [
             22,
             7
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             24,
             7
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             23,
             8
-          ]
+          ],
+          "cover": "seal"
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 2,
+          "y": 8,
+          "sprite": "torch-lit",
+          "blocking": false
+        },
+        {
+          "type": "decor",
+          "x": 43,
+          "y": 8,
+          "sprite": "torch-lit",
+          "blocking": false
+        },
+        {
+          "type": "decor",
+          "x": 21,
+          "y": 4,
+          "sprite": "bush",
+          "blocking": false
+        },
+        {
+          "type": "decor",
+          "x": 25,
+          "y": 4,
+          "sprite": "bush-b",
+          "blocking": false
+        },
         {
           "type": "runes",
           "x": 4,
@@ -258,7 +290,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             8,
             7,
@@ -270,6 +302,21 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 10,
+          "y": 3,
+          "sprite": "ice-fountain",
+          "blocking": true,
+          "note": "yield asked to stand"
+        },
+        {
+          "type": "decor",
+          "x": 9,
+          "y": 10,
+          "sprite": "brazier",
+          "blocking": false
+        },
         {
           "type": "runes",
           "x": 8,
@@ -376,14 +423,14 @@
       "width": 13,
       "height": 14,
       "wall": "Stone",
-      "floor": "Ice"
+      "floor": "Stone"
     },
     {
       "exit": "none",
       "stamps": [
         {
           "kind": "Wall",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             9,
             1,
@@ -413,7 +460,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             3,
             7,
@@ -423,7 +470,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Ember",
+          "material": "Dirt",
           "cells": [
             4,
             3,
@@ -457,6 +504,21 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 2,
+          "y": 3,
+          "sprite": "brazier-lit",
+          "blocking": true
+        },
+        {
+          "type": "decor",
+          "x": 5,
+          "y": 10,
+          "sprite": "water-fountain",
+          "blocking": true,
+          "note": "yield in a vessel"
+        },
         {
           "type": "runes",
           "x": 3,
@@ -785,7 +847,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Dirt",
           "cells": [
             7,
             13,
@@ -795,6 +857,20 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 3,
+          "y": 13,
+          "sprite": "stalagmite",
+          "blocking": true
+        },
+        {
+          "type": "decor",
+          "x": 11,
+          "y": 13,
+          "sprite": "pillar-broken",
+          "blocking": true
+        },
         {
           "type": "runes",
           "x": 7,
@@ -887,7 +963,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             7,
             12,
@@ -897,7 +973,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Scoured",
+          "material": "Dirt",
           "cells": [
             1,
             1,
@@ -1131,43 +1207,60 @@
       "width": 14,
       "height": 16,
       "wall": "Stone",
-      "floor": "Scoured"
+      "floor": "Stone"
     },
     {
       "exit": "none",
       "stamps": [
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Stone",
           "cells": [
             5,
             6,
             6,
             6
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             14,
             6,
             15,
             6
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             23,
             6,
             24,
             6
-          ]
+          ],
+          "cover": "seal"
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 2,
+          "y": 6,
+          "sprite": "torch-lit",
+          "blocking": false
+        },
+        {
+          "type": "decor",
+          "x": 27,
+          "y": 6,
+          "sprite": "torch-lit",
+          "blocking": false
+        },
         {
           "type": "runes",
           "x": 5,
@@ -1278,7 +1371,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Dirt",
           "cells": [
             12,
             6,
@@ -1349,7 +1442,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             3,
             3,
@@ -1361,7 +1454,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             4,
             8,
@@ -1371,6 +1464,13 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 2,
+          "y": 8,
+          "sprite": "brazier-lit",
+          "blocking": true
+        },
         {
           "type": "runes",
           "x": 3,
@@ -1496,17 +1596,18 @@
         },
         {
           "kind": "Floor",
-          "material": "Crystal",
+          "material": "Stone",
           "cells": [
             3,
             6,
             13,
             6
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             3,
             3,
@@ -1516,7 +1617,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Dirt",
           "cells": [
             3,
             9,
@@ -1526,7 +1627,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Stone",
           "cells": [
             3,
             8,
@@ -1659,7 +1760,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Crystal",
+          "material": "Stone",
           "cells": [
             7,
             4,
@@ -1691,11 +1792,12 @@
             6,
             11,
             6
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Stone",
           "cells": [
             9,
             8
@@ -1734,7 +1836,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             6,
             8,
@@ -1754,7 +1856,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Stone",
           "cells": [
             26,
             8,
@@ -1764,7 +1866,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Ice",
+          "material": "Stone",
           "cells": [
             28,
             8
@@ -1782,6 +1884,21 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 28,
+          "y": 6,
+          "sprite": "ice-fountain",
+          "blocking": true,
+          "note": "hard water, waiting"
+        },
+        {
+          "type": "decor",
+          "x": 7,
+          "y": 6,
+          "sprite": "lightning-vial",
+          "blocking": false
+        },
         {
           "type": "runes",
           "x": 6,
@@ -2180,7 +2297,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             14,
             11,
@@ -2198,7 +2315,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Dirt",
           "cells": [
             14,
             5,
@@ -2208,6 +2325,20 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 15,
+          "y": 3,
+          "sprite": "bush",
+          "blocking": true
+        },
+        {
+          "type": "decor",
+          "x": 13,
+          "y": 13,
+          "sprite": "bush-b",
+          "blocking": true
+        },
         {
           "type": "runes",
           "x": 14,
@@ -2270,7 +2401,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Stone",
           "cells": [
             3,
             8,
@@ -2280,7 +2411,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Stone",
           "cells": [
             3,
             10,
@@ -2290,7 +2421,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Ice",
+          "material": "Stone",
           "cells": [
             3,
             6,
@@ -2362,7 +2493,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Dirt",
           "cells": [
             10,
             8,
@@ -2374,6 +2505,21 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 2,
+          "y": 4,
+          "sprite": "ice-chest",
+          "blocking": true,
+          "note": "poorly stood yield"
+        },
+        {
+          "type": "decor",
+          "x": 4,
+          "y": 12,
+          "sprite": "water-fountain",
+          "blocking": true
+        },
         {
           "type": "runes",
           "x": 3,
@@ -2500,7 +2646,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             3,
             3,
@@ -2510,7 +2656,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Scoured",
+          "material": "Dirt",
           "cells": [
             3,
             10,
@@ -2520,7 +2666,7 @@
         },
         {
           "kind": "Wall",
-          "material": "Metal",
+          "material": "Stone",
           "cells": [
             13,
             1,
@@ -2550,6 +2696,13 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 5,
+          "y": 7,
+          "sprite": "lightning-vial",
+          "blocking": false
+        },
         {
           "type": "runes",
           "x": 10,
@@ -2609,7 +2762,7 @@
             "StormCall",
             "Thunderclap"
           ],
-          "sprite": "rod",
+          "sprite": "lightning-pillar",
           "note": "The seed already stands. Send it, or write hunger then breath."
         },
         {
@@ -2660,7 +2813,7 @@
             13,
             12
           ],
-          "clearMaterial": "Vein",
+          "clearMaterial": "Stone",
           "sprite": "charge-curtain",
           "note": "Hunger given breath, then sent. The veil forgets how to sting."
         },
@@ -2680,14 +2833,14 @@
       "width": 20,
       "height": 14,
       "wall": "Stone",
-      "floor": "Vein"
+      "floor": "Stone"
     },
     {
       "exit": "none",
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Hearth",
+          "material": "Stone",
           "cells": [
             16,
             4,
@@ -2697,7 +2850,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             11,
             8,
@@ -2707,7 +2860,7 @@
         },
         {
           "kind": "Floor",
-          "material": "SaltCrust",
+          "material": "Dirt",
           "cells": [
             5,
             4,
@@ -2731,6 +2884,20 @@
         }
       ],
       "props": [
+        {
+          "type": "decor",
+          "x": 3,
+          "y": 8,
+          "sprite": "brazier-lit",
+          "blocking": true
+        },
+        {
+          "type": "decor",
+          "x": 20,
+          "y": 8,
+          "sprite": "pillar",
+          "blocking": true
+        },
         {
           "type": "runes",
           "x": 16,
@@ -2962,7 +3129,7 @@
       "stamps": [
         {
           "kind": "Floor",
-          "material": "Crystal",
+          "material": "Stone",
           "cells": [
             8,
             3,
@@ -3012,11 +3179,12 @@
             6,
             13,
             6
-          ]
+          ],
+          "cover": "seal"
         },
         {
           "kind": "Floor",
-          "material": "Vein",
+          "material": "Stone",
           "cells": [
             10,
             8
@@ -3032,7 +3200,7 @@
         },
         {
           "kind": "Floor",
-          "material": "Damp",
+          "material": "Dirt",
           "cells": [
             11,
             8
@@ -3072,7 +3240,7 @@
     {
       "from": "fire-wing",
       "to": "hub",
-      "material": "Ice"
+      "material": "Stone"
     },
     {
       "from": "hub",
@@ -3082,12 +3250,12 @@
     {
       "from": "earth-wing",
       "to": "hub",
-      "material": "Stone"
+      "material": "Dirt"
     },
     {
       "from": "air-wing",
       "to": "hub",
-      "material": "Scoured"
+      "material": "Stone"
     },
     {
       "from": "hub",
@@ -3097,7 +3265,7 @@
     {
       "from": "body-sanctum",
       "to": "aspect-foyer",
-      "material": "SaltCrust"
+      "material": "Stone"
     },
     {
       "from": "aspect-foyer",
@@ -3107,13 +3275,13 @@
     {
       "from": "aspect-foyer",
       "to": "spirit-sanctum",
-      "material": "Hearth",
+      "material": "Stone",
       "hazard": "fire"
     },
     {
       "from": "spirit-sanctum",
       "to": "door-ii",
-      "material": "Crystal"
+      "material": "Stone"
     },
     {
       "from": "door-ii",
@@ -3123,17 +3291,17 @@
     {
       "from": "grove-court",
       "to": "join-foyer",
-      "material": "Moss"
+      "material": "Dirt"
     },
     {
       "from": "join-foyer",
       "to": "cistern",
-      "material": "Damp"
+      "material": "Stone"
     },
     {
       "from": "grove-court",
       "to": "spark-cell",
-      "material": "Vein"
+      "material": "Stone"
     },
     {
       "from": "join-foyer",
@@ -3143,7 +3311,7 @@
     {
       "from": "join-foyer",
       "to": "door-iii",
-      "material": "Crystal"
+      "material": "Stone"
     }
   ]
 }

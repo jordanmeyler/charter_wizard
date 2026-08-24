@@ -1,0 +1,756 @@
+{
+  "note": "Dungeon atlas. Floors are stone, dirt, or water. Ice, fire, and lightning are coverings, props, or FX \u2014 they swap onto a base tile. One door (door / door-open), 32x64 so the adept fits. Drop a replacement PNG on the same 32px grid and keep this catalog.",
+  "source": "Sprites/dungeon-atlas",
+  "cell": 32,
+  "columns": 12,
+  "rows": 8,
+  "pixelsPerUnit": 32,
+  "tiles": [
+    {
+      "id": "floor-stone",
+      "col": 0,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Solid dungeon cobble. Default walk."
+    },
+    {
+      "id": "floor-stone-b",
+      "col": 1,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Cobble variant."
+    },
+    {
+      "id": "floor-dirt",
+      "col": 2,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Loose earth."
+    },
+    {
+      "id": "floor-dirt-b",
+      "col": 3,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Dirt variant."
+    },
+    {
+      "id": "floor-water",
+      "col": 4,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Stone-rimmed pool. Drowns."
+    },
+    {
+      "id": "floor-water-b",
+      "col": 5,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Water frame 2."
+    },
+    {
+      "id": "pit",
+      "col": 6,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Square pit."
+    },
+    {
+      "id": "pit-edge",
+      "col": 7,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Drop lip."
+    },
+    {
+      "id": "floor-cracked",
+      "col": 8,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Broken cobble. Covering baked in."
+    },
+    {
+      "id": "floor-mud",
+      "col": 9,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Dirt after water."
+    },
+    {
+      "id": "floor-ash",
+      "col": 10,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "What fire leaves."
+    },
+    {
+      "id": "floor-pebble",
+      "col": 11,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "floor",
+      "note": "Pebble dirt."
+    },
+    {
+      "id": "wall",
+      "col": 0,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Brick wall."
+    },
+    {
+      "id": "wall-b",
+      "col": 1,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Brick variant."
+    },
+    {
+      "id": "wall-corner-in",
+      "col": 2,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Inner corner."
+    },
+    {
+      "id": "wall-corner-out",
+      "col": 3,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Outer corner."
+    },
+    {
+      "id": "wall-moss",
+      "col": 4,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Mossy wall."
+    },
+    {
+      "id": "wall-cave",
+      "col": 5,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Cave mouth."
+    },
+    {
+      "id": "wall-cave-b",
+      "col": 6,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Cave mouth variant."
+    },
+    {
+      "id": "wall-crack",
+      "col": 7,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Cracked brick."
+    },
+    {
+      "id": "wall-c",
+      "col": 8,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "wall",
+      "note": "Third brick variant."
+    },
+    {
+      "id": "pillar",
+      "col": 9,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.35",
+      "kind": "prop",
+      "note": "Stone column."
+    },
+    {
+      "id": "pillar-broken",
+      "col": 10,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.3",
+      "kind": "prop",
+      "note": "Broken stump."
+    },
+    {
+      "id": "stalagmite",
+      "col": 11,
+      "row": 1,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Cave spike."
+    },
+    {
+      "id": "arch",
+      "col": 0,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.4",
+      "kind": "door",
+      "note": "Open stone arch / door jamb."
+    },
+    {
+      "id": "door",
+      "col": 1,
+      "row": 2,
+      "w": 1,
+      "h": 2,
+      "pivot": "0.5,0.22",
+      "kind": "door",
+      "note": "The one wooden door. 32x64, adept-sized."
+    },
+    {
+      "id": "door-open",
+      "col": 2,
+      "row": 2,
+      "w": 1,
+      "h": 2,
+      "pivot": "0.5,0.22",
+      "kind": "door",
+      "note": "Same arch, leaf swung."
+    },
+    {
+      "id": "arch-pillar",
+      "col": 3,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.4",
+      "kind": "door",
+      "note": "Square-pillar arch."
+    },
+    {
+      "id": "torch-lit",
+      "col": 4,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.45",
+      "kind": "prop",
+      "note": "Lit wall torch."
+    },
+    {
+      "id": "torch-empty",
+      "col": 5,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.45",
+      "kind": "prop",
+      "note": "Empty sconce."
+    },
+    {
+      "id": "torch-unlit",
+      "col": 6,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.45",
+      "kind": "prop",
+      "note": "Unlit torch."
+    },
+    {
+      "id": "brazier-lit",
+      "col": 7,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.3",
+      "kind": "prop",
+      "note": "Standing flame."
+    },
+    {
+      "id": "brazier",
+      "col": 8,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.3",
+      "kind": "prop",
+      "note": "Cold brazier."
+    },
+    {
+      "id": "ring-mount",
+      "col": 9,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "prop",
+      "note": "Wall ring."
+    },
+    {
+      "id": "hook-statue",
+      "col": 10,
+      "row": 2,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Hooked stone."
+    },
+    {
+      "id": "arch-shut",
+      "col": 0,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.4",
+      "kind": "door",
+      "note": "Sealed arch (jamb when shut)."
+    },
+    {
+      "id": "ice-fountain",
+      "col": 3,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Fountain caged in ice."
+    },
+    {
+      "id": "ice-chest",
+      "col": 4,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.3",
+      "kind": "prop",
+      "note": "Chest / cask in ice."
+    },
+    {
+      "id": "water-fountain",
+      "col": 5,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Living fountain."
+    },
+    {
+      "id": "lightning-vial",
+      "col": 6,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.35",
+      "kind": "prop",
+      "note": "Spark in glass."
+    },
+    {
+      "id": "lightning-pillar",
+      "col": 7,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Charged column. Use as storm rod."
+    },
+    {
+      "id": "lightning-splash",
+      "col": 8,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.35",
+      "kind": "prop",
+      "note": "Spark leaving the vial."
+    },
+    {
+      "id": "cover-moss",
+      "col": 0,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Moss on stone or dirt."
+    },
+    {
+      "id": "cover-moss-b",
+      "col": 1,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Hanging moss."
+    },
+    {
+      "id": "cover-vine",
+      "col": 2,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Vines. Burns."
+    },
+    {
+      "id": "cover-crack",
+      "col": 3,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Large crack."
+    },
+    {
+      "id": "cover-crack-b",
+      "col": 4,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Medium crack."
+    },
+    {
+      "id": "cover-crack-c",
+      "col": 5,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Hairline crack."
+    },
+    {
+      "id": "cover-seal",
+      "col": 6,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Runic floor seal."
+    },
+    {
+      "id": "cover-blood",
+      "col": 7,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Blood splatter."
+    },
+    {
+      "id": "cover-ice",
+      "col": 8,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Ice after a freeze. Not a room floor."
+    },
+    {
+      "id": "cover-metal",
+      "col": 9,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Metal plate on stone."
+    },
+    {
+      "id": "cover-plant",
+      "col": 10,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Green growth."
+    },
+    {
+      "id": "cover-grove",
+      "col": 11,
+      "row": 4,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "cover",
+      "note": "Living mass."
+    },
+    {
+      "id": "fx-fire",
+      "col": 0,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Hunger on a tile."
+    },
+    {
+      "id": "fx-poison",
+      "col": 1,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Miasma / toxic gas."
+    },
+    {
+      "id": "fx-smoke",
+      "col": 2,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Smoke puff."
+    },
+    {
+      "id": "fx-smoke-b",
+      "col": 3,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Larger smoke."
+    },
+    {
+      "id": "fx-charge",
+      "col": 4,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Spark walking the floor."
+    },
+    {
+      "id": "fx-wet",
+      "col": 5,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Water on stone."
+    },
+    {
+      "id": "fx-grow",
+      "col": 6,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Growth tick."
+    },
+    {
+      "id": "fx-ripple",
+      "col": 7,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Water ripple."
+    },
+    {
+      "id": "fx-ripple-b",
+      "col": 8,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Wider ripple."
+    },
+    {
+      "id": "bush",
+      "col": 9,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Shrub."
+    },
+    {
+      "id": "bush-b",
+      "col": 10,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.28",
+      "kind": "prop",
+      "note": "Larger shrub."
+    },
+    {
+      "id": "fx-ember",
+      "col": 11,
+      "row": 5,
+      "w": 1,
+      "h": 1,
+      "pivot": "0.5,0.5",
+      "kind": "fx",
+      "note": "Low ember wash."
+    }
+  ],
+  "aliases": [
+    {
+      "id": "torch",
+      "tile": "torch-unlit"
+    },
+    {
+      "id": "torch-lit",
+      "tile": "torch-lit"
+    },
+    {
+      "id": "rod",
+      "tile": "lightning-pillar"
+    },
+    {
+      "id": "rod-live",
+      "tile": "lightning-pillar"
+    },
+    {
+      "id": "ice-block",
+      "tile": "ice-chest"
+    },
+    {
+      "id": "tile-fire",
+      "tile": "fx-fire"
+    },
+    {
+      "id": "tile-poison",
+      "tile": "fx-poison"
+    },
+    {
+      "id": "tile-fog",
+      "tile": "fx-smoke-b"
+    },
+    {
+      "id": "tile-charge",
+      "tile": "fx-charge"
+    },
+    {
+      "id": "tile-wet",
+      "tile": "fx-wet"
+    },
+    {
+      "id": "tile-grow",
+      "tile": "fx-grow"
+    },
+    {
+      "id": "door",
+      "tile": "door"
+    },
+    {
+      "id": "door-open",
+      "tile": "door-open"
+    }
+  ],
+  "bases": {
+    "stone": [
+      "floor-stone",
+      "floor-stone-b",
+      "floor-cracked"
+    ],
+    "dirt": [
+      "floor-dirt",
+      "floor-dirt-b",
+      "floor-pebble",
+      "floor-mud",
+      "floor-ash"
+    ],
+    "water": [
+      "floor-water",
+      "floor-water-b"
+    ]
+  },
+  "covers": {
+    "Moss": "cover-moss",
+    "Plant": "cover-plant",
+    "Grove": "cover-grove",
+    "Ice": "cover-ice",
+    "Snow": "cover-ice",
+    "Glacier": "cover-ice",
+    "Metal": "cover-metal",
+    "Crystal": "cover-seal",
+    "Ash": null,
+    "Mud": null,
+    "Acid": "fx-poison",
+    "Damp": "fx-wet"
+  }
+}

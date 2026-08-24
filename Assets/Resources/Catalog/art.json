@@ -171,7 +171,7 @@
       "id": "ice-cask",
       "name": "Ice cask",
       "kind": "prop",
-      "sprite": "ice-block",
+      "sprite": "ice-chest",
       "matter": "ice",
       "fragile": true,
       "look": "yield asked to stand, and poorly. Hunger or a shatter ends it."
