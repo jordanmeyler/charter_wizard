@@ -188,6 +188,11 @@ def assert_walkable(data):
     must_not(closed, "earth right bypass", world("earth-wing", rooms, 10, 6))
     must(closed, "air altar", world("air-wing", rooms, 7, 12))
     must(closed, "air miasma lip", world("air-wing", rooms, 7, 9))
+    air = next(r for r in rooms if r["id"] == "air-wing")
+    if any(p.get("type") == "fog" for p in air.get("props") or []):
+        raise SystemExit("air-wing should be tile miasma, not a fog lock")
+    if not any(s.get("aura") == "miasma" for s in air.get("stamps") or []):
+        raise SystemExit("air-wing is missing a miasma stamp")
     must(closed, "door I", world("hub", rooms, 23, 13))
 
     foyer = world("aspect-foyer", rooms, 15, 6)
