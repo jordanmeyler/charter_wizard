@@ -81,9 +81,14 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 
 ## Building levels and scenes
 
-**Hand-place items in the Unity scene.** `Window → Rune Magic → Authoring` creates prefabs (Item, Mite, Torch, Rod, Gate, Barrier, Plaque, Crystal, Charm, Adept). Drag one in, set catalog id / matter / keys / formula / sprites on the Inspector, optionally snap with `GameObject → Rune Magic → Snap Selection To Grid`. Play keeps scene objects and binds them.
+**Paint the map in the Scene view, then drop objects on it** — the usual Unity 2D flow.
 
-Add a **Level Authoring** object to choose tiles: the JSON startup map (default), a named map, a blank room shell, or a `WorldGrid` already in the scene. Turn **Include JSON Props** off if you want to place every lock yourself on top of Floor 1's tiles.
+1. `Window → Rune Magic → Authoring → Create tile palette`. Tiles land in `Assets/Tiles/Floor`, `Wall`, and `Special`. You can add your own folders there.
+2. `GameObject → Rune Magic → Painted Map`. That adds a Grid + Tilemap.
+3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Each brush is a material (Ice floor, Stone wall, Pit…). Click the tile asset to change material, kind, aura, or sprite. Paint over a region to reassign.
+4. Create prefabs from the same Authoring window and drag Item / Torch / Mite onto the painted cells.
+
+Play bakes the Tilemap into the live grid and skips the JSON floor when a painted map is present. Folders under `Assets/Tiles` and `Assets/Prefabs` are yours to organize.
 
 Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Magic → Sprite Sheet`. Save under `Assets/Resources/SpriteSheets/`. Clips are looked up by id (`adept-walk`, `ice-melt`, `fireball-shot`). Assign sliced Unity sprites on a prefab, or name a **change clip** so melt / explode plays before the object goes.
 

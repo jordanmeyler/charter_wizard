@@ -44,13 +44,24 @@ namespace RuneMagic
         {
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.HelpBox(
-                "Hand-place items in the Scene view. Play keeps them.\n\n" +
-                "1. Window → Rune Magic → Authoring → Create prefabs.\n" +
-                "2. Drag a prefab into the scene. Snap with GameObject → Rune Magic → Snap Selection To Grid.\n" +
-                "3. On the Inspector: catalog id, matter (Ice, Fire…), keys, formula, sprites, change clip.\n" +
-                "4. Optional: add Level Authoring to skip JSON props or paint a blank room shell.\n\n" +
-                "Sprite sheets: Create → Rune Magic → Sprite Sheet. Put the asset under Resources. Name clips idle, walk, melt, explode. Play looks up adept-walk, ice-melt, fireball-shot.",
+                "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
+                "1. Create tile palette — writes Assets/Tiles (Floor / Wall / Special).\n" +
+                "2. GameObject → Rune Magic → Painted Map (or the button below).\n" +
+                "3. Window → 2D → Tile Palette → open Rune Palette. Select the Tiles object. Paint.\n" +
+                "4. Click a tile asset to change material, kind, aura, or sprite. Paint over a region to reassign.\n" +
+                "5. Create prefabs, then drag Item / Torch / Mite onto the painted cells.\n" +
+                "6. Play. The painted map becomes the live grid; JSON Floor 1 is skipped.",
                 MessageType.Info);
+
+            if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
+            {
+                TilemapAuthoring.EnsureTiles();
+            }
+
+            if (GUILayout.Button("Add painted map to scene"))
+            {
+                TilemapAuthoring.CreatePaintedMap();
+            }
 
             if (GUILayout.Button("Create / refresh prefabs"))
             {

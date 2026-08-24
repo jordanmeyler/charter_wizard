@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace RuneMagic
 {
@@ -7,7 +8,8 @@ namespace RuneMagic
         StartupMap,
         NamedMap,
         RoomShell,
-        SceneGrid
+        SceneGrid,
+        Tilemap
     }
 
     /// <summary>
@@ -21,6 +23,7 @@ namespace RuneMagic
         public LevelTileSource tiles = LevelTileSource.StartupMap;
         public string mapId;
         public bool includeJsonProps = true;
+        public Tilemap tilemap;
 
         [Header("Spawn")]
         public Transform spawnPoint;
