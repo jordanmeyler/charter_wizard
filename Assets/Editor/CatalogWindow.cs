@@ -19,8 +19,18 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Recipes live in Assets/Resources/Catalog/spells.json — that is the master book the game loads. Sprites and items live in art.json. The fuller editor is Tools/catalog-editor.html.",
+                "Recipes live in Assets/Resources/Catalog/spells.json — that is the master book the game loads. Sprites and items live in art.json. Place items in the Scene with Window → Rune Magic → Authoring. Sprite sheets: Window → Rune Magic → Sprite Sheet.",
                 MessageType.Info);
+
+            if (GUILayout.Button("Open Authoring (place items)"))
+            {
+                AuthoringWindow.Open();
+            }
+
+            if (GUILayout.Button("Open Sprite Sheet importer"))
+            {
+                SpriteSheetWindow.Open();
+            }
 
             if (GUILayout.Button("Open spells.json (recipes + joins)"))
             {

@@ -22,12 +22,24 @@ namespace RuneMagic
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Gate";
+        [SerializeField] string authoredId = "gate";
+        [SerializeField] string[] requires;
+        [SerializeField] bool finishes;
+        [SerializeField] string note;
+        [SerializeField] string spriteId = "socket-gate";
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+        [SerializeField] Vector2Int[] doorCells;
+
         string[] _requires;
         string _resolvedNote;
         SanctumDirector _director;
         WorldGrid _grid;
         Vector2Int[] _doors;
         float _pulse;
+        bool _wired;
 
         public void Bind(
             string displayName,
@@ -39,6 +51,17 @@ namespace RuneMagic
             WorldGrid grid = null,
             IList<Vector2Int> doors = null)
         {
+            if (_wired)
+            {
+                if (grid != null)
+                {
+                    _grid = grid;
+                }
+
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             _requires = requires ?? System.Array.Empty<string>();
@@ -54,14 +77,33 @@ namespace RuneMagic
                 }
             }
 
-            var renderer = gameObject.AddComponent<SpriteRenderer>();
             var art = string.IsNullOrEmpty(spriteId) ? "socket-gate" : spriteId;
-            renderer.sprite = SpriteFactory.Named(art);
-            renderer.sortingOrder = 8;
-            SpriteAnim.On(gameObject, renderer).Play(art, 3f);
-            FixtureGlow.Attach(transform, new Color(0.85f, 0.72f, 0.28f, 0.7f), 2.1f, 0.18f);
+            AuthoringUtil.ApplyLook(gameObject, 8, art, portrait, idleFrames, 3f);
+            if (GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(0.85f, 0.72f, 0.28f, 0.7f), 2.1f, 0.18f);
+            }
+
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 1.05f, 0f),
                 new Color(0.95f, 0.84f, 0.45f));
+        }
+
+        public void BindFromAuthoring(WorldGrid grid)
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(
+                authoredName,
+                authoredId,
+                requires,
+                finishes,
+                note,
+                spriteId,
+                grid,
+                doorCells != null && doorCells.Length > 0 ? doorCells : null);
         }
 
         public void Collect(List<RuneId> buffer)

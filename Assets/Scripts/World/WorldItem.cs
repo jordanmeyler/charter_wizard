@@ -32,9 +32,26 @@ namespace RuneMagic
         public float LookRadius => 0.55f;
         public bool CanLook => !Collected && _item != null;
         public string LookText => Sight.OfItem(_item);
-        public Essence Matter => WorldMatter.Parse(_item != null ? _item.matter : null);
+        public Essence Matter => WorldMatter.Parse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null);
         public bool Fragile =>
-            _item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase));
+            fragile
+            || (_item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase)));
+
+        [Header("Authoring")]
+        [SerializeField] string catalogId;
+        [SerializeField] string displayName;
+        [SerializeField] string spriteId;
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+        [SerializeField] Sprite[] changeFrames;
+        [SerializeField] string changeClip;
+        [SerializeField] float changeFps = 10f;
+        [SerializeField] string matter;
+        [SerializeField] bool fragile;
+        [SerializeField] string[] keys;
+        [SerializeField] string teachesSpell;
+        [SerializeField] string note;
+        [SerializeField] string look;
 
         CatalogItem _item;
         Grimoire _grimoire;
@@ -42,6 +59,8 @@ namespace RuneMagic
         System.Action<string> _log;
         Transform _carrier;
         CircleCollider2D _hit;
+        SpriteRenderer _renderer;
+        bool _wired;
 
         public static GameObject Spawn(Vector3 position, CatalogItem item)
         {
@@ -57,14 +76,32 @@ namespace RuneMagic
             _grimoire = grimoire;
             _log = log;
             _pack = pack;
-            var spriteId = _item != null && !string.IsNullOrEmpty(_item.sprite) ? _item.sprite : "charm";
-            var renderer = gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = SpriteFactory.Named(spriteId);
-            renderer.sortingOrder = 5;
-            SpriteAnim.On(gameObject, renderer).Play(spriteId, 4f);
-            PropBob.Attach(transform, 0.08f, 1.4f);
-            FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
-            _hit = gameObject.AddComponent<CircleCollider2D>();
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
+            if (_item == null)
+            {
+                _item = AuthoringUtil.ResolveItem(catalogId, displayName, spriteId, matter, fragile, keys, teachesSpell, note, look);
+            }
+
+            var art = !string.IsNullOrEmpty(spriteId)
+                ? spriteId
+                : _item != null && !string.IsNullOrEmpty(_item.sprite) ? _item.sprite : "charm";
+            _renderer = AuthoringUtil.ApplyLook(gameObject, 5, art, portrait, idleFrames, 4f);
+            if (GetComponent<PropBob>() == null)
+            {
+                PropBob.Attach(transform, 0.08f, 1.4f);
+            }
+
+            if (GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
+            }
+
+            _hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
             _hit.isTrigger = true;
             _hit.radius = 0.4f;
             WorldLabel.Attach(transform, _item != null ? _item.name : "Item", new Vector3(0f, 0.7f, 0f),
@@ -86,11 +123,12 @@ namespace RuneMagic
                 return false;
             }
 
-            if (_item != null && _item.keys != null && _item.keys.Length > 0)
+            var keyList = keys != null && keys.Length > 0 ? keys : _item != null ? _item.keys : null;
+            if (keyList != null && keyList.Length > 0)
             {
-                for (var i = 0; i < _item.keys.Length; i++)
+                for (var i = 0; i < keyList.Length; i++)
                 {
-                    if (SpellRegistry.Parse(_item.keys[i]) == spell)
+                    if (SpellRegistry.Parse(keyList[i]) == spell)
                     {
                         return true;
                     }
@@ -99,7 +137,7 @@ namespace RuneMagic
                 return false;
             }
 
-            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material))
+            if (MatterLaw.TryParse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null, out var material))
             {
                 if (MatterLaw.ResistsMagic(material))
                 {
@@ -126,8 +164,17 @@ namespace RuneMagic
             Collected = true;
             _carrier = null;
             var name = _item != null && !string.IsNullOrEmpty(_item.name) ? _item.name : "The stood thing";
-            Destroy(gameObject);
-            if (MatterLaw.TryParse(_item != null ? _item.matter : null, out var material))
+            var hasChange = (changeFrames != null && changeFrames.Length > 0) || !string.IsNullOrEmpty(changeClip);
+            if (hasChange)
+            {
+                AuthoringUtil.PlayChange(gameObject, _renderer, changeFrames, changeClip, changeFps, () => Destroy(gameObject));
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+
+            if (MatterLaw.TryParse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null, out var material))
             {
                 return MatterLaw.MeltNote(material);
             }

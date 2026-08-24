@@ -7,17 +7,8 @@ namespace RuneMagic
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Schedule()
         {
-            if (AdeptAvatar.Find() != null)
-            {
-                return;
-            }
-
             var existing = Object.FindFirstObjectByType<SanctumDirector>();
-            if (existing != null && AdeptAvatar.Find() == null)
-            {
-                Object.DestroyImmediate(existing.gameObject);
-            }
-            else if (existing != null)
+            if (existing != null && existing.Started)
             {
                 return;
             }
@@ -33,7 +24,8 @@ namespace RuneMagic
 
         public static void Run()
         {
-            if (AdeptAvatar.Find() != null)
+            var existing = Object.FindFirstObjectByType<SanctumDirector>();
+            if (existing != null && existing.Started)
             {
                 return;
             }
@@ -48,18 +40,29 @@ namespace RuneMagic
                 Debug.LogWarning("Camera setup failed: " + exception);
             }
 
-            var directorObject = new GameObject("Sanctum");
-            var director = directorObject.AddComponent<SanctumDirector>();
-            var hud = directorObject.AddComponent<GameHud>();
-            hud.Bind(director);
-            directorObject.AddComponent<RoomAtmosphere>().Bind(director);
+            var director = existing;
+            if (director == null)
+            {
+                var directorObject = new GameObject("Sanctum");
+                director = directorObject.AddComponent<SanctumDirector>();
+            }
+
+            if (director.GetComponent<GameHud>() == null)
+            {
+                director.gameObject.AddComponent<GameHud>().Bind(director);
+            }
+
+            if (director.GetComponent<RoomAtmosphere>() == null)
+            {
+                director.gameObject.AddComponent<RoomAtmosphere>().Bind(director);
+            }
 
             SanctumBuild build = null;
             try
             {
-                build = SanctumLayout.Construct();
+                build = SceneLevel.Construct();
                 director.Begin(build);
-                if (build.Charm != null)
+                if (build != null && build.Charm != null && build.Charm.GetComponent<FreeCharm>() == null)
                 {
                     build.Charm.AddComponent<FreeCharm>().Bind(director.Grimoire, director.Log);
                 }
@@ -88,12 +91,17 @@ namespace RuneMagic
             }
 
             var spawn = build != null ? build.Spawn : new Vector3(2.5f, 5.5f, 0f);
-            var player = SpawnPlayer(spawn, cam);
+            var player = AdeptAvatar.Find() != null
+                ? EnsurePlayer(AdeptAvatar.Find().gameObject, spawn, cam)
+                : SpawnPlayer(spawn, cam);
             director.BindPlayer(player);
-            var tapestryHost = new GameObject("RuneTapestry");
-            var tapestry = tapestryHost.AddComponent<RuneTapestry>();
-            tapestry.Bind(director, build);
-            director.BindTapestry(tapestry);
+            if (Object.FindFirstObjectByType<RuneTapestry>() == null)
+            {
+                var tapestryHost = new GameObject("RuneTapestry");
+                var tapestry = tapestryHost.AddComponent<RuneTapestry>();
+                tapestry.Bind(director, build);
+                director.BindTapestry(tapestry);
+            }
         }
 
         static Camera PrepareCamera()
@@ -183,12 +191,77 @@ namespace RuneMagic
             return player;
         }
 
+        static GameObject EnsurePlayer(GameObject player, Vector3 spawn, Camera camera)
+        {
+            if (player.GetComponent<SpriteRenderer>() == null)
+            {
+                var sprite = player.AddComponent<SpriteRenderer>();
+                sprite.sprite = SpriteFactory.Named("adept");
+                sprite.sortingOrder = 20;
+            }
+
+            if (player.GetComponent<Rigidbody2D>() == null)
+            {
+                var body = player.AddComponent<Rigidbody2D>();
+                body.gravityScale = 0f;
+                body.freezeRotation = true;
+                body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            }
+
+            if (player.GetComponent<CircleCollider2D>() == null)
+            {
+                var hit = player.AddComponent<CircleCollider2D>();
+                hit.radius = 0.38f;
+            }
+
+            if (player.GetComponent<PlayerMotor2D>() == null)
+            {
+                player.AddComponent<PlayerMotor2D>();
+            }
+
+            if (player.GetComponent<StatusHost>() == null)
+            {
+                player.AddComponent<StatusHost>().Bind(CreatureNature.Flesh, new Vector3(0f, 1.42f, 0f));
+            }
+
+            if (player.transform.Find("Glow") == null)
+            {
+                var glow = new GameObject("Glow");
+                glow.transform.SetParent(player.transform, false);
+                glow.transform.localPosition = new Vector3(0f, -0.2f, 0f);
+                var halo = glow.AddComponent<SpriteRenderer>();
+                halo.sprite = SpriteFactory.Glow(new Color(0.78f, 0.55f, 1f, 0.85f));
+                halo.sortingOrder = 7;
+            }
+
+            if (camera != null)
+            {
+                var follow = camera.GetComponent<FollowCamera2D>() ?? camera.gameObject.AddComponent<FollowCamera2D>();
+                follow.Target = player.transform;
+                follow.damp = 8f;
+            }
+
+            if (player.transform.position.sqrMagnitude < 0.01f)
+            {
+                player.transform.position = spawn;
+            }
+
+            return player;
+        }
+
         static void BindWorldItems(SanctumDirector director)
         {
             var items = Object.FindObjectsByType<WorldItem>(FindObjectsSortMode.None);
             for (var i = 0; i < items.Length; i++)
             {
                 items[i].Bind(director.Grimoire, director.Log, director.Pack);
+            }
+
+            var charms = Object.FindObjectsByType<FreeCharm>(FindObjectsSortMode.None);
+            for (var i = 0; i < charms.Length; i++)
+            {
+                charms[i].Bind(director.Grimoire, director.Log);
             }
         }
     }

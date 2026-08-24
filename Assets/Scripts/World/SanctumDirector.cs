@@ -62,6 +62,7 @@ namespace RuneMagic
         public SpellId PendingSpell { get; private set; }
         public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
+        public bool Started { get; private set; }
         public bool CanMove =>
             (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming || Mode == PlayMode.Charter)
             && !Busy && !GameHud.EditingName;
@@ -92,8 +93,18 @@ namespace RuneMagic
             _rooms = build.Rooms;
             _safePoint = build.Spawn;
             _spawnPoint = build.Spawn;
-            SpawnCrystal.Spawn(build.Spawn);
+            var crystal = FindFirstObjectByType<SpawnCrystal>();
+            if (crystal == null)
+            {
+                SpawnCrystal.Spawn(build.Spawn);
+            }
+            else
+            {
+                crystal.EnsureBound();
+            }
+
             CurrentRoom = _rooms != null && _rooms.Length > 0 ? _rooms[0] : null;
+            Started = true;
             var broken = SpellCodex.Validate();
             if (!string.IsNullOrEmpty(broken))
             {

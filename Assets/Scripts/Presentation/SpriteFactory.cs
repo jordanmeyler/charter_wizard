@@ -26,6 +26,11 @@ namespace RuneMagic
                 return atlas;
             }
 
+            if (SpriteSheetLibrary.TrySprite(id, out var sheet) && sheet != null)
+            {
+                return sheet;
+            }
+
             var painted = SpriteActors.Still(id);
             if (painted != null)
             {
@@ -105,6 +110,11 @@ namespace RuneMagic
 
         public static Sprite[] Clip(string id)
         {
+            if (SpriteSheetLibrary.TryClip(id, out var sheet) && sheet != null && sheet.Length > 0)
+            {
+                return sheet;
+            }
+
             var clip = SpriteActors.Clip(id);
             if (clip != null && clip.Length > 0)
             {
@@ -116,6 +126,11 @@ namespace RuneMagic
 
         public static bool HasClip(string id)
         {
+            if (SpriteSheetLibrary.TryClip(id, out var sheet) && sheet != null && sheet.Length > 1)
+            {
+                return true;
+            }
+
             var clip = SpriteActors.Clip(id);
             return clip != null && clip.Length > 1;
         }

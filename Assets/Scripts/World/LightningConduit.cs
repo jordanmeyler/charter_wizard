@@ -16,13 +16,30 @@ namespace RuneMagic
         public float VoiceWeight => 2.6f;
         public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Storm Rod";
+        [SerializeField] string authoredId = "storm-rod";
+        [SerializeField] string authoredSprite = "rod";
+        [SerializeField] string authoredSpriteLit = "rod-live";
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+        [SerializeField] Sprite[] liveFrames;
+        [SerializeField] string[] keys;
+
         SpriteRenderer _renderer;
         TextMesh _label;
         string _spriteId = "rod";
         string _spriteLit = "rod-live";
+        bool _wired;
 
         public void Bind(string displayName, string formulaId, SpellId[] keys, string spriteId = null, string spriteLit = null)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys;
@@ -36,13 +53,29 @@ namespace RuneMagic
                 _spriteLit = spriteLit;
             }
 
-            _renderer = gameObject.AddComponent<SpriteRenderer>();
-            _renderer.sprite = SpriteFactory.Named(_spriteId);
-            _renderer.sortingOrder = 5;
-            SpriteAnim.On(gameObject, _renderer).Play(_spriteId, 4f);
-            FixtureGlow.Attach(transform, new Color(0.55f, 0.75f, 1f, 0.4f), 1.4f, 0.1f);
+            _renderer = AuthoringUtil.ApplyLook(gameObject, 5, _spriteId, portrait, idleFrames, 4f);
+            if (GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(0.55f, 0.75f, 1f, 0.4f), 1.4f, 0.1f);
+            }
+
             _label = WorldLabel.Attach(transform, "Storm rod", new Vector3(0f, 1.15f, 0f),
                 new Color(0.75f, 0.88f, 1f));
+        }
+
+        public void BindFromAuthoring()
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(
+                authoredName,
+                authoredId,
+                AuthoringUtil.ParseKeys(keys, MapBuilder.RodKeys),
+                authoredSprite,
+                authoredSpriteLit);
         }
 
         public void Collect(System.Collections.Generic.List<RuneId> buffer)
@@ -59,8 +92,15 @@ namespace RuneMagic
         public string Resolve(SpellId spell)
         {
             Resolved = true;
-            _renderer.sprite = SpriteFactory.Named(_spriteLit);
-            SpriteAnim.On(gameObject, _renderer).Play(_spriteLit, 12f);
+            if (liveFrames != null && liveFrames.Length > 0)
+            {
+                SpriteAnim.On(gameObject, _renderer).Play(liveFrames, 12f, true, _spriteLit);
+            }
+            else
+            {
+                _renderer.sprite = SpriteFactory.Named(_spriteLit);
+                SpriteAnim.On(gameObject, _renderer).Play(_spriteLit, 12f);
+            }
             if (_label != null)
             {
                 _label.text = "Live bolt";
