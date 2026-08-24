@@ -84,6 +84,9 @@ namespace RuneMagic
 
         void OnGUI()
         {
+            EditorGUILayout.HelpBox(
+                "Leftover JSON painter. Play loads the scene Tilemap, not these files. Use Window → 2D → Tile Palette.",
+                MessageType.Warning);
             if (_map == null)
             {
                 TryLoadDefault();

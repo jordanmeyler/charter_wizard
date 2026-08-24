@@ -4,7 +4,9 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// Turns a scene Tilemap you painted in the editor into a live WorldGrid.
+    /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
+    /// The walk layer sets kind + material. An optional Cover layer only
+    /// stamps aura and covering.
     /// </summary>
     public static class TilemapLevel
     {
@@ -30,44 +32,33 @@ namespace RuneMagic
 
         public static SanctumBuild Bake(LevelAuthoring spec, Tilemap map = null)
         {
-            map = map != null ? map : spec != null && spec.tilemap != null ? spec.tilemap : FindPaintedMap();
-            if (map == null)
+            var floors = map != null
+                ? map
+                : spec != null && spec.tilemap != null
+                    ? spec.tilemap
+                    : FindPaintedMap();
+            if (floors == null)
             {
                 return null;
             }
 
-            HideEditors(map);
-            var root = new GameObject(map.transform.parent != null ? map.transform.parent.name : "Painted Map");
+            HideEditors(floors);
+            var overlays = ResolveOverlays(spec, floors);
+            if (overlays != null)
+            {
+                HideEditors(overlays);
+            }
+
+            var root = new GameObject(floors.transform.parent != null ? floors.transform.parent.name : "Painted Map");
             var grid = root.AddComponent<WorldGrid>();
-            var bounds = map.cellBounds;
-            var any = false;
             var minX = int.MaxValue;
             var minY = int.MaxValue;
             var maxX = int.MinValue;
             var maxY = int.MinValue;
-
-            for (var y = bounds.yMin; y < bounds.yMax; y++)
+            var any = Stamp(grid, floors, true, ref minX, ref minY, ref maxX, ref maxY);
+            if (overlays != null && overlays != floors)
             {
-                for (var x = bounds.xMin; x < bounds.xMax; x++)
-                {
-                    var paint = map.GetTile<WorldPaintTile>(new Vector3Int(x, y, 0));
-                    if (paint == null)
-                    {
-                        continue;
-                    }
-
-                    any = true;
-                    minX = Mathf.Min(minX, x);
-                    minY = Mathf.Min(minY, y);
-                    maxX = Mathf.Max(maxX, x);
-                    maxY = Mathf.Max(maxY, y);
-                    var tile = grid.Set(x, y, paint.kind, paint.material);
-                    ApplyAura(tile, paint.aura);
-                    if (!string.IsNullOrEmpty(paint.cover))
-                    {
-                        tile.PaintCover(paint.cover);
-                    }
-                }
+                any = Stamp(grid, overlays, false, ref minX, ref minY, ref maxX, ref maxY) || any;
             }
 
             if (!any)
@@ -92,6 +83,71 @@ namespace RuneMagic
                 Rooms = new[] { room },
                 Charm = null
             };
+        }
+
+        static Tilemap ResolveOverlays(LevelAuthoring spec, Tilemap floors)
+        {
+            if (spec != null && spec.overlays != null)
+            {
+                return spec.overlays;
+            }
+
+            if (floors == null || floors.transform.parent == null)
+            {
+                return null;
+            }
+
+            var cover = floors.transform.parent.Find("Cover");
+            return cover != null ? cover.GetComponent<Tilemap>() : null;
+        }
+
+        static bool Stamp(
+            WorldGrid grid,
+            Tilemap map,
+            bool replace,
+            ref int minX,
+            ref int minY,
+            ref int maxX,
+            ref int maxY)
+        {
+            if (map == null)
+            {
+                return false;
+            }
+
+            var any = false;
+            var bounds = map.cellBounds;
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                for (var x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    var paint = map.GetTile<WorldPaintTile>(new Vector3Int(x, y, 0));
+                    if (paint == null)
+                    {
+                        continue;
+                    }
+
+                    any = true;
+                    minX = Mathf.Min(minX, x);
+                    minY = Mathf.Min(minY, y);
+                    maxX = Mathf.Max(maxX, x);
+                    maxY = Mathf.Max(maxY, y);
+
+                    var tile = grid.Get(x, y);
+                    if (tile == null || replace)
+                    {
+                        tile = grid.Set(x, y, paint.kind, paint.material);
+                    }
+
+                    ApplyAura(tile, paint.aura);
+                    if (paint.cover != TileCover.None)
+                    {
+                        tile.PaintCover(paint.cover);
+                    }
+                }
+            }
+
+            return any;
         }
 
         static int CountPainted(Tilemap map)
@@ -122,23 +178,22 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyAura(WorldTile tile, string aura)
+        static void ApplyAura(WorldTile tile, TileAura aura)
         {
-            if (tile == null || string.IsNullOrEmpty(aura))
+            if (tile == null)
             {
                 return;
             }
 
-            switch (aura.Trim().ToLowerInvariant())
+            switch (aura)
             {
-                case "miasma":
-                case "poison":
+                case TileAura.Miasma:
                     tile.Foul(1f);
                     break;
-                case "fog":
+                case TileAura.Fog:
                     tile.Cloak(1f);
                     break;
-                case "fire":
+                case TileAura.Fire:
                     tile.Kindle();
                     break;
             }

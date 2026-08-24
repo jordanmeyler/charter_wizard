@@ -32,7 +32,7 @@ namespace RuneMagic
         public float LookRadius => 0.55f;
         public bool CanLook => !Collected && _item != null;
         public string LookText => Sight.OfItem(_item);
-        public Essence Matter => WorldMatter.Parse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null);
+        public Essence Matter => WorldMatter.Parse(AuthoredMatter());
         public bool Fragile =>
             fragile
             || (_item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase)));
@@ -46,6 +46,8 @@ namespace RuneMagic
         [SerializeField] Sprite[] changeFrames;
         [SerializeField] string changeClip;
         [SerializeField] float changeFps = 10f;
+        [Tooltip("What this object is made of. Used when the catalog row has no matter.")]
+        [SerializeField] MaterialId material;
         [SerializeField] string matter;
         [SerializeField] bool fragile;
         [SerializeField] string[] keys;
@@ -84,7 +86,7 @@ namespace RuneMagic
             _wired = true;
             if (_item == null)
             {
-                _item = AuthoringUtil.ResolveItem(catalogId, displayName, spriteId, matter, fragile, keys, teachesSpell, note, look);
+                _item = AuthoringUtil.ResolveItem(catalogId, displayName, spriteId, AuthoredMatter(), fragile, keys, teachesSpell, note, look);
             }
 
             var art = !string.IsNullOrEmpty(spriteId)
@@ -137,14 +139,14 @@ namespace RuneMagic
                 return false;
             }
 
-            if (MatterLaw.TryParse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null, out var material))
+            if (MatterLaw.TryParse(AuthoredMatter(), out var authoredMaterial))
             {
-                if (MatterLaw.ResistsMagic(material))
+                if (MatterLaw.ResistsMagic(authoredMaterial))
                 {
                     return false;
                 }
 
-                if (MatterLaw.Melts(spell, material))
+                if (MatterLaw.Melts(spell, authoredMaterial))
                 {
                     return true;
                 }
@@ -174,9 +176,9 @@ namespace RuneMagic
                 Destroy(gameObject);
             }
 
-            if (MatterLaw.TryParse(!string.IsNullOrEmpty(matter) ? matter : _item != null ? _item.matter : null, out var material))
+            if (MatterLaw.TryParse(AuthoredMatter(), out var authoredMaterial))
             {
-                return MatterLaw.MeltNote(material);
+                return MatterLaw.MeltNote(authoredMaterial);
             }
 
             return Matter == Essence.Water
@@ -250,6 +252,21 @@ namespace RuneMagic
             }
 
             CollectInto();
+        }
+
+        string AuthoredMatter()
+        {
+            if (!string.IsNullOrEmpty(matter))
+            {
+                return matter;
+            }
+
+            if (material != MaterialId.None)
+            {
+                return material.ToString();
+            }
+
+            return _item != null ? _item.matter : null;
         }
 
         void CollectInto()

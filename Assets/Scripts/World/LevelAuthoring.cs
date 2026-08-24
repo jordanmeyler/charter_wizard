@@ -22,7 +22,10 @@ namespace RuneMagic
         public LevelTileSource tiles = LevelTileSource.Tilemap;
         public string mapId;
         public bool includeJsonProps;
+        [Tooltip("Walk tiles — floor, wall, pit, door. Paint with Window → 2D → Tile Palette.")]
         public Tilemap tilemap;
+        [Tooltip("Optional second Tilemap. Cover and aura brushes only change the overlay.")]
+        public Tilemap overlays;
 
         [Header("Spawn")]
         public Transform spawnPoint;

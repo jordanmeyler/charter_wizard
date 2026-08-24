@@ -1,6 +1,6 @@
 # Floor 1 — The Foundation
 
-*The tutorial floor. Teaches the whole grammar — the four elements (substance) and the three aspects (form & state) — entirely through play. Companion to [`DESIGN.md`](DESIGN.md) (v0.18), [`SPELLS.md`](SPELLS.md), and [`MATERIALS.md`](MATERIALS.md). Playable map: `Assets/Resources/Maps/foundation.json`.*
+*The tutorial floor. Teaches the whole grammar — the four elements (substance) and the three aspects (form & state) — entirely through play. Companion to [`DESIGN.md`](DESIGN.md) (v0.18), [`SPELLS.md`](SPELLS.md), and [`MATERIALS.md`](MATERIALS.md). Paint the playable map on the Tilemap in `Assets/Scenes/Main.unity`. The old `foundation.json` is leftover.*
 
 No text tutorials. Every lesson is a situation. Altars show the **mark beside a picture** of the thing — a flame for Fire, water for Water, a rock for Earth, a gale for Air — so Play can pair sign and meaning without a name. Develop still writes the name. Other runes may sit in the room’s materials; the wing’s own element is always present in its pure form.
 
