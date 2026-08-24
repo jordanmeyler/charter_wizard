@@ -18,6 +18,11 @@ namespace RuneMagic
 
         static SanctumBuild DefaultTiles()
         {
+            if (TilemapLevel.HasPaintedMap())
+            {
+                return TilemapLevel.Bake(null);
+            }
+
             if (Object.FindFirstObjectByType<WorldGrid>() != null)
             {
                 return FromExistingGrid(null);
@@ -44,6 +49,11 @@ namespace RuneMagic
                     return BuildShell(spec);
                 case LevelTileSource.SceneGrid:
                     return FromExistingGrid(spec);
+                case LevelTileSource.Tilemap:
+                    {
+                        var baked = TilemapLevel.Bake(spec);
+                        return baked ?? BuildShell(spec);
+                    }
                 default:
                     {
                         var map = string.IsNullOrEmpty(spec.mapId)
