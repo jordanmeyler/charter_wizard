@@ -5,9 +5,9 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Named slices from <c>Catalog/tiles.json</c> + <c>Sprites/dungeon-atlas</c>.
-    /// Floors resolve to stone, dirt, or water. Ice, fire, and lightning
-    /// are coverings or FX — they swap onto a base tile.
+    /// Named slices from <c>Catalog/tiles.json</c> and the sprite sheets
+    /// under <c>Sprites/</c>. Floors resolve to stone, dirt, or water.
+    /// Ice, fire, and lightning are coverings or FX — they swap onto a base tile.
     /// </summary>
     public static class TileAtlas
     {
@@ -15,10 +15,15 @@ namespace RuneMagic
         sealed class TileDef
         {
             public string id;
+            public string source;
             public int col;
             public int row;
             public int w = 1;
             public int h = 1;
+            public int x;
+            public int y;
+            public int width;
+            public int height;
             public string pivot;
             public string kind;
             public string note;
@@ -34,7 +39,7 @@ namespace RuneMagic
         [Serializable]
         sealed class TileFile
         {
-            public string source = "Sprites/dungeon-atlas";
+            public string source = "Sprites/pixellab-A-modular-top-down-pixel-art-d-1787590789217";
             public int cell = 32;
             public float pixelsPerUnit = 32f;
             public TileDef[] tiles;
@@ -44,6 +49,7 @@ namespace RuneMagic
         static bool _loaded;
         static readonly Dictionary<string, Sprite> ById = new(StringComparer.OrdinalIgnoreCase);
         static readonly Dictionary<string, string> Notes = new(StringComparer.OrdinalIgnoreCase);
+        static readonly Dictionary<string, Texture2D> Textures = new(StringComparer.OrdinalIgnoreCase);
 
         public static bool Ready
         {
@@ -74,14 +80,6 @@ namespace RuneMagic
                 return;
             }
 
-            var texture = LoadTexture(file.source);
-            if (texture == null)
-            {
-                return;
-            }
-
-            texture.filterMode = FilterMode.Point;
-            texture.wrapMode = TextureWrapMode.Clamp;
             var cell = file.cell > 0 ? file.cell : 32;
             var ppu = file.pixelsPerUnit > 0f ? file.pixelsPerUnit : 32f;
 
@@ -89,6 +87,13 @@ namespace RuneMagic
             {
                 var def = file.tiles[i];
                 if (def == null || string.IsNullOrEmpty(def.id))
+                {
+                    continue;
+                }
+
+                var source = string.IsNullOrWhiteSpace(def.source) ? file.source : def.source;
+                var texture = LoadTexture(source);
+                if (texture == null)
                 {
                     continue;
                 }
@@ -242,6 +247,10 @@ namespace RuneMagic
                     return "cover-metal";
                 case MaterialId.Crystal:
                     return "cover-seal";
+                case MaterialId.Ember:
+                case MaterialId.Lava:
+                case MaterialId.Hearth:
+                    return "cover-fire";
                 case MaterialId.Acid:
                     return "fx-poison";
                 case MaterialId.Damp:
@@ -281,10 +290,25 @@ namespace RuneMagic
 
         static Sprite Slice(Texture2D texture, TileDef def, int cell, float ppu)
         {
-            var width = Mathf.Max(1, def.w) * cell;
-            var height = Mathf.Max(1, def.h) * cell;
-            var x = def.col * cell;
-            var y = texture.height - (def.row + Mathf.Max(1, def.h)) * cell;
+            int x;
+            int y;
+            int width;
+            int height;
+            if (def.width > 0 && def.height > 0)
+            {
+                x = def.x;
+                y = def.y;
+                width = def.width;
+                height = def.height;
+            }
+            else
+            {
+                width = Mathf.Max(1, def.w) * cell;
+                height = Mathf.Max(1, def.h) * cell;
+                x = def.col * cell;
+                y = texture.height - (def.row + Mathf.Max(1, def.h)) * cell;
+            }
+
             if (x < 0 || y < 0 || x + width > texture.width || y + height > texture.height)
             {
                 return null;
@@ -315,7 +339,7 @@ namespace RuneMagic
 
         static Texture2D LoadTexture(string source)
         {
-            var key = (source ?? "Sprites/dungeon-atlas").Trim().Replace('\\', '/');
+            var key = (source ?? "Sprites/pixellab-A-modular-top-down-pixel-art-d-1787590789217").Trim().Replace('\\', '/');
             if (key.StartsWith("Assets/Resources/", StringComparison.OrdinalIgnoreCase))
             {
                 key = key.Substring("Assets/Resources/".Length);
@@ -332,9 +356,22 @@ namespace RuneMagic
                 key = key.Substring(0, dot);
             }
 
-            return Resources.Load<Texture2D>(key)
+            if (Textures.TryGetValue(key, out var cached) && cached != null)
+            {
+                return cached;
+            }
+
+            var texture = Resources.Load<Texture2D>(key)
                 ?? Resources.Load<Texture2D>("Sprites/" + key)
                 ?? Resources.Load<Texture2D>("Sprites/" + System.IO.Path.GetFileName(key));
+            if (texture != null)
+            {
+                texture.filterMode = FilterMode.Point;
+                texture.wrapMode = TextureWrapMode.Clamp;
+                Textures[key] = texture;
+            }
+
+            return texture;
         }
     }
 
