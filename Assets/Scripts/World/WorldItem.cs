@@ -150,8 +150,8 @@ namespace RuneMagic
                 }
             }
 
-            var matter = Matter != Essence.None ? Matter : Essence.Physical;
-            return WorldPhysics.UnmakesMatter(spell, matter);
+            var essence = Matter != Essence.None ? Matter : Essence.Physical;
+            return WorldPhysics.UnmakesMatter(spell, essence);
         }
 
         public string Unmake(SpellId spell)
