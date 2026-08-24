@@ -99,7 +99,7 @@ namespace RuneMagic
                 return ElementFamily.Flame;
             }
 
-            if (spell == SpellId.Grotto)
+            if (spell == SpellId.Grove)
             {
                 return ElementFamily.Plant;
             }

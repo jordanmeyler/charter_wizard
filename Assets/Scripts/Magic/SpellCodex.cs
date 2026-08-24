@@ -111,8 +111,8 @@ namespace RuneMagic
             E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth asked to go.", "Lava-flood", "Fire · Earth · Mercury", "Lava · Mercury", "Remote", SpellOutcome.Kill),
             E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Water · Salt", "Lava · Water · Salt", "Remote", SpellOutcome.Neither),
             E(29, SpellBook.GrowHeal, SpellId.Sprout, "Wet rest given a vegetable body, then marked living.", "Sprout", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
-            E(30, SpellBook.Hold, SpellId.Vine, "That living plant is sent. It holds them, or it climbs.", "Vine", "Water · Earth · Salt · Life · Mercury", "Grove · Mercury", "Remote", SpellOutcome.Restrain),
-            E(31, SpellBook.GrowHeal, SpellId.VineRise, "That living plant is asked to stand.", "Vine-rise", "Water · Earth · Salt · Life · Earth", "Grove · Earth", "Pillar", SpellOutcome.Neither),
+            E(30, SpellBook.Hold, SpellId.Vine, "That living plant is sent. It holds them, or it climbs.", "Vine", "Water · Earth · Salt · Life · Mercury", "Plant · Life · Mercury", "Remote", SpellOutcome.Restrain),
+            E(31, SpellBook.GrowHeal, SpellId.VineRise, "That living plant is asked to stand.", "Vine-rise", "Water · Earth · Salt · Life · Earth", "Plant · Life · Earth", "Pillar", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
@@ -122,7 +122,7 @@ namespace RuneMagic
             E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "Wind · Air", "Shot", SpellOutcome.Restrain),
             E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see.", "Veil", "Dark · Life · Salt · Air", "", "Spread", SpellOutcome.Neither),
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
-            E(41, SpellBook.Grave, SpellId.Blight, "A living plant, then the grave. Verdure rots. No soul.", "Blight", "Water · Earth · Salt · Life · Death", "Grove · Death", "Spread", SpellOutcome.Kill, "Either"),
+            E(41, SpellBook.Grave, SpellId.Blight, "A living plant, then the grave. Verdure rots. No soul.", "Blight", "Water · Earth · Salt · Life · Death", "Plant · Life · Death", "Spread", SpellOutcome.Kill, "Either"),
             E(42, SpellBook.Grave, SpellId.Shade, "Withheld, given a body, marked by the grave, and sent.", "Shade", "Dark · Death · Salt · Mercury", "Shade · Mercury", "Remote", SpellOutcome.Neither, "Free"),
             E(43, SpellBook.Grave, SpellId.Unmake, "The grave is sent into a living body.", "Unmake", "Death · Mercury · Life · Salt", "", "Remote", SpellOutcome.Kill, "Free"),
             E(44, SpellBook.Grave, SpellId.GraveSleep, "The waking passion is given to the grave. Sleep as if dead.", "Grave-sleep", "Life · Sulphur · Death", "", "Remote", SpellOutcome.Restrain, "Free"),
@@ -152,7 +152,7 @@ namespace RuneMagic
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
             E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
-            E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Earth · Salt · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither)
+            E(71, SpellBook.GrowHeal, SpellId.Grove, "The vegetable body marked living. A grove. Plant is the rune; Grove is the spell.", "Grove", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither, "", SpellId.Sprout)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -443,7 +443,7 @@ namespace RuneMagic
                 || WorldWork.StopsOnWalls(SpellId.Rain)
                 || WorldWork.StopsOnWalls(SpellId.Hop)
                 || WorldWork.StopsOnWalls(SpellId.Wall)
-                || WorldWork.StopsOnWalls(SpellId.Grotto))
+                || WorldWork.StopsOnWalls(SpellId.Grove))
             {
                 broken.Add("Remote, hop, and stood work must not be treated as flying shots");
             }
@@ -457,16 +457,19 @@ namespace RuneMagic
                 broken.Add("Plant must be the Water · Earth · Salt rune");
             }
 
-            if (RuneCatalog.TryParseName("Grotto", out _))
+            if (ChainBook.TryBirth(RuneId.Grove, out _)
+                || ChainBook.IsWrought(RuneId.Grove)
+                || RuneCatalog.TryParseName("Grove", out _))
             {
-                broken.Add("Grotto must not be a rune — it is a spell");
+                broken.Add("Grove must not be a rune — it is a spell");
             }
 
-            if (!TryGet(SpellId.Grotto, out var grotto)
-                || !ChainBook.SameStory(grotto.RecipeRunes, ChainBook.Parse("Water · Earth · Salt · Dark"))
-                || !ChainBook.SameStory(grotto.ViaRunes, ChainBook.Parse("Plant · Dark")))
+            if (!TryGet(SpellId.Grove, out var grove)
+                || !ChainBook.SameStory(grove.RecipeRunes, ChainBook.Parse("Water · Earth · Salt · Life"))
+                || !ChainBook.SameStory(grove.ViaRunes, ChainBook.Parse("Plant · Life"))
+                || grove.Work != SpellId.Sprout)
             {
-                broken.Add("Grotto must be Water · Earth · Salt · Dark, via Plant · Dark");
+                broken.Add("Grove must be Water · Earth · Salt · Life, via Plant · Life, and do Sprout’s work");
             }
 
             WorldPhysics.Audit(broken);

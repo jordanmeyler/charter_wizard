@@ -140,44 +140,6 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Grotto is a spell, not a rune. The vegetable body is withheld:
-        /// earth and stone walls open as a plant-lined cave, and floors
-        /// take a seed.
-        /// </summary>
-        public bool OpenGrotto()
-        {
-            if (Kind == TileKind.Door || MatterLaw.ResistsMagic(Material))
-            {
-                return false;
-            }
-
-            if (Kind == TileKind.Wall && WorldWork.CanCarveGrotto(Material))
-            {
-                IsConjured = false;
-                RaisedAs = RaisedForm.None;
-                _growth = 0;
-                Wet = Mathf.Max(Wet, 0.55f);
-                Reshape(new TileDef(TileKind.Floor, MaterialId.Plant));
-                return true;
-            }
-
-            if (CanTakePlant)
-            {
-                PlantHere();
-                return true;
-            }
-
-            if (IsPlantish)
-            {
-                Grow(1);
-                Drench(0.35f);
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// A watery swamp: yield meeting rest on a walkable floor.
         /// Deep water stays water. Pits stay pits until filled.
         /// </summary>

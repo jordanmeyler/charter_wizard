@@ -230,9 +230,9 @@ namespace RuneMagic
 
                 new WorldMaterial(MaterialId.Moss, "moss",
                     "A vegetable body marked living. Soft grove-work on stone.",
-                    RuneId.Grove, MaterialPaint.Moss,
+                    RuneId.Plant, MaterialPaint.Moss,
                     new Color(0.28f, 0.26f, 0.16f), new Color(0.24f, 0.28f, 0.18f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita, RuneId.Grove),
+                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Metal, "iron plate",
                     "Hungry earth given more rest, then stilled.",
@@ -306,10 +306,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Water, RuneId.Salt, RuneId.Obsidian),
 
                 new WorldMaterial(MaterialId.Grove, "grove",
-                    "The vegetable body marked living. Plant · Life.",
-                    RuneId.Grove, MaterialPaint.Grove,
+                    "The vegetable body marked living. Plant · Life. Grove is the spell, not a rune.",
+                    RuneId.Plant, MaterialPaint.Grove,
                     new Color(0.16f, 0.32f, 0.14f), new Color(0.14f, 0.26f, 0.12f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita, RuneId.Grove),
+                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Cloud, "cloud",
                     "Breath holding yield. A hanging veil.",

@@ -95,20 +95,6 @@
       ]
     },
     {
-      "rune": "Grove",
-      "sources": [
-        "Plant",
-        "Vita"
-      ]
-    },
-    {
-      "rune": "Forest",
-      "sources": [
-        "Plant",
-        "Vita"
-      ]
-    },
-    {
       "rune": "Flame",
       "sources": [
         "Fire",
@@ -178,7 +164,8 @@
     {
       "rune": "Blight",
       "sources": [
-        "Grove",
+        "Plant",
+        "Vita",
         "Mors"
       ]
     },
@@ -199,7 +186,8 @@
     {
       "rune": "Vine",
       "sources": [
-        "Grove",
+        "Plant",
+        "Vita",
         "Mercury"
       ]
     },
@@ -665,7 +653,7 @@
       "name": "Vine",
       "want": "That living plant is sent. It holds them, or it climbs.",
       "recipe": "Water · Earth · Salt · Life · Mercury",
-      "via": "Grove · Mercury",
+      "via": "Plant · Life · Mercury",
       "form": "Remote",
       "outcome": "Restrain",
       "gate": "",
@@ -678,7 +666,7 @@
       "name": "Vine-rise",
       "want": "That living plant is asked to stand.",
       "recipe": "Water · Earth · Salt · Life · Earth",
-      "via": "Grove · Earth",
+      "via": "Plant · Life · Earth",
       "form": "Pillar",
       "outcome": "Neither",
       "gate": "",
@@ -817,7 +805,7 @@
       "name": "Blight",
       "want": "A living plant, then the grave. Verdure rots. No soul.",
       "recipe": "Water · Earth · Salt · Life · Death",
-      "via": "Grove · Death",
+      "via": "Plant · Life · Death",
       "form": "Spread",
       "outcome": "Kill",
       "gate": "Either",
@@ -1250,16 +1238,18 @@
     },
     {
       "number": 71,
-      "id": "Grotto",
-      "book": "Cross",
-      "name": "Grotto",
-      "want": "The vegetable body is withheld. Rest opens a damp cave.",
-      "recipe": "Water · Earth · Salt · Dark",
-      "via": "Plant · Dark",
-      "form": "Remote",
+      "id": "Grove",
+      "book": "GrowHeal",
+      "name": "Grove",
+      "want": "The vegetable body marked living. A grove. Plant is the rune; Grove is the spell.",
+      "recipe": "Water · Earth · Salt · Life",
+      "via": "Plant · Life",
+      "form": "Spread",
       "outcome": "Neither",
       "gate": "",
-      "work": "Grotto"
+      "work": "Sprout",
+      "target": "Area",
+      "radius": 2.2
     }
   ]
 }

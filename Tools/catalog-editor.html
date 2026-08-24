@@ -51,7 +51,7 @@
     let tab = "spells";
     let index = 0;
     let paint = 1;
-    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Grove","Ember","Metal","Acid","Crystal","Glacier","Inferno","Plasma","Snow","Blizzard","Sandstorm","Vine","Forest","Wind","Current","Obsidian","Glass","Sand","Thunder","Storm","Rain","Shade","Blight"];
+    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Ember","Metal","Acid","Crystal","Glacier","Inferno","Plasma","Snow","Blizzard","Sandstorm","Vine","Forest","Wind","Current","Obsidian","Glass","Sand","Thunder","Storm","Rain","Shade","Blight"];
 
     const $ = id => document.getElementById(id);
     document.querySelectorAll(".tab").forEach(btn => btn.onclick = () => { tab = btn.dataset.tab; index = 0; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b===btn)); draw(); });
