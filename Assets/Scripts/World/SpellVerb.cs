@@ -20,7 +20,8 @@ namespace RuneMagic
         Freeze,
         Cloak,
         Foul,
-        Vent
+        Vent,
+        Dirt
     }
 
     /// <summary>
@@ -106,11 +107,14 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Frozen, 3.8f, TileVerb.Freeze);
                 case SpellId.Snowstorm:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Frozen, 5f, TileVerb.Freeze);
+                case SpellId.DirtToss:
+                    return new SpellVerb(SpellTarget.Single, 2.2f, StatusId.None, 0f, TileVerb.Dirt);
                 case SpellId.Douse:
                 case SpellId.WaterJet:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Soaked, 5f, TileVerb.Wet);
                 case SpellId.Rain:
                 case SpellId.Flood:
+                case SpellId.Monsoon:
                 case SpellId.Swamp:
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.Soaked, 6f, TileVerb.Wet);
                 case SpellId.Sprout:

@@ -35,7 +35,8 @@ namespace RuneMagic
         {
             Add(RuneId.Fire, RuneId.Air, RuneId.Spark, BlendKind.Stable, "Hunger given breath. Fire · Air → Spark.");
             Add(RuneId.Air, RuneId.Water, RuneId.Cloud, BlendKind.Stable, "Breath holding yield. Air · Water → Cloud.");
-            Add(RuneId.Water, RuneId.Earth, RuneId.Mud, BlendKind.Stable, "Yield meeting rest. Water · Earth → Mud.");
+            AddDirected(RuneId.Water, RuneId.Earth, RuneId.Ice, BlendKind.Stable, "Yield meeting rest. Water · Earth → Ice.");
+            AddDirected(RuneId.Earth, RuneId.Water, RuneId.Mud, BlendKind.Stable, "Rest meeting yield. Earth · Water → Mud.");
             Add(RuneId.Fire, RuneId.Earth, RuneId.Lava, BlendKind.Stable, "Hunger meeting rest. Fire · Earth → Lava.");
 
             Add(RuneId.Fire, RuneId.Water, RuneId.Steam, BlendKind.Violent, "Hunger forced through yield. Fire · Water → Steam.");
@@ -63,13 +64,18 @@ namespace RuneMagic
 
         static void Add(RuneId left, RuneId right, RuneId result, BlendKind kind, string note)
         {
+            AddDirected(left, right, result, kind, note);
+            if (left != right)
+            {
+                Blends[(right, left)] = Blends[(left, right)];
+            }
+        }
+
+        static void AddDirected(RuneId left, RuneId right, RuneId result, BlendKind kind, string note)
+        {
             var blend = new BlendResult(result, kind, note);
             Canonical.Add((left, right, blend));
             Blends[(left, right)] = blend;
-            if (left != right)
-            {
-                Blends[(right, left)] = blend;
-            }
         }
 
         public static bool TryBlend(RuneId left, RuneId right, out BlendResult result)

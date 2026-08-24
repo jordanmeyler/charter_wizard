@@ -165,6 +165,45 @@ namespace RuneMagic
             return true;
         }
 
+        /// <summary>
+        /// Loose rest, thrown. Ground-fire goes out. Walkable tiles
+        /// become dirt so Earth speaks here.
+        /// </summary>
+        public bool LayDirt()
+        {
+            var smothered = SmotherGroundFire();
+            if (Kind != TileKind.Floor && Kind != TileKind.Bridge)
+            {
+                return smothered;
+            }
+
+            if (IsDeepWater || Material == MaterialId.Lava || Material == MaterialId.Void)
+            {
+                return smothered;
+            }
+
+            if (Material == MaterialId.Dirt)
+            {
+                return true;
+            }
+
+            Reshape(new TileDef(Kind, MaterialId.Dirt));
+            return true;
+        }
+
+        public bool SmotherGroundFire()
+        {
+            if (Fire <= 0.01f && !Kindled)
+            {
+                return false;
+            }
+
+            Fire = 0f;
+            Kindled = false;
+            RefreshFx();
+            return true;
+        }
+
         public bool FreezeSolid()
         {
             if (!IsDeepWater)

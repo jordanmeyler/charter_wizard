@@ -52,6 +52,7 @@ namespace RuneMagic
                 case SpellId.BrilliantArc:
                 case SpellId.Blackout:
                 case SpellId.HurledStone:
+                case SpellId.DirtToss:
                 case SpellId.Gust:
                 case SpellId.Push:
                 case SpellId.Gale:
@@ -167,6 +168,7 @@ namespace RuneMagic
             {
                 case SpellId.WaterJet:
                 case SpellId.Flood:
+                case SpellId.Monsoon:
                 case SpellId.Rain:
                 case SpellId.Scald:
                 case SpellId.Spring:
@@ -594,6 +596,15 @@ namespace RuneMagic
                 }
             }
 
+            if (spell == SpellId.DirtToss)
+            {
+                var tossed = LayDirt(grid, cells);
+                if (tossed > 0)
+                {
+                    notes.Add("Loose rest lands. Ground-fire dies. Earth speaks here.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -666,6 +677,45 @@ namespace RuneMagic
             }
 
             return changed;
+        }
+
+        public static int LayDirt(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.LayDirt())
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
+        }
+
+        static List<Vector2Int> Merge(List<Vector2Int> left, List<Vector2Int> right)
+        {
+            var cells = left ?? new List<Vector2Int>();
+            if (right == null || right.Count == 0)
+            {
+                return cells;
+            }
+
+            for (var i = 0; i < right.Count; i++)
+            {
+                if (!cells.Contains(right[i]))
+                {
+                    cells.Add(right[i]);
+                }
+            }
+
+            return cells;
         }
 
         public static int FreezeWaterAlong(WorldGrid grid, List<Vector2Int> cells)
@@ -793,13 +843,19 @@ namespace RuneMagic
                 return Span(CoordOf(from), CoordOf(to));
             }
 
+            if (spell == SpellId.DirtToss)
+            {
+                return Merge(Span(CoordOf(from), CoordOf(to)), Disk(CoordOf(to), 1));
+            }
+
             if (IsShatterWork(spell))
             {
                 return Disk(CoordOf(to), 1);
             }
 
             if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
-                || spell == SpellId.Swamp || spell == SpellId.Snowfall || spell == SpellId.GraveIce)
+                || spell == SpellId.Monsoon || spell == SpellId.Swamp || spell == SpellId.Snowfall
+                || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
             }

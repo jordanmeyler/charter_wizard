@@ -209,6 +209,13 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Dirt:
+                        if (tile.LayDirt())
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -248,7 +255,9 @@ namespace RuneMagic
                                     ? "The hanging veil is given a body."
                                     : verb.Tiles == TileVerb.Foul
                                         ? "A sick mist stands on the floor."
-                                        : "Yield finds the floor.");
+                                        : verb.Tiles == TileVerb.Dirt
+                                            ? "Loose rest lands. Ground-fire dies. Earth speaks here."
+                                            : "Yield finds the floor.");
             }
         }
 

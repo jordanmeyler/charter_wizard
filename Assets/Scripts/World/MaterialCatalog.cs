@@ -39,7 +39,8 @@ namespace RuneMagic
         Glacier,
         Acid,
         Water,
-        Plant
+        Plant,
+        Dirt
     }
 
     public enum MaterialPaint
@@ -72,7 +73,8 @@ namespace RuneMagic
         Acid,
         Water,
         Plant,
-        Void
+        Void,
+        Dirt
     }
 
     /// <summary>
@@ -252,22 +254,22 @@ namespace RuneMagic
                     new Color(0.03f, 0.02f, 0.03f), new Color(0.06f, 0.05f, 0.06f), true),
 
                 new WorldMaterial(MaterialId.Ice, "ice",
-                    "Yield given a body and asked to rest. It will thaw.",
+                    "Yield meeting rest. Hard water. It will thaw.",
                     RuneId.Ice, MaterialPaint.Ice,
                     new Color(0.62f, 0.78f, 0.9f), new Color(0.48f, 0.62f, 0.76f), false,
-                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Ice),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Sand, "sand",
                     "Mud given breath until it dries. Grit given a body.",
                     RuneId.Sand, MaterialPaint.Sand,
                     new Color(0.72f, 0.6f, 0.38f), new Color(0.58f, 0.48f, 0.3f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Mud, RuneId.Air, RuneId.Sand),
+                    RuneId.Earth, RuneId.Water, RuneId.Mud, RuneId.Air, RuneId.Sand),
 
                 new WorldMaterial(MaterialId.Mud, "mud",
-                    "Yield meeting rest. Soft ground.",
+                    "Rest meeting yield. Soft ground.",
                     RuneId.Mud, MaterialPaint.Mud,
                     new Color(0.32f, 0.22f, 0.14f), new Color(0.28f, 0.2f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Mud),
+                    RuneId.Earth, RuneId.Water, RuneId.Mud),
 
                 new WorldMaterial(MaterialId.Lava, "lava",
                     "Hunger meeting rest. Earth that cannot stay earth.",
@@ -333,7 +335,7 @@ namespace RuneMagic
                     "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
                     RuneId.Glacier, MaterialPaint.Glacier,
                     new Color(0.7f, 0.82f, 0.88f), new Color(0.48f, 0.58f, 0.66f), false,
-                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
 
                 new WorldMaterial(MaterialId.Acid, "acid slick",
                     "Steam forced through Metal.",
@@ -351,7 +353,13 @@ namespace RuneMagic
                     "Vegetable body before Life marks a grove. Green cover.",
                     RuneId.Plant, MaterialPaint.Plant,
                     new Color(0.22f, 0.42f, 0.16f), new Color(0.18f, 0.34f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant)
+                    RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Plant),
+
+                new WorldMaterial(MaterialId.Dirt, "dirt",
+                    "Loose rest, thrown. Earth speaks here. It smothers ground-fire.",
+                    RuneId.Earth, MaterialPaint.Dirt,
+                    new Color(0.42f, 0.32f, 0.2f), new Color(0.34f, 0.26f, 0.16f), false,
+                    RuneId.Earth)
             };
 
             ById = new Dictionary<MaterialId, WorldMaterial>(AllMaterials.Length);
@@ -389,6 +397,7 @@ namespace RuneMagic
             Flag(MaterialId.Acid, 0.15f, 0.45f);
             Flag(MaterialId.Water, -1.6f, 1.25f);
             Flag(MaterialId.Plant, 1.5f, 0.05f);
+            Flag(MaterialId.Dirt, 0f, 0f);
         }
 
         static void Flag(MaterialId id, float flammability, float conductivity)
@@ -462,7 +471,7 @@ namespace RuneMagic
                 case RuneId.Fire: return MaterialId.Hearth;
                 case RuneId.Air: return MaterialId.Scoured;
                 case RuneId.Water: return MaterialId.Water;
-                case RuneId.Earth: return MaterialId.Stone;
+                case RuneId.Earth: return MaterialId.Dirt;
                 case RuneId.Plant: return MaterialId.Timber;
                 case RuneId.Spark: return MaterialId.Vein;
                 case RuneId.Ash: return MaterialId.Ash;

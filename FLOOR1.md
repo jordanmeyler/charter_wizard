@@ -25,8 +25,8 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
-| An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Hurled stone) |
-| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Salt · Earth** (Ice-pillar) |
+| An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Dirt toss). A body of rest sent is **Earth · Salt · Mercury** (Hurled stone). |
+| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Ice-pillar) |
 | A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
@@ -44,15 +44,17 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 | 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
-| 63 | **Ice-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
-| 64 | **Freeze** | Water · Salt · Earth · Sulphur | Hard water held as a condition. They freeze. |
-| 65 | **Snowstorm** | Air · Water · Salt · Earth · Air · Mercury | Driven snow. They freeze. |
+| 63 | **Ice-wall** | Water · Earth · Salt · Water · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
+| 64 | **Freeze** | Water · Earth · Sulphur | Hard water held as a condition. They freeze. |
+| 65 | **Snowstorm** | Air · Water · Water · Earth · Air · Mercury | Driven snow. They freeze. |
 | 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
-| 69 | **Swamp** | Water · Earth · Mercury · Salt | A watery swamp from your feet. Yield meeting rest, going, then stood. |
+| 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
 | 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
 | 71 | **Grove** | Water · Earth · Salt · Life | The vegetable body marked living. Plant is the rune; Grove is the spell. |
+| 72 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
+| 73 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
 
 ---
 
@@ -148,13 +150,13 @@ Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off 
 A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Earth · Salt · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
 
 ### Cistern · "The Cistern" — *water drowns; ice is a floor*
-A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Water · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
+A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Water · Earth · Salt** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
 
 ### Spark Cell · "The Seed of Charge" — *the join as a rune*
 Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air · Mercury. A **charge veil** holds the **spark stone**. Lightning unmakes the veil. The live rod still waits in the plate.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
-Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
+Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Salt · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
 
 ### Door III · Gate of Joins
 Three sockets: Grove, Flood, Spark. Insert them → the floor opens.

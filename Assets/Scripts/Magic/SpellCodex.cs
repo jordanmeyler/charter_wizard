@@ -98,12 +98,12 @@ namespace RuneMagic
             E(14, SpellBook.SeeHide, SpellId.Fog, "The hanging veil is withheld and given a body.", "Fog", "Air · Water · Dark · Salt", "Cloud · Dark · Salt", "Spread", SpellOutcome.Neither),
             E(15, SpellBook.End, SpellId.Scald, "Hunger forced through yield and sent.", "Scald", "Fire · Water · Mercury", "Steam · Mercury", "Shot", SpellOutcome.Kill),
             E(16, SpellBook.Weather, SpellId.WaterJet, "Yield learns breath so it can leave the vessel, then is sent.", "Water-jet", "Water · Air · Mercury", "", "Shot", SpellOutcome.Restrain),
-            E(17, SpellBook.Hold, SpellId.Flood, "Yield going, more yield, given a body. They bog.", "Flood", "Water · Mercury · Water · Salt", "Current · Water · Salt", "Spread", SpellOutcome.Restrain),
-            E(18, SpellBook.Cross, SpellId.IcePillar, "Yield given a body and asked to rest. Hard water. It will thaw.", "Ice-pillar", "Water · Salt · Earth", "Ice", "Pillar", SpellOutcome.Restrain),
-            E(19, SpellBook.Hold, SpellId.IceSpear, "That hard water-body is sent.", "Ice-spear", "Water · Salt · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
-            E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Salt · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
-            E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Salt · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
-            E(22, SpellBook.End, SpellId.HurledStone, "Rest asked to go. Earth flies.", "Hurled stone", "Earth · Mercury", "", "Shot", SpellOutcome.Kill),
+            E(17, SpellBook.Hold, SpellId.Flood, "Yield meeting rest. A flood at your feet.", "Flood", "Water · Earth", "Ice", "Spread", SpellOutcome.Restrain),
+            E(18, SpellBook.Cross, SpellId.IcePillar, "That hard water given a body. It stands. It will thaw.", "Ice-pillar", "Water · Earth · Salt", "Ice · Salt", "Pillar", SpellOutcome.Restrain),
+            E(19, SpellBook.Hold, SpellId.IceSpear, "That hard water-body is sent.", "Ice-spear", "Water · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
+            E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Water · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
+            E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
+            E(22, SpellBook.End, SpellId.HurledStone, "Rest given a body and sent. Earth flies.", "Hurled stone", "Earth · Salt · Mercury", "Stone · Mercury", "Shot", SpellOutcome.Kill),
             E(23, SpellBook.Cross, SpellId.Wall, "A body of rest asked to rest as more rest. A wall.", "Wall", "Earth · Salt · Earth", "Stone · Earth", "Pillar", SpellOutcome.Neither),
             E(24, SpellBook.Cross, SpellId.Pit, "Rest asked to go, given breath so it leaves a hollow.", "Pit", "Earth · Mercury · Air", "", "Remote", SpellOutcome.Neither),
             E(25, SpellBook.Cross, SpellId.Bridge, "A body of rest given breath and sent across.", "Bridge", "Earth · Salt · Air · Mercury", "Stone · Air · Mercury", "Remote", SpellOutcome.Neither),
@@ -132,7 +132,7 @@ namespace RuneMagic
             E(48, SpellBook.Grave, SpellId.Blackout, "The seed marked by the grave and sent. A live rod dies.", "Blackout", "Fire · Air · Death · Mercury", "Spark · Death · Mercury", "Shot", SpellOutcome.Neither, "Either"),
             E(49, SpellBook.Grave, SpellId.GraveIce, "Yield given a body, then the grave. Ice that will not thaw.", "Grave-ice", "Water · Salt · Death", "", "Remote", SpellOutcome.Restrain, "Either"),
             E(50, SpellBook.Grave, SpellId.LastBreath, "Living breath, then the grave, sent. The breath leaves them.", "Last breath", "Air · Life · Death · Mercury", "", "Remote", SpellOutcome.Kill, "Free"),
-            E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Water · Earth · Dark · Life · Death · Sulphur · Salt", "Mud · Dark · Life · Death · Sulphur · Salt", "Spread", SpellOutcome.Restrain, "Free"),
+            E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Earth · Water · Dark · Life · Death · Sulphur · Salt", "Mud · Dark · Life · Death · Sulphur · Salt", "Spread", SpellOutcome.Restrain, "Free"),
             E(52, SpellBook.Weather, SpellId.Douse, "Yield sent. Water thrown. Hunger ends.", "Douse", "Water · Mercury", "", "Shot", SpellOutcome.Neither),
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. A simple wind.", "Gust", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
@@ -144,15 +144,17 @@ namespace RuneMagic
             E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt · Earth", "Lava · Salt · Earth", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. It will thaw.", "Ice-wall", "Water · Salt · Earth · Salt · Water · Salt · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
-            E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Salt · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
-            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Salt · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain),
+            E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. It will thaw.", "Ice-wall", "Water · Earth · Salt · Water · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
+            E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
+            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Water · Earth · Air · Mercury", "Snow · Air · Mercury", "Remote", SpellOutcome.Restrain),
             E(66, SpellBook.Weather, SpellId.Push, "Breath given a body and sent. Wind that pushes the person.", "Push", "Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
+            E(69, SpellBook.Hold, SpellId.Swamp, "Rest meeting yield, going, given a body around your feet. A watery swamp.", "Swamp", "Earth · Water · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
             E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
-            E(71, SpellBook.GrowHeal, SpellId.Grove, "The vegetable body marked living. A grove. Plant is the rune; Grove is the spell.", "Grove", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither, "", SpellId.Sprout)
+            E(71, SpellBook.GrowHeal, SpellId.Grove, "The vegetable body marked living. A grove. Plant is the rune; Grove is the spell.", "Grove", "Water · Earth · Salt · Life", "Plant · Life", "Spread", SpellOutcome.Neither, "", SpellId.Sprout),
+            E(72, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
+            E(73, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -241,11 +243,34 @@ namespace RuneMagic
                 broken.Add("Earth · Salt should be Earth-pillar");
             }
 
+            if (!ChainBook.TryBirth(RuneId.Ice, out var iceBirth)
+                || iceBirth.Count != 2
+                || iceBirth[0] != RuneId.Water
+                || iceBirth[1] != RuneId.Earth)
+            {
+                broken.Add("Ice must be the Water · Earth rune");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Mud, out var mudBirth)
+                || mudBirth.Count != 2
+                || mudBirth[0] != RuneId.Earth
+                || mudBirth[1] != RuneId.Water)
+            {
+                broken.Add("Mud must be the Earth · Water rune");
+            }
+
             var ice = Composition.FromSequence(new[] { RuneId.Ice });
-            var icePillar = ChainBook.CollectExact(ice, SpellShape.None);
+            var iceFlood = ChainBook.CollectExact(ice, SpellShape.None);
+            if (iceFlood.Count == 0 || iceFlood[0].Spell != SpellId.Flood)
+            {
+                broken.Add("Ice should still be Flood");
+            }
+
+            var iceSalt = Composition.FromSequence(new[] { RuneId.Ice, RuneId.Salt });
+            var icePillar = ChainBook.CollectExact(iceSalt, SpellShape.None);
             if (icePillar.Count == 0 || icePillar[0].Spell != SpellId.IcePillar)
             {
-                broken.Add("Ice should still be Ice-pillar");
+                broken.Add("Ice · Salt should still be Ice-pillar");
             }
 
             var iceWall = Composition.FromSequence(new[] { RuneId.Ice, RuneId.Salt, RuneId.Ice });
@@ -257,13 +282,19 @@ namespace RuneMagic
 
             var iceWallRoots = Composition.FromSequence(new[]
             {
-                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt,
-                RuneId.Water, RuneId.Salt, RuneId.Earth
+                RuneId.Water, RuneId.Earth, RuneId.Salt, RuneId.Water, RuneId.Earth
             });
             var iceWallFromRoots = ChainBook.CollectExact(iceWallRoots, SpellShape.None);
             if (iceWallFromRoots.Count == 0 || iceWallFromRoots[0].Spell != SpellId.IceWall)
             {
-                broken.Add("Water · Salt · Earth · Salt · Water · Salt · Earth should be Ice-wall");
+                broken.Add("Water · Earth · Salt · Water · Earth should be Ice-wall");
+            }
+
+            var monsoon = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Mercury });
+            var monsoonExact = ChainBook.CollectExact(monsoon, SpellShape.None);
+            if (monsoonExact.Count == 0 || monsoonExact[0].Spell != SpellId.Monsoon)
+            {
+                broken.Add("Water · Salt · Mercury should be Monsoon");
             }
 
             var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Mercury });
@@ -425,6 +456,7 @@ namespace RuneMagic
             if (!WorldWork.StopsOnWalls(SpellId.Fireball)
                 || !WorldWork.StopsOnWalls(SpellId.IceSpear)
                 || !WorldWork.StopsOnWalls(SpellId.HurledStone)
+                || !WorldWork.StopsOnWalls(SpellId.DirtToss)
                 || !WorldWork.StopsOnWalls(SpellId.WaterJet)
                 || !WorldWork.StopsOnWalls(SpellId.Douse)
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
@@ -432,6 +464,26 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.LightningBolt))
             {
                 broken.Add("A flying shot must stop on a wall");
+            }
+
+            var dirtToss = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Mercury });
+            var dirtExact = ChainBook.CollectExact(dirtToss, SpellShape.None);
+            if (dirtExact.Count == 0 || dirtExact[0].Spell != SpellId.DirtToss)
+            {
+                broken.Add("Earth · Mercury should be Dirt toss");
+            }
+
+            if (SpellVerb.Of(SpellId.DirtToss).Status != StatusId.None
+                || (TryGet(SpellId.DirtToss, out var dirtEntry) && dirtEntry.Outcome != SpellOutcome.Neither))
+            {
+                broken.Add("Dirt toss must not harm a living body");
+            }
+
+            var hurled = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Salt, RuneId.Mercury });
+            var hurledExact = ChainBook.CollectExact(hurled, SpellShape.None);
+            if (hurledExact.Count == 0 || hurledExact[0].Spell != SpellId.HurledStone)
+            {
+                broken.Add("Earth · Salt · Mercury should be Hurled stone");
             }
 
             if (WorldWork.StopsOnWalls(SpellId.LightningStrike))

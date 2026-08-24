@@ -113,7 +113,7 @@
       if (tab === "joins") return `
         <label>Wrought rune <input name="rune" value="${esc(item.rune)}"></label>
         <label>Born from (comma) <input name="sources" value="${esc((item.sources||[]).join(", "))}"></label>
-        <p class="hint">Fire, Air → Spark. Steam, Metal → Acid. Water, Salt, Earth → Ice (Body). The Charter unfolds these when it reads a tile.</p>`;
+        <p class="hint">Fire, Air → Spark. Steam, Metal → Acid. Water, Earth → Ice. Earth, Water → Mud. The Charter unfolds these when it reads a tile.</p>`;
       if (tab === "sprites") return spriteForm(item);
       return `
         <div class="grid2">

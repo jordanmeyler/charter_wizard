@@ -104,6 +104,11 @@ namespace RuneMagic
 
         public static SpellShape ShapeOf(SpellId spell)
         {
+            if (spell == SpellId.Monsoon || spell == SpellId.Rain || spell == SpellId.StormCall)
+            {
+                return SpellShape.Remote;
+            }
+
             if (WorldWork.IsSpreadWork(spell) || WorldWork.IsSightVeil(spell) || WorldWork.IsPoisonVeil(spell))
             {
                 return SpellShape.Spread;
@@ -347,7 +352,8 @@ namespace RuneMagic
                 return Essence.Water;
             }
 
-            if (WorldWork.IsShatterWork(spell) || WorldWork.IsBoulderWork(spell) || WorldWork.IsPillar(spell))
+            if (WorldWork.IsShatterWork(spell) || WorldWork.IsBoulderWork(spell) || WorldWork.IsPillar(spell)
+                || spell == SpellId.DirtToss)
             {
                 return Essence.Earth;
             }

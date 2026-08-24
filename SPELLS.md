@@ -85,7 +85,7 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 **Fire · Air · Sulphur · Mercury** is the wildcard on the bolt. The same moving spark now reaches a mind. That is Jolt, not fire.
 
-**Ice** is yield given a body and asked to rest: **Water · Salt · Earth**. It melts. The grim twin (**Water · Salt · Death**) is grave-ice, and it is not in the ordinary book.
+**Ice** is yield meeting rest: **Water · Earth**. Hard water. It melts. **Mud** is the other order: **Earth · Water**. Soft ground. The grim twin of stood yield (**Water · Salt · Death**) is grave-ice, and it is not in the ordinary book.
 
 ---
 
@@ -93,7 +93,7 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 A join is not a modifier. It is a **new rune** with its own concept. Once it exists (you mixed it, or the room already holds it), later chains can start from it.
 
-Most joins are elements meeting elements (**Steam · Metal → Acid**). Some also take an operator: **Water · Salt · Earth → Ice** is yield plus Body, asked to rest. The Grimoire lists every written birth, split that way.
+Most joins are elements meeting elements (**Steam · Metal → Acid**). Order is the sentence: **Water · Earth → Ice**, **Earth · Water → Mud**. Some joins also take an operator: **Water · Earth · Salt → Plant** is that hard water given a vegetable body. The Grimoire lists every written birth, split that way.
 
 ### First joins — two roots
 
@@ -104,7 +104,8 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | **Lava** | Fire · Earth | Hunger meeting rest. Earth that cannot stay earth. | Stone that still hungers |
 | **Cloud** | Air · Water | Breath holding yield. A hanging veil. | Weather waiting |
 | **Dust** | Air · Earth | Breath forced through rest. | Blind grit |
-| **Mud** | Water · Earth | Yield meeting rest. Soft ground. | Ground that gives |
+| **Ice** | Water · Earth | Yield meeting rest. Hard water. | Solid water that will thaw |
+| **Mud** | Earth · Water | Rest meeting yield. Soft ground. | Ground that gives |
 
 ### From Spark and Cloud
 
@@ -123,7 +124,6 @@ Most joins are elements meeting elements (**Steam · Metal → Acid**). Some als
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
 | **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
-| **Ice** | Water · Salt · Earth | Yield given a body and asked to rest. Hard water. | Solid water that will thaw |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
 | **Plant** | Water · Earth · Salt | Yield and rest given a vegetable body. | Fiber, wood, a seed. Not living until Life. Grove is the living-plant spell (`Plant · Life`), not a rune |
 | **Sand** | Dust · Salt | Grit given a body. | Grains |
@@ -177,12 +177,12 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 14 | The hanging veil is withheld and given a body. The room is lost. | Fog | Air · Water · Dark · Salt | Cloud · Dark · Salt | Spread | Neither |
 | 15 | Hunger forced through yield and sent. Soft life ends. | Scald | Fire · Water · Mercury | Steam · Mercury | Shot | Kill |
 | 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Mercury | — | Shot | Restrain / Neither |
-| 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Spread | Restrain |
-| 18 | Yield given a body and asked to rest. Hard water, standing. It will thaw. | Ice-pillar | Water · Salt · Earth | Ice | Pillar | Restrain / Neither |
-| 19 | Hard water going — not stood as a pillar, so no Salt. It does not freeze a living body. | Ice-spear | Water · Earth · Mercury | — | Shot | Restrain |
-| 20 | The veil is given ice’s story and sent softly. They freeze. | Snowfall | Air · Water · Salt · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
-| 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Salt · Earth · Fire | Ice · Fire | Remote | Neither |
-| 22 | Rest asked to go. Earth flies. | Hurled stone | Earth · Mercury | — | Shot | Kill / Neither |
+| 17 | Yield meeting rest. A flood at your feet. Spark can travel it. | Flood | Water · Earth | Ice | Spread | Restrain |
+| 18 | That hard water given a body. It stands. It will thaw. | Ice-pillar | Water · Earth · Salt | Ice · Salt | Pillar | Restrain / Neither |
+| 19 | That hard water-body is sent. It does not freeze a living body. | Ice-spear | Water · Earth · Mercury | Ice · Mercury | Shot | Restrain |
+| 20 | The veil is given ice’s story and sent softly. They freeze. | Snowfall | Air · Water · Water · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
+| 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Earth · Fire | Ice · Fire | Remote | Neither |
+| 22 | Rest given a body and sent. Earth flies. | Hurled stone | Earth · Salt · Mercury | Stone · Mercury | Shot | Kill / Neither |
 | 23 | A body of rest asked to rest as more rest. Click start and stop. Across a pit it is a span; on the floor it is a barrier. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
 | 24 | Rest asked to go, given breath so it leaves a hollow. | Pit | Earth · Mercury · Air | Wind meeting rest, inverted | Remote | Neither / Restrain |
 | 25 | A body of rest given breath and sent across. A span. | Bridge | Earth · Salt · Air · Mercury | Stone · Air · Mercury | Remote | Neither |
@@ -231,7 +231,7 @@ Death is not “still” as a household verb. Earth already means rest. Death me
 | 49 | Yield given a body, then the grave. Ice that will not thaw like ordinary ice. | Grave-ice | Water · Salt · Death | — | Remote | Restrain | Either |
 | 50 | Living breath, then the grave, sent. The breath leaves them. | Last breath | Air · Life · Death · Mercury | — | Remote | Kill | Free |
 
-Ordinary ice is **Water · Salt · Earth**. Grave-ice is the same sentence with Death instead of Earth. You can tell them apart without names: one melts when hunger finds it; the other does not.
+Ordinary ice is **Water · Earth**. Grave-ice is yield given a body, then the grave (**Water · Salt · Death**). You can tell them apart without names: one melts when hunger finds it; the other does not.
 
 ---
 
@@ -243,7 +243,7 @@ Time-stop is not soul-work. Mercury (spirit / going / the adept’s soul) is not
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Death · Sulphur · Salt | Mud · Dark · Life · Death · Sulphur · Salt | Spread | Restrain | Free |
+| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Earth · Water · Dark · Life · Death · Sulphur · Salt | Mud · Dark · Life · Death · Sulphur · Salt | Spread | Restrain | Free |
 
 Floor 1 needed two ordinary sentences the original forty did not write. They sit with the ordinary book even though they are numbered after Time-stop.
 
@@ -260,15 +260,17 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 60 | Hungry earth given a body and asked to rest. It stands. Yield cools it to rock. | Lava-pillar | Fire · Earth · Salt · Earth | Lava · Salt · Earth | Pillar | Kill |
 | 61 | A stood wall given breath and sent. Matter comes apart. | Shatter | Earth · Salt · Earth · Air · Mercury | Stone · Earth · Air · Mercury | Remote | Neither |
 | 62 | Breath turned by Sulphur, into a mind. They lose the thread. | Confuse | Air · Sulphur · Mercury | — | Remote | Restrain |
-| 63 | A body of ice asked to stand as more ice. Click start and stop. Across a pit it is a span; on the floor it is a barrier. It will thaw. | Ice-wall | Water · Salt · Earth · Salt · Water · Salt · Earth | Ice · Salt · Ice | Pillar | Restrain |
-| 64 | Hard water held as a condition. They freeze. | Freeze | Water · Salt · Earth · Sulphur | Ice · Sulphur | Remote | Restrain |
-| 65 | The veil given ice’s story, then driven. They freeze. | Snowstorm | Air · Water · Salt · Earth · Air · Mercury | Snow · Air · Mercury | Remote | Restrain |
+| 63 | A body of ice asked to stand as more ice. Click start and stop. Across a pit it is a span; on the floor it is a barrier. It will thaw. | Ice-wall | Water · Earth · Salt · Water · Earth | Ice · Salt · Ice | Pillar | Restrain |
+| 64 | Hard water held as a condition. They freeze. | Freeze | Water · Earth · Sulphur | Ice · Sulphur | Remote | Restrain |
+| 65 | The veil given ice’s story, then driven. They freeze. | Snowstorm | Air · Water · Water · Earth · Air · Mercury | Snow · Air · Mercury | Remote | Restrain |
 | 66 | Breath given a body and sent. Wind that pushes the person. | Push | Air · Salt · Mercury | — | Shot | Restrain |
 | 67 | A spark given form from the air, moving at something. It falls from the sky. Walls will not hide them. | Lightning strike | Fire · Air · Salt · Air · Mercury | Spark · Salt · Air · Mercury | Remote | Kill |
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
-| 69 | Yield meeting rest, going, given a body around your feet. A watery swamp. | Swamp | Water · Earth · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
+| 69 | Rest meeting yield, going, given a body around your feet. A watery swamp. | Swamp | Earth · Water · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
 | 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
 | 71 | The vegetable body marked living. A grove. | Grove | Water · Earth · Salt · Life | Plant · Life | Spread | Neither |
+| 72 | Yield given a body and sent. A remote flood. The monsoon. | Monsoon | Water · Salt · Mercury | — | Remote | Restrain |
+| 73 | Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands. | Dirt toss | Earth · Mercury | — | Shot | Neither |
 
 **Grove is a spell, not an elemental rune.** Plant is the wrought rune (`Water · Earth · Salt`). Life marks that vegetable body living — the same sentence as Sprout. Do not write a Grove join.
 
@@ -298,6 +300,6 @@ A finished spell also names **who it touches** and **what condition it leaves**.
 
 ## 8. The sanctum slice
 
-The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands); walls stop the bolt. Lightning strike is Fire · Air · Salt · Air · Mercury (or Spark · Salt · Air · Mercury) — a spark given form from the air, falling from the sky. Ice-pillar is Water · Salt · Earth. Ice-wall is Ice · Salt · Ice (Water · Salt · Earth · Salt · Water · Salt · Earth). Hop is Air · Salt · Air (Self). Push is Air · Salt · Mercury (Shot) — breath given a body and sent; the wind pushes them. Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Charm is Life · Sulphur · Mercury — they fetch, and they fight what you have marked. Swamp is Water · Earth · Mercury · Salt (Spread). Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
+The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Dirt toss is Earth · Mercury — loose dirt, no harm; it smothers ground-fire and leaves Earth speaking. Hurled stone is Earth · Salt · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands); walls stop the bolt. Lightning strike is Fire · Air · Salt · Air · Mercury (or Spark · Salt · Air · Mercury) — a spark given form from the air, falling from the sky. Ice is Water · Earth. Flood is that join at your feet. Ice-pillar is Water · Earth · Salt (`Ice · Salt`). Ice-wall is Ice · Salt · Ice (Water · Earth · Salt · Water · Earth). Monsoon is Water · Salt · Mercury — a remote flood. Hop is Air · Salt · Air (Self). Push is Air · Salt · Mercury (Shot) — breath given a body and sent; the wind pushes them. Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Charm is Life · Sulphur · Mercury — they fetch, and they fight what you have marked. Swamp is Earth · Water · Mercury · Salt (Spread). Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
 
 **Charter Cast** wants the whole sentence, in the written order. Mercury · Fire is not fire. **Free Cast** may unscramble a valid bag of runes into a written recipe, and may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence — including one Free only had to reorder — is not filled toward a longer one. Free cannot be stored.

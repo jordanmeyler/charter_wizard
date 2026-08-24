@@ -297,7 +297,6 @@
           "formulaId": "ice-thing",
           "formula": [
             "Water",
-            "Salt",
             "Earth",
             "Life"
           ],
@@ -321,8 +320,8 @@
           "formulaId": "ice-cage",
           "formula": [
             "Water",
-            "Salt",
-            "Earth"
+            "Earth",
+            "Salt"
           ],
           "keys": [
             "Fireball",
@@ -492,6 +491,7 @@
             "WaterJet",
             "Rain",
             "Flood",
+            "Monsoon",
             "Smother",
             "Scald",
             "Swamp",
@@ -548,6 +548,7 @@
             "WaterJet",
             "Rain",
             "Flood",
+            "Monsoon",
             "Smother",
             "Scald",
             "Swamp",
@@ -2636,8 +2637,8 @@
           "y": 10,
           "runes": [
             "Water",
-            "Salt",
-            "Earth"
+            "Earth",
+            "Salt"
           ],
           "dir": "up"
         },
@@ -2984,6 +2985,7 @@
             "WaterJet",
             "Rain",
             "Flood",
+            "Monsoon",
             "Smother",
             "Scald",
             "Swamp",
@@ -3025,6 +3027,7 @@
             "WaterJet",
             "Rain",
             "Flood",
+            "Monsoon",
             "Smother",
             "Scald",
             "Swamp",
