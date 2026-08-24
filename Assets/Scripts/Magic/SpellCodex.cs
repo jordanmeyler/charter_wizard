@@ -151,7 +151,8 @@ namespace RuneMagic
             E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting rest, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Earth · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
-            E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill)
+            E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
+            E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Earth · Salt · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -441,9 +442,31 @@ namespace RuneMagic
             if (WorldWork.StopsOnWalls(SpellId.Melt)
                 || WorldWork.StopsOnWalls(SpellId.Rain)
                 || WorldWork.StopsOnWalls(SpellId.Hop)
-                || WorldWork.StopsOnWalls(SpellId.Wall))
+                || WorldWork.StopsOnWalls(SpellId.Wall)
+                || WorldWork.StopsOnWalls(SpellId.Grotto))
             {
                 broken.Add("Remote, hop, and stood work must not be treated as flying shots");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Plant, out var plantBirth)
+                || plantBirth.Count != 3
+                || plantBirth[0] != RuneId.Water
+                || plantBirth[1] != RuneId.Earth
+                || plantBirth[2] != RuneId.Salt)
+            {
+                broken.Add("Plant must be the Water · Earth · Salt rune");
+            }
+
+            if (RuneCatalog.TryParseName("Grotto", out _))
+            {
+                broken.Add("Grotto must not be a rune — it is a spell");
+            }
+
+            if (!TryGet(SpellId.Grotto, out var grotto)
+                || !ChainBook.SameStory(grotto.RecipeRunes, ChainBook.Parse("Water · Earth · Salt · Dark"))
+                || !ChainBook.SameStory(grotto.ViaRunes, ChainBook.Parse("Plant · Dark")))
+            {
+                broken.Add("Grotto must be Water · Earth · Salt · Dark, via Plant · Dark");
             }
 
             WorldPhysics.Audit(broken);

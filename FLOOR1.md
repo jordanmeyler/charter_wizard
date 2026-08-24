@@ -51,6 +51,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
 | 69 | **Swamp** | Water · Earth · Mercury · Salt | A watery swamp from your feet. Yield meeting rest, going, then stood. |
+| 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
+| 71 | **Grotto** | Water · Earth · Salt · Dark | The vegetable body withheld. A damp cave. Plant is the rune; Grotto is the spell. |
 
 ---
 
