@@ -1,80 +1,103 @@
-# Dungeon tiles
+# Tiles
 
-Named slices from [`Assets/Resources/Catalog/tiles.json`](Assets/Resources/Catalog/tiles.json) on [`Assets/Resources/Sprites/dungeon-atlas.png`](Assets/Resources/Sprites/dungeon-atlas.png). 32px cells. Cell `(0, 0)` is the top-left of the PNG. Rebuild the sheet with `python3 Tools/build-dungeon-atlas.py`.
+The live dungeon art is the sprite sheets you added under
+`Assets/Resources/Sprites/`. `tiles.json` names every slice the game
+uses. `TileAtlas` cuts those pixels at runtime (Unity's y-axis starts
+at the bottom of the PNG).
 
-Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are not room floors. They sit as coverings, props, or FX and **swap** onto a base tile when an element interacts (freeze water → ice cover; burn moss → ash; charge metal → spark FX).
+The old painted `dungeon-atlas.png` is unused now.
 
-There is **one door**: `door` / `door-open`, 32×64, pivot `0.5,0.22` — the same feet as the adept. Halls stay three tiles wide so a closed gate still seals; only the centre leaf is the wooden door. The sides are stone jambs (`arch` / `arch-shut`).
+## Sheets
 
-Map stamps may set `"cover": "moss"` / `"seal"` / `"crack"` / `"blood"` / `"ice"` / `"vine"` on a stone or dirt cell. Live tile state (fire, wet, charge, miasma, growth) still paints `fx-*` overlays.
+| File | What it is |
+|---|---|
+| `pixellab-A-modular-top-down-pixel-art-d-1787590789217.png` | Floors, walls, the wooden door, torches, braziers, pillars, vines, cracks, bushes, water, miasma |
+| `pixellab-fantastic-can-we-just-add-ice--1787592603251.png` | Ice overlays, ice props, lightning vial / rod, dirt variants, fire / lava FX |
+| `pixellab-the-furniture-should-be-ancien-1787593737338.png` | Ancient furniture, statues, shelves, water altar |
+| `sprite_sheet_env_1.png` | Extra env mix (not required by the current map) |
 
-Decor props in a map:
+Each tile is about 32–39px (the sheets are 256×256, not a clean 32 grid).
+Rects in `tiles.json` are Unity texture space: `x`, `y` from the
+**bottom-left**.
+
+## Floors (walk on these)
+
+Only three walkable families. Ice / fire / lightning are never the
+floor itself.
+
+| Id | Sheet | What it looks like |
+|---|---|---|
+| `floor-stone` | modular `(3,209)` | Dungeon cobble |
+| `floor-cracked` | modular `(45,209)` | Worn cobble |
+| `floor-dirt` | modular `(87,209)` | Packed earth |
+| `floor-water` | modular `(215,209)` | Water pool |
+| `pit` | modular `(172,209)` | Open pit |
+| `pit-edge` | modular `(130,209)` | Pit rim |
+
+Aliases: `floor`, `floor-hearth`, `floor-ice`, `floor-vein`,
+`floor-crystal`, `floor-ember` all resolve to stone or dirt so old map
+stamps keep working. The actual ice/fire/lightning look is a **cover**.
+
+## Walls and the door
+
+| Id | Sheet | Notes |
+|---|---|---|
+| `wall` | modular `(3,163)` | Solid dungeon wall |
+| `wall-moss` | modular `(130,163)` | Mossy outer wall |
+| `wall-cave` | modular `(172,163)` | Cave wall |
+| `wall-fissure` | modular `(215,163)` | Cracked wall |
+| `door` / `arch-shut` | modular `(45,119)` | **The** wooden door |
+| `door-open` | modular `(3,119)` | Open arch (no leaf) |
+| `arch-pillar` | modular `(87,119)` | Stone pillar arch |
+| `pillar` | modular `(160,75)` | Stone pillar |
+| `pillar-broken` | modular `(192,75)` | Broken stump |
+| `stalagmite` | modular `(224,75)` | Rock cluster |
+
+One door sprite. The exit is still three cells wide so a closed gate
+seals the hall; only the **center** cell draws the wooden leaf. The
+two jambs draw stone wall.
+
+## Coverings (element swaps)
+
+Freeze / burn / charge / flood swap the covering, not the walk family.
+
+| Cover | Sprite | Source |
+|---|---|---|
+| `ice` | `cover-ice` | ice sheet `(3,209)` — ice over stone |
+| `fire` | `cover-fire` | ice sheet `(160,0)` — lava / fire over dirt |
+| `lightning` | `cover-lightning` | modular `(192,39)` — gold seal overlay |
+| `water` | `cover-water` | modular water tile |
+| `vine` | `cover-vine` | modular `(64,41)` |
+| `cracks` | `cover-cracks` | modular `(95,39)` |
+| `seal` | `cover-seal` | modular `(192,39)` |
+
+## Props (reuse these)
+
+| Id | What |
+|---|---|
+| `torch` / `torch-lit` | Wall torch — modular `(0,79)` / `(64,79)` |
+| `brazier` / `brazier-lit` | Standing brazier — modular `(128,75)` / `(96,75)` |
+| `bush` / `bush-bloom` | Greenery — modular bottom row |
+| `water-ripple` | Water sparkle |
+| `ice-fountain` | Frozen fountain — ice sheet |
+| `ice-chest` / `ice-vessel` | Iced bust |
+| `rod` / `lightning-rod` / `lightning-pillar` | Charged column |
+| `lightning-vial` | Sparking jar |
+| `statue` / `statue-gold` | Ancient statues — furniture sheet |
+| `bookshelf` | Shelf of tomes |
+| `bench` / `chair` / `table` | Furniture |
+| `water-fountain` | Glowing water altar |
+
+Map stamps: `{ "type": "decor", "sprite": "torch", "blocking": false }`.
+
+## Adding a tile later
+
+1. Open the sheet in any image tool. Note the pixel rect. Remember
+   Unity `y` is measured from the **bottom**.
+2. Add a row to `tiles.json`:
 
 ```json
-{ "type": "decor", "x": 4, "y": 8, "sprite": "brazier-lit", "blocking": true }
+{ "id": "my-tile", "source": "Sprites/the-sheet", "x": 45, "y": 119, "width": 39, "height": 37 }
 ```
 
-## Floors
-
-| Id | Use |
-| --- | --- |
-| `floor-stone`, `floor-stone-b`, `floor-cracked` | Dungeon cobble |
-| `floor-dirt`, `floor-dirt-b`, `floor-pebble` | Loose earth |
-| `floor-water`, `floor-water-b` | Pool. Drowns until frozen |
-| `floor-mud` | Dirt after water |
-| `floor-ash` | What fire leaves of a covering |
-| `pit`, `pit-edge` | Hollow and lip |
-
-## Walls
-
-| Id | Use |
-| --- | --- |
-| `wall`, `wall-b`, `wall-c`, `wall-crack` | Brick |
-| `wall-corner-in`, `wall-corner-out` | Corners |
-| `wall-moss` | Aged brick |
-| `wall-cave`, `wall-cave-b` | Cave mouth |
-
-## Door
-
-| Id | Use |
-| --- | --- |
-| `door` | Closed wooden leaf in a stone arch |
-| `door-open` | Same arch, leaf swung |
-| `arch`, `arch-shut`, `arch-pillar` | Jambs / open stone |
-
-## Coverings
-
-| Id | Use |
-| --- | --- |
-| `cover-moss`, `cover-moss-b`, `cover-vine`, `cover-plant`, `cover-grove` | Green. Burns. Water grows plant |
-| `cover-crack`, `cover-crack-b`, `cover-crack-c` | Wear |
-| `cover-seal` | Runic slab |
-| `cover-blood` | Splatter |
-| `cover-ice` | After a freeze — not a painted room floor |
-| `cover-metal` | Conductive plate on stone |
-
-## Effects
-
-| Id | Use |
-| --- | --- |
-| `fx-fire`, `fx-ember` | Hunger on a tile |
-| `fx-poison` | Miasma / toxic gas |
-| `fx-smoke`, `fx-smoke-b` | Smoke / fog |
-| `fx-charge` | Spark walking the floor |
-| `fx-wet` | Water on stone |
-| `fx-grow` | Growth tick |
-| `fx-ripple`, `fx-ripple-b` | Water motion |
-
-## Props
-
-| Id | Use |
-| --- | --- |
-| `pillar`, `pillar-broken`, `stalagmite`, `hook-statue` | Stone bodies |
-| `torch-lit`, `torch-unlit`, `torch-empty`, `brazier-lit`, `brazier` | Light |
-| `ice-fountain`, `ice-chest` | Ice objects. Fire or shatter ends them |
-| `water-fountain` | Living yield |
-| `lightning-vial`, `lightning-pillar`, `lightning-splash` | Spark objects. The live rod uses the pillar |
-| `bush`, `bush-b` | Shrubs |
-| `ring-mount` | Wall ring |
-
-Aliases keep old ids working: `torch` → `torch-unlit`, `rod` / `rod-live` → `lightning-pillar`, `ice-block` → `ice-chest`, `tile-fire` → `fx-fire`, and the other `tile-*` FX names.
+3. Use `"sprite": "my-tile"` on a decor stamp, or `TileAtlas.Get("my-tile")`.
