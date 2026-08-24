@@ -69,6 +69,11 @@ namespace RuneMagic
                 return Of(ElementFamily.Poison);
             }
 
+            if (spell == SpellId.Darkness)
+            {
+                return Of(ElementFamily.Dark);
+            }
+
             if (WorldWork.IsSightVeil(spell) || spell == SpellId.Fog)
             {
                 return Of(ElementFamily.Fog);
@@ -88,6 +93,11 @@ namespace RuneMagic
             if (WorldWork.IsPoisonVeil(spell))
             {
                 return ElementFamily.Poison;
+            }
+
+            if (spell == SpellId.Darkness)
+            {
+                return ElementFamily.Dark;
             }
 
             if (WorldWork.IsSightVeil(spell))

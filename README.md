@@ -141,7 +141,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 ## Not in this slice (on purpose)
 
 - Full material tree, ternary nodes, and `material-codex.html`
-- Gas/oil explosions, and the rest of the later reaction list
+- The rest of the later reaction list. Oil-pillar is the first amateur bomb.
 - Attunement decay / off-focus wither, a Free-store item, Primordial access, soul-work
 - A real death / last-rites pass (this slice respawns at the crystal)
 - Passive item-wards and mediums, and the Primordial-gate item

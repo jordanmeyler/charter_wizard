@@ -552,24 +552,36 @@ namespace RuneMagic
 
         public static bool AuraAt(WorldGrid grid, Vector3 world, out VeilKind kind)
         {
-            kind = VeilKind.None;
+            var field = VeilKind.None;
+            var covered = VeilField.Covering(world, out field);
             var tile = grid != null ? grid.TileAtWorld(world) : null;
-            if (tile != null)
-            {
-                if (tile.HasMiasma)
-                {
-                    kind = VeilKind.Poison;
-                    return true;
-                }
+            kind = DominantAura(field, tile != null && tile.HasMiasma, tile != null && tile.HasFog);
+            return kind != VeilKind.None || covered;
+        }
 
-                if (tile.HasFog)
-                {
-                    kind = VeilKind.Fog;
-                    return true;
-                }
+        /// <summary>
+        /// A Darkness or poison field wins over leftover cloak on the
+        /// tile. Cloak is how fog and darkness both stain the floor;
+        /// the field is what the room is actually doing.
+        /// </summary>
+        public static VeilKind DominantAura(VeilKind field, bool hasMiasma, bool hasFog)
+        {
+            if (field == VeilKind.Darkness || field == VeilKind.Poison)
+            {
+                return field;
             }
 
-            return VeilField.Covering(world, out kind);
+            if (hasMiasma)
+            {
+                return VeilKind.Poison;
+            }
+
+            if (hasFog)
+            {
+                return VeilKind.Fog;
+            }
+
+            return field;
         }
 
         public static int BlowFog(IReadOnlyList<ISpellLock> locks, SpellSweep sweep)
@@ -693,6 +705,13 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
             {
                 broken.Add("Fog must cloak tiles and Blight must foul them");
+            }
+
+            if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
+                || DominantAura(VeilKind.None, false, true) != VeilKind.Fog
+                || SpellVerb.Of(SpellId.Darkness).Tiles != TileVerb.Cloak)
+            {
+                broken.Add("Darkness must withhold sight even when the floor is cloaked");
             }
 
             MatterLaw.Audit(broken);
