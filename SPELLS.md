@@ -85,7 +85,7 @@ Hunger was sent (**Mercury**). **Fire · Mercury**. That is fire. No Salt — a 
 
 **Fire · Air · Sulphur · Mercury** is the wildcard on the bolt. The same moving spark now reaches a mind. That is Jolt, not fire.
 
-**Ice** is yield meeting rest: **Water · Earth**. It melts. **Water · Earth · Salt** is a water-pillar. **Water · Salt · Earth** fizzles. The grim twin (**Water · Salt · Death**) is grave-ice, and it is not in the ordinary book.
+**Ice** is yield meeting rest: **Water · Earth**. It melts. **Water · Earth · Salt** is a water-pillar. **Water · Salt · Earth** is Plant. The grim twin (**Water · Salt · Death**) is grave-ice, and it is not in the ordinary book.
 
 ---
 
@@ -123,7 +123,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 | --- | --- | --- | --- |
 | **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
-| **Plant** | Water · Earth · Water | Hard water given more yield. Fiber, a seed. | Not living until Life. Grotto is the cave-spell (`Plant · Dark`), not a rune |
+| **Plant** | Water · Salt · Earth | Yield given a body, then rest. Fiber, a seed. | Not living until Life. Grotto is the cave-spell (`Plant · Dark`), not a rune |
 | **Sand** | Dust · Salt | Grit given a body. | Grains |
 | **Glass** | Sand · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
 | **Obsidian** | Lava · Water · Salt | Hungry earth quenched and given a body. | Black glass. A path. Melt, Shatter, and hunger's thaw will not take it |
@@ -185,9 +185,9 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 26 | Yield meeting grit, given a body. It holds them. | Quagmire | Water · Dust · Salt | Mud · Salt | Spread | Restrain |
 | 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Water · Salt | Lava · Water · Salt | Remote | Neither |
-| 29 | A vegetable body marked living, from the feet. | Sprout | Water · Earth · Water · Life | Plant · Life | Spread | Neither |
-| 30 | The vegetable body sent. It holds them, or it climbs. | Vine | Water · Earth · Water · Mercury | Plant · Mercury | Remote | Restrain / Neither |
-| 31 | The sent plant asked to stand. | Vine-rise | Water · Earth · Water · Mercury · Earth | Vine · Earth | Pillar | Neither / Restrain |
+| 29 | A vegetable body marked living, from the feet. | Sprout | Water · Salt · Earth · Life | Plant · Life | Spread | Neither |
+| 30 | The vegetable body sent. It holds them, or it climbs. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Remote | Restrain / Neither |
+| 31 | The sent plant asked to stand. | Vine-rise | Water · Salt · Earth · Mercury · Earth | Vine · Earth | Pillar | Neither / Restrain |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |
 | 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
@@ -216,7 +216,7 @@ Death is not “still” as a household verb. Earth already means rest. Death me
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41 | A vegetable body, then the grave, given a body. Verdure rots. | Blight | Water · Earth · Water · Death · Salt | Poison · Salt | Spread | Kill | Either |
+| 41 | A vegetable body, then the grave, given a body. Verdure rots. | Blight | Water · Salt · Earth · Death · Salt | Poison · Salt | Spread | Kill | Either |
 | 42 | Withheld, given a body, marked by the grave, and sent. No waking. | Shade | Dark · Death · Salt · Mercury | Shade · Mercury | Remote | Neither | Free |
 | 43 | The grave is sent into a living body. The waking is named so it can be taken. | Unmake | Death · Mercury · Life · Salt | — | Remote | Kill | Free |
 | 44 | The waking passion is given to the grave. They sleep as if dead. | Grave-sleep | Life · Sulphur · Death | — | Remote | Restrain | Free |
@@ -264,22 +264,22 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
 | 69 | Yield meeting grit, going, given a body around your feet. A watery swamp. | Swamp | Water · Dust · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
 | 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
-| 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Earth · Water · Dark | Plant · Dark | Remote | Neither |
+| 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Salt · Earth · Dark | Plant · Dark | Remote | Neither |
 | 72 | The arc meeting rest. | Thunder | Fire · Air · Earth | Lightning · Earth | Remote | Neither |
 | 73 | The hanging veil is withheld. Nothing in the vicinity can see. | Darkness | Air · Water · Dark | Cloud · Dark | Remote | Neither |
 | 74 | The veil given ice, a body, going, and wind. | Blizzard | Air · Water · Salt · Water · Earth · Mercury · Air · Mercury | Cloud · Salt · Ice · Mercury · Wind | Remote | Restrain |
 | 75 | Breath going, driving grit. | Sandstorm | Air · Mercury · Air · Earth · Mercury | Wind · Dust · Mercury | Remote | Neither |
 | 76 | Yield and rest given a standing body. A column of water. | Water-pillar | Water · Earth · Salt | Ice · Salt | Pillar | Neither |
-| 77 | Fuel sent. Surfaces hold flame. Fire already standing grows. | Oil shot | Water · Earth · Water · Fire · Earth · Mercury | Oil · Mercury | Shot | Neither |
-| 78 | A stood wick. Hunger makes it a bomb. | Oil-pillar | Water · Earth · Water · Fire · Earth · Salt · Earth | Oil · Salt · Earth | Pillar | Neither |
-| 79 | The grave of a plant, sent. | Poison | Water · Earth · Water · Death · Mercury | Poison · Mercury | Shot | Kill |
+| 77 | Fuel sent. Surfaces hold flame. Fire already standing grows. | Oil shot | Water · Salt · Earth · Fire · Earth · Mercury | Oil · Mercury | Shot | Neither |
+| 78 | A stood wick. A later fire sentence would make it a bomb. | Oil-pillar | Water · Salt · Earth · Fire · Earth · Salt · Earth | Oil · Salt · Earth | Pillar | Neither |
+| 79 | The grave of a plant, sent. | Poison | Water · Salt · Earth · Death · Mercury | Poison · Mercury | Shot | Kill |
 | 80 | The hanging veil forced through acid. Foul breath. | Miasma | Cloud · Acid | — | Spread | Kill |
 | 81 | Inferno joined to Spark and sent. Ordinary matter ends. | Plasma | Fire · Fire · Salt · Fire · Air · Mercury | Plasma · Mercury | Shot | Kill |
-| 82 | The vegetable body waking as a mass. | Forest | Water · Earth · Water · Life · Earth | Plant · Life · Earth | Remote | Neither |
+| 82 | The vegetable body waking as a mass. | Forest | Water · Salt · Earth · Life · Earth | Plant · Life · Earth | Remote | Neither |
 | 83 | Yield given a body and sent. A remote flood. The monsoon. | Monsoon | Water · Salt · Mercury | — | Remote | Restrain |
 | 84 | Rest sent without a body. Loose dirt. It smothers ground-fire. | Dirt toss | Earth · Mercury | — | Shot | Neither |
 
-**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Earth · Water`). Dark withholds that body so a cave opens. Forest is also a spell (`Plant · Life · Earth`), not a rune.
+**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Forest is also a spell (`Plant · Life · Earth`), not a rune. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb.
 
 Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Plasma** eats ordinary matter. **Obsidian**, **wardstone**, and **aegis** refuse almost all of that work. Use them when a wall must stay.
 
@@ -307,6 +307,6 @@ A finished spell also names **who it touches** and **what condition it leaves**.
 
 ## 8. The sanctum slice
 
-The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands); walls stop the bolt. Lightning strike is Fire · Air · Salt · Air · Mercury (or Spark · Salt · Air · Mercury) — a spark given form from the air, falling from the sky. Ice-pillar is Water · Earth · Salt · Earth (`Ice · Salt · Earth`). Water-pillar is Water · Earth · Salt. Water · Salt · Earth fizzles. Ice-wall is Ice · Salt · Ice (Water · Earth · Salt · Water · Earth). Hop is Air · Salt · Air (Self). Push is Air · Salt · Mercury (Shot) — breath given a body and sent; the wind pushes them. Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Charm is Life · Sulphur · Mercury — they fetch, and they fight what you have marked. Swamp is Water · Dust · Mercury · Salt (Spread). Dirt toss is Earth · Mercury. Hurled stone is Earth · Salt · Mercury. Monsoon is Water · Salt · Mercury. Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
+The written chains resolve in play. Joins fold (Fire · Air is Spark). If Spark already stands in the room, the Charter shows that mark and you can draw it; Fire and Air are still strewn through the weave. Open the Grimoire and click a name to cast that chain if those runes are in view. Short tutorial strings still work as a fallback. Fire is Fire · Mercury. Douse is Water · Mercury. Gust is Air · Mercury. Earth-pillar is Earth · Salt. Lightning is Fire · Air · Mercury (or Spark · Mercury, or Lightning · Mercury if the bolt already stands); walls stop the bolt. Lightning strike is Fire · Air · Salt · Air · Mercury (or Spark · Salt · Air · Mercury) — a spark given form from the air, falling from the sky. Ice-pillar is Water · Earth · Salt · Earth (`Ice · Salt · Earth`). Water-pillar is Water · Earth · Salt. Water · Salt · Earth is Plant. Ice-wall is Ice · Salt · Ice (Water · Earth · Salt · Water · Earth). Hop is Air · Salt · Air (Self). Push is Air · Salt · Mercury (Shot) — breath given a body and sent; the wind pushes them. Flight is Air · Mercury · Salt (Self) — same ideas, different order. Command is Salt · Sulphur · Mercury. Charm is Life · Sulphur · Mercury — they fetch, and they fight what you have marked. Swamp is Water · Dust · Mercury · Salt (Spread). Dirt toss is Earth · Mercury. Hurled stone is Earth · Salt · Mercury. Monsoon is Water · Salt · Mercury. Stoneskin is Earth · Salt · Sulphur (Self). Water ward is Water · Salt · Sulphur. Flame ward is Fire · Salt · Sulphur. Wind ward is Air · Salt · Sulphur. A pillar fills one hollow or stands as a column. A wall is start-to-stop: a span over a pit, a barrier on the floor. Snuff, Blackout, and Grave-dust are Death keys. Charter fizzles Free-only grave-work. The Foundation (`FLOOR1.md`) is the first floor that teaches this grammar through play.
 
 **Charter Cast** wants the whole sentence, in the written order. Mercury · Fire is not fire. **Free Cast** may unscramble a valid bag of runes into a written recipe, and may supply missing runes (fill budget 1 for now — 2/3 of a recipe is enough). If several written chains fit, attunement weighs the pick. A finished sentence — including one Free only had to reorder — is not filled toward a longer one. Free cannot be stored.

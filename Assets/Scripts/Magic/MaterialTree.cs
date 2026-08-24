@@ -49,7 +49,6 @@ namespace RuneMagic
             Add(RuneId.Sand, RuneId.Fire, RuneId.Glass, BlendKind.Stable, "Grains meet hunger, then rest. Sand · Flame · Earth → Glass.");
             Add(RuneId.Stone, RuneId.Water, RuneId.Crystal, BlendKind.Stable, "Stone grown with yield. Stone · Water → Crystal.");
             Add(RuneId.Ice, RuneId.Stone, RuneId.Glacier, BlendKind.Stable, "Still water given stone. Ice · Stone → Glacier.");
-            Add(RuneId.Ice, RuneId.Water, RuneId.Plant, BlendKind.Stable, "Hard water given more yield. Ice · Water → Plant.");
             Add(RuneId.Steam, RuneId.Metal, RuneId.Acid, BlendKind.Violent, "Steam forced through Metal → Acid.");
             Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Hunger leaves a vegetable body as Ash.");
             Add(RuneId.Ash, RuneId.Earth, RuneId.Oil, BlendKind.Stable, "Pressed vegetable hunger given rest. Ash · Earth → Oil.");

@@ -204,7 +204,7 @@ namespace RuneMagic
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Forest, "Forest", "Compressed. Catalog: Plant · Life · Earth. The vegetable body waking as a mass.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
             Register(RuneId.Oil, RuneId.Mercury, SpellShape.Shot, SpellId.OilShot, "Oil shot", "Compressed. Catalog: Oil · Mercury. Fuel sent. Fire grows.");
-            Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. Hunger makes it a bomb.");
+            Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");
             Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison", "Compressed. Catalog: Plant · Death · Mercury. The grave of a plant, sent.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Inferno joined to Spark and sent. Ordinary matter ends.");

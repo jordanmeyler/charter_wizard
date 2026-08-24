@@ -24,9 +24,30 @@ namespace RuneMagic
                 return Heat.None;
             }
 
-            return SpellCodex.TryGet(spell, out var entry)
-                ? HeatOf(entry.RecipeRunes)
-                : Heat.None;
+            if (!SpellCodex.TryGet(spell, out var entry))
+            {
+                return Heat.None;
+            }
+
+            // Unfolded Oil recipes still contain Fire. The via mark is
+            // the fuel rune; without it, standing a wick would be hunger.
+            if (entry.ViaRunes.Count == 0)
+            {
+                return HeatOf(entry.RecipeRunes);
+            }
+
+            var marks = new List<RuneId>(entry.RecipeRunes.Count + entry.ViaRunes.Count);
+            for (var i = 0; i < entry.RecipeRunes.Count; i++)
+            {
+                marks.Add(entry.RecipeRunes[i]);
+            }
+
+            for (var i = 0; i < entry.ViaRunes.Count; i++)
+            {
+                marks.Add(entry.ViaRunes[i]);
+            }
+
+            return HeatOf(marks);
         }
 
         public static Heat HeatOf(IReadOnlyList<RuneId> recipe)
@@ -340,9 +361,11 @@ namespace RuneMagic
 
             if (HeatOf(SpellId.Rage) != Heat.None
                 || HeatOf(SpellId.Frenzy) != Heat.None
-                || HeatOf(SpellId.Gust) != Heat.None)
+                || HeatOf(SpellId.Gust) != Heat.None
+                || HeatOf(SpellId.OilShot) != Heat.None
+                || HeatOf(SpellId.OilPillar) != Heat.None)
             {
-                broken.Add("Mind-fire and breath must not count as heat");
+                broken.Add("Mind-fire, breath, and oil fuel must not count as heat");
             }
 
             if (!Melts(SpellId.Fireball, MaterialId.Ice)

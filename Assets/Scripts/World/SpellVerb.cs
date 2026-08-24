@@ -174,7 +174,7 @@ namespace RuneMagic
                 case SpellId.OilShot:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
                 case SpellId.OilPillar:
-                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Plasma:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.Burning, 3f, TileVerb.Ignite);
                 case SpellId.Forest:

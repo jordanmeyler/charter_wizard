@@ -439,6 +439,7 @@ namespace RuneMagic
             var scoured = 0;
             var burned = 0;
             var melted = 0;
+            var detonated = 0;
             var meltMatter = MaterialId.None;
             var resisted = MaterialId.None;
             for (var i = 0; i < sweep.Cells.Count; i++)
@@ -470,6 +471,7 @@ namespace RuneMagic
                     if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
                     {
                         DetonateOil(grid, tile.Coord);
+                        detonated++;
                     }
                 }
 
@@ -540,6 +542,11 @@ namespace RuneMagic
             if (resisted != MaterialId.None)
             {
                 return MatterLaw.ResistNote(resisted);
+            }
+
+            if (detonated > 0)
+            {
+                return "The stood wick takes a fire sentence. The column becomes a bomb.";
             }
 
             if (burned > 0)
@@ -705,6 +712,18 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
             {
                 broken.Add("Fog must cloak tiles and Blight must foul them");
+            }
+
+            if (WorldWork.IsOilWork(SpellId.OilPillar)
+                || WorldWork.IsFireWork(SpellId.OilPillar)
+                || SpellVerb.Of(SpellId.OilPillar).Tiles != TileVerb.None)
+            {
+                broken.Add("Oil-pillar is a stood wick. A later fire sentence makes it a bomb");
+            }
+
+            if (!WorldWork.IsOilWork(SpellId.OilShot) || WorldWork.IsFireWork(SpellId.OilShot))
+            {
+                broken.Add("Oil shot must slick and grow fire, not detonate a wick");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness

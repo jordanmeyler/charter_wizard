@@ -203,10 +203,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Plant, RuneId.Ash),
 
                 new WorldMaterial(MaterialId.Timber, "timber",
-                    "Hard water given more yield. A vegetable body. Not living until Life.",
+                    "Yield given a body, then rest. A vegetable body. Not living until Life.",
                     RuneId.Plant, MaterialPaint.Planks,
                     new Color(0.46f, 0.3f, 0.16f), new Color(0.42f, 0.26f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant),
+                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant),
 
                 new WorldMaterial(MaterialId.Hearth, "hearthstone",
                     "Hunger given a body and asked to stay in stone.",
@@ -242,7 +242,7 @@ namespace RuneMagic
                     "A vegetable body marked living. Soft cover on stone.",
                     RuneId.Plant, MaterialPaint.Moss,
                     new Color(0.28f, 0.26f, 0.16f), new Color(0.24f, 0.28f, 0.18f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant, RuneId.Vita),
+                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Metal, "iron plate",
                     "Hungry earth given more rest, then stilled.",
@@ -319,7 +319,7 @@ namespace RuneMagic
                     "Living plant as a mass. Forest-work, not a rune.",
                     RuneId.Plant, MaterialPaint.Grove,
                     new Color(0.16f, 0.32f, 0.14f), new Color(0.14f, 0.26f, 0.12f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant, RuneId.Vita),
+                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Cloud, "cloud",
                     "Breath holding yield. A hanging veil.",
@@ -361,7 +361,7 @@ namespace RuneMagic
                     "Vegetable body before Life marks a forest. Green cover.",
                     RuneId.Plant, MaterialPaint.Plant,
                     new Color(0.22f, 0.42f, 0.16f), new Color(0.18f, 0.34f, 0.14f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Water, RuneId.Plant),
+                    RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant),
 
                 new WorldMaterial(MaterialId.Dirt, "dirt",
                     "Loose rest, thrown. Earth speaks here. It smothers ground-fire.",

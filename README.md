@@ -35,7 +35,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | Design rule | In this slice |
 | --- | --- |
 | Casting is perception, not position | Runes live on their own layer, visible only in the Charter. The weave is what is on screen, alternating rows, scrolled sideways. You cannot draw a rune that is off-camera. Click a cell to draw it. |
-| The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Earth · Water · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
+| The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Salt · Earth · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
 | Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |

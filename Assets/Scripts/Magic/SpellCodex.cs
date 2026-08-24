@@ -110,9 +110,9 @@ namespace RuneMagic
             E(26, SpellBook.Hold, SpellId.Quagmire, "Yield meeting grit, given a body. It holds them.", "Quagmire", "Water · Dust · Salt", "Mud · Salt", "Spread", SpellOutcome.Restrain),
             E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth asked to go.", "Lava-flood", "Fire · Earth · Mercury", "Lava · Mercury", "Remote", SpellOutcome.Kill),
             E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Water · Salt", "Lava · Water · Salt", "Remote", SpellOutcome.Neither),
-            E(29, SpellBook.GrowHeal, SpellId.Sprout, "A vegetable body marked living, from the feet.", "Sprout", "Water · Earth · Water · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
-            E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. It holds them, or it climbs.", "Vine", "Water · Earth · Water · Mercury", "Plant · Mercury", "Remote", SpellOutcome.Restrain),
-            E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Earth · Water · Mercury · Earth", "Vine · Earth", "Pillar", SpellOutcome.Neither),
+            E(29, SpellBook.GrowHeal, SpellId.Sprout, "A vegetable body marked living, from the feet.", "Sprout", "Water · Salt · Earth · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
+            E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. It holds them, or it climbs.", "Vine", "Water · Salt · Earth · Mercury", "Plant · Mercury", "Remote", SpellOutcome.Restrain),
+            E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Salt · Earth · Mercury · Earth", "Vine · Earth", "Pillar", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
@@ -122,7 +122,7 @@ namespace RuneMagic
             E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "Wind · Air", "Shot", SpellOutcome.Restrain),
             E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see.", "Veil", "Dark · Life · Salt · Air", "", "Spread", SpellOutcome.Neither),
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
-            E(41, SpellBook.Grave, SpellId.Blight, "A vegetable body, then the grave, given a body. Verdure rots.", "Blight", "Water · Earth · Water · Death · Salt", "Poison · Salt", "Spread", SpellOutcome.Kill, "Either"),
+            E(41, SpellBook.Grave, SpellId.Blight, "A vegetable body, then the grave, given a body. Verdure rots.", "Blight", "Water · Salt · Earth · Death · Salt", "Poison · Salt", "Spread", SpellOutcome.Kill, "Either"),
             E(42, SpellBook.Grave, SpellId.Shade, "Withheld, given a body, marked by the grave, and sent.", "Shade", "Dark · Death · Salt · Mercury", "Shade · Mercury", "Remote", SpellOutcome.Neither, "Free"),
             E(43, SpellBook.Grave, SpellId.Unmake, "The grave is sent into a living body.", "Unmake", "Death · Mercury · Life · Salt", "", "Remote", SpellOutcome.Kill, "Free"),
             E(44, SpellBook.Grave, SpellId.GraveSleep, "The waking passion is given to the grave. Sleep as if dead.", "Grave-sleep", "Life · Sulphur · Death", "", "Remote", SpellOutcome.Restrain, "Free"),
@@ -152,18 +152,18 @@ namespace RuneMagic
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting grit, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Dust · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
             E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
-            E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Earth · Water · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither),
+            E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Salt · Earth · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither),
             E(72, SpellBook.Weather, SpellId.Thunder, "The arc meeting rest.", "Thunder", "Fire · Air · Earth", "Lightning · Earth", "Remote", SpellOutcome.Neither),
             E(73, SpellBook.SeeHide, SpellId.Darkness, "The hanging veil is withheld. Nothing in the vicinity can see.", "Darkness", "Air · Water · Dark", "Cloud · Dark", "Remote", SpellOutcome.Neither),
             E(74, SpellBook.Weather, SpellId.Blizzard, "The veil given ice, a body, going, and wind.", "Blizzard", "Air · Water · Salt · Water · Earth · Mercury · Air · Mercury", "Cloud · Salt · Ice · Mercury · Wind", "Remote", SpellOutcome.Restrain),
             E(75, SpellBook.Weather, SpellId.Sandstorm, "Breath going, driving grit.", "Sandstorm", "Air · Mercury · Air · Earth · Mercury", "Wind · Dust · Mercury", "Remote", SpellOutcome.Neither),
             E(76, SpellBook.Cross, SpellId.WaterPillar, "Yield and rest given a standing body. A column of water.", "Water-pillar", "Water · Earth · Salt", "Ice · Salt", "Pillar", SpellOutcome.Neither),
-            E(77, SpellBook.End, SpellId.OilShot, "Fuel sent. Surfaces hold flame. Fire already standing grows.", "Oil shot", "Water · Earth · Water · Fire · Earth · Mercury", "Oil · Mercury", "Shot", SpellOutcome.Neither),
-            E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. Hunger makes it a bomb.", "Oil-pillar", "Water · Earth · Water · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
-            E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Earth · Water · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
+            E(77, SpellBook.End, SpellId.OilShot, "Fuel sent. Surfaces hold flame. Fire already standing grows.", "Oil shot", "Water · Salt · Earth · Fire · Earth · Mercury", "Oil · Mercury", "Shot", SpellOutcome.Neither),
+            E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. A later fire sentence would make it a bomb.", "Oil-pillar", "Water · Salt · Earth · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
+            E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Spread", SpellOutcome.Kill),
             E(81, SpellBook.End, SpellId.Plasma, "Inferno joined to Spark and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Fire · Salt · Fire · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
-            E(82, SpellBook.GrowHeal, SpellId.Forest, "The vegetable body waking as a mass.", "Forest", "Water · Earth · Water · Life · Earth", "Plant · Life · Earth", "Remote", SpellOutcome.Neither),
+            E(82, SpellBook.GrowHeal, SpellId.Forest, "The vegetable body waking as a mass.", "Forest", "Water · Salt · Earth · Life · Earth", "Plant · Life · Earth", "Remote", SpellOutcome.Neither),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither)
         };
@@ -267,10 +267,10 @@ namespace RuneMagic
                 broken.Add("Water · Earth · Salt should be Water-pillar");
             }
 
-            var oldIce = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Earth });
-            if (ChainBook.CollectExact(oldIce, SpellShape.None).Count != 0)
+            var plantJoin = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Earth });
+            if (ChainBook.CollectExact(plantJoin, SpellShape.None).Count != 0)
             {
-                broken.Add("Water · Salt · Earth must fizzle");
+                broken.Add("Water · Salt · Earth joins to Plant, not a spell");
             }
 
             var iceWall = Composition.FromSequence(new[] { RuneId.Ice, RuneId.Salt, RuneId.Ice });
@@ -503,10 +503,10 @@ namespace RuneMagic
             if (!ChainBook.TryBirth(RuneId.Plant, out var plantBirth)
                 || plantBirth.Count != 3
                 || plantBirth[0] != RuneId.Water
-                || plantBirth[1] != RuneId.Earth
-                || plantBirth[2] != RuneId.Water)
+                || plantBirth[1] != RuneId.Salt
+                || plantBirth[2] != RuneId.Earth)
             {
-                broken.Add("Plant must be the Water · Earth · Water rune");
+                broken.Add("Plant must be the Water · Salt · Earth rune");
             }
 
             if (!ChainBook.TryBirth(RuneId.Ice, out var iceBirth)
@@ -527,10 +527,10 @@ namespace RuneMagic
             }
 
             if (!TryGet(SpellId.Grotto, out var grotto)
-                || !ChainBook.SameStory(grotto.RecipeRunes, ChainBook.Parse("Water · Earth · Water · Dark"))
+                || !ChainBook.SameStory(grotto.RecipeRunes, ChainBook.Parse("Water · Salt · Earth · Dark"))
                 || !ChainBook.SameStory(grotto.ViaRunes, ChainBook.Parse("Plant · Dark")))
             {
-                broken.Add("Grotto must be Water · Earth · Water · Dark, via Plant · Dark");
+                broken.Add("Grotto must be Water · Salt · Earth · Dark, via Plant · Dark");
             }
 
             if (!TryGet(SpellId.StormCall, out var storm)

@@ -199,7 +199,7 @@ namespace RuneMagic
             MatterLaw.HeatOf(spell) >= Heat.Fire;
 
         public static bool IsOilWork(SpellId spell) =>
-            spell == SpellId.OilShot || spell == SpellId.OilPillar;
+            spell == SpellId.OilShot;
 
         public static bool IsPlasmaWork(SpellId spell) =>
             MatterLaw.IsPlasmaWork(spell);
@@ -1122,11 +1122,18 @@ namespace RuneMagic
 
             if (filled > 0 && barred > 0)
             {
-                return "Rest stands where the floor was, and fills the hollow.";
+                return spell == SpellId.OilPillar
+                    ? "A stood wick. A later fire sentence would make it a bomb."
+                    : "Rest stands where the floor was, and fills the hollow.";
             }
 
             if (filled > 0)
             {
+                if (spell == SpellId.OilPillar)
+                {
+                    return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
                 if (DriesWater(spell) && !IsPillar(spell) && !FreezesWater(spell))
                 {
                     return filled == 1
@@ -1148,6 +1155,11 @@ namespace RuneMagic
 
             if (barred > 0)
             {
+                if (spell == SpellId.OilPillar)
+                {
+                    return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
                 if (form == RaisedForm.Pillar)
                 {
                     return "A column stands in the way.";

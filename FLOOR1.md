@@ -52,9 +52,9 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
 | 69 | **Swamp** | Water · Dust · Mercury · Salt | A watery swamp from your feet. Yield meeting grit, going, then stood. |
 | 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
-| 71 | **Grotto** | Water · Earth · Water · Dark | The vegetable body withheld. A damp cave. |
+| 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
 | 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
-| 82 | **Forest** | Water · Earth · Water · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
+| 82 | **Forest** | Water · Salt · Earth · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
 | 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
 | 84 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
 
@@ -149,7 +149,7 @@ The aspects taught *how a sentence stands or goes.* This stage is more open: key
 Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off it. The north hall leads to Door III.
 
 ### Grove Court · "The Living Thicket" — *grow, then burn*
-A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Earth · Water · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
+A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Salt · Earth · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
 
 ### Cistern · "The Cistern" — *water drowns; ice is a floor*
 A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Ice · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.

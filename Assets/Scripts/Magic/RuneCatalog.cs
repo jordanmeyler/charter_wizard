@@ -124,7 +124,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Stone, RuneFamily.Material, "Stone", "Sn", "Rest given a body. Earth · Salt."),
                 new RuneDef(RuneId.Glass, RuneFamily.Material, "Glass", "Gl", "Grains, a fire-body, asked to rest. Sand · Flame · Earth."),
                 new RuneDef(RuneId.Sand, RuneFamily.Material, "Sand", "Sd", "Grit given a body. Dust · Salt. Also mud given breath until it dries."),
-                new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Hard water given more yield. Water · Earth · Water. Fiber, a seed. Not living until Life."),
+                new RuneDef(RuneId.Plant, RuneFamily.Material, "Plant", "Pl", "Yield given a body, then rest. Water · Salt · Earth. Fiber, a seed. Not living until Life."),
                 new RuneDef(RuneId.Lightning, RuneFamily.Material, "Lightning", "Ln", "The seed stretched through more breath. Spark · Air. A path, not a body."),
                 new RuneDef(RuneId.Inferno, RuneFamily.Material, "Inferno", "In", "A fire-body taught to travel and keep eating."),
                 new RuneDef(RuneId.Plasma, RuneFamily.Material, "Plasma", "Pm", "Inferno joined to Spark. Eats ordinary matter. Obsidian and warded stone refuse it."),

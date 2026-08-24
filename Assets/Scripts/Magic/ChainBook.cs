@@ -45,7 +45,7 @@ namespace RuneMagic
             SetBirth(RuneId.Ice, RuneId.Water, RuneId.Earth);
             SetBirth(RuneId.Mud, RuneId.Water, RuneId.Dust);
             SetBirth(RuneId.Stone, RuneId.Earth, RuneId.Salt);
-            SetBirth(RuneId.Plant, RuneId.Water, RuneId.Earth, RuneId.Water);
+            SetBirth(RuneId.Plant, RuneId.Water, RuneId.Salt, RuneId.Earth);
             SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Sulphur, RuneId.Fire);
             SetBirth(RuneId.Ember, RuneId.Fire, RuneId.Mors);
             SetBirth(RuneId.Wind, RuneId.Air, RuneId.Mercury);
@@ -242,8 +242,8 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Unfolds a join to the eleven basics. Plant becomes Water, Earth,
-        /// Water. Ash becomes Fire, Water, Earth, Water. Each ingredient is
+        /// Unfolds a join to the eleven basics. Plant becomes Water, Salt,
+        /// Earth. Ash becomes Fire, Water, Salt, Earth. Each ingredient is
         /// one column in the Charter weave.
         /// </summary>
         public static int ExpandRecipe(RuneId rune, List<RuneId> dest)

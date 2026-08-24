@@ -739,7 +739,7 @@ def main():
                 {"type": "runes", "x": 14, "y": 11, "runes": ["Fire"], "dir": "left"},
                 {"type": "runes", "x": 14, "y": 8, "runes": ["Plant"], "dir": "left"},
                 {"type": "runes", "x": 14, "y": 5, "runes": ["Water"], "dir": "left"},
-                lesson(14, 3, ["Water", "Earth", "Water", "Life"], "left"),
+                lesson(14, 3, ["Water", "Salt", "Earth", "Life"], "left"),
                 {"type": "item", "x": 6, "y": 8, "item": "grove-stone"},
             ],
         ),
