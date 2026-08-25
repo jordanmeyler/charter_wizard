@@ -8,7 +8,7 @@ namespace RuneMagic
         public float damp = 8f;
         public float lookAhead = 0.85f;
         public bool pixelSnap = true;
-        public float pixelsPerUnit = 32f;
+        public float pixelsPerUnit = 16f;
         bool _snapped;
         Vector3 _look;
 

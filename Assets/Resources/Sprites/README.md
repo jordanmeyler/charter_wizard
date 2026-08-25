@@ -1,9 +1,7 @@
 # Sprites
 
-Drop a PNG here whose filename matches a sprite id (`adept.png`, `fire-golem.png`, `adept-walk.png`). The game loads it at boot and uses point filtering.
+16px tiles live in `Rogue/`. Enemy strips live in `Enemies/`. Named slices are in `Catalog/tiles.json` and `Catalog/art.json`.
 
-The pixellab sheets in this folder are the live dungeon art. Named slices live in `Catalog/tiles.json`. See [`TILES.md`](../../../TILES.md).
+The grid is one world unit per 16×16 tile (16 PPU). Paint the map in `Assets/Scenes/Main.unity`. Drop enemies with **GameObject → Rune Magic → Enemies**.
 
-`python3 Tools/import-sprite.py path/to/file.png --id adept`
-
-See [`ART.md`](../../../ART.md) for sizes, pivots, and where to get better art.
+`python3 Tools/import-sprite.py path/to/file.png --id adept --ppu 16`

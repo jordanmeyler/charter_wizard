@@ -17,7 +17,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Install a PNG as a named game sprite.")
     parser.add_argument("png", type=Path, help="Source PNG (or other image Unity can import)")
     parser.add_argument("--id", required=True, help="Sprite id, e.g. adept or adept-walk")
-    parser.add_argument("--ppu", type=float, default=32.0, help="Pixels per unit (default 32)")
+    parser.add_argument("--ppu", type=float, default=16.0, help="Pixels per unit (default 16)")
     parser.add_argument("--pivot", default="0.5,0.5", help="Pivot as x,y (adept: 0.5,0.22)")
     args = parser.parse_args()
 

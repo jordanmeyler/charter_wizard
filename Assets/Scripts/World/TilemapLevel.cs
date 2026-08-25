@@ -121,8 +121,10 @@ namespace RuneMagic
             {
                 for (var x = bounds.xMin; x < bounds.xMax; x++)
                 {
-                    var paint = map.GetTile<WorldPaintTile>(new Vector3Int(x, y, 0));
-                    if (paint == null)
+                    var pos = new Vector3Int(x, y, 0);
+                    var paint = map.GetTile<WorldPaintTile>(pos);
+                    var raw = paint != null ? paint : map.GetTile(pos);
+                    if (raw == null)
                     {
                         continue;
                     }
@@ -133,16 +135,29 @@ namespace RuneMagic
                     maxX = Mathf.Max(maxX, x);
                     maxY = Mathf.Max(maxY, y);
 
+                    var kind = paint != null ? paint.kind : GuessKind(raw);
+                    var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
                     if (tile == null || replace)
                     {
-                        tile = grid.Set(x, y, paint.kind, paint.material);
+                        tile = grid.Set(x, y, kind, material);
                     }
 
-                    ApplyAura(tile, paint.aura);
-                    if (paint.cover != TileCover.None)
+                    var look = paint != null
+                        ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
+                        : SpriteOf(raw);
+                    if (look != null)
                     {
-                        tile.PaintCover(paint.cover);
+                        tile.AuthorLook(look);
+                    }
+
+                    if (paint != null)
+                    {
+                        ApplyAura(tile, paint.aura);
+                        if (paint.cover != TileCover.None)
+                        {
+                            tile.PaintCover(paint.cover);
+                        }
                     }
                 }
             }
@@ -160,13 +175,74 @@ namespace RuneMagic
             var n = 0;
             foreach (var pos in map.cellBounds.allPositionsWithin)
             {
-                if (map.GetTile<WorldPaintTile>(pos) != null)
+                if (map.GetTile(pos) != null)
                 {
                     n++;
                 }
             }
 
             return n;
+        }
+
+        static TileKind GuessKind(TileBase tile)
+        {
+            var name = tile != null ? tile.name : string.Empty;
+            if (name.IndexOf("wall", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return TileKind.Wall;
+            }
+
+            if (name.IndexOf("door", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return TileKind.Door;
+            }
+
+            if (name.IndexOf("pit", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("hole", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("void", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return TileKind.Pit;
+            }
+
+            if (name.IndexOf("bridge", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return TileKind.Bridge;
+            }
+
+            return TileKind.Floor;
+        }
+
+        static MaterialId GuessMaterial(TileBase tile)
+        {
+            var name = tile != null ? tile.name : string.Empty;
+            if (name.IndexOf("water", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Water;
+            }
+
+            if (name.IndexOf("dirt", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("earth", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Dirt;
+            }
+
+            if (name.IndexOf("lava", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("hell", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Lava;
+            }
+
+            if (name.IndexOf("ice", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Ice;
+            }
+
+            return MaterialId.Stone;
+        }
+
+        static Sprite SpriteOf(TileBase tile)
+        {
+            return tile is Tile painted ? painted.sprite : null;
         }
 
         static void HideEditors(Tilemap map)

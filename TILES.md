@@ -16,12 +16,19 @@ each `WorldPaintTile` into a live `WorldTile`.
 5. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    **cover**, and **aura**. Duplicate an asset to make a new brush.
    `Create → Rune Magic → Map Tile` also works.
-6. Place objects with `GameObject → Rune Magic → Item / Decor / Mite / Torch…`
+6. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
    and set catalog id, material, formula, or sprite on the Inspector.
+   Pack enemies are under `GameObject → Rune Magic → Enemies`.
+7. `Window → Rune Magic → Stamp Foundation Into Scene` rebuilds Floor 1
+   as painted tiles and scene objects you can keep editing.
 
 Play hides the editor Tilemap renderers and builds the live grid from
 what you painted. JSON under `Assets/Resources/Maps/` is leftover and
 is not loaded unless Level Authoring is set to **Named Map**.
+
+The grid is **16×16** (16 PPU, one cell = one tile). ElvGames Tile
+palettes also paint — Play keeps that sprite and guesses wall / door /
+water from the tile name.
 
 | Folder | Brushes |
 |---|---|
@@ -30,26 +37,28 @@ is not loaded unless Level Authoring is set to **Named Map**.
 | `Assets/Tiles/Special` | Pit, Door, Bridge |
 | `Assets/Tiles/Cover` | Ice / fire / lightning / vine overlays and fire / miasma / fog auras |
 
-The live dungeon art is the sprite sheets under
-`Assets/Resources/Sprites/`. `tiles.json` names every slice the game
-uses. `TileAtlas` cuts those pixels at runtime (Unity's y-axis starts
-at the bottom of the PNG). Leave a tile's Sprite blank to use the atlas
-slice for that material.
+The live dungeon art is the Rogue Adventure sheets under
+`Assets/Resources/Sprites/Rogue/`. `tiles.json` names every 16px slice.
+`TileAtlas` cuts those pixels at runtime (Unity's y-axis starts at the
+bottom of the PNG). Leave a tile's Sprite blank to use the atlas slice
+for that material. Enemies are 32×32 strips in `Sprites/Enemies/`.
 
-The old painted `dungeon-atlas.png` is unused now.
+Regenerate slices with `python3 Tools/build-rogue-atlas.py`.
 
 ## Sheets
 
 | File | What it is |
 |---|---|
-| `pixellab-A-modular-top-down-pixel-art-d-1787590789217.png` | Floors, walls, the wooden door, torches, braziers, pillars, vines, cracks, bushes, water, miasma |
-| `pixellab-fantastic-can-we-just-add-ice--1787592603251.png` | Ice overlays, ice props, lightning vial / rod, dirt variants, fire / lava FX |
-| `pixellab-the-furniture-should-be-ancien-1787593737338.png` | Ancient furniture, statues, shelves, water altar |
-| `sprite_sheet_env_1.png` | Extra env mix (not required by the current map) |
+| `Rogue/RA_Crypt.png` | Hub stone floors, brick walls, door, furniture |
+| `Rogue/RA_Hell.png` | Fire / lava cover, scorched rock, braziers |
+| `Rogue/RA_Cavern.png` | Dirt, water, pits, cave walls, bridges |
+| `Rogue/RA_Sanctuary.png` | Ice cover, pillars, torches, altars |
+| `Rogue/RA_Jungle.png` | Moss, vines, plants, bushes |
+| `Rogue/RA_Atlantis.png` | Seals, lightning, charged props |
+| `Enemies/Enemy_001.png` … `012` | Placeable pack enemies (`enemy-001` …) |
 
-Each tile is about 32–39px (the sheets are 256×256, not a clean 32 grid).
-Rects in `tiles.json` are Unity texture space: `x`, `y` from the
-**bottom-left**.
+Each tile is 16×16 at 16 PPU. Rects in `tiles.json` are Unity texture
+space: `x`, `y` from the **bottom-left**.
 
 ## Floors (walk on these)
 
@@ -58,12 +67,12 @@ floor itself.
 
 | Id | Sheet | What it looks like |
 |---|---|---|
-| `floor-stone` | modular `(3,209)` | Dungeon cobble |
-| `floor-cracked` | modular `(45,209)` | Worn cobble |
-| `floor-dirt` | modular `(87,209)` | Packed earth |
-| `floor-water` | modular `(215,209)` | Water pool |
-| `pit` | modular `(172,209)` | Open pit |
-| `pit-edge` | modular `(130,209)` | Pit rim |
+| `floor-stone` | Crypt | Dungeon cobble |
+| `floor-cracked` | Crypt | Worn cobble |
+| `floor-dirt` | Cavern | Packed earth |
+| `floor-water` | Cavern | Water pool |
+| `pit` | Cavern | Open pit |
+| `pit-edge` | Cavern | Pit rim |
 
 Aliases: `floor`, `floor-hearth`, `floor-ice`, `floor-vein`,
 `floor-crystal`, `floor-ember` all resolve to stone or dirt so old map
@@ -73,16 +82,16 @@ stamps keep working. The actual ice/fire/lightning look is a **cover**.
 
 | Id | Sheet | Notes |
 |---|---|---|
-| `wall` | modular `(3,163)` | Solid dungeon wall |
-| `wall-moss` | modular `(130,163)` | Mossy outer wall |
-| `wall-cave` | modular `(172,163)` | Cave wall |
-| `wall-fissure` | modular `(215,163)` | Cracked wall |
-| `door` / `arch-shut` | modular `(45,119)` | **The** wooden door |
-| `door-open` | modular `(3,119)` | Open arch (no leaf) |
-| `arch-pillar` | modular `(87,119)` | Stone pillar arch |
-| `pillar` | modular `(160,75)` | Stone pillar |
-| `pillar-broken` | modular `(192,75)` | Broken stump |
-| `stalagmite` | modular `(224,75)` | Rock cluster |
+| `wall` | Crypt | Solid dungeon wall |
+| `wall-moss` | Jungle | Mossy outer wall |
+| `wall-cave` | Cavern | Cave wall |
+| `wall-fissure` | Hell | Cracked volcanic wall |
+| `door` / `arch-shut` | Crypt | **The** wooden door |
+| `door-open` | Crypt | Open arch (no leaf) |
+| `arch-pillar` | Sanctuary | Stone pillar arch |
+| `pillar` | Sanctuary | Stone pillar |
+| `pillar-broken` | Crypt | Broken stump |
+| `stalagmite` | Cavern | Rock cluster |
 
 One door sprite. The exit is still three cells wide so a closed gate
 seals the hall; only the **center** cell draws the wooden leaf. The
@@ -94,13 +103,13 @@ Freeze / burn / charge / flood swap the covering, not the walk family.
 
 | Cover | Sprite | Source |
 |---|---|---|
-| `ice` | `cover-ice` | ice sheet `(3,209)` — ice over stone |
-| `fire` | `cover-fire` | ice sheet `(160,0)` — lava / fire over dirt |
-| `lightning` | `cover-lightning` | modular `(192,39)` — gold seal overlay |
-| `water` | `cover-water` | modular water tile |
-| `vine` | `cover-vine` | modular `(64,41)` |
-| `cracks` | `cover-cracks` | modular `(95,39)` |
-| `seal` | `cover-seal` | modular `(192,39)` |
+| `ice` | `cover-ice` | Sanctuary — ice over stone |
+| `fire` | `cover-fire` | Hell — lava / fire |
+| `lightning` | `cover-lightning` | Atlantis — charged seal |
+| `water` | `cover-water` | Cavern water tile |
+| `vine` | `cover-vine` | Jungle vines |
+| `cracks` | `cover-cracks` | Crypt cracks |
+| `seal` | `cover-seal` | Atlantis seal |
 
 ## Props (reuse these)
 
@@ -120,7 +129,8 @@ Freeze / burn / charge / flood swap the covering, not the walk family.
 | `water-fountain` | Glowing water altar |
 
 Place decor with `GameObject → Rune Magic → Decor` and set the sprite id
-(`torch`, `brazier`, `pillar`…). The JSON stamp form is leftover.
+(`torch`, `brazier`, `pillar`…). Place pack enemies with
+`GameObject → Rune Magic → Enemies`. The JSON stamp form is leftover.
 
 ## Adding a tile later
 
@@ -129,7 +139,7 @@ Place decor with `GameObject → Rune Magic → Decor` and set the sprite id
 2. Add a row to `tiles.json`:
 
 ```json
-{ "id": "my-tile", "source": "Sprites/the-sheet", "x": 45, "y": 119, "width": 39, "height": 37 }
+{ "id": "my-tile", "source": "Sprites/Rogue/RA_Crypt", "x": 32, "y": 240, "width": 16, "height": 16 }
 ```
 
 3. Use `"sprite": "my-tile"` on a decor stamp, or `TileAtlas.Get("my-tile")`.

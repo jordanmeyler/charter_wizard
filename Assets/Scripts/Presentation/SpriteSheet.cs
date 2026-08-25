@@ -20,9 +20,9 @@ namespace RuneMagic
     {
         public string id = "adept";
         public Texture2D texture;
-        public int cellWidth = 32;
-        public int cellHeight = 32;
-        public float pixelsPerUnit = 32f;
+        public int cellWidth = 16;
+        public int cellHeight = 16;
+        public float pixelsPerUnit = 16f;
         public Vector2 pivot = new(0.5f, 0.5f);
         public SpriteSheetClip[] clips;
 
@@ -84,7 +84,7 @@ namespace RuneMagic
             texture.wrapMode = TextureWrapMode.Clamp;
             var cols = Mathf.Max(1, texture.width / cellWidth);
             var frames = new Sprite[clip.count];
-            var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 32f;
+            var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 16f;
             for (var i = 0; i < clip.count; i++)
             {
                 var index = clip.start + i;

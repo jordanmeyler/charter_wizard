@@ -1,6 +1,163 @@
 {
-  "note": "Custom sprites and items. Drop Assets/Resources/Sprites/{id}.png to replace a built-in, or add a sprites[] row with source and optional pivot. Painted cells still work. See ART.md. Built-in ids: adept, ash-mite, torch, torch-lit, rod, rod-live, charm, plaque, ice-block, flame-curtain, charge-curtain, arrow-rack, poison-veil, rope, socket-gate, stone-fire, ice-thing, fire-golem, stone-man, warden. Clips: adept-idle, adept-walk, adept-cast, adept-hop, fire-golem-slam, warden-cast.",
-  "sprites": [],
+  "note": "Custom sprites and items. Rogue Adventure enemies are enemy-001 \u2026 enemy-012. Drop Assets/Resources/Sprites/{id}.png or add a sprites[] row. See ART.md.",
+  "sprites": [
+    {
+      "id": "enemy-001",
+      "source": "Sprites/Enemies/Enemy_001",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Shade idle from Rogue Adventure Enemy_001."
+    },
+    {
+      "id": "enemy-002",
+      "source": "Sprites/Enemies/Enemy_002",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Squire idle from Rogue Adventure Enemy_002."
+    },
+    {
+      "id": "enemy-003",
+      "source": "Sprites/Enemies/Enemy_003",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Crawler idle from Rogue Adventure Enemy_003."
+    },
+    {
+      "id": "enemy-004",
+      "source": "Sprites/Enemies/Enemy_004",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Wisp idle from Rogue Adventure Enemy_004."
+    },
+    {
+      "id": "enemy-005",
+      "source": "Sprites/Enemies/Enemy_005",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Brute idle from Rogue Adventure Enemy_005."
+    },
+    {
+      "id": "enemy-006",
+      "source": "Sprites/Enemies/Enemy_006",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Imp idle from Rogue Adventure Enemy_006."
+    },
+    {
+      "id": "enemy-007",
+      "source": "Sprites/Enemies/Enemy_007",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Skeleton idle from Rogue Adventure Enemy_007."
+    },
+    {
+      "id": "enemy-008",
+      "source": "Sprites/Enemies/Enemy_008",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Cultist idle from Rogue Adventure Enemy_008."
+    },
+    {
+      "id": "enemy-009",
+      "source": "Sprites/Enemies/Enemy_009",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Bat idle from Rogue Adventure Enemy_009."
+    },
+    {
+      "id": "enemy-010",
+      "source": "Sprites/Enemies/Enemy_010",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Serpent idle from Rogue Adventure Enemy_010."
+    },
+    {
+      "id": "enemy-011",
+      "source": "Sprites/Enemies/Enemy_011",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Golem idle from Rogue Adventure Enemy_011."
+    },
+    {
+      "id": "enemy-012",
+      "source": "Sprites/Enemies/Enemy_012",
+      "x": 0,
+      "y": 128,
+      "width": 32,
+      "height": 32,
+      "frames": 6,
+      "fps": 8,
+      "pixelsPerUnit": 16,
+      "pivot": "0.5,0.18",
+      "note": "Warden idle from Rogue Adventure Enemy_012."
+    }
+  ],
   "items": [
     {
       "id": "free-charm",
@@ -9,7 +166,7 @@
       "sprite": "charm",
       "teachesSpell": "Fireball",
       "teachesFormula": "ash-mite",
-      "note": "Hunger given a path — Fire · Mercury.",
+      "note": "Hunger given a path \u2014 Fire \u00b7 Mercury.",
       "look": "hunger given a path. Fire that flies."
     },
     {
@@ -17,7 +174,11 @@
       "name": "Ash Mite",
       "kind": "mite",
       "sprite": "ash-mite",
-      "formula": ["Fire", "Salt", "Life"],
+      "formula": [
+        "Fire",
+        "Salt",
+        "Life"
+      ],
       "keys": [],
       "look": "a small burning body, still hungry."
     },
@@ -92,8 +253,8 @@
       "name": "Mind stone",
       "kind": "stone",
       "sprite": "stone-mind",
-      "note": "Thought that turns the work. Life · Sulphur · Mercury is Charm.",
-      "look": "thought that turns the work — the wildcard. Charm reaches a living mind."
+      "note": "Thought that turns the work. Life \u00b7 Sulphur \u00b7 Mercury is Charm.",
+      "look": "thought that turns the work \u2014 the wildcard. Charm reaches a living mind."
     },
     {
       "id": "grove-key",

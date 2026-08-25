@@ -49,8 +49,9 @@ namespace RuneMagic
                 "2. Main already has a Map (Grid + Tiles + Cover). Or GameObject → Rune Magic → Painted Map.\n" +
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Cover for ice / fire / aura.\n" +
                 "4. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
-                "5. GameObject → Rune Magic → Item / Decor / Mite / Torch… Set catalog id and material on the Inspector.\n" +
-                "6. Play. The painted map becomes the live grid. JSON floors are not loaded.",
+                "5. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
+                "6. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
+                "7. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
             if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
@@ -68,10 +69,37 @@ namespace RuneMagic
                 CreatePrefabs();
             }
 
+            if (GUILayout.Button("Stamp Foundation into this scene"))
+            {
+                StampFoundation.Stamp();
+            }
+
             EditorGUILayout.Space();
             DrawPlace("Item", "WorldItem — catalog id, material, keys, change clip");
             DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
             DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant");
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Pack enemies", EditorStyles.boldLabel);
+            for (var i = 0; i < PackEnemies.All.Length; i++)
+            {
+                var spec = PackEnemies.All[i];
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(spec.Name, GUILayout.Width(72));
+                EditorGUILayout.LabelField(spec.SpriteId + " — drop in the scene", EditorStyles.miniLabel);
+                if (GUILayout.Button("Place", GUILayout.Width(56)))
+                {
+                    var world = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                        ? SceneView.lastActiveSceneView.pivot
+                        : Vector3.zero);
+                    var encounter = PackEnemies.Spawn(spec, world);
+                    Undo.RegisterCreatedObjectUndo(encounter.gameObject, "Place " + spec.Name);
+                    Selection.activeGameObject = encounter.gameObject;
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.Space();
             DrawPlace("Torch", "TorchFixture — keys, lit frames");
             DrawPlace("Rod", "LightningConduit — spark lock");
             DrawPlace("Gate", "SocketGate — requires pack items");
@@ -175,9 +203,9 @@ namespace RuneMagic
     {
         Texture2D _texture;
         string _id = "adept";
-        int _cellWidth = 32;
-        int _cellHeight = 32;
-        float _ppu = 32f;
+        int _cellWidth = 16;
+        int _cellHeight = 16;
+        float _ppu = 16f;
         Vector2 _pivot = new(0.5f, 0.5f);
         string _clips = "idle,0,4,8\nwalk,4,4,10\nmelt,8,4,12";
 

@@ -45,9 +45,13 @@ namespace RuneMagic
         public string id;
         public int width = 32;
         public int height = 32;
-        public float pixelsPerUnit = 32f;
+        public float pixelsPerUnit = 16f;
         public string source;
         public string pivot;
+        public int x;
+        public int y;
+        public int frames = 1;
+        public float fps = 8f;
         public string[] colors;
         public string cells;
     }
@@ -269,14 +273,14 @@ namespace RuneMagic
                 return null;
             }
 
-            var ppu = def.pixelsPerUnit > 0f ? def.pixelsPerUnit : 32f;
+            var ppu = def.pixelsPerUnit > 0f ? def.pixelsPerUnit : 16f;
             var pivot = ParsePivot(def.pivot);
             if (!string.IsNullOrWhiteSpace(def.source))
             {
-                var sheet = LoadSheet(def.source.Trim(), ppu, pivot);
-                if (sheet != null)
+                var sliced = LoadSliced(def, ppu, pivot);
+                if (sliced != null)
                 {
-                    return sheet;
+                    return sliced;
                 }
             }
 
@@ -310,7 +314,45 @@ namespace RuneMagic
             return canvas.ToSprite(ppu, pivot);
         }
 
-        static Sprite LoadSheet(string id, float pixelsPerUnit = 32f, Vector2? pivot = null)
+        static Sprite LoadSliced(CatalogSprite def, float ppu, Vector2 pivot)
+        {
+            var texture = LoadTexture(def.source);
+            if (texture == null)
+            {
+                return null;
+            }
+
+            var frameW = def.width > 0 ? def.width : texture.width;
+            var frameH = def.height > 0 ? def.height : texture.height;
+            var count = Mathf.Max(1, def.frames);
+            var frames = new Sprite[count];
+            for (var i = 0; i < count; i++)
+            {
+                var x = def.x + i * frameW;
+                var y = def.y;
+                if (x < 0 || y < 0 || x + frameW > texture.width || y + frameH > texture.height)
+                {
+                    frames[i] = frames[0];
+                    continue;
+                }
+
+                frames[i] = Sprite.Create(texture, new Rect(x, y, frameW, frameH), pivot, ppu);
+            }
+
+            if (frames[0] == null)
+            {
+                return null;
+            }
+
+            if (count > 1)
+            {
+                SpriteSheetLibrary.Register(def.id, frames, def.fps);
+            }
+
+            return frames[0];
+        }
+
+        static Texture2D LoadTexture(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -344,7 +386,18 @@ namespace RuneMagic
 
             texture.filterMode = FilterMode.Point;
             texture.wrapMode = TextureWrapMode.Clamp;
-            var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 32f;
+            return texture;
+        }
+
+        static Sprite LoadSheet(string id, float pixelsPerUnit = 16f, Vector2? pivot = null)
+        {
+            var texture = LoadTexture(id);
+            if (texture == null)
+            {
+                return null;
+            }
+
+            var ppu = pixelsPerUnit > 0f ? pixelsPerUnit : 16f;
             return Sprite.Create(
                 texture,
                 new Rect(0f, 0f, texture.width, texture.height),
