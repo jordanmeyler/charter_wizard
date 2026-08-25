@@ -127,7 +127,11 @@ namespace RuneMagic
             cam.backgroundColor = new Color(0.04f, 0.045f, 0.07f);
             cam.nearClipPlane = 0.1f;
             cam.transform.rotation = Quaternion.identity;
-            cam.transform.position = new Vector3(2.5f, 5.5f, -10f);
+            var authoring = Object.FindFirstObjectByType<LevelAuthoring>();
+            var start = authoring != null && authoring.spawnPoint != null
+                ? authoring.spawnPoint.position
+                : new Vector3(2.5f, 5.5f, 0f);
+            cam.transform.position = new Vector3(start.x, start.y, -10f);
 
             var follow = cam.GetComponent<FollowCamera2D>();
             if (follow == null)

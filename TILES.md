@@ -132,6 +132,30 @@ Place decor with `GameObject → Rune Magic → Decor` and set the sprite id
 (`torch`, `brazier`, `pillar`…). Place pack enemies with
 `GameObject → Rune Magic → Enemies`. The JSON stamp form is leftover.
 
+## Fixing a bad slice (by hand)
+
+The atlas rects in `tiles.json` were guessed. Do **not** edit JSON if you
+can drag a sprite — the ElvGames pack is already sliced in Unity.
+
+1. Open `Assets/Tiles/Floor/Floor-Stone` (or Wall-Stone, Door, Pit…).
+2. In the Inspector, the **Sprite** field is empty. That is why the
+   Scene view looks blank.
+3. In the Project window open
+   `Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tileset/Tiles`
+   (Hell, Cavern, Sanctuary, Jungle, Atlantis have the same layout).
+4. Drag the tile you want onto **Sprite**. The painted map updates.
+5. Repeat for each brush you care about. Play uses that sprite.
+
+To fix a `tiles.json` rect instead (only needed when Sprite is left blank):
+
+1. Open `Assets/Resources/Sprites/Rogue/RA_Crypt.png` (or Hell / Cavern…).
+2. Measure the 16×16 cell. Unity `y` starts at the **bottom-left** of
+   the PNG, not the top.
+3. Edit that row’s `x`, `y`, `width`, `height` in
+   `Assets/Resources/Catalog/tiles.json`.
+4. `floor-stone` is the stone floor, `wall` is the stone wall, `door`
+   is the leaf. Save. Play again.
+
 ## Adding a tile later
 
 1. Open the sheet in any image tool. Note the pixel rect. Remember
