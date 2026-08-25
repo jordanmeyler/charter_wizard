@@ -39,9 +39,9 @@ namespace RuneMagic
         [Serializable]
         sealed class TileFile
         {
-            public string source = "Sprites/pixellab-A-modular-top-down-pixel-art-d-1787590789217";
-            public int cell = 32;
-            public float pixelsPerUnit = 32f;
+            public string source = "Sprites/Rogue/RA_Crypt";
+            public int cell = 16;
+            public float pixelsPerUnit = 16f;
             public TileDef[] tiles;
             public TileAlias[] aliases;
         }
@@ -80,8 +80,8 @@ namespace RuneMagic
                 return;
             }
 
-            var cell = file.cell > 0 ? file.cell : 32;
-            var ppu = file.pixelsPerUnit > 0f ? file.pixelsPerUnit : 32f;
+            var cell = file.cell > 0 ? file.cell : 16;
+            var ppu = file.pixelsPerUnit > 0f ? file.pixelsPerUnit : 16f;
 
             for (var i = 0; i < file.tiles.Length; i++)
             {
@@ -339,7 +339,7 @@ namespace RuneMagic
 
         static Texture2D LoadTexture(string source)
         {
-            var key = (source ?? "Sprites/pixellab-A-modular-top-down-pixel-art-d-1787590789217").Trim().Replace('\\', '/');
+            var key = (source ?? "Sprites/Rogue/RA_Crypt").Trim().Replace('\\', '/');
             if (key.StartsWith("Assets/Resources/", StringComparison.OrdinalIgnoreCase))
             {
                 key = key.Substring("Assets/Resources/".Length);

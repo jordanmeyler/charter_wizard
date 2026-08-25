@@ -36,6 +36,7 @@ namespace RuneMagic
         SpriteRenderer _overlay;
         SpriteRenderer _cover;
         SpriteRenderer _fx;
+        Sprite _authoredLook;
         Collider2D _collider;
         int _growth;
         GameObject _linger;
@@ -54,6 +55,15 @@ namespace RuneMagic
             ApplyVisual();
             ApplyCover();
             ApplyCollider();
+        }
+
+        public void AuthorLook(Sprite sprite)
+        {
+            _authoredLook = sprite;
+            if (_renderer != null)
+            {
+                ApplyVisual();
+            }
         }
 
         public void MarkDoor(DoorFace face)
@@ -595,6 +605,7 @@ namespace RuneMagic
         void Reshape(TileDef def)
         {
             Def = def;
+            _authoredLook = null;
             if (def.Kind != TileKind.Door)
             {
                 PassageOpen = false;
@@ -642,6 +653,13 @@ namespace RuneMagic
         {
             try
             {
+                if (_authoredLook != null && _telegraph == MaterialId.None && !IsConjured)
+                {
+                    _renderer.sprite = _authoredLook;
+                    _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
+                    return;
+                }
+
                 switch (Kind)
                 {
                     case TileKind.Wall:

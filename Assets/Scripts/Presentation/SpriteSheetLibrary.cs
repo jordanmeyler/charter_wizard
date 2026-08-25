@@ -28,6 +28,11 @@ namespace RuneMagic
             }
         }
 
+        public static void Register(string id, Sprite[] frames, float fps)
+        {
+            Store(id, frames, fps);
+        }
+
         public static void Register(SpriteSheet sheet)
         {
             if (sheet == null || sheet.clips == null)

@@ -110,6 +110,22 @@ namespace RuneMagic
             combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
         }
 
+        public void ApplyPack(PackEnemies.Spec spec)
+        {
+            if (spec == null)
+            {
+                return;
+            }
+
+            authoredName = spec.Name;
+            authoredId = spec.Id;
+            spriteId = spec.SpriteId;
+            formula = spec.Formula;
+            attack = spec.Attack;
+            authoredBlocking = spec.Blocking;
+            authoredEnsouled = spec.Ensouled;
+        }
+
         public void BindFromAuthoring()
         {
             if (_wired)

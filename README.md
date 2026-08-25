@@ -86,7 +86,7 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
 2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
 3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell.
-4. `GameObject → Rune Magic → Item / Decor / Mite / Torch / Gate…` places objects. Set catalog id and material (or formula, keys, sprite) on the Inspector.
+4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate…` places objects. Pack enemies are under **Enemies**. Set catalog id and material (or formula, keys, sprite) on the Inspector. The grid is 16×16 (16 PPU).
 
 Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
 
@@ -98,7 +98,7 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
 
-Tiles come from the sprite sheets in `Assets/Resources/Sprites/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings, props, or FX that swap onto a base tile. Water ripples. Procedural painters stay as fallback. The adept walks, idles, and raises the staff to aim; mites, golems, and the warden have their own loops. Torches flicker, the spawn crystal breathes, pickups hover. Walls sit a little taller than the floor. Rooms wash the camera; locks carry a soft glow. A flying shot — yours or theirs — stops on a wall or a shut door; an opened door is a hole. You can replace the generated actors: drop a PNG in `Assets/Resources/Sprites/{id}.png` or point `art.json` at it. See [`ART.md`](ART.md). A custom still overrides the generated clip.
+Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. Procedural painters stay as fallback for the adept. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
 
 ## Catalog — recipes, sprites, items
 

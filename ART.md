@@ -1,6 +1,9 @@
 # Art — how to get past the generated sprites
 
-The world is still painted in code (`SpriteFactory` / `SpriteActors`): 32–64px procedural tiles and actors, point-filtered, snapped to a 32 PPU camera. That look has a ceiling. You can keep polishing the painters, but they will not become a finished game’s art. Replace them.
+The dungeon tiles are 16×16 Rogue Adventure slices at 16 PPU. Actors
+still fall back to generated painters if you have not dropped a PNG.
+Point-filter, snap the camera to 16 PPU. Replace the generated adept
+and locks when you have stills.
 
 A custom still **overrides** a generated clip. The game looks up art in this order:
 
@@ -21,7 +24,7 @@ A custom still **overrides** a generated clip. The game looks up art in this ord
 | `arrow-shot`, `fireball-shot` | Projectiles | 16–32 | `0.5,0.5` |
 | `stone-fire` … `key-spark` | Pack items | 32 | `0.5,0.5` |
 
-Floors, walls, the door, and dungeon props come from your sprite sheets (`TileAtlas` / `tiles.json`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings, props, or FX — they swap onto a base tile when an element lands. One wooden door (`door` / `door-open`) so the adept fits. Named ids and rects are in [`TILES.md`](TILES.md).
+Floors, walls, the door, and dungeon props come from Rogue Adventure (`TileAtlas` / `tiles.json`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `enemy-012`) drop from **GameObject → Rune Magic → Enemies**. Named ids and rects are in [`TILES.md`](TILES.md).
 
 ## Ways to get the pictures
 
@@ -38,7 +41,7 @@ The catalog pixel grid is for charms and keys. It is the wrong tool for the adep
 ## How to install a PNG
 
 ```bash
-python3 Tools/import-sprite.py ~/art/adept.png --id adept --ppu 32 --pivot 0.5,0.22
+python3 Tools/import-sprite.py ~/art/adept.png --id adept --ppu 16 --pivot 0.5,0.22
 ```
 
 That copies the file to `Assets/Resources/Sprites/adept.png` and registers `source` in `art.json`. Or drop the PNG in that folder yourself — the id is the filename. Unity must import it as a texture (default is fine; play mode reads it as `Texture2D` and applies point filtering).

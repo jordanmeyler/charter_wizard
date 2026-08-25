@@ -19,6 +19,45 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Mite", false, 22)]
         static void Mite() => Spawn("Mite", typeof(EncounterLock));
 
+        [MenuItem("GameObject/Rune Magic/Enemy", false, 22)]
+        static void Enemy() => SpawnEnemy(PackEnemies.All[0]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Shade", false, 40)]
+        static void EnemyShade() => SpawnEnemy(PackEnemies.All[0]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Squire", false, 41)]
+        static void EnemySquire() => SpawnEnemy(PackEnemies.All[1]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Crawler", false, 42)]
+        static void EnemyCrawler() => SpawnEnemy(PackEnemies.All[2]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Wisp", false, 43)]
+        static void EnemyWisp() => SpawnEnemy(PackEnemies.All[3]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Brute", false, 44)]
+        static void EnemyBrute() => SpawnEnemy(PackEnemies.All[4]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Imp", false, 45)]
+        static void EnemyImp() => SpawnEnemy(PackEnemies.All[5]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Skeleton", false, 46)]
+        static void EnemySkeleton() => SpawnEnemy(PackEnemies.All[6]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Cultist", false, 47)]
+        static void EnemyCultist() => SpawnEnemy(PackEnemies.All[7]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Bat", false, 48)]
+        static void EnemyBat() => SpawnEnemy(PackEnemies.All[8]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Serpent", false, 49)]
+        static void EnemySerpent() => SpawnEnemy(PackEnemies.All[9]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Golem", false, 50)]
+        static void EnemyGolem() => SpawnEnemy(PackEnemies.All[10]);
+
+        [MenuItem("GameObject/Rune Magic/Enemies/Warden", false, 51)]
+        static void EnemyWarden() => SpawnEnemy(PackEnemies.All[11]);
+
         [MenuItem("GameObject/Rune Magic/Torch", false, 23)]
         static void Torch() => Spawn("Torch", typeof(TorchFixture));
 
@@ -39,6 +78,16 @@ namespace RuneMagic
 
         [MenuItem("GameObject/Rune Magic/Charm", false, 29)]
         static void Charm() => Spawn("Charm", typeof(FreeCharm));
+
+        static void SpawnEnemy(PackEnemies.Spec spec)
+        {
+            var world = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                ? SceneView.lastActiveSceneView.pivot
+                : Vector3.zero);
+            var encounter = PackEnemies.Spawn(spec, world);
+            Undo.RegisterCreatedObjectUndo(encounter.gameObject, "Create " + spec.Name);
+            Selection.activeGameObject = encounter.gameObject;
+        }
 
         static void Spawn(string name, System.Type type)
         {
