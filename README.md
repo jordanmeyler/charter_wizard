@@ -46,7 +46,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 
 1. Install [Unity Hub](https://unity.com/download) and **Unity 6.3 LTS** (`6000.3.22f1` or a nearby 6.3).
 2. Open this folder in Hub (`Assets`, `Packages`, `ProjectSettings`).
-3. Open `Assets/Scenes/Main.unity`. The scene already has a **Map** Grid with **Tiles** and **Cover** Tilemaps. Open **Window → 2D → Tile Palette**, paint, then press Play. Do not place a character in the scene — the adept still spawns at runtime.
+3. Open `Assets/Scenes/Main.unity`. The scene already has a **Map** Grid with **Tiles** and **Cover** Tilemaps and a small stone room at the origin. In the Scene view turn on **2D**, select **Map**, and press **F** to frame it. Open **Window → 2D → Tile Palette** → **Rune Palette**, paint, then press Play. If the palette is blank, run **Window → Rune Magic → Bind Pack Sprites**. Do not place a character in the scene — the adept still spawns at runtime.
 
 ### Controls
 

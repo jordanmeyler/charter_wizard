@@ -74,10 +74,16 @@ namespace RuneMagic
                 var palette = AssetDatabase.LoadAssetAtPath<GameObject>(PalettePath);
                 if (stone != null && palette != null)
                 {
+                    if (stone.sprite == null)
+                    {
+                        BindPackSprites();
+                    }
+
                     return;
                 }
 
                 EnsureTiles();
+                BindPackSprites();
             };
         }
 
@@ -85,6 +91,7 @@ namespace RuneMagic
         public static void MenuEnsureTiles()
         {
             EnsureTiles();
+            BindPackSprites();
             EditorUtility.DisplayDialog(
                 "Tile Palette",
                 "Tiles are in Assets/Tiles (Floor, Wall, Special, Cover).\n\n" +
@@ -92,6 +99,19 @@ namespace RuneMagic
                 "Select the Tiles object in the scene and paint walk cells.\n" +
                 "Select Cover to paint ice / fire / lightning / aura.\n" +
                 "Click a tile asset to change its material, kind, cover, or sprite.",
+                "OK");
+        }
+
+        [MenuItem("Window/Rune Magic/Bind Pack Sprites")]
+        public static void MenuBindPackSprites()
+        {
+            EnsureTiles();
+            var count = BindPackSprites();
+            EditorUtility.DisplayDialog(
+                "Pack sprites",
+                count + " tile brushes now use sliced ElvGames sprites.\n\n" +
+                "Open Window → 2D → Tile Palette → Rune Palette.\n" +
+                "Select Map/Tiles, press F to frame the starter room, and paint.",
                 "OK");
         }
 
@@ -179,11 +199,91 @@ namespace RuneMagic
             tile.aura = aura;
             if (tile.sprite == null)
             {
-                tile.sprite = tile.PreviewSprite();
+                tile.sprite = PackSprite(name) ?? tile.PreviewSprite();
             }
 
             EditorUtility.SetDirty(tile);
             return tile;
+        }
+
+        public static int BindPackSprites()
+        {
+            var changed = 0;
+            foreach (var path in AssetDatabase.FindAssets("t:WorldPaintTile", new[] { TileRoot }))
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(path);
+                var tile = AssetDatabase.LoadAssetAtPath<WorldPaintTile>(assetPath);
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                var sprite = PackSprite(tile.name) ?? tile.PreviewSprite();
+                if (sprite == null || tile.sprite == sprite)
+                {
+                    continue;
+                }
+
+                tile.sprite = sprite;
+                EditorUtility.SetDirty(tile);
+                changed++;
+            }
+
+            AssetDatabase.SaveAssets();
+            return changed;
+        }
+
+        static readonly Dictionary<string, string> PackTiles = new()
+        {
+            ["Floor-Stone"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tiles/RA_Crypt_1.asset",
+            ["Floor-Dirt"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_4.asset",
+            ["Floor-Water"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_24.asset",
+            ["Floor-Mud"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_16.asset",
+            ["Floor-Ash"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_20.asset",
+            ["Floor-Ice"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Sanctuary/Tiles/RA_Sanctuary_0.asset",
+            ["Floor-Lava"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_21.asset",
+            ["Floor-Moss"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_0.asset",
+            ["Floor-Plant"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_1.asset",
+            ["Floor-Grove"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_2.asset",
+            ["Wall-Stone"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tiles/RA_Crypt_31.asset",
+            ["Wall-Moss"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_10.asset",
+            ["Wall-Ice"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Sanctuary/Tiles/RA_Sanctuary_16.asset",
+            ["Wall-Lava"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_8.asset",
+            ["Door"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tiles/RA_Crypt_80.asset",
+            ["Pit"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_1.asset",
+            ["Bridge"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_40.asset",
+            ["Cover-Ice"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Sanctuary/Tiles/RA_Sanctuary_0.asset",
+            ["Cover-Fire"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_21.asset",
+            ["Cover-Water"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Caverns/Tiles/RA_Cavern_24.asset",
+            ["Cover-Vine"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_5.asset",
+            ["Cover-Lightning"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Atlantis/Tiles/RA_Atlantis_20.asset",
+            ["Cover-Seal"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Atlantis/Tiles/RA_Atlantis_16.asset",
+            ["Cover-Cracks"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tiles/RA_Crypt_50.asset",
+            ["Aura-Fire"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_22.asset",
+            ["Aura-Miasma"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Jungle/Tiles/RA_Jungle_3.asset",
+            ["Aura-Fog"] = "Assets/ElvGames/Rogue Adventure/Tilesets/Hell/Tiles/RA_Hell_10.asset",
+        };
+
+        static Sprite PackSprite(string name)
+        {
+            if (!PackTiles.TryGetValue(name, out var path))
+            {
+                if (name.StartsWith("Wall-"))
+                {
+                    path = PackTiles["Wall-Stone"];
+                }
+                else if (name.StartsWith("Floor-") || name.StartsWith("Cover-") || name.StartsWith("Aura-"))
+                {
+                    path = PackTiles["Floor-Stone"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            var pack = AssetDatabase.LoadAssetAtPath<Tile>(path);
+            return pack != null ? pack.sprite : null;
         }
 
         static void WritePalette(List<WorldPaintTile> tiles)
