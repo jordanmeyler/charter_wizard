@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e1f92873ac5c746a20edf7b01823394, type: 3}
   m_Name: Wall-Ember
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldPaintTile
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
@@ -32,8 +32,8 @@ MonoBehaviour:
     e32: 0
     e33: 1
   m_InstancedGameObject: {fileID: 0}
-  m_Flags: 2
-  m_ColliderType: 0
+  m_Flags: 1
+  m_ColliderType: 1
   material: 5
   kind: 1
   aura: 0
