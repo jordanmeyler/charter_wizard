@@ -6,21 +6,25 @@ each `WorldPaintTile` into a live `WorldTile`.
 ## Authoring
 
 1. Open `Assets/Scenes/Main.unity`. The scene already has **Map** (a
-   Grid), **Tiles**, **Cover**, and **Spawn**.
-2. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
+   Grid), **Tiles**, **Cover**, and **Spawn**, plus a 13×11 stone room
+   at the origin so you can see tiles immediately.
+2. In the Scene view, turn on **2D**. Select **Map** and press **F** to
+   frame the room. The camera and spawn sit inside that room.
+3. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
+   If the palette is blank, `Window → Rune Magic → Bind Pack Sprites`.
    If the palette is missing, `Window → Rune Magic → Create Tile Palette`.
-3. Select the **Tiles** object and paint walk cells (stone floor, water,
-   walls, pits, doors).
-4. Select **Cover** and paint ice / fire / lightning / vine / aura over
+4. Select the **Tiles** object and paint walk cells (stone floor, water,
+   walls, pits, doors). Erase or overwrite the starter room as you like.
+5. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells. Overlay brushes do not replace the walk family.
-5. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
+6. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    **cover**, and **aura**. Duplicate an asset to make a new brush.
    `Create → Rune Magic → Map Tile` also works.
-6. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
+7. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
    and set catalog id, material, formula, or sprite on the Inspector.
    Pack enemies are under `GameObject → Rune Magic → Enemies`.
-7. `Window → Rune Magic → Stamp Foundation Into Scene` rebuilds Floor 1
-   as painted tiles and scene objects you can keep editing.
+8. Leave **Stamp Foundation Into Scene** alone unless you want the old
+   generated Floor 1 dumped back onto the Tilemap.
 
 Play hides the editor Tilemap renderers and builds the live grid from
 what you painted. JSON under `Assets/Resources/Maps/` is leftover and
@@ -37,11 +41,14 @@ water from the tile name.
 | `Assets/Tiles/Special` | Pit, Door, Bridge |
 | `Assets/Tiles/Cover` | Ice / fire / lightning / vine overlays and fire / miasma / fog auras |
 
-The live dungeon art is the Rogue Adventure sheets under
-`Assets/Resources/Sprites/Rogue/`. `tiles.json` names every 16px slice.
-`TileAtlas` cuts those pixels at runtime (Unity's y-axis starts at the
-bottom of the PNG). Leave a tile's Sprite blank to use the atlas slice
-for that material. Enemies are 32×32 strips in `Sprites/Enemies/`.
+Each brush in `Assets/Tiles` already has a sliced ElvGames sprite
+assigned (Crypt stone, Hell lava, Jungle moss, and so on). Drag a
+different `RA_*` tile from `Assets/ElvGames/Rogue Adventure/Tilesets`
+onto **Sprite** if you want another look. Play keeps that sprite.
+
+The atlas under `Assets/Resources/Sprites/Rogue/` is only a fallback for
+brushes that still have a blank Sprite. Enemies are 32×32 strips in
+`Sprites/Enemies/`.
 
 Regenerate slices with `python3 Tools/build-rogue-atlas.py`.
 
@@ -138,13 +145,12 @@ The atlas rects in `tiles.json` were guessed. Do **not** edit JSON if you
 can drag a sprite — the ElvGames pack is already sliced in Unity.
 
 1. Open `Assets/Tiles/Floor/Floor-Stone` (or Wall-Stone, Door, Pit…).
-2. In the Inspector, the **Sprite** field is empty. That is why the
-   Scene view looks blank.
-3. In the Project window open
-   `Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tileset/Tiles`
-   (Hell, Cavern, Sanctuary, Jungle, Atlantis have the same layout).
-4. Drag the tile you want onto **Sprite**. The painted map updates.
-5. Repeat for each brush you care about. Play uses that sprite.
+2. In the Project window open
+   `Assets/ElvGames/Rogue Adventure/Tilesets/Crypt/Tiles`
+   (Hell, Caverns, Sanctuary, Jungle, Atlantis have the same layout).
+3. Drag the tile you want onto **Sprite**. The painted map updates.
+4. Repeat for each brush you care about. Play uses that sprite.
+5. If every brush is blank again, run `Window → Rune Magic → Bind Pack Sprites`.
 
 To fix a `tiles.json` rect instead (only needed when Sprite is left blank):
 

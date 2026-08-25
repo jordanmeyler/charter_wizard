@@ -24,6 +24,7 @@ namespace RuneMagic
             }
 
             TilemapAuthoring.EnsureTiles();
+            TilemapAuthoring.BindPackSprites();
             var authoring = Object.FindFirstObjectByType<LevelAuthoring>();
             if (authoring == null)
             {
