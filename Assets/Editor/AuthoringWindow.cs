@@ -46,13 +46,19 @@ namespace RuneMagic
             EditorGUILayout.HelpBox(
                 "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
                 "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
-                "2. Main already has a Map (Grid + Tiles + Cover). Or GameObject → Rune Magic → Painted Map.\n" +
-                "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Cover for ice / fire / aura.\n" +
-                "4. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
-                "5. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
-                "6. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
-                "7. Play. The painted map becomes the live grid. JSON floors are not loaded.",
+                "2. Main already has a Map (Grid + Tiles + Environment Details + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. Interactables are GameObjects, not a tile layer.\n" +
+                "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Environment Details for plants and furniture. Select Cover for ice / fire / aura.\n" +
+                "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Select Environment Details, check Blocks, and drag across a cluster to add collision.\n" +
+                "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
+                "6. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
+                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
+                "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
+
+            if (GUILayout.Button("Tile Properties (assign after painting)"))
+            {
+                TilePropertyPaint.Open();
+            }
 
             if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
             {
@@ -107,6 +113,13 @@ namespace RuneMagic
             DrawPlace("Plaque", "HintPlaque — readable text");
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
             DrawPlace("Charm", "FreeCharm — teaches Fire · Mercury");
+            DrawPlace("Rune", "RuneStringSource — a written sentence in the field");
+            DrawPlace("Inscription", "RuneStele floor mark — one teaching rune");
+            DrawPlace("Pillar", "RuneStele standing mark — one teaching rune");
+            DrawPlace("Arrows", "ArrowVolley — shots down a lane");
+            DrawPlace("Chasm", "PitChasm — lock over nearby pits");
+            DrawPlace("Fog", "RoomFog — standing breath / poison");
+            DrawPlace("Flame Hall", "FlameHall — names the water-ward lesson");
 
             EditorGUILayout.Space();
             if (GUILayout.Button("Add Level Authoring to scene"))
@@ -177,6 +190,13 @@ namespace RuneMagic
             Write("Plaque", typeof(HintPlaque));
             Write("Crystal", typeof(SpawnCrystal));
             Write("Charm", typeof(FreeCharm));
+            Write("Rune", typeof(RuneStringSource));
+            Write("Inscription", typeof(RuneStele));
+            Write("Pillar", typeof(RuneStele));
+            Write("Arrows", typeof(ArrowVolley));
+            Write("Chasm", typeof(PitChasm));
+            Write("Fog", typeof(RoomFog));
+            Write("Flame Hall", typeof(FlameHall));
             Write("Adept", typeof(AdeptAvatar));
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

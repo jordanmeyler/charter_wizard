@@ -21,6 +21,16 @@ namespace RuneMagic
         public float VoiceWeight => 1.6f;
         public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Poison fog";
+        [SerializeField] string authoredId = "poison-fog";
+        [SerializeField] string[] formula = { "Air" };
+        [SerializeField] string[] keys;
+        [SerializeField] string spriteId = "poison-fog";
+        [SerializeField] string note;
+        [SerializeField] Vector2Int[] coverCells;
+
+        bool _wired;
         RuneId[] _formula;
         string _resolvedNote;
         Vector3 _retreat;
@@ -28,6 +38,24 @@ namespace RuneMagic
         WorldGrid _grid;
         readonly List<GameObject> _wisps = new();
         float _pulse;
+
+        public void BindFromAuthoring(WorldGrid grid)
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(
+                authoredName,
+                authoredId,
+                AuthoringUtil.ParseKeys(keys, MapBuilder.FogKeys),
+                AuthoringUtil.ParseRunes(formula, RuneId.Air),
+                AuthoringUtil.CellsOrHere(coverCells, transform.position),
+                spriteId,
+                note,
+                grid);
+        }
 
         public void Bind(
             string displayName,
@@ -39,6 +67,12 @@ namespace RuneMagic
             string resolvedNote,
             WorldGrid grid = null)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys ?? System.Array.Empty<SpellId>();

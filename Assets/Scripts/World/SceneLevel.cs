@@ -173,6 +173,24 @@ namespace RuneMagic
                 decors[i].BindFromAuthoring();
             }
 
+            var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            for (var i = 0; i < steles.Length; i++)
+            {
+                steles[i].BindFromAuthoring();
+            }
+
+            var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
+            for (var i = 0; i < strings.Length; i++)
+            {
+                strings[i].BindFromAuthoring();
+            }
+
+            var halls = Object.FindObjectsByType<FlameHall>(FindObjectsSortMode.None);
+            for (var i = 0; i < halls.Length; i++)
+            {
+                halls[i].BindFromAuthoring();
+            }
+
             var locks = new List<ISpellLock>();
             if (build.Locks != null)
             {
@@ -217,6 +235,15 @@ namespace RuneMagic
                     break;
                 case BarrierLock barrier:
                     barrier.BindFromAuthoring(grid);
+                    break;
+                case PitChasm chasm:
+                    chasm.BindFromAuthoring(grid);
+                    break;
+                case ArrowVolley arrows:
+                    arrows.BindFromAuthoring(grid);
+                    break;
+                case RoomFog fog:
+                    fog.BindFromAuthoring(grid);
                     break;
             }
         }

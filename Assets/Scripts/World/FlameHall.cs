@@ -9,6 +9,7 @@ namespace RuneMagic
     public sealed class FlameHall : MonoBehaviour, ILookable
     {
         bool _told;
+        bool _wired;
 
         public Vector3 WorldPosition => transform.position;
         public float LookRadius => 1.15f;
@@ -27,9 +28,20 @@ namespace RuneMagic
             return hall;
         }
 
+        public void BindFromAuthoring()
+        {
+            Bind();
+        }
+
         void Bind()
         {
-            var renderer = gameObject.AddComponent<SpriteRenderer>();
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
+            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
             renderer.sprite = SpriteFactory.Named("plaque");
             renderer.sortingOrder = 2;
             renderer.color = new Color(1f, 0.55f, 0.22f, 0.95f);

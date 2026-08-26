@@ -4,9 +4,10 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// A palette tile you paint in the Scene view. Kind + material become
-    /// a live <see cref="WorldTile"/> at Play. Assign a sprite or leave it
-    /// blank to use the atlas slice for that material.
+    /// A palette tile you paint in the Scene view. On Floor / Walls, kind
+    /// + material become the walk cell. On Environment Details they
+    /// become a detail stamp — material, optional collision, and a
+    /// plant can burn off and leave the stone.
     /// </summary>
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile
@@ -19,6 +20,8 @@ namespace RuneMagic
         public TileAura aura;
         [Tooltip("Ice / fire / lightning / vine over the walk tile.")]
         public TileCover cover;
+        [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
+        public bool blocks;
 
         public bool HasOverlay => aura != TileAura.None || cover != TileCover.None;
 

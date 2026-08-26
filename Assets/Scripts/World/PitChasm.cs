@@ -17,11 +17,43 @@ namespace RuneMagic
         public float VoiceWeight => 0.4f;
         public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Chasm";
+        [SerializeField] string authoredId = "chasm";
+        [SerializeField] string[] keys;
+        [Tooltip("Pit cells this lock covers. Leave empty to take nearby pits.")]
+        [SerializeField] Vector2Int[] pitCells;
+
         WorldGrid _grid;
         Vector2Int[] _pits;
+        bool _wired;
+
+        public void BindFromAuthoring(WorldGrid grid)
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            var pits = pitCells != null && pitCells.Length > 0
+                ? pitCells
+                : NearbyPits(grid, transform.position, 12);
+            Bind(
+                authoredName,
+                authoredId,
+                AuthoringUtil.ParseKeys(keys, MapBuilder.PitKeys),
+                grid,
+                pits);
+        }
 
         public void Bind(string displayName, string formulaId, SpellId[] keys, WorldGrid grid, IList<Vector2Int> pits)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys;
@@ -80,6 +112,30 @@ namespace RuneMagic
                                 : spell == SpellId.Bridge
                                     ? "A body of rest given breath spans the drop."
                                     : "Earth takes spirit and flies. Hurled stone piles into a bridge.";
+        }
+
+        static Vector2Int[] NearbyPits(WorldGrid grid, Vector3 world, int reach)
+        {
+            if (grid == null)
+            {
+                return new[] { AuthoringUtil.CellOf(world) };
+            }
+
+            var origin = AuthoringUtil.CellOf(world);
+            var found = new List<Vector2Int>();
+            for (var y = origin.y - reach; y <= origin.y + reach; y++)
+            {
+                for (var x = origin.x - reach; x <= origin.x + reach; x++)
+                {
+                    var tile = grid.Get(x, y);
+                    if (tile != null && tile.Kind == TileKind.Pit)
+                    {
+                        found.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            return found.Count > 0 ? found.ToArray() : new[] { origin };
         }
     }
 }

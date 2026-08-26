@@ -185,7 +185,9 @@ MonoBehaviour:
   mapId: 
   includeJsonProps: 0
   tilemap: {fileID: 210000013}
+  walls: {fileID: 858902333}
   overlays: {fileID: 210000023}
+  decor: {fileID: 2141078938}
   spawnPoint: {fileID: 210000032}
   roomName: Painted Map
   roomWidth: 13
