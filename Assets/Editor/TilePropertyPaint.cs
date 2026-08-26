@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 
 namespace RuneMagic
@@ -41,6 +42,8 @@ namespace RuneMagic
         void OnEnable()
         {
             SceneView.duringSceneGui += OnScene;
+            _ = StampOverlay.Enabled;
+            SceneView.RepaintAll();
         }
 
         void OnDisable()
@@ -52,7 +55,7 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Show stamps outlines each stamp in the Scene view — the painted tiles stay visible.",
+                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Stamped cells glow in the Scene view — gold stone, brown dirt, and a different colour per material.",
                 MessageType.Info);
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
@@ -403,7 +406,7 @@ namespace RuneMagic
     [InitializeOnLoad]
     static class StampOverlay
     {
-        const string EnabledPref = "RuneMagic.ShowStampOverlay";
+        const string EnabledPref = "RuneMagic.ShowStampOverlay.v2";
         const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
 
         static readonly Color Pit = new(0.95f, 0.2f, 0.75f, 1f);
@@ -424,13 +427,14 @@ namespace RuneMagic
         static readonly List<Color> SeenColors = new();
         static readonly List<string> SeenLabels = new();
         static Vector2 _legendScroll;
+        public static int LastStampCount { get; private set; }
 
         public static bool Enabled
         {
-            get => EditorPrefs.GetBool(EnabledPref, false);
+            get => EditorPrefs.GetBool(EnabledPref, true);
             set
             {
-                if (EditorPrefs.GetBool(EnabledPref, false) == value)
+                if (EditorPrefs.GetBool(EnabledPref, true) == value)
                 {
                     return;
                 }
@@ -546,6 +550,10 @@ namespace RuneMagic
 
         public static void DrawLegendGui()
         {
+            var n = LastStampCount;
+            EditorGUILayout.LabelField(n > 0
+                ? n + " stamped cells in the Scene view"
+                : "No stamped cells in view — stamp a cell or turn on look-only outlines.");
             EditorGUILayout.LabelField("Materials", EditorStyles.miniBoldLabel);
             _legendScroll = EditorGUILayout.BeginScrollView(_legendScroll, GUILayout.MaxHeight(220f));
             foreach (MaterialId id in System.Enum.GetValues(typeof(MaterialId)))
@@ -585,11 +593,16 @@ namespace RuneMagic
         {
             SeenColors.Clear();
             SeenLabels.Clear();
+            LastStampCount = 0;
             var maps = CollectMaps();
+            var oldZ = Handles.zTest;
+            Handles.zTest = CompareFunction.Always;
             for (var i = 0; i < maps.Count; i++)
             {
                 DrawMap(maps[i]);
             }
+
+            Handles.zTest = oldZ;
         }
 
         static void DrawMap(Tilemap map)
@@ -602,52 +615,30 @@ namespace RuneMagic
                     continue;
                 }
 
+                LastStampCount++;
                 Note(color, StampLabel(tile));
-                var id = StampId(tile);
-                var min = map.CellToWorld(cell);
-                var max = map.CellToWorld(cell + Vector3Int.one);
-                if (StampId(map.GetTile(cell + Vector3Int.left)) != id)
-                {
-                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(min.x, max.y, 0f), color);
-                }
-
-                if (StampId(map.GetTile(cell + Vector3Int.right)) != id)
-                {
-                    DrawGlowEdge(new Vector3(max.x, min.y, 0f), new Vector3(max.x, max.y, 0f), color);
-                }
-
-                if (StampId(map.GetTile(cell + Vector3Int.down)) != id)
-                {
-                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(max.x, min.y, 0f), color);
-                }
-
-                if (StampId(map.GetTile(cell + Vector3Int.up)) != id)
-                {
-                    DrawGlowEdge(new Vector3(min.x, max.y, 0f), new Vector3(max.x, max.y, 0f), color);
-                }
+                DrawCellGlow(map, cell, color);
             }
         }
 
-        static void DrawGlowEdge(Vector3 a, Vector3 b, Color color)
+        static void DrawCellGlow(Tilemap map, Vector3Int cell, Color color)
         {
-            Handles.color = new Color(color.r, color.g, color.b, 0.28f);
-            Handles.DrawAAPolyLine(8f, a, b);
-            Handles.color = new Color(color.r, color.g, color.b, 0.95f);
-            Handles.DrawAAPolyLine(2.4f, a, b);
-        }
-
-        static int StampId(TileBase tile)
-        {
-            if (tile is WorldPaintTile paint)
+            var center = map.GetCellCenterWorld(cell);
+            var size = map.layoutGrid != null ? map.layoutGrid.cellSize : map.cellSize;
+            var half = new Vector3(size.x * 0.48f, size.y * 0.48f, 0f);
+            var min = center - half;
+            var max = center + half;
+            var verts = new[]
             {
-                return ((int)paint.kind << 24)
-                    ^ ((int)paint.material << 16)
-                    ^ ((int)paint.cover << 8)
-                    ^ ((int)paint.aura << 4)
-                    ^ (paint.blocks ? 1 : 0);
-            }
-
-            return tile != null ? -1 : 0;
+                new Vector3(min.x, min.y, 0f),
+                new Vector3(max.x, min.y, 0f),
+                new Vector3(max.x, max.y, 0f),
+                new Vector3(min.x, max.y, 0f)
+            };
+            Handles.DrawSolidRectangleWithOutline(
+                verts,
+                new Color(color.r, color.g, color.b, 0.16f),
+                new Color(color.r, color.g, color.b, 0.95f));
         }
 
         static List<Tilemap> CollectMaps()
