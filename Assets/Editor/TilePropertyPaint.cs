@@ -52,11 +52,29 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties.",
+                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Show stamps tints the Scene view so you can tell a pit from a hole that only looks like one.",
                 MessageType.Info);
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
             _coverLayer = EditorGUILayout.Toggle("Write onto Cover layer", _coverLayer);
+            var show = EditorGUILayout.Toggle("Show stamps in Scene view", StampOverlay.Enabled);
+            if (show != StampOverlay.Enabled)
+            {
+                StampOverlay.Enabled = show;
+            }
+
+            if (StampOverlay.Enabled)
+            {
+                var lookOnly = EditorGUILayout.Toggle("Tint look-only cells", StampOverlay.ShowLookOnly);
+                if (lookOnly != StampOverlay.ShowLookOnly)
+                {
+                    StampOverlay.ShowLookOnly = lookOnly;
+                }
+
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Legend", EditorStyles.boldLabel);
+                StampOverlay.DrawLegendGui();
+            }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Stamp", EditorStyles.boldLabel);
@@ -141,6 +159,13 @@ namespace RuneMagic
                     },
                     fill,
                     new Color(0.72f, 0.55f, 1f, 0.9f));
+
+                if (StampOverlay.Enabled)
+                {
+                    Handles.Label(
+                        new Vector3((min.x + max.x) * 0.5f, max.y + 0.08f, 0f),
+                        StampOverlay.Describe(tile));
+                }
             }
 
             if (!_paint)
@@ -368,6 +393,317 @@ namespace RuneMagic
             var sign = local < 0 ? "n" : "p";
             var solid = blocks ? "block" : "open";
             return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_" + guid + "_" + sign + Mathf.Abs(local);
+        }
+    }
+
+    /// <summary>
+    /// Scene-view tint for stamped Kind / Material / Aura / Cover / Blocks.
+    /// Yellow means the cell has a sprite but no WorldPaintTile — Play will
+    /// guess from the name.
+    /// </summary>
+    [InitializeOnLoad]
+    static class StampOverlay
+    {
+        const string EnabledPref = "RuneMagic.ShowStampOverlay";
+        const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
+
+        static readonly Color Pit = new(0.95f, 0.15f, 0.72f, 0.42f);
+        static readonly Color IceWall = new(0.25f, 0.88f, 1f, 0.42f);
+        static readonly Color Wall = new(0.28f, 0.3f, 0.36f, 0.38f);
+        static readonly Color Door = new(0.9f, 0.58f, 0.12f, 0.4f);
+        static readonly Color Bridge = new(0.72f, 0.55f, 0.28f, 0.35f);
+        static readonly Color Blocks = new(0.95f, 0.18f, 0.18f, 0.38f);
+        static readonly Color Miasma = new(0.28f, 0.82f, 0.22f, 0.4f);
+        static readonly Color AuraFire = new(1f, 0.38f, 0.08f, 0.38f);
+        static readonly Color AuraFog = new(0.78f, 0.82f, 0.88f, 0.38f);
+        static readonly Color CoverIce = new(0.55f, 0.85f, 1f, 0.36f);
+        static readonly Color CoverFire = new(1f, 0.45f, 0.12f, 0.36f);
+        static readonly Color CoverLightning = new(1f, 0.92f, 0.2f, 0.36f);
+        static readonly Color CoverWater = new(0.2f, 0.5f, 0.95f, 0.36f);
+        static readonly Color CoverVine = new(0.35f, 0.7f, 0.2f, 0.36f);
+        static readonly Color CoverOther = new(0.7f, 0.4f, 0.85f, 0.32f);
+        static readonly Color LookOnly = new(1f, 0.86f, 0.15f, 0.22f);
+
+        public static bool Enabled
+        {
+            get => EditorPrefs.GetBool(EnabledPref, false);
+            set
+            {
+                if (EditorPrefs.GetBool(EnabledPref, false) == value)
+                {
+                    return;
+                }
+
+                EditorPrefs.SetBool(EnabledPref, value);
+                SceneView.RepaintAll();
+            }
+        }
+
+        public static bool ShowLookOnly
+        {
+            get => EditorPrefs.GetBool(LookOnlyPref, true);
+            set
+            {
+                if (EditorPrefs.GetBool(LookOnlyPref, true) == value)
+                {
+                    return;
+                }
+
+                EditorPrefs.SetBool(LookOnlyPref, value);
+                SceneView.RepaintAll();
+            }
+        }
+
+        static StampOverlay()
+        {
+            SceneView.duringSceneGui += OnScene;
+        }
+
+        static void OnScene(SceneView view)
+        {
+            if (!Enabled || Application.isPlaying || Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            DrawCells();
+            DrawSceneLegend();
+        }
+
+        public static string Describe(TileBase tile)
+        {
+            if (tile is WorldPaintTile paint)
+            {
+                var text = paint.kind + " / " + paint.material;
+                if (paint.cover != TileCover.None)
+                {
+                    text += " / " + paint.cover;
+                }
+
+                if (paint.aura != TileAura.None)
+                {
+                    text += " / " + paint.aura;
+                }
+
+                if (paint.blocks)
+                {
+                    text += " / blocks";
+                }
+
+                return text;
+            }
+
+            return tile != null ? tile.name + " (look only)" : "";
+        }
+
+        public static void DrawLegendGui()
+        {
+            Swatch(Pit, "Pit");
+            Swatch(IceWall, "Ice wall");
+            Swatch(Wall, "Wall");
+            Swatch(Door, "Door");
+            Swatch(Miasma, "Miasma");
+            Swatch(CoverIce, "Ice cover (walkable)");
+            Swatch(CoverFire, "Fire cover");
+            Swatch(Blocks, "Blocks");
+            if (ShowLookOnly)
+            {
+                Swatch(LookOnly, "Look only — not stamped, Play guesses");
+            }
+        }
+
+        static void Swatch(Color color, string label)
+        {
+            EditorGUILayout.BeginHorizontal();
+            var rect = GUILayoutUtility.GetRect(14f, 14f, GUILayout.Width(14f), GUILayout.Height(14f));
+            EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
+            GUILayout.Label(label, EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawCells()
+        {
+            var maps = CollectMaps();
+            for (var i = 0; i < maps.Count; i++)
+            {
+                var map = maps[i];
+                foreach (var cell in map.cellBounds.allPositionsWithin)
+                {
+                    var tile = map.GetTile(cell);
+                    if (tile == null || !TryColor(tile, out var fill))
+                    {
+                        continue;
+                    }
+
+                    var min = map.CellToWorld(cell);
+                    var max = map.CellToWorld(cell + Vector3Int.one);
+                    Handles.DrawSolidRectangleWithOutline(
+                        new[]
+                        {
+                            new Vector3(min.x, min.y, 0f),
+                            new Vector3(max.x, min.y, 0f),
+                            new Vector3(max.x, max.y, 0f),
+                            new Vector3(min.x, max.y, 0f)
+                        },
+                        fill,
+                        new Color(fill.r, fill.g, fill.b, Mathf.Min(0.9f, fill.a + 0.45f)));
+                }
+            }
+        }
+
+        static List<Tilemap> CollectMaps()
+        {
+            var found = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var maps = new List<Tilemap>(found.Length);
+            for (var i = 0; i < found.Length; i++)
+            {
+                if (found[i] != null && found[i].gameObject.scene.IsValid())
+                {
+                    maps.Add(found[i]);
+                }
+            }
+
+            maps.Sort((a, b) => LayerOrder(a).CompareTo(LayerOrder(b)));
+            return maps;
+        }
+
+        static int LayerOrder(Tilemap map)
+        {
+            var name = map.gameObject.name.ToLowerInvariant();
+            if (name.IndexOf("cover", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("overlay", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("aura", System.StringComparison.Ordinal) >= 0)
+            {
+                return 3;
+            }
+
+            if (name.IndexOf("detail", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("decor", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("environment", System.StringComparison.Ordinal) >= 0)
+            {
+                return 2;
+            }
+
+            if (name.IndexOf("wall", System.StringComparison.Ordinal) >= 0)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        static bool TryColor(TileBase tile, out Color color)
+        {
+            if (tile is not WorldPaintTile paint)
+            {
+                color = LookOnly;
+                return ShowLookOnly;
+            }
+
+            if (paint.kind == TileKind.Pit)
+            {
+                color = Pit;
+                return true;
+            }
+
+            if (paint.kind == TileKind.Wall)
+            {
+                color = paint.material == MaterialId.Ice ? IceWall : Wall;
+                return true;
+            }
+
+            if (paint.kind == TileKind.Door)
+            {
+                color = Door;
+                return true;
+            }
+
+            if (paint.kind == TileKind.Bridge)
+            {
+                color = Bridge;
+                return true;
+            }
+
+            if (paint.blocks)
+            {
+                color = Blocks;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Miasma)
+            {
+                color = Miasma;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Fire)
+            {
+                color = AuraFire;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Fog)
+            {
+                color = AuraFog;
+                return true;
+            }
+
+            switch (paint.cover)
+            {
+                case TileCover.Ice:
+                    color = CoverIce;
+                    return true;
+                case TileCover.Fire:
+                    color = CoverFire;
+                    return true;
+                case TileCover.Lightning:
+                    color = CoverLightning;
+                    return true;
+                case TileCover.Water:
+                    color = CoverWater;
+                    return true;
+                case TileCover.Vine:
+                    color = CoverVine;
+                    return true;
+                case TileCover.Cracks:
+                case TileCover.Seal:
+                    color = CoverOther;
+                    return true;
+                default:
+                    color = default;
+                    return false;
+            }
+        }
+
+        static void DrawSceneLegend()
+        {
+            Handles.BeginGUI();
+            var box = new Rect(12f, 12f, 188f, ShowLookOnly ? 168f : 150f);
+            EditorGUI.DrawRect(box, new Color(0.08f, 0.08f, 0.1f, 0.72f));
+            GUILayout.BeginArea(new Rect(box.x + 8f, box.y + 6f, box.width - 16f, box.height - 10f));
+            GUILayout.Label("Stamps", EditorStyles.boldLabel);
+            SceneSwatch(Pit, "Pit");
+            SceneSwatch(IceWall, "Ice wall");
+            SceneSwatch(Wall, "Wall");
+            SceneSwatch(Miasma, "Miasma");
+            SceneSwatch(CoverIce, "Ice cover");
+            SceneSwatch(Blocks, "Blocks");
+            if (ShowLookOnly)
+            {
+                SceneSwatch(LookOnly, "Look only");
+            }
+
+            GUILayout.EndArea();
+            Handles.EndGUI();
+        }
+
+        static void SceneSwatch(Color color, string label)
+        {
+            GUILayout.BeginHorizontal();
+            var rect = GUILayoutUtility.GetRect(10f, 10f, GUILayout.Width(10f), GUILayout.Height(10f));
+            EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
+            GUILayout.Label(label, EditorStyles.miniLabel);
+            GUILayout.EndHorizontal();
         }
     }
 }
