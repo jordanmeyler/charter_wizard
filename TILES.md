@@ -13,17 +13,22 @@ each `WorldPaintTile` into a live `WorldTile`.
 3. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
    If the palette is blank, `Window → Rune Magic → Bind Pack Sprites`.
    If the palette is missing, `Window → Rune Magic → Create Tile Palette`.
-4. Select the **Tiles** object and paint walk cells (stone floor, water,
-   walls, pits, doors). Erase or overwrite the starter room as you like.
-5. Select **Cover** and paint ice / fire / lightning / vine / aura over
-   those cells. Overlay brushes do not replace the walk family.
-6. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
-   **cover**, and **aura**. Duplicate an asset to make a new brush.
-   `Create → Rune Magic → Map Tile` also works.
-7. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
+4. Select the **Tiles** object and paint the look — Rune Palette or any
+   ElvGames palette. Erase or overwrite the starter room as you like.
+5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
+   Turn on **Paint in Scene view**, pick Kind / Material / Cover / Aura,
+   and click the cells you already painted. The sprite stays. Right-click
+   a cell to copy its properties. Check **Write onto Cover layer** to
+   stamp ice / fire / aura without changing the walk cell.
+6. Select **Cover** and paint ice / fire / lightning / vine / aura over
+   those cells if you would rather brush overlays than stamp them.
+7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
+   **cover**, and **aura** on a shared brush. Duplicate an asset to make
+   a new brush. `Create → Rune Magic → Map Tile` also works.
+8. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
    and set catalog id, material, formula, or sprite on the Inspector.
    Pack enemies are under `GameObject → Rune Magic → Enemies`.
-8. Leave **Stamp Foundation Into Scene** alone unless you want the old
+9. Leave **Stamp Foundation Into Scene** alone unless you want the old
    generated Floor 1 dumped back onto the Tilemap.
 
 Play hides the editor Tilemap renderers and builds the live grid from

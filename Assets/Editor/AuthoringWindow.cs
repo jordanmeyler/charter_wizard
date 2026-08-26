@@ -48,11 +48,17 @@ namespace RuneMagic
                 "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
                 "2. Main already has a Map (Grid + Tiles + Cover). Or GameObject → Rune Magic → Painted Map.\n" +
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Cover for ice / fire / aura.\n" +
-                "4. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
-                "5. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
-                "6. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
-                "7. Play. The painted map becomes the live grid. JSON floors are not loaded.",
+                "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover.\n" +
+                "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
+                "6. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
+                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
+                "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
+
+            if (GUILayout.Button("Tile Properties (assign after painting)"))
+            {
+                TilePropertyPaint.Open();
+            }
 
             if (GUILayout.Button("Create tile palette (Floor / Wall / Special)"))
             {

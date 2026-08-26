@@ -184,6 +184,10 @@ namespace RuneMagic
             return n;
         }
 
+        public static TileKind GuessKindForEditor(TileBase tile) => GuessKind(tile);
+
+        public static MaterialId GuessMaterialForEditor(TileBase tile) => GuessMaterial(tile);
+
         static TileKind GuessKind(TileBase tile)
         {
             var name = tile != null ? tile.name : string.Empty;
