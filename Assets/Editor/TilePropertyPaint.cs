@@ -52,11 +52,29 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties.",
+                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Show stamps outlines each stamp in the Scene view — the painted tiles stay visible.",
                 MessageType.Info);
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
             _coverLayer = EditorGUILayout.Toggle("Write onto Cover layer", _coverLayer);
+            var show = EditorGUILayout.Toggle("Show stamps in Scene view", StampOverlay.Enabled);
+            if (show != StampOverlay.Enabled)
+            {
+                StampOverlay.Enabled = show;
+            }
+
+            if (StampOverlay.Enabled)
+            {
+                var lookOnly = EditorGUILayout.Toggle("Outline look-only cells", StampOverlay.ShowLookOnly);
+                if (lookOnly != StampOverlay.ShowLookOnly)
+                {
+                    StampOverlay.ShowLookOnly = lookOnly;
+                }
+
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Legend", EditorStyles.boldLabel);
+                StampOverlay.DrawLegendGui();
+            }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Stamp", EditorStyles.boldLabel);
@@ -141,6 +159,13 @@ namespace RuneMagic
                     },
                     fill,
                     new Color(0.72f, 0.55f, 1f, 0.9f));
+
+                if (StampOverlay.Enabled)
+                {
+                    Handles.Label(
+                        new Vector3((min.x + max.x) * 0.5f, max.y + 0.08f, 0f),
+                        StampOverlay.Describe(tile));
+                }
             }
 
             if (!_paint)
@@ -368,6 +393,479 @@ namespace RuneMagic
             var sign = local < 0 ? "n" : "p";
             var solid = blocks ? "block" : "open";
             return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_" + guid + "_" + sign + Mathf.Abs(local);
+        }
+    }
+
+    /// <summary>
+    /// Scene-view outline for each stamp. Adjacent cells of the same stamp
+    /// share one glow so the painted tiles stay readable.
+    /// </summary>
+    [InitializeOnLoad]
+    static class StampOverlay
+    {
+        const string EnabledPref = "RuneMagic.ShowStampOverlay";
+        const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
+
+        static readonly Color Pit = new(0.95f, 0.2f, 0.75f, 1f);
+        static readonly Color Door = new(0.95f, 0.62f, 0.12f, 1f);
+        static readonly Color Bridge = new(0.78f, 0.58f, 0.28f, 1f);
+        static readonly Color Blocks = new(1f, 0.22f, 0.22f, 1f);
+        static readonly Color AuraMiasma = new(0.3f, 0.88f, 0.22f, 1f);
+        static readonly Color AuraFire = new(1f, 0.4f, 0.08f, 1f);
+        static readonly Color AuraFog = new(0.82f, 0.86f, 0.92f, 1f);
+        static readonly Color CoverIce = new(0.55f, 0.88f, 1f, 1f);
+        static readonly Color CoverFire = new(1f, 0.48f, 0.12f, 1f);
+        static readonly Color CoverLightning = new(1f, 0.92f, 0.2f, 1f);
+        static readonly Color CoverWater = new(0.2f, 0.52f, 1f, 1f);
+        static readonly Color CoverVine = new(0.38f, 0.78f, 0.22f, 1f);
+        static readonly Color CoverOther = new(0.75f, 0.42f, 0.9f, 1f);
+        static readonly Color LookOnly = new(1f, 0.86f, 0.15f, 1f);
+        static readonly Color[] MaterialTones;
+        static readonly List<Color> SeenColors = new();
+        static readonly List<string> SeenLabels = new();
+        static Vector2 _legendScroll;
+
+        public static bool Enabled
+        {
+            get => EditorPrefs.GetBool(EnabledPref, false);
+            set
+            {
+                if (EditorPrefs.GetBool(EnabledPref, false) == value)
+                {
+                    return;
+                }
+
+                EditorPrefs.SetBool(EnabledPref, value);
+                SceneView.RepaintAll();
+            }
+        }
+
+        public static bool ShowLookOnly
+        {
+            get => EditorPrefs.GetBool(LookOnlyPref, false);
+            set
+            {
+                if (EditorPrefs.GetBool(LookOnlyPref, false) == value)
+                {
+                    return;
+                }
+
+                EditorPrefs.SetBool(LookOnlyPref, value);
+                SceneView.RepaintAll();
+            }
+        }
+
+        static StampOverlay()
+        {
+            SceneView.duringSceneGui += OnScene;
+            var max = 0;
+            foreach (MaterialId id in System.Enum.GetValues(typeof(MaterialId)))
+            {
+                max = Mathf.Max(max, (int)id);
+            }
+
+            MaterialTones = new Color[max + 1];
+            Tone(MaterialId.None, 0.55f, 0.55f, 0.58f);
+            Tone(MaterialId.Stone, 0.95f, 0.82f, 0.38f);
+            Tone(MaterialId.Ash, 0.68f, 0.6f, 0.54f);
+            Tone(MaterialId.Timber, 0.8f, 0.5f, 0.18f);
+            Tone(MaterialId.Hearth, 0.88f, 0.32f, 0.2f);
+            Tone(MaterialId.Ember, 1f, 0.36f, 0.08f);
+            Tone(MaterialId.Damp, 0.32f, 0.55f, 0.78f);
+            Tone(MaterialId.Vein, 0.95f, 0.86f, 0.22f);
+            Tone(MaterialId.Scoured, 0.62f, 0.7f, 0.76f);
+            Tone(MaterialId.Moss, 0.42f, 0.72f, 0.22f);
+            Tone(MaterialId.Metal, 0.7f, 0.76f, 0.86f);
+            Tone(MaterialId.SaltCrust, 0.92f, 0.88f, 0.78f);
+            Tone(MaterialId.Void, 0.48f, 0.16f, 0.55f);
+            Tone(MaterialId.Ice, 0.35f, 0.9f, 1f);
+            Tone(MaterialId.Sand, 0.9f, 0.74f, 0.32f);
+            Tone(MaterialId.Mud, 0.5f, 0.32f, 0.16f);
+            Tone(MaterialId.Lava, 1f, 0.28f, 0.05f);
+            Tone(MaterialId.Steam, 0.78f, 0.86f, 0.9f);
+            Tone(MaterialId.Dust, 0.74f, 0.64f, 0.46f);
+            Tone(MaterialId.Glass, 0.32f, 0.78f, 0.84f);
+            Tone(MaterialId.Crystal, 0.74f, 0.42f, 0.96f);
+            Tone(MaterialId.Obsidian, 0.32f, 0.2f, 0.52f);
+            Tone(MaterialId.Grove, 0.18f, 0.62f, 0.26f);
+            Tone(MaterialId.Cloud, 0.84f, 0.9f, 0.98f);
+            Tone(MaterialId.Rain, 0.28f, 0.48f, 0.8f);
+            Tone(MaterialId.Snow, 0.95f, 0.97f, 1f);
+            Tone(MaterialId.Glacier, 0.58f, 0.8f, 0.92f);
+            Tone(MaterialId.Acid, 0.72f, 0.95f, 0.12f);
+            Tone(MaterialId.Water, 0.12f, 0.46f, 0.98f);
+            Tone(MaterialId.Plant, 0.28f, 0.82f, 0.3f);
+            Tone(MaterialId.Dirt, 0.72f, 0.42f, 0.18f);
+            Tone(MaterialId.Oil, 0.42f, 0.3f, 0.08f);
+            Tone(MaterialId.Miasma, 0.4f, 0.72f, 0.12f);
+            Tone(MaterialId.Wardstone, 0.56f, 0.4f, 0.78f);
+            Tone(MaterialId.Aegis, 0.86f, 0.82f, 0.28f);
+        }
+
+        static void Tone(MaterialId id, float r, float g, float b)
+        {
+            MaterialTones[(int)id] = new Color(r, g, b, 1f);
+        }
+
+        static void OnScene(SceneView view)
+        {
+            if (!Enabled || Application.isPlaying || Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+
+            DrawCells();
+            DrawSceneLegend();
+        }
+
+        public static string Describe(TileBase tile)
+        {
+            if (tile is WorldPaintTile paint)
+            {
+                var text = paint.kind + " / " + paint.material;
+                if (paint.cover != TileCover.None)
+                {
+                    text += " / " + paint.cover;
+                }
+
+                if (paint.aura != TileAura.None)
+                {
+                    text += " / " + paint.aura;
+                }
+
+                if (paint.blocks)
+                {
+                    text += " / blocks";
+                }
+
+                return text;
+            }
+
+            return tile != null ? tile.name + " (look only)" : "";
+        }
+
+        public static void DrawLegendGui()
+        {
+            EditorGUILayout.LabelField("Materials", EditorStyles.miniBoldLabel);
+            _legendScroll = EditorGUILayout.BeginScrollView(_legendScroll, GUILayout.MaxHeight(220f));
+            foreach (MaterialId id in System.Enum.GetValues(typeof(MaterialId)))
+            {
+                if (id == MaterialId.None)
+                {
+                    continue;
+                }
+
+                Swatch(MaterialColor(id), MaterialCatalog.Of(id).Name);
+            }
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Other stamps", EditorStyles.miniBoldLabel);
+            Swatch(Pit, "Pit");
+            Swatch(Door, "Door");
+            Swatch(AuraMiasma, "Miasma (aura)");
+            Swatch(CoverIce, "Ice cover");
+            Swatch(Blocks, "Blocks");
+            if (ShowLookOnly)
+            {
+                Swatch(LookOnly, "Look only — Play guesses");
+            }
+        }
+
+        static void Swatch(Color color, string label)
+        {
+            EditorGUILayout.BeginHorizontal();
+            var rect = GUILayoutUtility.GetRect(14f, 14f, GUILayout.Width(14f), GUILayout.Height(14f));
+            EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
+            GUILayout.Label(label, EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        static void DrawCells()
+        {
+            SeenColors.Clear();
+            SeenLabels.Clear();
+            var maps = CollectMaps();
+            for (var i = 0; i < maps.Count; i++)
+            {
+                DrawMap(maps[i]);
+            }
+        }
+
+        static void DrawMap(Tilemap map)
+        {
+            foreach (var cell in map.cellBounds.allPositionsWithin)
+            {
+                var tile = map.GetTile(cell);
+                if (tile == null || !TryColor(tile, out var color))
+                {
+                    continue;
+                }
+
+                Note(color, StampLabel(tile));
+                var id = StampId(tile);
+                var min = map.CellToWorld(cell);
+                var max = map.CellToWorld(cell + Vector3Int.one);
+                if (StampId(map.GetTile(cell + Vector3Int.left)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(min.x, max.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.right)) != id)
+                {
+                    DrawGlowEdge(new Vector3(max.x, min.y, 0f), new Vector3(max.x, max.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.down)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(max.x, min.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.up)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, max.y, 0f), new Vector3(max.x, max.y, 0f), color);
+                }
+            }
+        }
+
+        static void DrawGlowEdge(Vector3 a, Vector3 b, Color color)
+        {
+            Handles.color = new Color(color.r, color.g, color.b, 0.28f);
+            Handles.DrawAAPolyLine(8f, a, b);
+            Handles.color = new Color(color.r, color.g, color.b, 0.95f);
+            Handles.DrawAAPolyLine(2.4f, a, b);
+        }
+
+        static int StampId(TileBase tile)
+        {
+            if (tile is WorldPaintTile paint)
+            {
+                return ((int)paint.kind << 24)
+                    ^ ((int)paint.material << 16)
+                    ^ ((int)paint.cover << 8)
+                    ^ ((int)paint.aura << 4)
+                    ^ (paint.blocks ? 1 : 0);
+            }
+
+            return tile != null ? -1 : 0;
+        }
+
+        static List<Tilemap> CollectMaps()
+        {
+            var found = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var maps = new List<Tilemap>(found.Length);
+            for (var i = 0; i < found.Length; i++)
+            {
+                if (found[i] != null && found[i].gameObject.scene.IsValid())
+                {
+                    maps.Add(found[i]);
+                }
+            }
+
+            maps.Sort((a, b) => LayerOrder(a).CompareTo(LayerOrder(b)));
+            return maps;
+        }
+
+        static int LayerOrder(Tilemap map)
+        {
+            var name = map.gameObject.name.ToLowerInvariant();
+            if (name.IndexOf("cover", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("overlay", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("aura", System.StringComparison.Ordinal) >= 0)
+            {
+                return 3;
+            }
+
+            if (name.IndexOf("detail", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("decor", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("environment", System.StringComparison.Ordinal) >= 0)
+            {
+                return 2;
+            }
+
+            if (name.IndexOf("wall", System.StringComparison.Ordinal) >= 0)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        static bool TryColor(TileBase tile, out Color color)
+        {
+            if (tile is not WorldPaintTile paint)
+            {
+                color = LookOnly;
+                return ShowLookOnly;
+            }
+
+            if (paint.kind == TileKind.Pit)
+            {
+                color = Pit;
+                return true;
+            }
+
+            if (paint.kind == TileKind.Door)
+            {
+                color = Door;
+                return true;
+            }
+
+            if (paint.kind == TileKind.Bridge)
+            {
+                color = Bridge;
+                return true;
+            }
+
+            if (paint.blocks)
+            {
+                color = Blocks;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Miasma)
+            {
+                color = AuraMiasma;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Fire)
+            {
+                color = AuraFire;
+                return true;
+            }
+
+            if (paint.aura == TileAura.Fog)
+            {
+                color = AuraFog;
+                return true;
+            }
+
+            switch (paint.cover)
+            {
+                case TileCover.Ice:
+                    color = CoverIce;
+                    return true;
+                case TileCover.Fire:
+                    color = CoverFire;
+                    return true;
+                case TileCover.Lightning:
+                    color = CoverLightning;
+                    return true;
+                case TileCover.Water:
+                    color = CoverWater;
+                    return true;
+                case TileCover.Vine:
+                    color = CoverVine;
+                    return true;
+                case TileCover.Cracks:
+                case TileCover.Seal:
+                    color = CoverOther;
+                    return true;
+            }
+
+            color = MaterialColor(paint.material);
+            if (paint.kind == TileKind.Wall)
+            {
+                color = Color.Lerp(color, new Color(0.12f, 0.12f, 0.14f), 0.32f);
+            }
+
+            return true;
+        }
+
+        static Color MaterialColor(MaterialId id)
+        {
+            var index = (int)id;
+            if (index >= 0 && index < MaterialTones.Length && MaterialTones[index].a > 0f)
+            {
+                return MaterialTones[index];
+            }
+
+            var tone = MaterialCatalog.Of(id).FloorTone;
+            Color.RGBToHSV(tone, out var h, out var s, out var v);
+            return Color.HSVToRGB(h, Mathf.Max(0.45f, s), Mathf.Max(0.72f, v));
+        }
+
+        static string StampLabel(TileBase tile)
+        {
+            if (tile is WorldPaintTile paint)
+            {
+                if (paint.kind == TileKind.Pit)
+                {
+                    return "Pit";
+                }
+
+                if (paint.kind == TileKind.Door)
+                {
+                    return "Door";
+                }
+
+                if (paint.blocks)
+                {
+                    return "Blocks";
+                }
+
+                if (paint.aura != TileAura.None)
+                {
+                    return paint.aura.ToString();
+                }
+
+                if (paint.cover != TileCover.None)
+                {
+                    return paint.cover + " cover";
+                }
+
+                return paint.kind + " / " + MaterialCatalog.Of(paint.material).Name;
+            }
+
+            return "Look only";
+        }
+
+        static void Note(Color color, string label)
+        {
+            for (var i = 0; i < SeenLabels.Count; i++)
+            {
+                if (SeenLabels[i] == label)
+                {
+                    return;
+                }
+            }
+
+            SeenLabels.Add(label);
+            SeenColors.Add(color);
+        }
+
+        static void DrawSceneLegend()
+        {
+            Handles.BeginGUI();
+            var count = Mathf.Min(SeenLabels.Count, 16);
+            var extra = SeenLabels.Count - count;
+            var height = 28f + count * 16f + (extra > 0 ? 16f : 0f);
+            var box = new Rect(12f, 12f, 188f, height);
+            EditorGUI.DrawRect(box, new Color(0.08f, 0.08f, 0.1f, 0.72f));
+            GUILayout.BeginArea(new Rect(box.x + 8f, box.y + 6f, box.width - 16f, box.height - 10f));
+            GUILayout.Label("Stamps", EditorStyles.boldLabel);
+            for (var i = 0; i < count; i++)
+            {
+                SceneSwatch(SeenColors[i], SeenLabels[i]);
+            }
+
+            if (extra > 0)
+            {
+                GUILayout.Label("+" + extra + " more in Tile Properties", EditorStyles.miniLabel);
+            }
+
+            GUILayout.EndArea();
+            Handles.EndGUI();
+        }
+
+        static void SceneSwatch(Color color, string label)
+        {
+            GUILayout.BeginHorizontal();
+            var rect = GUILayoutUtility.GetRect(10f, 10f, GUILayout.Width(10f), GUILayout.Height(10f));
+            EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
+            GUILayout.Label(label, EditorStyles.miniLabel);
+            GUILayout.EndHorizontal();
         }
     }
 }
