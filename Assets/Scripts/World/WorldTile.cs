@@ -33,11 +33,13 @@ namespace RuneMagic
         public RuneSourceKind SourceKind => RuneSourceKind.Tile;
 
         SpriteRenderer _renderer;
+        SpriteRenderer _underlay;
         SpriteRenderer _overlay;
         SpriteRenderer _cover;
         SpriteRenderer _detail;
         SpriteRenderer _fx;
         Sprite _authoredLook;
+        Sprite _underlayLook;
         Sprite _detailLook;
         MaterialId _detailMaterial;
         bool _detailBlocks;
@@ -61,12 +63,27 @@ namespace RuneMagic
             ApplyCollider();
         }
 
+        public Sprite AuthoredLook => _authoredLook;
+
         public void AuthorLook(Sprite sprite)
         {
             _authoredLook = sprite;
             if (_renderer != null)
             {
                 ApplyVisual();
+            }
+        }
+
+        /// <summary>
+        /// Floor under a wall or door. Pack wall tiles leave the cobble
+        /// transparent in the same cell; Play used to show the void there.
+        /// </summary>
+        public void AuthorUnderlay(Sprite sprite)
+        {
+            _underlayLook = sprite;
+            if (_renderer != null)
+            {
+                ApplyUnderlay();
             }
         }
 
@@ -662,6 +679,12 @@ namespace RuneMagic
         {
             Def = def;
             _authoredLook = null;
+            _underlayLook = null;
+            if (_underlay != null)
+            {
+                _underlay.enabled = false;
+                _underlay.sprite = null;
+            }
             if (_detailMaterial != MaterialId.Ash)
             {
                 ClearDetail();
@@ -718,6 +741,7 @@ namespace RuneMagic
                     _renderer.sprite = _authoredLook;
                     _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
                     ApplyDetail();
+                    ApplyUnderlay();
                     return;
                 }
 
@@ -765,6 +789,43 @@ namespace RuneMagic
             }
 
             ApplyDetail();
+            ApplyUnderlay();
+        }
+
+        void ApplyUnderlay()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            if (_underlayLook == null || (Kind != TileKind.Wall && Kind != TileKind.Door))
+            {
+                if (_underlay != null)
+                {
+                    _underlay.enabled = false;
+                }
+
+                return;
+            }
+
+            var view = EnsureUnderlay();
+            view.sprite = _underlayLook;
+            view.sortingOrder = 0;
+            view.enabled = true;
+        }
+
+        SpriteRenderer EnsureUnderlay()
+        {
+            if (_underlay != null)
+            {
+                return _underlay;
+            }
+
+            var child = new GameObject("TileUnderlay");
+            child.transform.SetParent(transform, false);
+            _underlay = child.AddComponent<SpriteRenderer>();
+            return _underlay;
         }
 
         void ApplyDoorSprite(bool open)
