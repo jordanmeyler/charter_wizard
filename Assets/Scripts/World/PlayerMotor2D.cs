@@ -63,34 +63,47 @@ namespace RuneMagic
 
         static Vector2 ReadMove()
         {
-            var x = 0f;
-            var y = 0f;
+            var keyboard = Vector2.zero;
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                x -= 1f;
+                keyboard.x -= 1f;
             }
 
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
-                x += 1f;
+                keyboard.x += 1f;
             }
 
             if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
-                y -= 1f;
+                keyboard.y -= 1f;
             }
 
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                y += 1f;
+                keyboard.y += 1f;
             }
 
-            if (x == 0f && y == 0f)
+            if (keyboard.sqrMagnitude > 0f)
             {
-                return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+                return keyboard.sqrMagnitude > 1f ? keyboard.normalized : keyboard;
             }
 
-            return new Vector2(x, y);
+            // Joystick / leftover analog. A noisy stick or an OS axis
+            // that sits slightly off zero walks the adept forever.
+            var analog = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            const float dead = 0.25f;
+            if (Mathf.Abs(analog.x) < dead)
+            {
+                analog.x = 0f;
+            }
+
+            if (Mathf.Abs(analog.y) < dead)
+            {
+                analog.y = 0f;
+            }
+
+            return analog.sqrMagnitude > 1f ? analog.normalized : analog;
         }
     }
 }
