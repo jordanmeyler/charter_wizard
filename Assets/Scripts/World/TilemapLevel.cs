@@ -6,8 +6,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
-    /// Floor / Tiles / Walls set kind + material. Cover only stamps aura
-    /// and covering. Decor stays as painted art and is not baked.
+    /// Floor / Tiles / Walls set kind + material. Cover stamps aura and
+    /// covering. Decor is a detail stamp on that cell — its own material —
+    /// so a plant can burn off a stone floor.
     /// </summary>
     public static class TilemapLevel
     {
@@ -58,6 +59,7 @@ namespace RuneMagic
 
             var walks = WalkLayers(spec, floors);
             var covers = CoverLayers(spec, floors);
+            var decors = DecorLayers(spec, floors);
             for (var i = 0; i < walks.Count; i++)
             {
                 HideEditors(walks[i]);
@@ -66,6 +68,11 @@ namespace RuneMagic
             for (var i = 0; i < covers.Count; i++)
             {
                 HideEditors(covers[i]);
+            }
+
+            for (var i = 0; i < decors.Count; i++)
+            {
+                HideEditors(decors[i]);
             }
 
             var root = new GameObject(floors.transform.parent != null ? floors.transform.parent.name : "Painted Map");
@@ -84,6 +91,11 @@ namespace RuneMagic
             for (var i = 0; i < covers.Count; i++)
             {
                 any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY) || any;
+            }
+
+            for (var i = 0; i < decors.Count; i++)
+            {
+                any = StampDetail(grid, decors[i], ref minX, ref minY, ref maxX, ref maxY) || any;
             }
 
             if (!any)
@@ -129,6 +141,14 @@ namespace RuneMagic
             return list;
         }
 
+        static List<Tilemap> DecorLayers(LevelAuthoring spec, Tilemap primary)
+        {
+            var list = new List<Tilemap>();
+            AddUnique(list, spec != null ? spec.decor : null);
+            CollectSiblings(primary, list, IsDecor);
+            return list;
+        }
+
         static void CollectSiblings(Tilemap primary, List<Tilemap> list, System.Func<Tilemap, bool> match)
         {
             if (primary == null || primary.transform.parent == null)
@@ -139,7 +159,7 @@ namespace RuneMagic
             var maps = primary.transform.parent.GetComponentsInChildren<Tilemap>(true);
             for (var i = 0; i < maps.Length; i++)
             {
-                if (match(maps[i]) && !IsDecor(maps[i]))
+                if (match(maps[i]))
                 {
                     AddUnique(list, maps[i]);
                 }
@@ -241,6 +261,67 @@ namespace RuneMagic
                     {
                         tile.AuthorLook(look);
                     }
+
+                    if (paint != null)
+                    {
+                        ApplyAura(tile, paint.aura);
+                        if (paint.cover != TileCover.None)
+                        {
+                            tile.PaintCover(paint.cover);
+                        }
+                    }
+                }
+            }
+
+            return any;
+        }
+
+        static bool StampDetail(
+            WorldGrid grid,
+            Tilemap map,
+            ref int minX,
+            ref int minY,
+            ref int maxX,
+            ref int maxY)
+        {
+            if (map == null)
+            {
+                return false;
+            }
+
+            var any = false;
+            var bounds = map.cellBounds;
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                for (var x = bounds.xMin; x < bounds.xMax; x++)
+                {
+                    var pos = new Vector3Int(x, y, 0);
+                    var paint = map.GetTile<WorldPaintTile>(pos);
+                    var raw = paint != null ? paint : map.GetTile(pos);
+                    if (raw == null)
+                    {
+                        continue;
+                    }
+
+                    any = true;
+                    minX = Mathf.Min(minX, x);
+                    minY = Mathf.Min(minY, y);
+                    maxX = Mathf.Max(maxX, x);
+                    maxY = Mathf.Max(maxY, y);
+
+                    var tile = grid.Get(x, y);
+                    if (tile == null)
+                    {
+                        tile = grid.Set(x, y, TileKind.Floor, MaterialId.Stone);
+                    }
+
+                    var look = paint != null
+                        ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
+                        : SpriteOf(raw);
+                    var material = paint != null ? paint.material : MaterialId.None;
+                    var blocks = paint != null &&
+                                 (paint.kind == TileKind.Wall || paint.kind == TileKind.Door);
+                    tile.AuthorDetail(look, material, blocks);
 
                     if (paint != null)
                     {

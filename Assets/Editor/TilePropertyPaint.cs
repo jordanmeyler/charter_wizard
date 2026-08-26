@@ -86,7 +86,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Walk cells (floor, wall, pit, door) go on Tiles. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
+                "Select the layer first. Tiles / Walls set walk. Decor is its own stamp — Plant on a bush burns off and leaves the stone under it. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
                 MessageType.None);
         }
 

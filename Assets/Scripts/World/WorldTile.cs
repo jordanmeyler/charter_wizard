@@ -24,7 +24,7 @@ namespace RuneMagic
         /// An opened door is a hole in the wall.
         /// </summary>
         public bool BlocksTravel =>
-            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen);
+            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen) || _detailBlocks;
 
         public bool IsEmitting => !Def.TearsTapestry && Emission.Count > 0;
         public Vector3 WorldOrigin => transform.position;
@@ -35,8 +35,12 @@ namespace RuneMagic
         SpriteRenderer _renderer;
         SpriteRenderer _overlay;
         SpriteRenderer _cover;
+        SpriteRenderer _detail;
         SpriteRenderer _fx;
         Sprite _authoredLook;
+        Sprite _detailLook;
+        MaterialId _detailMaterial;
+        bool _detailBlocks;
         Collider2D _collider;
         int _growth;
         GameObject _linger;
@@ -63,6 +67,22 @@ namespace RuneMagic
             if (_renderer != null)
             {
                 ApplyVisual();
+            }
+        }
+
+        /// <summary>
+        /// A Decor-layer stamp. Sprite and material sit on top of the
+        /// walk cell, so a plant can burn off and leave the stone.
+        /// </summary>
+        public void AuthorDetail(Sprite sprite, MaterialId material, bool blocks = false)
+        {
+            _detailLook = sprite;
+            _detailMaterial = material;
+            _detailBlocks = blocks;
+            if (_renderer != null)
+            {
+                ApplyDetail();
+                RefreshCollider();
             }
         }
 
@@ -101,11 +121,16 @@ namespace RuneMagic
         public bool IsPoisonWater =>
             Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
         public float Flammability =>
-            Def.WorldMaterial.Flammability + (HasOil ? 1.6f : 0f);
+            Def.WorldMaterial.Flammability + DetailFlammability + (HasOil ? 1.6f : 0f);
         public float Conductivity => Def.WorldMaterial.Conductivity;
-        public bool IsPlantish =>
-            Material == MaterialId.Plant || Material == MaterialId.Grove ||
-            Material == MaterialId.Moss || Material == MaterialId.Timber;
+        public bool IsPlantish => IsPlantMaterial(Material);
+        public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
+        public bool HasDetail =>
+            _detailLook != null || _detailMaterial != MaterialId.None;
+        float DetailFlammability =>
+            _detailMaterial == MaterialId.None
+                ? 0f
+                : MaterialCatalog.Of(_detailMaterial).Flammability;
         public bool CanTakePlant =>
             (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             Material != MaterialId.Water && Material != MaterialId.Lava &&
@@ -591,6 +616,15 @@ namespace RuneMagic
 
         public void BurnDown()
         {
+            if (HasPlantishDetail && !IsPlantish)
+            {
+                Fire = 0.15f;
+                ClearDetail();
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
             if (!IsPlantish)
             {
                 return;
@@ -606,6 +640,7 @@ namespace RuneMagic
         {
             Def = def;
             _authoredLook = null;
+            ClearDetail();
             if (def.Kind != TileKind.Door)
             {
                 PassageOpen = false;
@@ -657,6 +692,7 @@ namespace RuneMagic
                 {
                     _renderer.sprite = _authoredLook;
                     _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
+                    ApplyDetail();
                     return;
                 }
 
@@ -702,12 +738,68 @@ namespace RuneMagic
                 _renderer.sprite = SpriteFactory.Square(new Color(0.32f, 0.3f, 0.34f));
                 _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : 0;
             }
+
+            ApplyDetail();
         }
 
         void ApplyDoorSprite(bool open)
         {
             _renderer.sprite = SpriteFactory.Door(open, DoorFace != DoorFace.Jamb);
             _renderer.sortingOrder = 4;
+        }
+
+        void ClearDetail()
+        {
+            _detailLook = null;
+            _detailMaterial = MaterialId.None;
+            _detailBlocks = false;
+            if (_detail != null)
+            {
+                _detail.enabled = false;
+                _detail.sprite = null;
+            }
+        }
+
+        void ApplyDetail()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            if (_detailLook == null)
+            {
+                if (_detail != null)
+                {
+                    _detail.enabled = false;
+                }
+
+                return;
+            }
+
+            var view = EnsureDetail();
+            view.sprite = _detailLook;
+            view.sortingOrder = _renderer.sortingOrder + 2;
+            view.enabled = true;
+        }
+
+        SpriteRenderer EnsureDetail()
+        {
+            if (_detail != null)
+            {
+                return _detail;
+            }
+
+            var child = new GameObject("TileDetail");
+            child.transform.SetParent(transform, false);
+            _detail = child.AddComponent<SpriteRenderer>();
+            return _detail;
+        }
+
+        static bool IsPlantMaterial(MaterialId material)
+        {
+            return material == MaterialId.Plant || material == MaterialId.Grove ||
+                   material == MaterialId.Moss || material == MaterialId.Timber;
         }
 
         void ApplyCover()

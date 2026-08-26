@@ -46,9 +46,9 @@ namespace RuneMagic
             EditorGUILayout.HelpBox(
                 "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
                 "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
-                "2. Main already has a Map (Grid + Tiles + Cover). Extra Floor / Walls / Decor / Coverings children are fine — Play merges them. Interactables are GameObjects, not a tile layer.\n" +
-                "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Cover for ice / fire / aura.\n" +
-                "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover.\n" +
+                "2. Main already has a Map (Grid + Tiles + Decor + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. Interactables are GameObjects, not a tile layer.\n" +
+                "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Decor for plants and furniture. Select Cover for ice / fire / aura.\n" +
+                "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover. Select Decor to stamp plants that burn off the floor.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
                 "6. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
                 "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +

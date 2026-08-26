@@ -4,9 +4,9 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// A palette tile you paint in the Scene view. Kind + material become
-    /// a live <see cref="WorldTile"/> at Play. Assign a sprite or leave it
-    /// blank to use the atlas slice for that material.
+    /// A palette tile you paint in the Scene view. On Floor / Walls, kind
+    /// + material become the walk cell. On Decor they become a detail
+    /// stamp on that cell — a plant can burn off and leave the stone.
     /// </summary>
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile

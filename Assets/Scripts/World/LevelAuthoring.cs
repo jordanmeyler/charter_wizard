@@ -28,7 +28,7 @@ namespace RuneMagic
         public Tilemap walls;
         [Tooltip("Cover and aura only. A Cover or Coverings child works.")]
         public Tilemap overlays;
-        [Tooltip("Look-only decorations. Stays visible at Play; does not change walk.")]
+        [Tooltip("Detail stamp — plants, rugs, furniture. Own material. Burns off without changing the floor.")]
         public Tilemap decor;
 
         [Header("Spawn")]

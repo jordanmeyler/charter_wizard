@@ -97,7 +97,7 @@ namespace RuneMagic
                 }
 
                 tile.Ignite(-0.12f - quench);
-                if (tile.Fire > 0.55f && tile.IsPlantish)
+                if (tile.Fire > 0.55f && (tile.IsPlantish || tile.HasPlantishDetail))
                 {
                     tile.BurnDown();
                 }
