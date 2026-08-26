@@ -21,10 +21,10 @@ each `WorldPaintTile` into a live `WorldTile`.
    Cover / Aura / Blocks, and click those cells. The sprite stays.
    Right-click a cell to copy its properties. Check **Write onto Cover
    layer** to stamp ice / fire / aura without changing the walk cell.
-   Turn on **Show stamps in Scene view** to tint every cell by what
-   Play will use: magenta pit, cyan ice wall, grey wall, green miasma,
-   red blocks. Yellow is look only — a painted sprite with no stamp,
-   so Play guesses from the name. Hover still lists the exact stamp.
+   Turn on **Show stamps in Scene view** to outline each stamp: gold
+   stone floor, brown dirt, magenta pit, cyan ice wall, green miasma,
+   red blocks. Cells with no outline are look only — Play guesses
+   from the name. Hover still lists the exact stamp.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
    Select **Environment Details** for plants and furniture that sit on
@@ -64,8 +64,8 @@ Open `Window → Rune Magic → Tile Properties`. Select the layer
 first (**Tiles** for walk / pit / ice walls, **Cover** or
 **Write onto Cover layer** for miasma). Turn on **Paint in Scene
 view** and **Show stamps**. Uncheck the stamps you do not want so
-a click only writes Kind, or only Aura. If a hole stays yellow,
-it is not a pit yet.
+a click only writes Kind, or only Aura. If a hole has no magenta
+outline, it is not a pit yet.
 
 ### 1. Fire — fire stone frozen in ice
 

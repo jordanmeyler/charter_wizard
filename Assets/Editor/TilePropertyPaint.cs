@@ -52,7 +52,7 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Show stamps tints the Scene view so you can tell a pit from a hole that only looks like one.",
+                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Show stamps outlines each stamp in the Scene view — the painted tiles stay visible.",
                 MessageType.Info);
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
@@ -65,7 +65,7 @@ namespace RuneMagic
 
             if (StampOverlay.Enabled)
             {
-                var lookOnly = EditorGUILayout.Toggle("Tint look-only cells", StampOverlay.ShowLookOnly);
+                var lookOnly = EditorGUILayout.Toggle("Outline look-only cells", StampOverlay.ShowLookOnly);
                 if (lookOnly != StampOverlay.ShowLookOnly)
                 {
                     StampOverlay.ShowLookOnly = lookOnly;
@@ -397,9 +397,8 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// Scene-view tint for stamped Kind / Material / Aura / Cover / Blocks.
-    /// Yellow means the cell has a sprite but no WorldPaintTile — Play will
-    /// guess from the name.
+    /// Scene-view outline for each stamp. Adjacent cells of the same stamp
+    /// share one glow so the painted tiles stay readable.
     /// </summary>
     [InitializeOnLoad]
     static class StampOverlay
@@ -407,22 +406,25 @@ namespace RuneMagic
         const string EnabledPref = "RuneMagic.ShowStampOverlay";
         const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
 
-        static readonly Color Pit = new(0.95f, 0.15f, 0.72f, 0.42f);
-        static readonly Color IceWall = new(0.25f, 0.88f, 1f, 0.42f);
-        static readonly Color Wall = new(0.28f, 0.3f, 0.36f, 0.38f);
-        static readonly Color Door = new(0.9f, 0.58f, 0.12f, 0.4f);
-        static readonly Color Bridge = new(0.72f, 0.55f, 0.28f, 0.35f);
-        static readonly Color Blocks = new(0.95f, 0.18f, 0.18f, 0.38f);
-        static readonly Color Miasma = new(0.28f, 0.82f, 0.22f, 0.4f);
-        static readonly Color AuraFire = new(1f, 0.38f, 0.08f, 0.38f);
-        static readonly Color AuraFog = new(0.78f, 0.82f, 0.88f, 0.38f);
-        static readonly Color CoverIce = new(0.55f, 0.85f, 1f, 0.36f);
-        static readonly Color CoverFire = new(1f, 0.45f, 0.12f, 0.36f);
-        static readonly Color CoverLightning = new(1f, 0.92f, 0.2f, 0.36f);
-        static readonly Color CoverWater = new(0.2f, 0.5f, 0.95f, 0.36f);
-        static readonly Color CoverVine = new(0.35f, 0.7f, 0.2f, 0.36f);
-        static readonly Color CoverOther = new(0.7f, 0.4f, 0.85f, 0.32f);
-        static readonly Color LookOnly = new(1f, 0.86f, 0.15f, 0.22f);
+        static readonly Color Pit = new(0.95f, 0.2f, 0.75f, 1f);
+        static readonly Color IceWall = new(0.25f, 0.9f, 1f, 1f);
+        static readonly Color Wall = new(0.55f, 0.58f, 0.65f, 1f);
+        static readonly Color Door = new(0.95f, 0.62f, 0.12f, 1f);
+        static readonly Color Bridge = new(0.78f, 0.58f, 0.28f, 1f);
+        static readonly Color Blocks = new(1f, 0.22f, 0.22f, 1f);
+        static readonly Color Miasma = new(0.3f, 0.88f, 0.22f, 1f);
+        static readonly Color AuraFire = new(1f, 0.4f, 0.08f, 1f);
+        static readonly Color AuraFog = new(0.82f, 0.86f, 0.92f, 1f);
+        static readonly Color CoverIce = new(0.55f, 0.88f, 1f, 1f);
+        static readonly Color CoverFire = new(1f, 0.48f, 0.12f, 1f);
+        static readonly Color CoverLightning = new(1f, 0.92f, 0.2f, 1f);
+        static readonly Color CoverWater = new(0.2f, 0.52f, 1f, 1f);
+        static readonly Color CoverVine = new(0.38f, 0.78f, 0.22f, 1f);
+        static readonly Color CoverOther = new(0.75f, 0.42f, 0.9f, 1f);
+        static readonly Color FloorStone = new(0.95f, 0.82f, 0.38f, 1f);
+        static readonly Color FloorDirt = new(0.72f, 0.42f, 0.18f, 1f);
+        static readonly Color FloorOther = new(0.85f, 0.85f, 0.9f, 1f);
+        static readonly Color LookOnly = new(1f, 0.86f, 0.15f, 1f);
 
         public static bool Enabled
         {
@@ -441,10 +443,10 @@ namespace RuneMagic
 
         public static bool ShowLookOnly
         {
-            get => EditorPrefs.GetBool(LookOnlyPref, true);
+            get => EditorPrefs.GetBool(LookOnlyPref, false);
             set
             {
-                if (EditorPrefs.GetBool(LookOnlyPref, true) == value)
+                if (EditorPrefs.GetBool(LookOnlyPref, false) == value)
                 {
                     return;
                 }
@@ -498,17 +500,17 @@ namespace RuneMagic
 
         public static void DrawLegendGui()
         {
+            Swatch(FloorStone, "Floor / Stone");
+            Swatch(FloorDirt, "Floor / Dirt");
             Swatch(Pit, "Pit");
             Swatch(IceWall, "Ice wall");
             Swatch(Wall, "Wall");
-            Swatch(Door, "Door");
             Swatch(Miasma, "Miasma");
-            Swatch(CoverIce, "Ice cover (walkable)");
-            Swatch(CoverFire, "Fire cover");
+            Swatch(CoverIce, "Ice cover");
             Swatch(Blocks, "Blocks");
             if (ShowLookOnly)
             {
-                Swatch(LookOnly, "Look only — not stamped, Play guesses");
+                Swatch(LookOnly, "Look only — Play guesses");
             }
         }
 
@@ -526,29 +528,65 @@ namespace RuneMagic
             var maps = CollectMaps();
             for (var i = 0; i < maps.Count; i++)
             {
-                var map = maps[i];
-                foreach (var cell in map.cellBounds.allPositionsWithin)
-                {
-                    var tile = map.GetTile(cell);
-                    if (tile == null || !TryColor(tile, out var fill))
-                    {
-                        continue;
-                    }
+                DrawMap(maps[i]);
+            }
+        }
 
-                    var min = map.CellToWorld(cell);
-                    var max = map.CellToWorld(cell + Vector3Int.one);
-                    Handles.DrawSolidRectangleWithOutline(
-                        new[]
-                        {
-                            new Vector3(min.x, min.y, 0f),
-                            new Vector3(max.x, min.y, 0f),
-                            new Vector3(max.x, max.y, 0f),
-                            new Vector3(min.x, max.y, 0f)
-                        },
-                        fill,
-                        new Color(fill.r, fill.g, fill.b, Mathf.Min(0.9f, fill.a + 0.45f)));
+        static void DrawMap(Tilemap map)
+        {
+            foreach (var cell in map.cellBounds.allPositionsWithin)
+            {
+                var tile = map.GetTile(cell);
+                if (tile == null || !TryColor(tile, out var color))
+                {
+                    continue;
+                }
+
+                var id = StampId(tile);
+                var min = map.CellToWorld(cell);
+                var max = map.CellToWorld(cell + Vector3Int.one);
+                if (StampId(map.GetTile(cell + Vector3Int.left)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(min.x, max.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.right)) != id)
+                {
+                    DrawGlowEdge(new Vector3(max.x, min.y, 0f), new Vector3(max.x, max.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.down)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, min.y, 0f), new Vector3(max.x, min.y, 0f), color);
+                }
+
+                if (StampId(map.GetTile(cell + Vector3Int.up)) != id)
+                {
+                    DrawGlowEdge(new Vector3(min.x, max.y, 0f), new Vector3(max.x, max.y, 0f), color);
                 }
             }
+        }
+
+        static void DrawGlowEdge(Vector3 a, Vector3 b, Color color)
+        {
+            Handles.color = new Color(color.r, color.g, color.b, 0.28f);
+            Handles.DrawAAPolyLine(8f, a, b);
+            Handles.color = new Color(color.r, color.g, color.b, 0.95f);
+            Handles.DrawAAPolyLine(2.4f, a, b);
+        }
+
+        static int StampId(TileBase tile)
+        {
+            if (tile is WorldPaintTile paint)
+            {
+                return ((int)paint.kind << 24)
+                    ^ ((int)paint.material << 16)
+                    ^ ((int)paint.cover << 8)
+                    ^ ((int)paint.aura << 4)
+                    ^ (paint.blocks ? 1 : 0);
+            }
+
+            return tile != null ? -1 : 0;
         }
 
         static List<Tilemap> CollectMaps()
@@ -669,24 +707,34 @@ namespace RuneMagic
                 case TileCover.Seal:
                     color = CoverOther;
                     return true;
-                default:
-                    color = default;
-                    return false;
             }
+
+            if (paint.kind == TileKind.Floor)
+            {
+                color = paint.material == MaterialId.Stone
+                    ? FloorStone
+                    : paint.material == MaterialId.Dirt
+                        ? FloorDirt
+                        : FloorOther;
+                return true;
+            }
+
+            color = FloorOther;
+            return true;
         }
 
         static void DrawSceneLegend()
         {
             Handles.BeginGUI();
-            var box = new Rect(12f, 12f, 188f, ShowLookOnly ? 168f : 150f);
+            var box = new Rect(12f, 12f, 176f, ShowLookOnly ? 176f : 158f);
             EditorGUI.DrawRect(box, new Color(0.08f, 0.08f, 0.1f, 0.72f));
             GUILayout.BeginArea(new Rect(box.x + 8f, box.y + 6f, box.width - 16f, box.height - 10f));
             GUILayout.Label("Stamps", EditorStyles.boldLabel);
+            SceneSwatch(FloorStone, "Floor / Stone");
+            SceneSwatch(FloorDirt, "Floor / Dirt");
             SceneSwatch(Pit, "Pit");
             SceneSwatch(IceWall, "Ice wall");
-            SceneSwatch(Wall, "Wall");
             SceneSwatch(Miasma, "Miasma");
-            SceneSwatch(CoverIce, "Ice cover");
             SceneSwatch(Blocks, "Blocks");
             if (ShowLookOnly)
             {
