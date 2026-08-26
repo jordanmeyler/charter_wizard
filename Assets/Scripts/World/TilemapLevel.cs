@@ -254,9 +254,15 @@ namespace RuneMagic
 
                     var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
+                    var underlay = KeepFloorUnder(kind, tile, x, y);
                     if (tile == null || replace)
                     {
                         tile = grid.Set(x, y, kind, material);
+                    }
+
+                    if (underlay != null)
+                    {
+                        tile.AuthorUnderlay(underlay);
                     }
 
                     var look = paint != null
@@ -279,6 +285,24 @@ namespace RuneMagic
             }
 
             return any;
+        }
+
+        static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y)
+        {
+            if (kind != TileKind.Wall && kind != TileKind.Door)
+            {
+                return null;
+            }
+
+            if (prior != null && prior.Kind == TileKind.Floor && prior.AuthoredLook != null)
+            {
+                return prior.AuthoredLook;
+            }
+
+            var material = prior != null && prior.Kind == TileKind.Floor
+                ? prior.Material
+                : MaterialId.Stone;
+            return SpriteFactory.Floor(material, x, y);
         }
 
         static bool StampDetail(
