@@ -28,7 +28,7 @@ namespace RuneMagic
         public Tilemap walls;
         [Tooltip("Cover and aura only. A Cover or Coverings child works.")]
         public Tilemap overlays;
-        [Tooltip("Detail stamp — plants, rugs, furniture. Own material. Burns to an ash pile; fire can run onto a flammable floor.")]
+        [Tooltip("Environment Details — plants, rugs, furniture. Own material and optional collision. Burns to an ash pile; fire can run onto a flammable floor.")]
         public Tilemap decor;
 
         [Header("Spawn")]

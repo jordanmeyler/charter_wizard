@@ -7,8 +7,8 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// Paint looks first (any palette), then stamp Kind / Material / Cover / Aura
-    /// onto those cells without changing the sprite.
+    /// Paint looks first (any palette), then stamp Kind / Material / Cover /
+    /// Aura / Blocks onto those cells without changing the sprite.
     /// </summary>
     public sealed class TilePropertyPaint : EditorWindow
     {
@@ -20,10 +20,12 @@ namespace RuneMagic
         MaterialId _material = MaterialId.Stone;
         TileCover _cover = TileCover.None;
         TileAura _aura = TileAura.None;
+        bool _blocks;
         bool _applyKind = true;
         bool _applyMaterial = true;
         bool _applyCover;
         bool _applyAura;
+        bool _applyBlocks;
         bool _paint;
         bool _coverLayer;
         Tilemap _hoverMap;
@@ -62,6 +64,7 @@ namespace RuneMagic
             DrawField("Material", ref _applyMaterial, () => _material = (MaterialId)EditorGUILayout.EnumPopup(_material));
             DrawField("Cover", ref _applyCover, () => _cover = (TileCover)EditorGUILayout.EnumPopup(_cover));
             DrawField("Aura", ref _applyAura, () => _aura = (TileAura)EditorGUILayout.EnumPopup(_aura));
+            DrawField("Blocks", ref _applyBlocks, () => _blocks = EditorGUILayout.Toggle(_blocks));
 
             EditorGUILayout.Space();
             if (_hasHover && _hoverMap != null)
@@ -77,6 +80,7 @@ namespace RuneMagic
                     EditorGUILayout.LabelField("Material", paint.material.ToString());
                     EditorGUILayout.LabelField("Cover", paint.cover.ToString());
                     EditorGUILayout.LabelField("Aura", paint.aura.ToString());
+                    EditorGUILayout.LabelField("Blocks", paint.blocks ? "yes" : "no");
                 }
                 else if (tile != null)
                 {
@@ -86,7 +90,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Tiles / Walls set walk. Decor is its own stamp — Timber on a table burns to an ash pile and can catch a plant or timber floor next to it. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
+                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
                 MessageType.None);
         }
 
@@ -177,6 +181,7 @@ namespace RuneMagic
             _material = paint.material;
             _cover = paint.cover;
             _aura = paint.aura;
+            _blocks = paint.blocks;
             Repaint();
         }
 
@@ -200,13 +205,15 @@ namespace RuneMagic
             var material = _applyMaterial ? _material : (current != null ? current.material : GuessMaterial(raw));
             var cover = _applyCover ? _cover : (current != null ? current.cover : TileCover.None);
             var aura = _applyAura ? _aura : (current != null ? current.aura : TileAura.None);
+            var blocks = _applyBlocks ? _blocks : current != null && current.blocks;
             if (_coverLayer)
             {
                 kind = current != null ? current.kind : TileKind.Floor;
                 material = current != null ? current.material : MaterialId.Stone;
+                blocks = false;
             }
 
-            var authored = EnsureTile(sprite, kind, material, cover, aura);
+            var authored = EnsureTile(sprite, kind, material, cover, aura, blocks);
             if (authored == null || authored == raw)
             {
                 return;
@@ -305,9 +312,10 @@ namespace RuneMagic
             TileKind kind,
             MaterialId material,
             TileCover cover,
-            TileAura aura)
+            TileAura aura,
+            bool blocks)
         {
-            var key = Key(sprite, kind, material, cover, aura);
+            var key = Key(sprite, kind, material, cover, aura, blocks);
             if (Cache.TryGetValue(key, out var cached) && cached != null)
             {
                 return cached;
@@ -336,6 +344,7 @@ namespace RuneMagic
             tile.material = material;
             tile.cover = cover;
             tile.aura = aura;
+            tile.blocks = blocks;
             EditorUtility.SetDirty(tile);
             Cache[key] = tile;
             return tile;
@@ -346,7 +355,8 @@ namespace RuneMagic
             TileKind kind,
             MaterialId material,
             TileCover cover,
-            TileAura aura)
+            TileAura aura,
+            bool blocks)
         {
             var guid = "none";
             long local = 0;
@@ -356,7 +366,8 @@ namespace RuneMagic
             }
 
             var sign = local < 0 ? "n" : "p";
-            return kind + "_" + material + "_" + cover + "_" + aura + "_" + guid + "_" + sign + Mathf.Abs(local);
+            var solid = blocks ? "block" : "open";
+            return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_" + guid + "_" + sign + Mathf.Abs(local);
         }
     }
 }

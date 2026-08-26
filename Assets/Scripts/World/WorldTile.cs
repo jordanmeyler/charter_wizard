@@ -86,6 +86,15 @@ namespace RuneMagic
             }
         }
 
+        public void AuthorBlocks(bool blocks)
+        {
+            _detailBlocks = blocks;
+            if (_renderer != null)
+            {
+                RefreshCollider();
+            }
+        }
+
         public void MarkDoor(DoorFace face)
         {
             DoorFace = face;

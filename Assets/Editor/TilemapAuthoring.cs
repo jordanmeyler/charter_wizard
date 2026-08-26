@@ -34,7 +34,7 @@ namespace RuneMagic
             renderer.sortingOrder = 0;
 
             var wallsLayer = AddTileLayer(root.transform, "Walls", 2);
-            var decorLayer = AddTileLayer(root.transform, "Decor", 3);
+            var decorLayer = AddTileLayer(root.transform, "Environment Details", 3);
             var coverLayer = AddTileLayer(root.transform, "Cover", 4);
 
             var authoring = root.AddComponent<LevelAuthoring>();
@@ -55,7 +55,7 @@ namespace RuneMagic
             Undo.RegisterCreatedObjectUndo(root, "Painted Map");
             Selection.activeGameObject = layer;
             EditorGUIUtility.PingObject(layer);
-            Debug.Log("Painted Map created. Paint floors on Tiles, walls on Walls, props on Decor, ice/fire on Cover.");
+            Debug.Log("Painted Map created. Paint floors on Tiles, walls on Walls, props on Environment Details, ice/fire on Cover.");
         }
 
         static Tilemap AddTileLayer(Transform parent, string name, int order)

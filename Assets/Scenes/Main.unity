@@ -2080,7 +2080,7 @@ GameObject:
   - component: {fileID: 210000043}
   - component: {fileID: 210000044}
   m_Layer: 0
-  m_Name: Decor
+  m_Name: Environment Details
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

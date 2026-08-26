@@ -7,15 +7,20 @@ namespace RuneMagic
     /// <summary>
     /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
     /// Floor / Tiles / Walls set kind + material. Cover stamps aura and
-    /// covering. Decor is a detail stamp on that cell — its own material —
-    /// so a plant can burn off a stone floor.
+    /// covering. Environment Details (Decor) is a detail stamp on that
+    /// cell — its own material and optional collision — so a table can
+    /// block and a plant can burn off a stone floor.
     /// </summary>
     public static class TilemapLevel
     {
         static readonly string[] WalkNames = { "tiles", "floor", "floors", "ground", "walk" };
         static readonly string[] WallNames = { "wall", "walls" };
         static readonly string[] CoverNames = { "cover", "covers", "covering", "coverings", "overlay", "overlays", "aura" };
-        static readonly string[] DecorNames = { "decor", "decoration", "decorations", "prop", "props", "detail", "details" };
+        static readonly string[] DecorNames =
+        {
+            "environment details", "enviroment details", "environment", "enviroment",
+            "decor", "decoration", "decorations", "prop", "props", "detail", "details"
+        };
 
         public static Tilemap FindPaintedMap()
         {
@@ -319,8 +324,9 @@ namespace RuneMagic
                         ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
                         : SpriteOf(raw);
                     var material = paint != null ? paint.material : GuessDetailMaterial(raw);
-                    var blocks = paint != null &&
-                                 (paint.kind == TileKind.Wall || paint.kind == TileKind.Door);
+                    var blocks = paint != null
+                        ? paint.blocks || paint.kind == TileKind.Wall || paint.kind == TileKind.Door
+                        : GuessDetailBlocks(raw);
                     tile.AuthorDetail(look, material, blocks);
 
                     if (paint != null)
@@ -414,6 +420,14 @@ namespace RuneMagic
             }
 
             return MaterialId.Stone;
+        }
+
+        static bool GuessDetailBlocks(TileBase tile)
+        {
+            var name = tile != null ? tile.name : string.Empty;
+            return NameHas(name, "table", "statue", "crate", "barrel", "chest", "pillar",
+                "shelf", "book", "desk", "cabinet", "bed", "stool", "urn", "fountain",
+                "altar", "chair", "bench");
         }
 
         static MaterialId GuessDetailMaterial(TileBase tile)

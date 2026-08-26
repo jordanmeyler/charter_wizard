@@ -6,8 +6,8 @@ each `WorldPaintTile` into a live `WorldTile`.
 ## Authoring
 
 1. Open `Assets/Scenes/Main.unity`. The scene already has **Map** (a
-   Grid), **Tiles**, **Decor**, **Cover**, and **Spawn**, plus a 13×11
-   stone room at the origin so you can see tiles immediately.
+   Grid), **Tiles**, **Environment Details**, **Cover**, and **Spawn**,
+   plus a 13×11 stone room at the origin so you can see tiles immediately.
 2. In the Scene view, turn on **2D**. Select **Map** and press **F** to
    frame the room. The camera and spawn sit inside that room.
 3. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
@@ -16,14 +16,16 @@ each `WorldPaintTile` into a live `WorldTile`.
 4. Select the **Tiles** object and paint the look — Rune Palette or any
    ElvGames palette. Erase or overwrite the starter room as you like.
 5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
-   Select the layer you just painted (Tiles, Walls, or Decor), turn on
-   **Paint in Scene view**, pick Kind / Material / Cover / Aura, and
-   click those cells. The sprite stays. Right-click a cell to copy its
-   properties. Check **Write onto Cover layer** to stamp ice / fire /
-   aura without changing the walk cell.
+   Select the layer you just painted (Tiles, Walls, or Environment
+   Details), turn on **Paint in Scene view**, pick Kind / Material /
+   Cover / Aura / Blocks, and click those cells. The sprite stays.
+   Right-click a cell to copy its properties. Check **Write onto Cover
+   layer** to stamp ice / fire / aura without changing the walk cell.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
-   Select **Decor** for plants and furniture that sit on the floor.
+   Select **Environment Details** for plants and furniture that sit on
+   the floor. Check **Blocks** and drag across a cluster to give that
+   group collision.
 7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    **cover**, and **aura** on a shared brush. Duplicate an asset to make
    a new brush. `Create → Rune Magic → Map Tile` also works.
@@ -46,15 +48,17 @@ Keep extra Tilemaps as **children of Map**. Play merges them by name.
 | **Tiles** / **Floor** | Walkable ground, water, pits, doors | Kind + material. Hidden, then baked. |
 | **Walls** | Solid walls | Merged as walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, aura | Overlay only. Hidden, then baked. |
-| **Decor** / **Decorations** | Plants, rugs, chairs, statues | Own stamp. Hidden, then baked as a detail on the floor. |
+| **Environment Details** / Decor | Plants, rugs, chairs, statues | Own stamp + optional collision. Hidden, then baked as a detail. |
 
 Do **not** make a Tilemap for interactables. Items, enemies, torches-as-locks, gates, plaques, and the spawn crystal are GameObjects: `GameObject → Rune Magic → Item / Enemy / Torch / Gate / …`. Those have formulas, keys, and colliders. A tile cannot.
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
 
-Decor has its **own** stamp. Select **Decor**, stamp **Timber** on a table or **Plant** on a bush. Fire turns that furniture into a pile of ash and leaves the floor — stone stays stone. The coals stay hot, so fire can run from the pile onto a neighboring Plant / Timber / Moss / Grove floor. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it. Stamp **Wall** on a statue if it should block. Cover and Aura on Decor still apply to that cell (ice, fire, vine, kindled).
+**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. Fire turns that furniture into a pile of ash and leaves the floor — stone stays stone. The coals stay hot, so fire can run from the pile onto a neighboring Plant / Timber / Moss / Grove floor. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
-`GameObject → Rune Magic → Decor` is still look-only art. Burning furniture has to be a Decor **tile**.
+Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. When a blocking table burns to ash, you can walk over the pile. Cover and Aura still apply to that cell (ice, fire, vine, kindled).
+
+`GameObject → Rune Magic → Decor` is still look-only art. Burning or blocking furniture has to be an Environment Details **tile**.
 
 The grid is **16×16** (16 PPU, one cell = one tile). ElvGames Tile
 palettes also paint — Play keeps that sprite and guesses wall / door /
