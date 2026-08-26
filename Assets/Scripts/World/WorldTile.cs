@@ -332,36 +332,6 @@ namespace RuneMagic
             Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
         }
 
-        /// <summary>
-        /// Authoring: turn this walk cell into a room wall (ice cage, etc).
-        /// </summary>
-        public void BecomeRoomWall(MaterialId material)
-        {
-            if (Kind == TileKind.Door)
-            {
-                return;
-            }
-
-            IsConjured = false;
-            RaisedAs = RaisedForm.None;
-            Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
-        }
-
-        /// <summary>
-        /// Authoring: open a hollow so Hop / Earth-pillar has something to cross.
-        /// </summary>
-        public void BecomePit()
-        {
-            if (Kind == TileKind.Door || Kind == TileKind.Wall)
-            {
-                return;
-            }
-
-            IsConjured = false;
-            RaisedAs = RaisedForm.None;
-            Reshape(new TileDef(TileKind.Pit, MaterialId.Void));
-        }
-
         public bool RestoreFoundation()
         {
             if (!IsConjured)

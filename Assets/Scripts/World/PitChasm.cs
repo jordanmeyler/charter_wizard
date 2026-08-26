@@ -21,10 +21,8 @@ namespace RuneMagic
         [SerializeField] string authoredName = "Chasm";
         [SerializeField] string authoredId = "chasm";
         [SerializeField] string[] keys;
-        [Tooltip("Pit cells relative to this object. Leave empty to take nearby pits, or this tile if Carve Pits is on.")]
+        [Tooltip("Pit cells this lock covers. Leave empty to take nearby pits.")]
         [SerializeField] Vector2Int[] pitCells;
-        [Tooltip("Open those cells as pits at Play so you do not have to paint Pit tiles first.")]
-        [SerializeField] bool carvePits;
 
         WorldGrid _grid;
         Vector2Int[] _pits;
@@ -38,29 +36,14 @@ namespace RuneMagic
             }
 
             var pits = pitCells != null && pitCells.Length > 0
-                ? AuthoringUtil.WorldCells(pitCells, transform.position)
-                : carvePits
-                    ? AuthoringUtil.WorldCells(null, transform.position)
-                    : NearbyPits(grid, transform.position, 12);
-            if (carvePits && grid != null)
-            {
-                for (var i = 0; i < pits.Length; i++)
-                {
-                    grid.Get(pits[i])?.BecomePit();
-                }
-            }
-
+                ? pitCells
+                : NearbyPits(grid, transform.position, 12);
             Bind(
                 authoredName,
                 authoredId,
                 AuthoringUtil.ParseKeys(keys, MapBuilder.PitKeys),
                 grid,
                 pits);
-        }
-
-        void OnDrawGizmos()
-        {
-            AuthoringUtil.DrawCellGizmos(transform.position, pitCells, new Color(0.95f, 0.45f, 0.25f, 0.45f));
         }
 
         public void Bind(string displayName, string formulaId, SpellId[] keys, WorldGrid grid, IList<Vector2Int> pits)

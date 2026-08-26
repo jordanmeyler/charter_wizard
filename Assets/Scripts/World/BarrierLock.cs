@@ -34,10 +34,7 @@ namespace RuneMagic
         [SerializeField] Sprite[] idleFrames;
         [SerializeField] Sprite[] resolveFrames;
         [SerializeField] string resolveClip;
-        [Tooltip("Cells relative to this object. Empty = this tile only. A ring around a fire stone is the ice cage.")]
         [SerializeField] Vector2Int[] coverCells;
-        [Tooltip("Turn those floor cells into ice walls at Play so the cage blocks walking.")]
-        [SerializeField] bool stampIceWalls = true;
 
         WorldGrid _grid;
         Vector2Int[] _cells;
@@ -120,15 +117,11 @@ namespace RuneMagic
                 AuthoringUtil.ParseKeys(keys, MapBuilder.TorchKeys),
                 AuthoringUtil.ParseRunes(formula),
                 grid,
-                AuthoringUtil.WorldCells(coverCells, transform.position),
+                AuthoringUtil.CellsOrHere(coverCells, transform.position),
                 grant,
                 clearMaterial,
                 spriteId,
                 note);
-            if (stampIceWalls)
-            {
-                StampIceWalls(grid, _cells, AuthoringUtil.CellOf(transform.position));
-            }
         }
 
         public void Collect(List<RuneId> buffer)
@@ -207,38 +200,6 @@ namespace RuneMagic
             }
 
             return $"{DisplayName} yields.";
-        }
-
-        static void StampIceWalls(WorldGrid grid, Vector2Int[] cells, Vector2Int keepOpen)
-        {
-            if (grid == null || cells == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < cells.Length; i++)
-            {
-                if (cells[i] == keepOpen)
-                {
-                    continue;
-                }
-
-                var tile = grid.Get(cells[i]);
-                if (tile == null || tile.Kind == TileKind.Door || tile.Kind == TileKind.Pit)
-                {
-                    continue;
-                }
-
-                if (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge)
-                {
-                    tile.BecomeRoomWall(MaterialId.Ice);
-                }
-            }
-        }
-
-        void OnDrawGizmos()
-        {
-            AuthoringUtil.DrawCellGizmos(transform.position, coverCells, new Color(0.55f, 0.85f, 1f, 0.45f));
         }
 
         void ClearCells()

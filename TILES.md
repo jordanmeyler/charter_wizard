@@ -52,72 +52,78 @@ Keep extra Tilemaps as **children of Map**. Play merges them by name.
 
 ## First area puzzles
 
-Paint the rooms first. Then drop the three locks. Do **not** run
-**Stamp Foundation** — that dumps the old generated floor over your
-tiles. Frame each alcove in the Scene view (2D) and use
-`Window → Rune Magic → Authoring` or
-`GameObject → Rune Magic → First Area`.
+Stamp gameplay onto the rooms you painted, then drop the stones.
+Do **not** run **Stamp Foundation** — that dumps the old generated
+floor over your tiles.
 
-### 1. Fire — ice-caged fire stone
+Open `Window → Rune Magic → Tile Properties`. Select the layer
+first (**Tiles** for walk / pit / ice walls, **Cover** or
+**Write onto Cover layer** for miasma). Turn on **Paint in Scene
+view**. Uncheck the stamps you do not want so a click only writes
+Kind, or only Aura.
 
-The stone sits in a U of ice that opens north. Any fire-bearing
-sentence (Fireball, Melt, Ignite, a flame-pillar) melts the cage.
+### 1. Fire — fire stone frozen in ice
 
-1. Frame the fire alcove. The pivot should sit on the floor cell
-   where the stone belongs.
-2. `GameObject → Rune Magic → First Area → Ice-caged Fire Stone`.
-3. That drops a **Fire Stone** (`catalogId` `fire-stone`) and an
-   **Ice Cage** (`Barrier`). Cover cells are a U around the stone.
-   Play freezes those floor cells into ice walls.
-4. Drag the pair if the U clips a room wall. Snap to grid
-   (`GameObject → Rune Magic → Snap Selection To Grid`).
+Ice has to *block*. Cover-Ice is only a look; you still walk it.
+Stamp a ring (or U) of **ice walls**, leave one floor cell in the
+middle for the stone.
 
-By hand: place **Item**, set `catalogId` to `fire-stone`. Place
-**Barrier**, name it Ice cage, formula `Water` · `Earth`, sprite
-`ice-block`, and list cover cells as offsets from the stone
-(`(-1,-1)`, `(0,-1)`, `(1,-1)`, `(-1,0)`, `(1,0)`). Leave
-**Stamp Ice Walls** on.
+1. Select **Tiles** (or **Walls**).
+2. Tile Properties: check **Kind** = `Wall`, **Material** = `Ice`.
+   Uncheck Cover / Aura / Blocks.
+3. Click the cells around the alcove. Leave the centre as floor.
+4. Optional look: check **Cover** = `Ice`, **Write onto Cover
+   layer**, and stamp the same cells (and the inner floor) so the
+   ice reads as ice.
+5. `GameObject → Rune Magic → Item`. Snap to the inner cell.
+   Inspector: `catalogId` = `fire-stone` (sprite `stone-fire` if
+   you want it shown in the editor).
+6. Optional lock sprite: `GameObject → Rune Magic → Barrier` on
+   that same cell. `authoredName` = `Ice cage`, formula `Water`
+   and `Earth`, `spriteId` = `ice-block`. List **Cover Cells** as
+   the ice-wall cells. Fireball / Melt / Ignite / a flame-pillar
+   still melt ice walls even without the Barrier — the Barrier is
+   a target you can click.
 
 ### 2. Air — miasma, then the air stone
 
-Miasma is not a wall. Walking in throws you back. **Gust**
-(`Air · Mercury`) or Gale pushes the breath out. The stone sits
-in the once-fouled air.
+Miasma is not a wall. Walking in it throws you back to the last
+safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
 
-1. Frame the back of the air room.
-2. `GameObject → Rune Magic → First Area → Miasma + Air Stone`.
-3. That drops **Miasma** (`RoomFog`, radius 2) and an **Air Stone**
-   one tile east. Walking in throws you west, toward the mouth.
-4. Raise **Radius** or list **Cover Cells** if the disk is too small.
-   Set **Retreat Offset** to a safe floor just outside the fog.
+1. Select **Tiles** so you can see the air room.
+2. Tile Properties: uncheck Kind / Material. Check **Aura** =
+   `Miasma`. Turn on **Write onto Cover layer**.
+3. Click (or drag) the floor you want fouled — the path to the
+   stone, not the doorway if you want them to step in and get
+   thrown back.
+4. `GameObject → Rune Magic → Item` on the far side of the fog.
+   `catalogId` = `air-stone`.
+5. Optional: `GameObject → Rune Magic → Fog` on those cells if
+   you want a named lock Gust can target. Painted aura alone
+   already throws you back and vents when air is sent.
 
-By hand: paint **Aura-Miasma** on Cover (Tile Properties → Aura →
-Miasma, write onto Cover) *or* place **Fog**. Place **Item**,
-`catalogId` `air-stone`, past the fog. Painted aura alone already
-throws you back; the Fog object is the lock Gust can target.
+### 3. Earth — stamp a pit (fall zone)
 
-### 3. Earth — a small pit, then the earth stone
+A pit is a hole in the **Tiles** layer. Walk in and you return to
+the last safe floor. That is all it is — no Chasm object. Hop
+(`Air · Salt · Air`) or Earth-pillar (`Earth · Salt`) still
+crosses it.
 
-A one-tile hollow. Hop (`Air · Salt · Air`) or Earth-pillar
-(`Earth · Salt`) crosses it. The stone sits on the far side.
+1. Paint the hole look if you want (Cavern pit / void tiles).
+2. Select **Tiles**.
+3. Tile Properties: check **Kind** = `Pit`, **Material** = `Void`.
+   Uncheck the rest. Leave **Write onto Cover layer** off.
+4. Click the crossing — one cell is a small hop; two or three in
+   a line is a short gap. Keep it under 4×4 or water work can
+   fill it.
+5. `GameObject → Rune Magic → Item` on the far ledge.
+   `catalogId` = `earth-stone`.
 
-1. Frame the crossing. The pivot is the pit.
-2. `GameObject → Rune Magic → First Area → Pit + Earth Stone`.
-3. That drops a **Pit** (`PitChasm`, **Carve Pits** on) and an
-   **Earth Stone** one tile north.
-4. Play opens that cell as a pit. Widen **Pit Cells** if you want
-   a two-tile gap.
-
-By hand: paint **Pit** on Tiles (or Tile Properties → Kind Pit) and
-place **Item**, `catalogId` `earth-stone`, on the far ledge. The
-Chasm object is optional — it makes the gap a targetable lock.
-
-On this painted map the three are already in the scene under
-**Map / First Area**: fire in the west dead-end, air in the east
-alcove, earth in the small north bump off the upper hall.
+If you only paint a pit-looking ElvGames tile and never stamp
+**Kind = Pit**, Play treats it as floor and you will not fall.
 
 Plaques, altars, and teaching columns come after these three
-locks play.
+play.
 
 Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
 

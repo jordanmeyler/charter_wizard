@@ -86,7 +86,7 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
 2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
 3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell.
-4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate…` places objects. Pack enemies are under **Enemies**. First-area locks are under **First Area** (ice-caged fire stone, miasma + air stone, pit + earth stone). Set catalog id and material (or formula, keys, sprite) on the Inspector. The grid is 16×16 (16 PPU). See [`TILES.md`](TILES.md) for the walkthrough.
+4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate…` places objects. Pack enemies are under **Enemies**. Set catalog id and material (or formula, keys, sprite) on the Inspector. The grid is 16×16 (16 PPU).
 
 Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
 
