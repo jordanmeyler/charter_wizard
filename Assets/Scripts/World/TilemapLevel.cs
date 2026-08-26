@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -5,23 +6,36 @@ namespace RuneMagic
 {
     /// <summary>
     /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
-    /// The walk layer sets kind + material. An optional Cover layer only
-    /// stamps aura and covering.
+    /// Floor / Tiles / Walls set kind + material. Cover only stamps aura
+    /// and covering. Decor stays as painted art and is not baked.
     /// </summary>
     public static class TilemapLevel
     {
+        static readonly string[] WalkNames = { "tiles", "floor", "floors", "ground", "walk" };
+        static readonly string[] WallNames = { "wall", "walls" };
+        static readonly string[] CoverNames = { "cover", "covers", "covering", "coverings", "overlay", "overlays", "aura" };
+        static readonly string[] DecorNames = { "decor", "decoration", "decorations", "prop", "props", "detail", "details" };
+
         public static Tilemap FindPaintedMap()
         {
             var maps = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
             Tilemap best = null;
             var count = 0;
+            var bestWalk = false;
             for (var i = 0; i < maps.Length; i++)
             {
+                if (IsDecor(maps[i]) || IsCover(maps[i]))
+                {
+                    continue;
+                }
+
                 var painted = CountPainted(maps[i]);
-                if (painted > count)
+                var walk = IsWalk(maps[i]) || IsWall(maps[i]);
+                if (painted > count || (painted == count && walk && !bestWalk))
                 {
                     count = painted;
                     best = maps[i];
+                    bestWalk = walk;
                 }
             }
 
@@ -42,11 +56,16 @@ namespace RuneMagic
                 return null;
             }
 
-            HideEditors(floors);
-            var overlays = ResolveOverlays(spec, floors);
-            if (overlays != null)
+            var walks = WalkLayers(spec, floors);
+            var covers = CoverLayers(spec, floors);
+            for (var i = 0; i < walks.Count; i++)
             {
-                HideEditors(overlays);
+                HideEditors(walks[i]);
+            }
+
+            for (var i = 0; i < covers.Count; i++)
+            {
+                HideEditors(covers[i]);
             }
 
             var root = new GameObject(floors.transform.parent != null ? floors.transform.parent.name : "Painted Map");
@@ -55,10 +74,16 @@ namespace RuneMagic
             var minY = int.MaxValue;
             var maxX = int.MinValue;
             var maxY = int.MinValue;
-            var any = Stamp(grid, floors, true, ref minX, ref minY, ref maxX, ref maxY);
-            if (overlays != null && overlays != floors)
+            var any = false;
+            for (var i = 0; i < walks.Count; i++)
             {
-                any = Stamp(grid, overlays, false, ref minX, ref minY, ref maxX, ref maxY) || any;
+                var wallDefault = IsWall(walks[i]) ? TileKind.Wall : (TileKind?)null;
+                any = Stamp(grid, walks[i], true, wallDefault, ref minX, ref minY, ref maxX, ref maxY) || any;
+            }
+
+            for (var i = 0; i < covers.Count; i++)
+            {
+                any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY) || any;
             }
 
             if (!any)
@@ -85,26 +110,87 @@ namespace RuneMagic
             };
         }
 
-        static Tilemap ResolveOverlays(LevelAuthoring spec, Tilemap floors)
+        static List<Tilemap> WalkLayers(LevelAuthoring spec, Tilemap primary)
         {
-            if (spec != null && spec.overlays != null)
+            var list = new List<Tilemap>();
+            AddUnique(list, spec != null ? spec.tilemap : null);
+            AddUnique(list, spec != null ? spec.walls : null);
+            AddUnique(list, primary);
+            CollectSiblings(primary, list, map => IsWalk(map) || IsWall(map));
+            list.Sort((a, b) => WalkRank(a).CompareTo(WalkRank(b)));
+            return list;
+        }
+
+        static List<Tilemap> CoverLayers(LevelAuthoring spec, Tilemap primary)
+        {
+            var list = new List<Tilemap>();
+            AddUnique(list, spec != null ? spec.overlays : null);
+            CollectSiblings(primary, list, IsCover);
+            return list;
+        }
+
+        static void CollectSiblings(Tilemap primary, List<Tilemap> list, System.Func<Tilemap, bool> match)
+        {
+            if (primary == null || primary.transform.parent == null)
             {
-                return spec.overlays;
+                return;
             }
 
-            if (floors == null || floors.transform.parent == null)
+            var maps = primary.transform.parent.GetComponentsInChildren<Tilemap>(true);
+            for (var i = 0; i < maps.Length; i++)
             {
-                return null;
+                if (match(maps[i]) && !IsDecor(maps[i]))
+                {
+                    AddUnique(list, maps[i]);
+                }
+            }
+        }
+
+        static void AddUnique(List<Tilemap> list, Tilemap map)
+        {
+            if (map != null && !list.Contains(map))
+            {
+                list.Add(map);
+            }
+        }
+
+        static int WalkRank(Tilemap map)
+        {
+            return IsWall(map) ? 2 : 1;
+        }
+
+        static bool IsWalk(Tilemap map) => NameIs(map, WalkNames);
+
+        static bool IsWall(Tilemap map) => NameIs(map, WallNames);
+
+        static bool IsCover(Tilemap map) => NameIs(map, CoverNames);
+
+        static bool IsDecor(Tilemap map) => NameIs(map, DecorNames);
+
+        static bool NameIs(Tilemap map, string[] names)
+        {
+            if (map == null)
+            {
+                return false;
             }
 
-            var cover = floors.transform.parent.Find("Cover");
-            return cover != null ? cover.GetComponent<Tilemap>() : null;
+            var n = map.gameObject.name.ToLowerInvariant();
+            for (var i = 0; i < names.Length; i++)
+            {
+                if (n == names[i] || n.Contains(names[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static bool Stamp(
             WorldGrid grid,
             Tilemap map,
             bool replace,
+            TileKind? defaultKind,
             ref int minX,
             ref int minY,
             ref int maxX,
@@ -136,6 +222,11 @@ namespace RuneMagic
                     maxY = Mathf.Max(maxY, y);
 
                     var kind = paint != null ? paint.kind : GuessKind(raw);
+                    if (paint == null && defaultKind != null && kind == TileKind.Floor)
+                    {
+                        kind = defaultKind.Value;
+                    }
+
                     var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
                     if (tile == null || replace)

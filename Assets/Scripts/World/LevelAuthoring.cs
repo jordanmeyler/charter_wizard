@@ -22,10 +22,14 @@ namespace RuneMagic
         public LevelTileSource tiles = LevelTileSource.Tilemap;
         public string mapId;
         public bool includeJsonProps;
-        [Tooltip("Walk tiles — floor, wall, pit, door. Paint with Window → 2D → Tile Palette.")]
+        [Tooltip("Walk tiles — floor, wall, pit, door. A Floor or Tiles child works.")]
         public Tilemap tilemap;
-        [Tooltip("Optional second Tilemap. Cover and aura brushes only change the overlay.")]
+        [Tooltip("Optional Walls Tilemap. Merged into the walk grid on Play.")]
+        public Tilemap walls;
+        [Tooltip("Cover and aura only. A Cover or Coverings child works.")]
         public Tilemap overlays;
+        [Tooltip("Look-only decorations. Stays visible at Play; does not change walk.")]
+        public Tilemap decor;
 
         [Header("Spawn")]
         public Transform spawnPoint;

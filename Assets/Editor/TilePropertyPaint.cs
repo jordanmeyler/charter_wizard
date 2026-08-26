@@ -219,40 +219,70 @@ namespace RuneMagic
 
         Tilemap ResolveMap()
         {
+            var selected = Selection.activeGameObject != null
+                ? Selection.activeGameObject.GetComponent<Tilemap>()
+                : null;
+            if (selected != null && !_coverLayer)
+            {
+                return selected;
+            }
+
             var authoring = Object.FindFirstObjectByType<LevelAuthoring>();
             if (_coverLayer)
             {
+                if (selected != null && selected.gameObject.name.ToLowerInvariant().Contains("cover"))
+                {
+                    return selected;
+                }
+
                 if (authoring != null && authoring.overlays != null)
                 {
                     return authoring.overlays;
                 }
 
                 var tiles = authoring != null ? authoring.tilemap : TilemapLevel.FindPaintedMap();
-                if (tiles != null && tiles.transform.parent != null)
-                {
-                    var cover = tiles.transform.parent.Find("Cover");
-                    if (cover != null)
-                    {
-                        return cover.GetComponent<Tilemap>();
-                    }
-                }
+                return NamedSibling(tiles, "cover") ?? WalkMap();
             }
 
             return WalkMap();
         }
 
+        static Tilemap NamedSibling(Tilemap from, string name)
+        {
+            if (from == null || from.transform.parent == null)
+            {
+                return null;
+            }
+
+            var maps = from.transform.parent.GetComponentsInChildren<Tilemap>(true);
+            for (var i = 0; i < maps.Length; i++)
+            {
+                if (maps[i].gameObject.name.ToLowerInvariant().Contains(name))
+                {
+                    return maps[i];
+                }
+            }
+
+            return null;
+        }
+
         static Tilemap WalkMap()
         {
+            var selected = Selection.activeGameObject != null
+                ? Selection.activeGameObject.GetComponent<Tilemap>()
+                : null;
+            if (selected != null)
+            {
+                return selected;
+            }
+
             var authoring = Object.FindFirstObjectByType<LevelAuthoring>();
             if (authoring != null && authoring.tilemap != null)
             {
                 return authoring.tilemap;
             }
 
-            var selected = Selection.activeGameObject != null
-                ? Selection.activeGameObject.GetComponent<Tilemap>()
-                : null;
-            return selected != null ? selected : TilemapLevel.FindPaintedMap();
+            return TilemapLevel.FindPaintedMap();
         }
 
         static Sprite SpriteOf(TileBase tile)

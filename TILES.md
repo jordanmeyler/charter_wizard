@@ -35,9 +35,24 @@ Play hides the editor Tilemap renderers and builds the live grid from
 what you painted. JSON under `Assets/Resources/Maps/` is leftover and
 is not loaded unless Level Authoring is set to **Named Map**.
 
+## Layers
+
+Keep extra Tilemaps as **children of Map**. Play merges them by name.
+
+| Child name | What to paint | Play |
+|---|---|---|
+| **Tiles** / **Floor** | Walkable ground, water, pits, doors | Kind + material. Hidden, then baked. |
+| **Walls** | Solid walls | Merged as walls. Hidden, then baked. |
+| **Cover** / **Coverings** | Ice, fire, vine, aura | Overlay only. Hidden, then baked. |
+| **Decor** / **Decorations** | Torches, chairs, rugs, statues | Look only. Stays visible. Does not walk or burn. |
+
+Do **not** make a Tilemap for interactables. Items, enemies, torches-as-locks, gates, plaques, and the spawn crystal are GameObjects: `GameObject → Rune Magic → Item / Enemy / Torch / Gate / …`. Those have formulas, keys, and colliders. A tile cannot.
+
+Materials work if you stamp them after painting: select the **Floor** or **Walls** layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
+
 The grid is **16×16** (16 PPU, one cell = one tile). ElvGames Tile
 palettes also paint — Play keeps that sprite and guesses wall / door /
-water from the tile name.
+water from the tile name unless you stamped properties.
 
 | Folder | Brushes |
 |---|---|

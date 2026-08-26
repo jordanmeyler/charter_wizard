@@ -33,19 +33,17 @@ namespace RuneMagic
             renderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
             renderer.sortingOrder = 0;
 
-            var coverLayer = new GameObject("Cover");
-            coverLayer.transform.SetParent(root.transform, false);
-            var overlays = coverLayer.AddComponent<Tilemap>();
-            overlays.tileAnchor = new Vector3(0.5f, 0.5f, 0f);
-            var coverRenderer = coverLayer.AddComponent<TilemapRenderer>();
-            coverRenderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
-            coverRenderer.sortingOrder = 1;
+            var wallsLayer = AddTileLayer(root.transform, "Walls", 2);
+            var decorLayer = AddTileLayer(root.transform, "Decor", 3);
+            var coverLayer = AddTileLayer(root.transform, "Cover", 4);
 
             var authoring = root.AddComponent<LevelAuthoring>();
             authoring.tiles = LevelTileSource.Tilemap;
             authoring.includeJsonProps = false;
             authoring.tilemap = map;
-            authoring.overlays = overlays;
+            authoring.walls = wallsLayer;
+            authoring.overlays = coverLayer;
+            authoring.decor = decorLayer;
             authoring.roomName = "Painted Map";
             StampShell(map, 13, 11);
 
@@ -57,7 +55,19 @@ namespace RuneMagic
             Undo.RegisterCreatedObjectUndo(root, "Painted Map");
             Selection.activeGameObject = layer;
             EditorGUIUtility.PingObject(layer);
-            Debug.Log("Painted Map created. Window → 2D → Tile Palette, open Rune Palette, paint walk cells on Tiles, overlays on Cover.");
+            Debug.Log("Painted Map created. Paint floors on Tiles, walls on Walls, props on Decor, ice/fire on Cover.");
+        }
+
+        static Tilemap AddTileLayer(Transform parent, string name, int order)
+        {
+            var host = new GameObject(name);
+            host.transform.SetParent(parent, false);
+            var map = host.AddComponent<Tilemap>();
+            map.tileAnchor = new Vector3(0.5f, 0.5f, 0f);
+            var renderer = host.AddComponent<TilemapRenderer>();
+            renderer.sortOrder = TilemapRenderer.SortOrder.TopRight;
+            renderer.sortingOrder = order;
+            return map;
         }
 
         [InitializeOnLoadMethod]
