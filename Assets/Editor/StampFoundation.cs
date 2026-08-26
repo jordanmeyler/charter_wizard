@@ -388,6 +388,37 @@ namespace RuneMagic
                     host = new GameObject("Charm");
                     host.AddComponent<FreeCharm>();
                     break;
+                case "barrier":
+                    host = new GameObject(string.IsNullOrEmpty(prop.displayName) ? "Barrier" : prop.displayName);
+                    var barrier = host.AddComponent<BarrierLock>();
+                    SetString(barrier, "authoredName", prop.displayName);
+                    SetString(barrier, "authoredId", prop.formulaId);
+                    SetString(barrier, "spriteId", prop.sprite);
+                    SetString(barrier, "clearMaterial", prop.clearMaterial);
+                    SetString(barrier, "note", prop.note);
+                    SetStrings(barrier, "formula", prop.formula);
+                    SetStrings(barrier, "keys", prop.keys);
+                    SetOffsets(barrier, "coverCells", prop.cells, prop.x, prop.y);
+                    break;
+                case "fog":
+                    host = new GameObject(string.IsNullOrEmpty(prop.displayName) ? "Fog" : prop.displayName);
+                    var fog = host.AddComponent<RoomFog>();
+                    SetString(fog, "authoredName", prop.displayName);
+                    SetString(fog, "authoredId", prop.formulaId);
+                    SetString(fog, "spriteId", prop.sprite);
+                    SetString(fog, "note", prop.note);
+                    SetStrings(fog, "formula", prop.formula);
+                    SetStrings(fog, "keys", prop.keys);
+                    SetOffsets(fog, "coverCells", prop.cells, prop.x, prop.y);
+                    break;
+                case "chasm":
+                    host = new GameObject(string.IsNullOrEmpty(prop.displayName) ? "Chasm" : prop.displayName);
+                    var chasm = host.AddComponent<PitChasm>();
+                    SetString(chasm, "authoredName", prop.displayName);
+                    SetString(chasm, "authoredId", prop.formulaId);
+                    SetStrings(chasm, "keys", prop.keys);
+                    SetOffsets(chasm, "pitCells", prop.cells, prop.x, prop.y);
+                    break;
                 default:
                     return;
             }
@@ -454,13 +485,62 @@ namespace RuneMagic
             }
         }
 
+        static void SetStrings(Object target, string field, string[] values)
+        {
+            if (target == null || values == null || values.Length == 0)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(field);
+            if (property == null)
+            {
+                return;
+            }
+
+            property.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                property.GetArrayElementAtIndex(i).stringValue = values[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void SetOffsets(Object target, string field, int[] cells, int originX, int originY)
+        {
+            if (target == null || cells == null || cells.Length < 2)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(field);
+            if (property == null)
+            {
+                return;
+            }
+
+            var n = cells.Length / 2;
+            property.arraySize = n;
+            for (var i = 0; i < n; i++)
+            {
+                property.GetArrayElementAtIndex(i).vector2IntValue =
+                    new Vector2Int(cells[i * 2] - originX, cells[i * 2 + 1] - originY);
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         static void ClearAuthored(Transform root)
         {
             var doomed = new List<GameObject>();
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or
-                    TorchFixture or SocketGate or FreeCharm or SpawnCrystal or BarrierLock)
+                    TorchFixture or SocketGate or FreeCharm or SpawnCrystal or BarrierLock or
+                    RoomFog or PitChasm or ArrowVolley)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

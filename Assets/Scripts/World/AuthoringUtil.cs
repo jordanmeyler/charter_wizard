@@ -162,6 +162,48 @@ namespace RuneMagic
             return new[] { CellOf(world) };
         }
 
+        /// <summary>
+        /// Inspector cells are offsets from this object. Empty means this tile.
+        /// </summary>
+        public static Vector2Int[] WorldCells(Vector2Int[] offsets, Vector3 world)
+        {
+            var origin = CellOf(world);
+            if (offsets == null || offsets.Length == 0)
+            {
+                return new[] { origin };
+            }
+
+            var cells = new Vector2Int[offsets.Length];
+            for (var i = 0; i < offsets.Length; i++)
+            {
+                cells[i] = origin + offsets[i];
+            }
+
+            return cells;
+        }
+
+        public static void DrawCellGizmos(Vector3 world, Vector2Int[] offsets, Color color, int radius = 0)
+        {
+            Gizmos.color = color;
+            if (radius > 0 && (offsets == null || offsets.Length == 0))
+            {
+                var origin = CellOf(world);
+                var disk = WorldWork.Disk(origin, radius);
+                for (var i = 0; i < disk.Count; i++)
+                {
+                    Gizmos.DrawWireCube(WorldGrid.Center(disk[i].x, disk[i].y), Vector3.one * 0.92f);
+                }
+
+                return;
+            }
+
+            var cells = WorldCells(offsets, world);
+            for (var i = 0; i < cells.Length; i++)
+            {
+                Gizmos.DrawWireCube(WorldGrid.Center(cells[i].x, cells[i].y), Vector3.one * 0.92f);
+            }
+        }
+
         static string First(params string[] values)
         {
             if (values == null)

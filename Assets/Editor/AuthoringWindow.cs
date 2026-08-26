@@ -122,6 +122,30 @@ namespace RuneMagic
             DrawPlace("Flame Hall", "FlameHall — names the water-ward lesson");
 
             EditorGUILayout.Space();
+            EditorGUILayout.LabelField("First area puzzles", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "Frame the alcove in the Scene view (2D), then Place. Each button drops the lock and the stone at the pivot. Do not Stamp Foundation — that wipes your painted map.\n\n" +
+                "1. Fire — ice-caged fire stone. U of ice opens north. Fireball / Melt / Ignite frees it.\n" +
+                "2. Air — miasma disk + air stone. Walking in throws you back. Gust (Air · Mercury) clears it.\n" +
+                "3. Earth — one-tile pit + earth stone on the far side. Hop or Earth-pillar crosses it.\n\n" +
+                "Then Play. Plaques and teaching columns come later.",
+                MessageType.Info);
+            if (GUILayout.Button("Place ice-caged fire stone"))
+            {
+                FirstAreaPuzzles.PlaceFire();
+            }
+
+            if (GUILayout.Button("Place miasma + air stone"))
+            {
+                FirstAreaPuzzles.PlaceAir();
+            }
+
+            if (GUILayout.Button("Place pit + earth stone"))
+            {
+                FirstAreaPuzzles.PlaceEarth();
+            }
+
+            EditorGUILayout.Space();
             if (GUILayout.Button("Add Level Authoring to scene"))
             {
                 CreateLevelHost();

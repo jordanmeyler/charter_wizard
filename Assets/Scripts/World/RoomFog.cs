@@ -28,7 +28,12 @@ namespace RuneMagic
         [SerializeField] string[] keys;
         [SerializeField] string spriteId = "poison-fog";
         [SerializeField] string note;
+        [Tooltip("Cells relative to this object. Empty + radius paints a disk.")]
         [SerializeField] Vector2Int[] coverCells;
+        [Tooltip("If cover cells are empty, foul this many tiles around the object.")]
+        [SerializeField] int radius = 2;
+        [Tooltip("Where walking in throws you. Relative to this object. Empty = just north of the fog.")]
+        [SerializeField] Vector2Int retreatOffset;
 
         bool _wired;
         RuneId[] _formula;
@@ -51,10 +56,25 @@ namespace RuneMagic
                 authoredId,
                 AuthoringUtil.ParseKeys(keys, MapBuilder.FogKeys),
                 AuthoringUtil.ParseRunes(formula, RuneId.Air),
-                AuthoringUtil.CellsOrHere(coverCells, transform.position),
+                CoverFromAuthoring(),
                 spriteId,
                 note,
                 grid);
+        }
+
+        Vector2Int[] CoverFromAuthoring()
+        {
+            if (coverCells != null && coverCells.Length > 0)
+            {
+                return AuthoringUtil.WorldCells(coverCells, transform.position);
+            }
+
+            if (radius > 0)
+            {
+                return WorldWork.Disk(AuthoringUtil.CellOf(transform.position), radius).ToArray();
+            }
+
+            return AuthoringUtil.WorldCells(null, transform.position);
         }
 
         public void Bind(
@@ -117,9 +137,17 @@ namespace RuneMagic
                 }
             }
 
-            _retreat = north > int.MinValue
-                ? WorldGrid.Center(midX, north + 1)
-                : transform.position;
+            if (retreatOffset != Vector2Int.zero)
+            {
+                var origin = AuthoringUtil.CellOf(transform.position);
+                _retreat = WorldGrid.Center(origin.x + retreatOffset.x, origin.y + retreatOffset.y);
+            }
+            else
+            {
+                _retreat = north > int.MinValue
+                    ? WorldGrid.Center(midX, north + 1)
+                    : transform.position;
+            }
 
             var mark = gameObject.AddComponent<SpriteRenderer>();
             mark.sprite = sprite;
@@ -269,6 +297,8 @@ namespace RuneMagic
                 return;
             }
 
+            var director = FindFirstObjectByType<SanctumDirector>();
+            director?.Log("The breath is foul. Send air through it.");
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {
@@ -276,7 +306,15 @@ namespace RuneMagic
             }
 
             player.position = _retreat;
-            FindFirstObjectByType<SanctumDirector>()?.Log("The breath is foul. Send air through it.");
+        }
+
+        void OnDrawGizmos()
+        {
+            AuthoringUtil.DrawCellGizmos(
+                transform.position,
+                coverCells,
+                new Color(0.4f, 0.9f, 0.25f, 0.4f),
+                coverCells == null || coverCells.Length == 0 ? radius : 0);
         }
 
         void Update()
