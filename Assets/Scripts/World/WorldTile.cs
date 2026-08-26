@@ -616,31 +616,47 @@ namespace RuneMagic
 
         public void BurnDown()
         {
-            if (HasPlantishDetail && !IsPlantish)
+            var detailBurned = HasPlantishDetail;
+            if (detailBurned)
+            {
+                LeaveAshPile();
+            }
+
+            if (IsPlantish)
             {
                 Fire = 0.15f;
-                ClearDetail();
-                RefreshCollider();
+                _growth = 0;
+                Reshape(new TileDef(Kind == TileKind.Wall ? TileKind.Floor : Kind, MaterialId.Ash));
                 RefreshFx();
                 return;
             }
 
-            if (!IsPlantish)
+            if (detailBurned)
             {
-                return;
+                // Coals on the pile so hunger can still run onto a
+                // plant or timber floor beside (or under) the furniture.
+                Fire = Mathf.Max(Fire, 0.65f);
+                RefreshCollider();
+                RefreshFx();
             }
+        }
 
-            Fire = 0.15f;
-            _growth = 0;
-            Reshape(new TileDef(Kind == TileKind.Wall ? TileKind.Floor : Kind, MaterialId.Ash));
-            RefreshFx();
+        void LeaveAshPile()
+        {
+            _detailMaterial = MaterialId.Ash;
+            _detailBlocks = false;
+            _detailLook = SpriteFactory.Floor(MaterialId.Ash, Coord.x, Coord.y);
+            ApplyDetail();
         }
 
         void Reshape(TileDef def)
         {
             Def = def;
             _authoredLook = null;
-            ClearDetail();
+            if (_detailMaterial != MaterialId.Ash)
+            {
+                ClearDetail();
+            }
             if (def.Kind != TileKind.Door)
             {
                 PassageOpen = false;
@@ -780,6 +796,9 @@ namespace RuneMagic
             var view = EnsureDetail();
             view.sprite = _detailLook;
             view.sortingOrder = _renderer.sortingOrder + 2;
+            view.transform.localScale = _detailMaterial == MaterialId.Ash
+                ? new Vector3(0.7f, 0.7f, 1f)
+                : Vector3.one;
             view.enabled = true;
         }
 

@@ -86,7 +86,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Tiles / Walls set walk. Decor is its own stamp — Plant on a bush burns off and leaves the stone under it. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
+                "Select the layer first. Tiles / Walls set walk. Decor is its own stamp — Timber on a table burns to an ash pile and can catch a plant or timber floor next to it. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind.",
                 MessageType.None);
         }
 

@@ -318,7 +318,7 @@ namespace RuneMagic
                     var look = paint != null
                         ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
                         : SpriteOf(raw);
-                    var material = paint != null ? paint.material : MaterialId.None;
+                    var material = paint != null ? paint.material : GuessDetailMaterial(raw);
                     var blocks = paint != null &&
                                  (paint.kind == TileKind.Wall || paint.kind == TileKind.Door);
                     tile.AuthorDetail(look, material, blocks);
@@ -414,6 +414,36 @@ namespace RuneMagic
             }
 
             return MaterialId.Stone;
+        }
+
+        static MaterialId GuessDetailMaterial(TileBase tile)
+        {
+            var name = tile != null ? tile.name : string.Empty;
+            if (NameHas(name, "plant", "grass", "bush", "moss", "vine", "fern", "flower", "leaf"))
+            {
+                return MaterialId.Plant;
+            }
+
+            if (NameHas(name, "table", "chair", "bench", "crate", "barrel", "chest",
+                    "shelf", "book", "wood", "timber", "desk", "cabinet", "bed", "stool"))
+            {
+                return MaterialId.Timber;
+            }
+
+            return MaterialId.None;
+        }
+
+        static bool NameHas(string name, params string[] tokens)
+        {
+            for (var i = 0; i < tokens.Length; i++)
+            {
+                if (name.IndexOf(tokens[i], System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static Sprite SpriteOf(TileBase tile)

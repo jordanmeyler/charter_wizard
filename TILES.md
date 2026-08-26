@@ -52,7 +52,9 @@ Do **not** make a Tilemap for interactables. Items, enemies, torches-as-locks, g
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
 
-Decor has its **own** stamp. Select **Decor**, stamp **Plant** (or Moss / Timber / Grove) on a bush. Fire burns the plant off and leaves the floor — stone stays stone. Leave Decor unstamped if it is only scenery. Stamp **Wall** on a statue if it should block. Cover and Aura on Decor still apply to that cell (ice, fire, vine, kindled).
+Decor has its **own** stamp. Select **Decor**, stamp **Timber** on a table or **Plant** on a bush. Fire turns that furniture into a pile of ash and leaves the floor — stone stays stone. The coals stay hot, so fire can run from the pile onto a neighboring Plant / Timber / Moss / Grove floor. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it. Stamp **Wall** on a statue if it should block. Cover and Aura on Decor still apply to that cell (ice, fire, vine, kindled).
+
+`GameObject → Rune Magic → Decor` is still look-only art. Burning furniture has to be a Decor **tile**.
 
 The grid is **16×16** (16 PPU, one cell = one tile). ElvGames Tile
 palettes also paint — Play keeps that sprite and guesses wall / door /
