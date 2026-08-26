@@ -10,9 +10,14 @@ namespace RuneMagic
     /// </summary>
     public sealed class RuneStringSource : MonoBehaviour, IRuneSource
     {
+        [Header("Authoring")]
+        [SerializeField] string[] runes = { "Fire" };
+        [SerializeField] string dir = "right";
+
         public int StringId { get; private set; }
         public RuneId[] Sequence { get; private set; }
         public Vector3 Heading { get; private set; }
+        bool _wired;
 
         public bool IsEmitting => Sequence != null && Sequence.Length > 0;
         public Vector3 WorldOrigin => transform.position;
@@ -33,8 +38,24 @@ namespace RuneMagic
             return source;
         }
 
+        public void BindFromAuthoring()
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(AuthoringUtil.ParseRunes(runes, RuneId.Fire), MapFile.HeadingOf(dir));
+        }
+
         public void Bind(IReadOnlyList<RuneId> sequence, Vector3 heading)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             StringId = GetInstanceID();
             Sequence = sequence != null ? new RuneId[sequence.Count] : System.Array.Empty<RuneId>();
             if (sequence != null)

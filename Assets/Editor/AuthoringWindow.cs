@@ -113,6 +113,13 @@ namespace RuneMagic
             DrawPlace("Plaque", "HintPlaque — readable text");
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
             DrawPlace("Charm", "FreeCharm — teaches Fire · Mercury");
+            DrawPlace("Rune", "RuneStringSource — a written sentence in the field");
+            DrawPlace("Inscription", "RuneStele floor mark — one teaching rune");
+            DrawPlace("Pillar", "RuneStele standing mark — one teaching rune");
+            DrawPlace("Arrows", "ArrowVolley — shots down a lane");
+            DrawPlace("Chasm", "PitChasm — lock over nearby pits");
+            DrawPlace("Fog", "RoomFog — standing breath / poison");
+            DrawPlace("Flame Hall", "FlameHall — names the water-ward lesson");
 
             EditorGUILayout.Space();
             if (GUILayout.Button("Add Level Authoring to scene"))
@@ -183,6 +190,13 @@ namespace RuneMagic
             Write("Plaque", typeof(HintPlaque));
             Write("Crystal", typeof(SpawnCrystal));
             Write("Charm", typeof(FreeCharm));
+            Write("Rune", typeof(RuneStringSource));
+            Write("Inscription", typeof(RuneStele));
+            Write("Pillar", typeof(RuneStele));
+            Write("Arrows", typeof(ArrowVolley));
+            Write("Chasm", typeof(PitChasm));
+            Write("Fog", typeof(RoomFog));
+            Write("Flame Hall", typeof(FlameHall));
             Write("Adept", typeof(AdeptAvatar));
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

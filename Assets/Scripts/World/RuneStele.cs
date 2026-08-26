@@ -15,8 +15,13 @@ namespace RuneMagic
             Pillar
         }
 
+        [Header("Authoring")]
+        [SerializeField] RuneId authoredRune = RuneId.Fire;
+        [SerializeField] Kind authoredForm = Kind.Floor;
+
         public RuneId Rune { get; private set; }
         public Kind Form { get; private set; }
+        bool _wired;
 
         public bool IsEmitting => Rune != RuneId.None;
         public Vector3 WorldOrigin => transform.position;
@@ -50,8 +55,26 @@ namespace RuneMagic
             return stele;
         }
 
-        void Bind(RuneId rune, Kind form)
+        public void BindFromAuthoring()
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(authoredRune, authoredForm);
+        }
+
+        public void Bind(RuneId rune, Kind form)
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
+            authoredRune = rune;
+            authoredForm = form;
             Rune = rune;
             Form = form;
             if (form == Kind.Pillar)

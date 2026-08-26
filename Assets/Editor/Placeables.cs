@@ -79,6 +79,27 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Charm", false, 29)]
         static void Charm() => Spawn("Charm", typeof(FreeCharm));
 
+        [MenuItem("GameObject/Rune Magic/Rune", false, 30)]
+        static void Rune() => Spawn("Rune", typeof(RuneStringSource));
+
+        [MenuItem("GameObject/Rune Magic/Inscription", false, 31)]
+        static void Inscription() => SpawnStele(RuneStele.Kind.Floor);
+
+        [MenuItem("GameObject/Rune Magic/Pillar", false, 32)]
+        static void Pillar() => SpawnStele(RuneStele.Kind.Pillar);
+
+        [MenuItem("GameObject/Rune Magic/Arrows", false, 33)]
+        static void Arrows() => Spawn("Arrows", typeof(ArrowVolley));
+
+        [MenuItem("GameObject/Rune Magic/Chasm", false, 34)]
+        static void Chasm() => Spawn("Chasm", typeof(PitChasm));
+
+        [MenuItem("GameObject/Rune Magic/Fog", false, 35)]
+        static void Fog() => Spawn("Fog", typeof(RoomFog));
+
+        [MenuItem("GameObject/Rune Magic/Flame Hall", false, 36)]
+        static void Hall() => Spawn("Flame Hall", typeof(FlameHall));
+
         static void SpawnEnemy(PackEnemies.Spec spec)
         {
             var world = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
@@ -87,6 +108,31 @@ namespace RuneMagic
             var encounter = PackEnemies.Spawn(spec, world);
             Undo.RegisterCreatedObjectUndo(encounter.gameObject, "Create " + spec.Name);
             Selection.activeGameObject = encounter.gameObject;
+        }
+
+        static void SpawnStele(RuneStele.Kind form)
+        {
+            var name = form == RuneStele.Kind.Pillar ? "Rune Pillar" : "Inscription";
+            var host = new GameObject(name);
+            var stele = host.AddComponent<RuneStele>();
+            var so = new SerializedObject(stele);
+            var property = so.FindProperty("authoredForm");
+            if (property != null)
+            {
+                property.enumValueIndex = (int)form;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            if (host.GetComponent<SpriteRenderer>() == null)
+            {
+                host.AddComponent<SpriteRenderer>();
+            }
+
+            host.transform.position = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                ? SceneView.lastActiveSceneView.pivot
+                : Vector3.zero);
+            Undo.RegisterCreatedObjectUndo(host, "Create " + name);
+            Selection.activeGameObject = host;
         }
 
         static void Spawn(string name, System.Type type)

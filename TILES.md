@@ -50,7 +50,29 @@ Keep extra Tilemaps as **children of Map**. Play merges them by name.
 | **Cover** / **Coverings** | Ice, fire, vine, aura | Overlay only. Hidden, then baked. |
 | **Environment Details** / Decor | Plants, rugs, chairs, statues | Own stamp + optional collision. Hidden, then baked as a detail. |
 
-Do **not** make a Tilemap for interactables. Items, enemies, torches-as-locks, gates, plaques, and the spawn crystal are GameObjects: `GameObject → Rune Magic → Item / Enemy / Torch / Gate / …`. Those have formulas, keys, and colliders. A tile cannot.
+Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
+
+| Place | Old puzzle job | Inspector |
+|---|---|---|
+| **Item** | fire-stone, water-stone, earth-stone, air-stone, body / mind / grove / flood / spark stones, ice-cask | `catalogId` |
+| **Mite** / **Enemy** | ice-thing, ash-mite, and the rest | formula, keys, sprite |
+| **Torch** | cold torch | keys |
+| **Rod** | storm rod | keys |
+| **Gate** | Gate of Elements | `requires` item ids |
+| **Barrier** | ice cage | formula, cover cells, clear material |
+| **Chasm** | pit lock | nearby pits, or list cells |
+| **Arrows** | arrow volley | dir, cover cells |
+| **Fog** | poison / gust room | cover cells |
+| **Plaque** | wall text | text |
+| **Rune** | written sentence on the field | runes, dir |
+| **Inscription** | floor teaching mark | one rune |
+| **Pillar** | standing teaching mark | one rune |
+| **Charm** | Free charm | — |
+| **Crystal** | spawn / death return | — |
+| **Flame Hall** | water-ward lesson at a kindled hall | — |
+| **Decor** | look-only prop (not a lock) | sprite |
+
+A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
 

@@ -21,14 +21,46 @@ namespace RuneMagic
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.Creature;
 
+        [Header("Authoring")]
+        [SerializeField] string authoredName = "Arrow volley";
+        [SerializeField] string authoredId = "arrow-volley";
+        [SerializeField] string[] formula;
+        [SerializeField] string[] keys;
+        [SerializeField] string dir = "down";
+        [SerializeField] string spriteId = "arrow-rack";
+        [SerializeField] string note;
+        [SerializeField] Vector2Int[] coverCells;
+        [SerializeField] Vector2Int[] killCells;
+
         WorldGrid _grid;
         Vector2Int[] _cover;
+        bool _wired;
         HashSet<Vector2Int> _kill;
         RuneId[] _formula;
         string _resolvedNote;
         float _beat;
         SpriteRenderer _renderer;
         Vector2 _heading = Vector2.down;
+
+        public void BindFromAuthoring(WorldGrid grid)
+        {
+            if (_wired)
+            {
+                return;
+            }
+
+            Bind(
+                authoredName,
+                authoredId,
+                AuthoringUtil.ParseKeys(keys, MapBuilder.ArrowKeys),
+                AuthoringUtil.ParseRunes(formula),
+                grid,
+                AuthoringUtil.CellsOrHere(coverCells, transform.position),
+                killCells,
+                spriteId,
+                note,
+                MapFile.HeadingOf(dir));
+        }
 
         public void Bind(
             string displayName,
@@ -42,6 +74,12 @@ namespace RuneMagic
             string resolvedNote,
             Vector3 heading)
         {
+            if (_wired)
+            {
+                return;
+            }
+
+            _wired = true;
             DisplayName = displayName;
             FormulaId = formulaId;
             AcceptedKeys = keys ?? System.Array.Empty<SpellId>();
@@ -67,7 +105,7 @@ namespace RuneMagic
                 }
             }
 
-            _renderer = gameObject.AddComponent<SpriteRenderer>();
+            _renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
             _renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(spriteId) ? "arrow-rack" : spriteId);
             _renderer.sortingOrder = 8;
             FixtureGlow.Attach(transform, new Color(0.85f, 0.55f, 0.2f, 0.55f), 1.6f, 0.14f);
