@@ -21,10 +21,12 @@ each `WorldPaintTile` into a live `WorldTile`.
    Cover / Aura / Blocks, and click those cells. The sprite stays.
    Right-click a cell to copy its properties. Check **Write onto Cover
    layer** to stamp ice / fire / aura without changing the walk cell.
-   Turn on **Show stamps in Scene view** to outline each stamp: gold
-   stone floor, brown dirt, magenta pit, cyan ice wall, green miasma,
-   red blocks. Cells with no outline are look only — Play guesses
-   from the name. Hover still lists the exact stamp.
+   Turn on **Show stamps in Scene view** to outline each stamp. Every
+   material has its own colour (gold stone, brown dirt, blue water,
+   cyan ice, and so on). Magenta is a pit, green is miasma, red is
+   Blocks. Cells with no outline are look only — Play guesses from
+   the name. Hover still lists the exact stamp. The Scene legend
+   lists what is on the map; Tile Properties lists every material.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
    Select **Environment Details** for plants and furniture that sit on
