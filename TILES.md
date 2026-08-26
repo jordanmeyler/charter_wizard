@@ -65,7 +65,7 @@ floor over your tiles.
 Open `Window → Rune Magic → Tile Properties`. Select the layer
 first (**Tiles** for walk / pit / ice walls, **Cover** or
 **Write onto Cover layer** for miasma). Turn on **Paint in Scene
-view** and **Show stamps**. Uncheck the stamps you do not want so
+view**. Uncheck the stamps you do not want so
 a click only writes Kind, or only Aura. If a hole has no magenta
 outline, it is not a pit yet.
 
