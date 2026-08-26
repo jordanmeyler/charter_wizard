@@ -162,7 +162,6 @@ To fix a `tiles.json` rect instead (only needed when Sprite is left blank):
 4. `floor-stone` is the stone floor, `wall` is the stone wall, `door`
    is the leaf. Save. Play again.
 
->>>>>>> d3f73cce (Bind ElvGames sprites so the Scene view shows a paintable room.)
 ## Adding a tile later
 
 1. Open the sheet in any image tool. Note the pixel rect. Remember
