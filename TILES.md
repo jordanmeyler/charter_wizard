@@ -15,8 +15,9 @@ each `WorldPaintTile` into a live `WorldTile`.
    If the palette is missing, `Window → Rune Magic → Create Tile Palette`.
 4. Select the **Tiles** object and paint the look — Rune Palette or any
    ElvGames palette. Erase or overwrite the starter room as you like.
-   Cells you leave empty are the drop at Play. Paint walls and
-   floor where they should stand; raise a pillar or wall to cross.
+   Cells you leave empty are the drop at Play. A painted look is **not**
+   floor until you stamp **Kind = Floor** or use a **Floor-** brush.
+   Raise a pillar or wall to cross a drop.
 5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
    Select the layer you just painted (Tiles, Walls, or Environment
    Details), turn on **Paint in Scene view**, pick Kind / Material /
@@ -52,13 +53,17 @@ is not loaded unless Level Authoring is set to **Named Map**.
 ## Layers
 
 Keep extra Tilemaps as **children of Map**. Play merges them by name.
+A cell is **floor only** when a Floor brush or **Kind = Floor** stamp
+says so. Looks on any layer — Tiles, Floor 2, Environment Details —
+are not walkable. Extra **Floor** / **Tiles** children are more
+levels of the same grid: stamp Floor on the cells you can walk.
 
 | Child name | What to paint | Play |
 |---|---|---|
-| **Tiles** / **Floor** | Walkable ground, water, pits, doors | Kind + material. Empty cells become pits. Hidden, then baked. |
-| **Walls** | Solid walls | Merged as walls. Hidden, then baked. |
+| **Tiles** / **Floor** / **Floor 2** | Looks, then Floor / pit / door stamps | Floor only where stamped. Empty cells become pits. Hidden, then baked. |
+| **Walls** | Solid walls | Unstamped cells on this layer stay walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, miasma, fog | Overlay: look, work, and weave. Hidden, then baked. |
-| **Environment Details** / Decor | Plants, rugs, chairs, statues | Own stamp + optional collision. Hidden, then baked as a detail. |
+| **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here still makes that cell walkable. Hidden, then baked. |
 
 ## First area puzzles
 
@@ -207,17 +212,18 @@ Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `Gam
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave hot coals. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
-Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. When a blocking table burns to ash, you can walk over the pile. Cover still applies to that cell (ice, fire, vine, kindled, miasma).
+Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns to ash, you can walk over the pile. Cover still applies to that cell (ice, fire, vine, kindled, miasma).
 
 `GameObject → Rune Magic → Decor` is still look-only art. Burning or blocking furniture has to be an Environment Details **tile**.
 
 The grid is **16×16** (16 PPU, one cell = one tile). ElvGames Tile
-palettes also paint — Play keeps that sprite and guesses wall / door /
-water from the tile name unless you stamped properties.
+palettes also paint — Play keeps that sprite as a look. It will guess
+wall / door / pit / bridge from the tile name, but it will **not**
+guess floor. Stamp Kind = Floor (or paint a Floor brush) to walk.
 
 | Folder | Brushes |
 |---|---|

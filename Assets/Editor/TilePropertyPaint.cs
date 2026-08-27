@@ -115,7 +115,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: ice, fire, water, vine, miasma, fog. It is the look, the work, and what the cell answers. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: ice, fire, water, vine, miasma, fog. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
         }
 
@@ -245,7 +245,7 @@ namespace RuneMagic
             var opacity = _applyOpacity ? _opacity : (current != null ? current.opacity : 0f);
             if (_coverLayer)
             {
-                kind = current != null ? current.kind : TileKind.Floor;
+                kind = current != null ? current.kind : TileKind.None;
                 material = current != null ? current.material : MaterialId.Stone;
                 blocks = false;
                 if (cover == TileCover.None)
@@ -886,6 +886,18 @@ namespace RuneMagic
                     return true;
             }
 
+            if (paint.kind == TileKind.None)
+            {
+                if (paint.material != MaterialId.None && paint.material != MaterialId.Stone)
+                {
+                    color = MaterialColor(paint.material);
+                    return true;
+                }
+
+                color = LookOnly;
+                return ShowLookOnly;
+            }
+
             color = MaterialColor(paint.material);
             if (paint.kind == TileKind.Wall)
             {
@@ -930,6 +942,13 @@ namespace RuneMagic
                 if (paint.ResolvedCover() != TileCover.None)
                 {
                     return paint.ResolvedCover() + " cover";
+                }
+
+                if (paint.kind == TileKind.None)
+                {
+                    return paint.material != MaterialId.None && paint.material != MaterialId.Stone
+                        ? MaterialCatalog.Of(paint.material).Name + " (look)"
+                        : "Look only";
                 }
 
                 return paint.kind + " / " + MaterialCatalog.Of(paint.material).Name;

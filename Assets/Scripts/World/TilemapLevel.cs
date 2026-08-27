@@ -6,10 +6,12 @@ namespace RuneMagic
 {
     /// <summary>
     /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
-    /// Floor / Tiles / Walls set kind + material. Cover stamps aura and
-    /// covering. Environment Details (Decor) is a detail stamp on that
-    /// cell — its own material and optional collision — so a table can
-    /// block and a plant can burn off a stone floor.
+    /// A cell is walkable floor only when a Floor brush or Kind = Floor
+    /// stamp says so. Looks on any layer are not floor. Extra Floor /
+    /// Tiles children merge — each Floor stamp still counts. Walls you
+    /// never stamp stay walls on a Walls layer. Cover is overlay.
+    /// Environment Details is a detail on that cell, and may also carry
+    /// a Floor stamp if you want a second level to walk.
     /// </summary>
     public static class TilemapLevel
     {
@@ -65,20 +67,9 @@ namespace RuneMagic
             var walks = WalkLayers(spec, floors);
             var covers = CoverLayers(spec, floors);
             var decors = DecorLayers(spec, floors);
-            for (var i = 0; i < walks.Count; i++)
-            {
-                HideEditors(walks[i]);
-            }
-
-            for (var i = 0; i < covers.Count; i++)
-            {
-                HideEditors(covers[i]);
-            }
-
-            for (var i = 0; i < decors.Count; i++)
-            {
-                HideEditors(decors[i]);
-            }
+            HideAll(walks);
+            HideAll(covers);
+            HideAll(decors);
 
             var root = new GameObject(floors.transform.parent != null ? floors.transform.parent.name : "Painted Map");
             var grid = root.AddComponent<WorldGrid>();
@@ -93,14 +84,14 @@ namespace RuneMagic
                 any = Stamp(grid, walks[i], true, wallDefault, ref minX, ref minY, ref maxX, ref maxY) || any;
             }
 
+            for (var i = 0; i < decors.Count; i++)
+            {
+                any = StampDetail(grid, decors[i], guessBlocks: true, ref minX, ref minY, ref maxX, ref maxY) || any;
+            }
+
             for (var i = 0; i < covers.Count; i++)
             {
                 any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY, overlay: true) || any;
-            }
-
-            for (var i = 0; i < decors.Count; i++)
-            {
-                any = StampDetail(grid, decors[i], ref minX, ref minY, ref maxX, ref maxY) || any;
             }
 
             if (!any)
@@ -133,9 +124,13 @@ namespace RuneMagic
             var list = new List<Tilemap>();
             AddUnique(list, spec != null ? spec.tilemap : null);
             AddUnique(list, spec != null ? spec.walls : null);
-            AddUnique(list, primary);
+            if (IsWalk(primary) || IsWall(primary) || !HasNamedWalkSibling(primary))
+            {
+                AddUnique(list, primary);
+            }
+
             CollectSiblings(primary, list, map => IsWalk(map) || IsWall(map));
-            list.Sort((a, b) => WalkRank(a).CompareTo(WalkRank(b)));
+            list.Sort(CompareLayers);
             return list;
         }
 
@@ -151,8 +146,33 @@ namespace RuneMagic
         {
             var list = new List<Tilemap>();
             AddUnique(list, spec != null ? spec.decor : null);
-            CollectSiblings(primary, list, IsDecor);
+            CollectSiblings(primary, list, IsLookLayer);
+            list.Sort(CompareSorting);
             return list;
+        }
+
+        static bool IsLookLayer(Tilemap map)
+        {
+            return map != null && !IsWalk(map) && !IsWall(map) && !IsCover(map);
+        }
+
+        static bool HasNamedWalkSibling(Tilemap primary)
+        {
+            if (primary == null || primary.transform.parent == null)
+            {
+                return false;
+            }
+
+            var maps = primary.transform.parent.GetComponentsInChildren<Tilemap>(true);
+            for (var i = 0; i < maps.Length; i++)
+            {
+                if (maps[i] != primary && (IsWalk(maps[i]) || IsWall(maps[i])))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static void CollectSiblings(Tilemap primary, List<Tilemap> list, System.Func<Tilemap, bool> match)
@@ -183,6 +203,31 @@ namespace RuneMagic
         static int WalkRank(Tilemap map)
         {
             return IsWall(map) ? 2 : 1;
+        }
+
+        static int CompareLayers(Tilemap a, Tilemap b)
+        {
+            var rank = WalkRank(a).CompareTo(WalkRank(b));
+            return rank != 0 ? rank : CompareSorting(a, b);
+        }
+
+        static int CompareSorting(Tilemap a, Tilemap b)
+        {
+            return SortingOrder(a).CompareTo(SortingOrder(b));
+        }
+
+        static int SortingOrder(Tilemap map)
+        {
+            var renderer = map != null ? map.GetComponent<TilemapRenderer>() : null;
+            return renderer != null ? renderer.sortingOrder : 0;
+        }
+
+        static void HideAll(List<Tilemap> maps)
+        {
+            for (var i = 0; i < maps.Count; i++)
+            {
+                HideEditors(maps[i]);
+            }
         }
 
         static bool IsWalk(Tilemap map) => NameIs(map, WalkNames);
@@ -248,33 +293,12 @@ namespace RuneMagic
                     maxX = Mathf.Max(maxX, x);
                     maxY = Mathf.Max(maxY, y);
 
-                    var kind = paint != null ? paint.kind : GuessKind(raw);
-                    if (paint == null && defaultKind != null && kind == TileKind.Floor)
-                    {
-                        kind = defaultKind.Value;
-                    }
-
-                    var material = paint != null ? paint.material : GuessMaterial(raw);
-                    var tile = grid.Get(x, y);
-                    var underlay = KeepFloorUnder(kind, tile, x, y, out var underFloor);
-                    if (tile == null || replace)
-                    {
-                        if (overlay)
-                        {
-                            continue;
-                        }
-
-                        tile = grid.Set(x, y, kind, material);
-                    }
-
-                    if (underlay != null)
-                    {
-                        tile.AuthorUnderlay(underlay, underFloor);
-                    }
-
                     var look = paint != null
                         ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
                         : SpriteOf(raw);
+                    var kind = ResolveWalkKind(paint, raw, defaultKind);
+                    var material = paint != null ? paint.material : GuessMaterial(raw);
+                    var tile = grid.Get(x, y);
                     if (overlay)
                     {
                         if (tile == null)
@@ -290,6 +314,23 @@ namespace RuneMagic
 
                         ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true));
                         continue;
+                    }
+
+                    if (kind == null)
+                    {
+                        ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks: false);
+                        continue;
+                    }
+
+                    var underlay = KeepFloorUnder(kind.Value, tile, x, y, out var underFloor);
+                    if (tile == null || replace)
+                    {
+                        tile = grid.Set(x, y, kind.Value, material);
+                    }
+
+                    if (underlay != null)
+                    {
+                        tile.AuthorUnderlay(underlay, underFloor);
                     }
 
                     if (look != null)
@@ -376,6 +417,7 @@ namespace RuneMagic
         static bool StampDetail(
             WorldGrid grid,
             Tilemap map,
+            bool guessBlocks,
             ref int minX,
             ref int minY,
             ref int maxX,
@@ -406,29 +448,95 @@ namespace RuneMagic
                     maxX = Mathf.Max(maxX, x);
                     maxY = Mathf.Max(maxY, y);
 
-                    var tile = grid.Get(x, y);
-                    if (tile == null)
-                    {
-                        tile = grid.Set(x, y, TileKind.Floor, MaterialId.Stone);
-                    }
-
                     var look = paint != null
                         ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
                         : SpriteOf(raw);
-                    var material = paint != null ? paint.material : GuessDetailMaterial(raw);
-                    var blocks = paint != null
-                        ? paint.blocks || paint.kind == TileKind.Wall || paint.kind == TileKind.Door
-                        : GuessDetailBlocks(raw);
-                    tile.AuthorDetail(look, material, blocks);
-
-                    if (paint != null)
+                    var kind = ResolveWalkKind(paint, raw, null);
+                    var material = paint != null
+                        ? paint.material
+                        : kind != null ? GuessMaterial(raw) : GuessDetailMaterial(raw);
+                    if (kind != null)
                     {
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                        var tile = grid.Get(x, y);
+                        var underlay = KeepFloorUnder(kind.Value, tile, x, y, out var underFloor);
+                        if (tile == null || tile.Kind == TileKind.Pit || kind == TileKind.Wall || kind == TileKind.Door)
+                        {
+                            tile = grid.Set(x, y, kind.Value, material);
+                        }
+
+                        if (underlay != null)
+                        {
+                            tile.AuthorUnderlay(underlay, underFloor);
+                        }
+
+                        if (look != null)
+                        {
+                            tile.AuthorLook(look);
+                        }
+
+                        if (paint != null)
+                        {
+                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                        }
+
+                        continue;
                     }
+
+                    ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks);
                 }
             }
 
             return any;
+        }
+
+        /// <summary>
+        /// Floor only when a Floor brush or Kind = Floor stamp says so.
+        /// Name guesses may still mark wall / door / pit / bridge.
+        /// A Walls layer still defaults unstamped cells to wall.
+        /// </summary>
+        static TileKind? ResolveWalkKind(WorldPaintTile paint, TileBase raw, TileKind? defaultKind)
+        {
+            if (paint != null)
+            {
+                return paint.StampsWalk ? paint.kind : (TileKind?)null;
+            }
+
+            var named = GuessNamedKind(raw);
+            if (named != null)
+            {
+                return named;
+            }
+
+            return defaultKind;
+        }
+
+        static void ApplyLookOnly(
+            WorldGrid grid,
+            int x,
+            int y,
+            Sprite look,
+            WorldPaintTile paint,
+            TileBase raw,
+            bool guessBlocks)
+        {
+            var tile = grid.Get(x, y) ?? grid.EnsureOpenPit(x, y);
+            var material = paint != null ? paint.material : GuessDetailMaterial(raw);
+            var blocks = paint != null
+                ? paint.blocks
+                : guessBlocks && GuessDetailBlocks(raw);
+            if (tile.Kind == TileKind.Pit && tile.AuthoredLook == null && look != null && !blocks)
+            {
+                tile.AuthorLook(look);
+            }
+            else
+            {
+                tile.AuthorDetail(look, material, blocks);
+            }
+
+            if (paint != null)
+            {
+                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+            }
         }
 
         static int CountPainted(Tilemap map)
@@ -450,11 +558,11 @@ namespace RuneMagic
             return n;
         }
 
-        public static TileKind GuessKindForEditor(TileBase tile) => GuessKind(tile);
+        public static TileKind GuessKindForEditor(TileBase tile) => GuessNamedKind(tile) ?? TileKind.None;
 
         public static MaterialId GuessMaterialForEditor(TileBase tile) => GuessMaterial(tile);
 
-        static TileKind GuessKind(TileBase tile)
+        static TileKind? GuessNamedKind(TileBase tile)
         {
             var name = tile != null ? tile.name : string.Empty;
             if (name.IndexOf("wall", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -479,7 +587,7 @@ namespace RuneMagic
                 return TileKind.Bridge;
             }
 
-            return TileKind.Floor;
+            return null;
         }
 
         static MaterialId GuessMaterial(TileBase tile)

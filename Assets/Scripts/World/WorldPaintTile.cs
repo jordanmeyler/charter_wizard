@@ -4,10 +4,10 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// A palette tile you paint in the Scene view. On Floor / Walls, kind
-    /// + material become the walk cell. On Environment Details they
-    /// become a detail stamp — material, optional collision, and a
-    /// plant can burn off and leave the stone.
+    /// A palette tile you paint in the Scene view. Kind is the walk
+    /// family — Floor only if you stamped Floor or used a Floor brush.
+    /// A look with Kind = None is never a floor, on any layer.
+    /// Extra Floor / Tiles children merge; each Floor stamp still counts.
     /// Cover is the overlay: look, gameplay, and what the cell answers.
     /// Older Aura stamps still map onto Cover.
     /// </summary>
@@ -16,8 +16,12 @@ namespace RuneMagic
     {
         [Tooltip("What the cell is made of. Play bakes this into the live grid.")]
         public MaterialId material = MaterialId.Stone;
-        [Tooltip("Floor, wall, pit, door, or bridge.")]
+        [Tooltip("Walk family. Floor is walkable ground. None is look only — not a floor, on any layer.")]
         public TileKind kind = TileKind.Floor;
+
+        public bool StampsWalk => kind != TileKind.None;
+
+        public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Prefer Cover. Play still reads this.")]
         public TileAura aura;
         [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and weave.")]
@@ -163,6 +167,8 @@ namespace RuneMagic
                     return TileAtlas.Door(false, true) ?? TileAtlas.Get("door");
                 case TileKind.Bridge:
                     return TileAtlas.Get("bridge") ?? TileAtlas.Floor(material, x, y);
+                case TileKind.None:
+                    return sprite != null ? sprite : TileAtlas.Get("floor-stone");
                 default:
                     return TileAtlas.Floor(material, x, y) ?? TileAtlas.Get("floor-stone");
             }

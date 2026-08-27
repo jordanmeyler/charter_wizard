@@ -366,7 +366,7 @@ namespace RuneMagic
             }
 
             EditorGUILayout.HelpBox(
-                "Paint this from Window → 2D → Tile Palette. Material and kind are the walk cell. Cover and aura are overlays — paint those on the Cover Tilemap so they sit on top of an existing floor. Drag a sliced sprite onto Sprite to replace the atlas look.",
+                "Paint this from Window → 2D → Tile Palette. Kind = Floor is walkable ground. Kind = None is look only — not a floor, on any layer. Cover and aura are overlays — paint those on the Cover Tilemap so they sit on top of an existing floor. Drag a sliced sprite onto Sprite to replace the atlas look.",
                 MessageType.Info);
             if (GUILayout.Button("Refresh sprite from atlas"))
             {
