@@ -288,17 +288,7 @@ namespace RuneMagic
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        var aura = ResolveAura(paint, raw);
-                        ApplyAura(tile, aura);
-                        if (paint != null && paint.cover != TileCover.None)
-                        {
-                            tile.PaintCover(paint.cover);
-                        }
-                        else if (aura == TileAura.Miasma)
-                        {
-                            tile.PaintCover(TileCover.Miasma);
-                        }
-
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true));
                         continue;
                     }
 
@@ -309,11 +299,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyAura(tile, ResolveAura(paint, raw));
-                        if (paint.cover != TileCover.None)
-                        {
-                            tile.PaintCover(paint.cover);
-                        }
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
                     }
                 }
             }
@@ -437,11 +423,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyAura(tile, ResolveAura(paint, raw));
-                        if (paint.cover != TileCover.None)
-                        {
-                            tile.PaintCover(paint.cover);
-                        }
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
                     }
                 }
             }
@@ -528,51 +510,79 @@ namespace RuneMagic
             return MaterialId.Stone;
         }
 
-        static TileAura ResolveAura(WorldPaintTile paint, TileBase raw)
+        static TileCover ResolveCover(WorldPaintTile paint, TileBase raw, bool overlay)
         {
             if (paint != null)
             {
-                var fromPaint = paint.ResolvedAura();
-                if (fromPaint != TileAura.None)
+                var fromPaint = paint.ResolvedCover();
+                if (fromPaint != TileCover.None)
                 {
                     return fromPaint;
                 }
+
+                if (overlay)
+                {
+                    fromPaint = WorldPaintTile.CoverFromMaterial(paint.material);
+                    if (fromPaint != TileCover.None)
+                    {
+                        return fromPaint;
+                    }
+                }
             }
 
-            return GuessAura(raw);
+            return GuessCover(raw);
         }
 
-        static TileAura GuessAura(TileBase tile)
+        static TileCover GuessCover(TileBase tile)
         {
             var name = tile != null ? tile.name : string.Empty;
             if (NameHas(name, "miasma", "poison", "gas"))
             {
-                return TileAura.Miasma;
+                return TileCover.Miasma;
             }
 
             if (NameHas(name, "fog", "mist", "smoke", "haze"))
             {
-                return TileAura.Fog;
+                return TileCover.Fog;
+            }
+
+            if (NameHas(name, "ice", "frost", "glacier"))
+            {
+                return TileCover.Ice;
+            }
+
+            if (NameHas(name, "water", "wet"))
+            {
+                return TileCover.Water;
             }
 
             if (NameHas(name, "fire", "flame", "burn"))
             {
-                return TileAura.Fire;
+                return TileCover.Fire;
             }
 
-            return TileAura.None;
+            if (NameHas(name, "vine", "plant"))
+            {
+                return TileCover.Vine;
+            }
+
+            if (NameHas(name, "lightning", "spark"))
+            {
+                return TileCover.Lightning;
+            }
+
+            return TileCover.None;
         }
 
         static float VeilOpacity(TileBase tile)
         {
-            var aura = GuessAura(tile);
-            if (aura == TileAura.Miasma || aura == TileAura.Fog)
+            var cover = GuessCover(tile);
+            if (cover == TileCover.Miasma || cover == TileCover.Fog)
             {
                 return 0.42f;
             }
 
-            var name = tile != null ? tile.name : string.Empty;
-            if (NameHas(name, "ice", "water", "wet"))
+            if (cover == TileCover.Ice || cover == TileCover.Water)
             {
                 return 0.7f;
             }
@@ -632,22 +642,23 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyAura(WorldTile tile, TileAura aura)
+        static void ApplyCoverWork(WorldTile tile, TileCover cover)
         {
-            if (tile == null)
+            if (tile == null || cover == TileCover.None)
             {
                 return;
             }
 
-            switch (aura)
+            tile.PaintCover(cover);
+            switch (cover)
             {
-                case TileAura.Miasma:
+                case TileCover.Miasma:
                     tile.Foul(1f);
                     break;
-                case TileAura.Fog:
+                case TileCover.Fog:
                     tile.Cloak(1f);
                     break;
-                case TileAura.Fire:
+                case TileCover.Fire:
                     tile.Kindle();
                     break;
             }

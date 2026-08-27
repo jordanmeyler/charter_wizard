@@ -131,6 +131,8 @@ namespace RuneMagic
             }
         }
 
+        public TileCover Cover { get; private set; }
+
         public void PaintCover(TileCover cover)
         {
             PaintCover(cover == TileCover.None ? null : cover.ToString().ToLowerInvariant());
@@ -139,12 +141,29 @@ namespace RuneMagic
         public void PaintCover(string id)
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
+            Cover = ParseCover(_coverId);
             if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
             {
                 _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
             }
 
             ApplyCover();
+        }
+
+        static TileCover ParseCover(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return TileCover.None;
+            }
+
+            var name = id.Trim();
+            if (name.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase))
+            {
+                name = name.Substring(6);
+            }
+
+            return System.Enum.TryParse(name, true, out TileCover cover) ? cover : TileCover.None;
         }
 
         public void AuthorCoverLook(Sprite sprite, float alpha = 1f)
@@ -1061,6 +1080,12 @@ namespace RuneMagic
                     string.Equals(_coverId, "cover-miasma", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return SpriteFactory.Named("tile-poison");
+                }
+
+                if (string.Equals(_coverId, "fog", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-fog", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-fog");
                 }
             }
 

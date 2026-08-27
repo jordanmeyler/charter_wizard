@@ -10,7 +10,7 @@ namespace RuneMagic
 {
     /// <summary>
     /// Paint looks first (any palette), then stamp Kind / Material / Cover /
-    /// Aura / Blocks onto those cells without changing the sprite.
+    /// Blocks onto those cells without changing the sprite.
     /// </summary>
     public sealed class TilePropertyPaint : EditorWindow
     {
@@ -21,12 +21,10 @@ namespace RuneMagic
         TileKind _kind = TileKind.Floor;
         MaterialId _material = MaterialId.Stone;
         TileCover _cover = TileCover.None;
-        TileAura _aura = TileAura.None;
         bool _blocks;
         bool _applyKind = true;
         bool _applyMaterial = true;
         bool _applyCover;
-        bool _applyAura;
         bool _applyBlocks;
         bool _applyOpacity;
         float _opacity = 0.42f;
@@ -87,7 +85,6 @@ namespace RuneMagic
             DrawField("Kind", ref _applyKind, () => _kind = (TileKind)EditorGUILayout.EnumPopup(_kind));
             DrawField("Material", ref _applyMaterial, () => _material = (MaterialId)EditorGUILayout.EnumPopup(_material));
             DrawField("Cover", ref _applyCover, () => _cover = (TileCover)EditorGUILayout.EnumPopup(_cover));
-            DrawField("Aura", ref _applyAura, () => _aura = (TileAura)EditorGUILayout.EnumPopup(_aura));
             DrawField("Blocks", ref _applyBlocks, () => _blocks = EditorGUILayout.Toggle(_blocks));
             DrawField("Opacity", ref _applyOpacity, () =>
             {
@@ -106,8 +103,7 @@ namespace RuneMagic
                 {
                     EditorGUILayout.LabelField("Kind", paint.kind.ToString());
                     EditorGUILayout.LabelField("Material", paint.material.ToString());
-                    EditorGUILayout.LabelField("Cover", paint.cover.ToString());
-                    EditorGUILayout.LabelField("Aura", paint.ResolvedAura().ToString());
+                    EditorGUILayout.LabelField("Cover", paint.ResolvedCover().ToString());
                     EditorGUILayout.LabelField("Blocks", paint.blocks ? "yes" : "no");
                     EditorGUILayout.LabelField("Opacity", Mathf.RoundToInt(paint.ResolvedOpacity() * 100f) + "%");
                 }
@@ -119,7 +115,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma on Cover is Aura, Cover, or Material = Miasma — all three foul the floor. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
+                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: ice, fire, water, vine, miasma, fog. It is the look, the work, and what the cell answers. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty.",
                 MessageType.None);
         }
 
@@ -215,8 +211,12 @@ namespace RuneMagic
 
             _kind = paint.kind;
             _material = paint.material;
-            _cover = paint.cover;
-            _aura = paint.aura;
+            _cover = paint.ResolvedCover();
+            if (_cover == TileCover.None && (_coverLayer || map.gameObject.name.ToLowerInvariant().Contains("cover")))
+            {
+                _cover = WorldPaintTile.CoverFromMaterial(paint.material);
+            }
+
             _blocks = paint.blocks;
             _opacity = paint.opacity > 0.001f ? paint.opacity : paint.ResolvedOpacity();
             Repaint();
@@ -240,8 +240,7 @@ namespace RuneMagic
             var sprite = SpriteOf(raw);
             var kind = _applyKind ? _kind : (current != null ? current.kind : GuessKind(raw));
             var material = _applyMaterial ? _material : (current != null ? current.material : GuessMaterial(raw));
-            var cover = _applyCover ? _cover : (current != null ? current.cover : TileCover.None);
-            var aura = _applyAura ? _aura : (current != null ? current.aura : TileAura.None);
+            var cover = _applyCover ? _cover : (current != null ? current.ResolvedCover() : TileCover.None);
             var blocks = _applyBlocks ? _blocks : current != null && current.blocks;
             var opacity = _applyOpacity ? _opacity : (current != null ? current.opacity : 0f);
             if (_coverLayer)
@@ -249,9 +248,13 @@ namespace RuneMagic
                 kind = current != null ? current.kind : TileKind.Floor;
                 material = current != null ? current.material : MaterialId.Stone;
                 blocks = false;
+                if (cover == TileCover.None)
+                {
+                    cover = WorldPaintTile.CoverFromMaterial(_applyMaterial ? _material : material);
+                }
             }
 
-            var authored = EnsureTile(sprite, kind, material, cover, aura, blocks, opacity);
+            var authored = EnsureTile(sprite, kind, material, cover, blocks, opacity);
             if (authored == null || authored == raw)
             {
                 return;
@@ -350,10 +353,10 @@ namespace RuneMagic
             TileKind kind,
             MaterialId material,
             TileCover cover,
-            TileAura aura,
             bool blocks,
             float opacity)
         {
+            var aura = WorldPaintTile.AuraFromCover(cover);
             var key = Key(sprite, kind, material, cover, aura, blocks, opacity);
             if (Cache.TryGetValue(key, out var cached) && cached != null)
             {
@@ -565,14 +568,9 @@ namespace RuneMagic
             if (tile is WorldPaintTile paint)
             {
                 var text = paint.kind + " / " + paint.material;
-                if (paint.cover != TileCover.None)
+                if (paint.ResolvedCover() != TileCover.None)
                 {
-                    text += " / " + paint.cover;
-                }
-
-                if (paint.aura != TileAura.None)
-                {
-                    text += " / " + paint.aura;
+                    text += " / " + paint.ResolvedCover();
                 }
 
                 if (paint.blocks)
@@ -610,7 +608,7 @@ namespace RuneMagic
             Swatch(Pit, "Pit");
             Swatch(BlankPit, "Blank space (pit at Play)");
             Swatch(Door, "Door");
-            Swatch(AuraMiasma, "Miasma (aura)");
+            Swatch(AuraMiasma, "Miasma cover");
             Swatch(CoverIce, "Ice cover");
             Swatch(Blocks, "Blocks");
             if (ShowLookOnly)
@@ -857,25 +855,9 @@ namespace RuneMagic
                 return true;
             }
 
-            if (paint.aura == TileAura.Miasma || paint.ResolvedAura() == TileAura.Miasma)
-            {
-                color = AuraMiasma;
-                return true;
-            }
-
-            if (paint.aura == TileAura.Fire)
-            {
-                color = AuraFire;
-                return true;
-            }
-
-            if (paint.aura == TileAura.Fog)
-            {
-                color = AuraFog;
-                return true;
-            }
-
-            switch (paint.cover)
+            switch (paint.ResolvedCover() != TileCover.None
+                ? paint.ResolvedCover()
+                : WorldPaintTile.CoverFromMaterial(paint.material))
             {
                 case TileCover.Ice:
                     color = CoverIce;
@@ -894,6 +876,9 @@ namespace RuneMagic
                     return true;
                 case TileCover.Miasma:
                     color = AuraMiasma;
+                    return true;
+                case TileCover.Fog:
+                    color = AuraFog;
                     return true;
                 case TileCover.Cracks:
                 case TileCover.Seal:
@@ -942,14 +927,9 @@ namespace RuneMagic
                     return "Blocks";
                 }
 
-                if (paint.aura != TileAura.None)
+                if (paint.ResolvedCover() != TileCover.None)
                 {
-                    return paint.aura.ToString();
-                }
-
-                if (paint.cover != TileCover.None)
-                {
-                    return paint.cover + " cover";
+                    return paint.ResolvedCover() + " cover";
                 }
 
                 return paint.kind + " / " + MaterialCatalog.Of(paint.material).Name;

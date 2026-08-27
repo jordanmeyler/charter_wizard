@@ -8,6 +8,8 @@ namespace RuneMagic
     /// + material become the walk cell. On Environment Details they
     /// become a detail stamp — material, optional collision, and a
     /// plant can burn off and leave the stone.
+    /// Cover is the overlay: look, gameplay, and what the cell answers.
+    /// Older Aura stamps still map onto Cover.
     /// </summary>
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile
@@ -16,37 +18,31 @@ namespace RuneMagic
         public MaterialId material = MaterialId.Stone;
         [Tooltip("Floor, wall, pit, door, or bridge.")]
         public TileKind kind = TileKind.Floor;
-        [Tooltip("Fire, miasma, or fog on this cell.")]
+        [Tooltip("Legacy veil stamp. Prefer Cover. Play still reads this.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / lightning / vine over the walk tile.")]
+        [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and weave.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
-        [Tooltip("Cover / aura tint. 0 means automatic: miasma and fog are see-through.")]
+        [Tooltip("Cover tint. 0 means automatic: miasma and fog are see-through.")]
         [Range(0f, 1f)]
         public float opacity;
 
-        public bool HasOverlay =>
-            aura != TileAura.None || cover != TileCover.None || material == MaterialId.Miasma;
+        public bool HasOverlay => ResolvedCover() != TileCover.None || material == MaterialId.Miasma;
 
-        /// <summary>
-        /// Aura stamp, Cover=Miasma, or Material=Miasma on a covering
-        /// all mean the same veil. The Material dropdown is how this
-        /// was getting stamped onto Cover.
-        /// </summary>
+        public TileCover ResolvedCover()
+        {
+            if (cover != TileCover.None)
+            {
+                return cover;
+            }
+
+            return CoverFromAura(aura);
+        }
+
         public TileAura ResolvedAura()
         {
-            if (aura != TileAura.None)
-            {
-                return aura;
-            }
-
-            if (cover == TileCover.Miasma || material == MaterialId.Miasma)
-            {
-                return TileAura.Miasma;
-            }
-
-            return TileAura.None;
+            return AuraFromCover(ResolvedCover() != TileCover.None ? ResolvedCover() : CoverFromMaterial(material));
         }
 
         public float ResolvedOpacity()
@@ -56,8 +52,13 @@ namespace RuneMagic
                 return Mathf.Clamp01(opacity);
             }
 
-            var veil = ResolvedAura();
-            if (veil == TileAura.Miasma || veil == TileAura.Fog)
+            var shown = ResolvedCover();
+            if (shown == TileCover.None && material == MaterialId.Miasma)
+            {
+                shown = TileCover.Miasma;
+            }
+
+            if (shown == TileCover.Miasma || shown == TileCover.Fog)
             {
                 return 0.42f;
             }
@@ -67,7 +68,66 @@ namespace RuneMagic
 
         public string CoverId()
         {
-            return cover == TileCover.None ? null : cover.ToString().ToLowerInvariant();
+            var shown = ResolvedCover();
+            return shown == TileCover.None ? null : shown.ToString().ToLowerInvariant();
+        }
+
+        public static TileCover CoverFromAura(TileAura aura)
+        {
+            switch (aura)
+            {
+                case TileAura.Miasma:
+                    return TileCover.Miasma;
+                case TileAura.Fog:
+                    return TileCover.Fog;
+                case TileAura.Fire:
+                    return TileCover.Fire;
+                default:
+                    return TileCover.None;
+            }
+        }
+
+        public static TileAura AuraFromCover(TileCover cover)
+        {
+            switch (cover)
+            {
+                case TileCover.Miasma:
+                    return TileAura.Miasma;
+                case TileCover.Fog:
+                    return TileAura.Fog;
+                case TileCover.Fire:
+                    return TileAura.Fire;
+                default:
+                    return TileAura.None;
+            }
+        }
+
+        public static TileCover CoverFromMaterial(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Miasma:
+                    return TileCover.Miasma;
+                case MaterialId.Cloud:
+                case MaterialId.Steam:
+                    return TileCover.Fog;
+                case MaterialId.Ice:
+                case MaterialId.Snow:
+                case MaterialId.Glacier:
+                    return TileCover.Ice;
+                case MaterialId.Water:
+                case MaterialId.Rain:
+                    return TileCover.Water;
+                case MaterialId.Ember:
+                case MaterialId.Hearth:
+                case MaterialId.Lava:
+                    return TileCover.Fire;
+                case MaterialId.Plant:
+                case MaterialId.Grove:
+                    return TileCover.Vine;
+                default:
+                    return TileCover.None;
+            }
         }
 
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)

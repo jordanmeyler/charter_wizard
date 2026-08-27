@@ -200,7 +200,10 @@ namespace RuneMagic
             {
                 live.Add(RuneId.Air);
                 live.Add(RuneId.Acid);
+                live.Add(RuneId.Miasma);
             }
+
+            CollectCover(tile, live);
 
             if (tile.Growth > 0 || tile.IsPlantish)
             {
@@ -237,6 +240,52 @@ namespace RuneMagic
                 case MaterialId.Metal:
                     live.Add(RuneId.Spark);
                     live.Add(RuneId.Fire);
+                    live.Add(RuneId.Air);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// A covering answers like its material. Ice cover on stone
+        /// still speaks Ice. Miasma cover still speaks the veil.
+        /// </summary>
+        static void CollectCover(WorldTile tile, HashSet<RuneId> live)
+        {
+            if (tile == null)
+            {
+                return;
+            }
+
+            switch (tile.Cover)
+            {
+                case TileCover.Ice:
+                    live.Add(RuneId.Ice);
+                    live.Add(RuneId.Water);
+                    live.Add(RuneId.Earth);
+                    break;
+                case TileCover.Fire:
+                    live.Add(RuneId.Fire);
+                    break;
+                case TileCover.Water:
+                    live.Add(RuneId.Water);
+                    break;
+                case TileCover.Vine:
+                    live.Add(RuneId.Plant);
+                    live.Add(RuneId.Vita);
+                    break;
+                case TileCover.Miasma:
+                    live.Add(RuneId.Air);
+                    live.Add(RuneId.Acid);
+                    live.Add(RuneId.Miasma);
+                    break;
+                case TileCover.Fog:
+                    live.Add(RuneId.Air);
+                    live.Add(RuneId.Water);
+                    live.Add(RuneId.Cloud);
+                    break;
+                case TileCover.Lightning:
+                    live.Add(RuneId.Lightning);
+                    live.Add(RuneId.Spark);
                     live.Add(RuneId.Air);
                     break;
             }
