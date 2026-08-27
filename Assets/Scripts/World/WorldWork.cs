@@ -11,6 +11,8 @@ namespace RuneMagic
     public static class WorldWork
     {
         public const int MaxWallLength = 10;
+        // Later: a span over pits should collapse past a shorter reach
+        // than a barrier on solid floor. MaxWallLength stays the hard cap.
         public const int HopTiles = 4;
         public const float FlightSeconds = 10f;
         public const float TimeStopSeconds = 8f;
@@ -1066,7 +1068,7 @@ namespace RuneMagic
             for (var i = 0; i < cells.Count; i++)
             {
                 var probe = grid.Get(cells[i]);
-                if (probe != null && probe.Kind == TileKind.Pit)
+                if (probe == null || probe.Kind == TileKind.Pit)
                 {
                     crossesGap = true;
                     break;
@@ -1079,6 +1081,11 @@ namespace RuneMagic
             for (var i = 0; i < cells.Count; i++)
             {
                 var tile = grid.Get(cells[i]);
+                if (tile == null && FillsGaps(spell))
+                {
+                    tile = grid.EnsureOpenPit(cells[i].x, cells[i].y);
+                }
+
                 if (tile == null)
                 {
                     continue;
@@ -1118,6 +1125,11 @@ namespace RuneMagic
                     tile.BecomeBarrier(material, form);
                     barred++;
                 }
+            }
+
+            if (filled > 0)
+            {
+                grid.DressLooks();
             }
 
             if (filled > 0 && barred > 0)
@@ -1208,12 +1220,7 @@ namespace RuneMagic
             for (var i = 1; i < path.Count; i++)
             {
                 var tile = grid.Get(path[i]);
-                if (tile == null)
-                {
-                    break;
-                }
-
-                if (tile.Kind == TileKind.Pit)
+                if (tile == null || tile.Kind == TileKind.Pit)
                 {
                     continue;
                 }

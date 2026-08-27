@@ -20,6 +20,7 @@ namespace RuneMagic
         string _coverId;
         Sprite _coverLook;
         float _coverAlpha = 1f;
+        bool _openVoid;
 
         /// <summary>
         /// Closed masonry and shut doors stop bodies and shots.
@@ -151,6 +152,19 @@ namespace RuneMagic
             _coverLook = sprite;
             _coverAlpha = Mathf.Clamp01(alpha <= 0f ? 1f : alpha);
             ApplyCover();
+        }
+
+        /// <summary>
+        /// Blank space baked as a drop — dark void, not a carved hole.
+        /// Stamp Kind=Pit if you want the pit sprite on a painted cell.
+        /// </summary>
+        public void MarkOpenVoid()
+        {
+            _openVoid = true;
+            if (_renderer != null)
+            {
+                ApplyVisual();
+            }
         }
 
         public float Fire { get; private set; }
@@ -855,7 +869,9 @@ namespace RuneMagic
                     case TileKind.Pit:
                         _renderer.sprite = Material == MaterialId.Water
                             ? SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
-                            : SpriteFactory.Pit(Coord.x, Coord.y);
+                            : _openVoid
+                                ? SpriteFactory.OpenVoid()
+                                : SpriteFactory.Pit(Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:

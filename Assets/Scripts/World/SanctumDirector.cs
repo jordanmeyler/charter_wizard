@@ -191,6 +191,11 @@ namespace RuneMagic
             }
 
             var adept = player.GetComponent<AdeptAvatar>();
+            if ((adept == null || !adept.IsAirborne) && Underfoot == null)
+            {
+                FallInPit(player);
+            }
+
             if (Underfoot != null && Underfoot.IsDeepWater && (adept == null || !adept.IsAirborne))
             {
                 FallInPit(player);

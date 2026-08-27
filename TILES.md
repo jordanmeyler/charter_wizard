@@ -15,6 +15,8 @@ each `WorldPaintTile` into a live `WorldTile`.
    If the palette is missing, `Window → Rune Magic → Create Tile Palette`.
 4. Select the **Tiles** object and paint the look — Rune Palette or any
    ElvGames palette. Erase or overwrite the starter room as you like.
+   Cells you leave empty are the drop at Play. Paint walls and
+   floor where they should stand; raise a pillar or wall to cross.
 5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
    Select the layer you just painted (Tiles, Walls, or Environment
    Details), turn on **Paint in Scene view**, pick Kind / Material /
@@ -53,7 +55,7 @@ Keep extra Tilemaps as **children of Map**. Play merges them by name.
 
 | Child name | What to paint | Play |
 |---|---|---|
-| **Tiles** / **Floor** | Walkable ground, water, pits, doors | Kind + material. Hidden, then baked. |
+| **Tiles** / **Floor** | Walkable ground, water, pits, doors | Kind + material. Empty cells become pits. Hidden, then baked. |
 | **Walls** | Solid walls | Merged as walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, aura | Overlay only. Hidden, then baked. |
 | **Environment Details** / Decor | Plants, rugs, chairs, statues | Own stamp + optional collision. Hidden, then baked as a detail. |
@@ -68,8 +70,9 @@ Open `Window → Rune Magic → Tile Properties`. Select the layer
 first (**Tiles** for walk / pit / ice walls, **Cover** or
 **Write onto Cover layer** for miasma). Turn on **Paint in Scene
 view**. Uncheck the stamps you do not want so
-a click only writes Kind, or only Aura. If a hole has no magenta
-outline, it is not a pit yet.
+a click only writes Kind, or only Aura. Empty Tiles cells are
+already pits at Play (magenta “blank” glow). Stamp **Kind = Pit**
+only when you painted a hole look that would otherwise stay floor.
 
 ### 1. Fire — fire stone frozen in ice
 
@@ -127,25 +130,33 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
    you want a named lock Gust can target. Painted aura alone
    already throws you back and vents when air is sent.
 
-### 3. Earth — stamp a pit (fall zone)
+### 3. Earth — pits and the drop
 
-A pit is a hole in the **Tiles** layer. Walk in and you return to
-the last safe floor. That is all it is — no Chasm object. Hop
-(`Air · Salt · Air`) or Earth-pillar (`Earth · Salt`) still
-crosses it.
+Unpainted Tiles cells are the drop. Walk off the floor, or through
+a hole you erased, and you return to the last safe floor. No
+Chasm object. Hop (`Air · Salt · Air`), Earth-pillar
+(`Earth · Salt`), or a wall drawn across the gap still crosses.
 
-1. Paint the hole look if you want (Cavern pit / void tiles).
-2. Select **Tiles**.
-3. Tile Properties: check **Kind** = `Pit`, **Material** = `Void`.
-   Uncheck the rest. Leave **Write onto Cover layer** off.
-4. Click the crossing — one cell is a small hop; two or three in
-   a line is a short gap. Keep it under 4×4 or water work can
-   fill it.
-5. `GameObject → Rune Magic → Item` on the far ledge.
+**To make a pit**
+
+- Erase floor on **Tiles** (or never paint those cells). That is
+  enough. The Scene glow marks blank space as a pit.
+- Or paint a hole look (Cavern pit / void tiles), then stamp
+  **Kind = Pit**, **Material = Void** so Play does not treat that
+  art as floor.
+
+Keep a closed hole under 4×4 or water work can fill it. A hole
+that opens onto the map edge is part of the outer void and will
+not fill.
+
+1. Leave or erase the crossing — one cell is a small hop; two or
+   three in a line is a short gap.
+2. `GameObject → Rune Magic → Item` on the far ledge.
    `catalogId` = `earth-stone`.
 
-If you only paint a pit-looking ElvGames tile and never stamp
-**Kind = Pit**, Play treats it as floor and you will not fall.
+Painted walls stay walls. Pillars and wall spells fill pits as
+walkable spans. A later pass will cap how far a bridge can run
+over a drop before it collapses.
 
 Plaques, altars, and teaching columns come after these three
 play.

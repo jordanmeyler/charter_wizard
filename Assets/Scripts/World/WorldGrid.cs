@@ -23,6 +23,19 @@ namespace RuneMagic
             return Get(WorldWork.CoordOf(world));
         }
 
+        public WorldTile EnsureOpenPit(int x, int y)
+        {
+            var existing = Get(x, y);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var tile = Set(x, y, TileKind.Pit, MaterialId.Void);
+            tile.MarkOpenVoid();
+            return tile;
+        }
+
         public WorldTile Set(int x, int y, TileKind kind, MaterialId material)
         {
             var coord = new Vector2Int(x, y);

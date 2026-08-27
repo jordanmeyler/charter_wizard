@@ -174,6 +174,11 @@ namespace RuneMagic
             });
         }
 
+        public static Sprite OpenVoid()
+        {
+            return Square(new Color(0.04f, 0.03f, 0.05f, 1f));
+        }
+
         public static Sprite Square(Color color, int size = 32)
         {
             return Memo($"square:{color}:{size}", () =>

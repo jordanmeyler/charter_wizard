@@ -119,7 +119,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma and fog are see-through unless you stamp Opacity.",
+                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
                 MessageType.None);
         }
 
@@ -425,6 +425,7 @@ namespace RuneMagic
         const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
 
         static readonly Color Pit = new(0.95f, 0.2f, 0.75f, 1f);
+        static readonly Color BlankPit = new(0.72f, 0.12f, 0.55f, 1f);
         static readonly Color Door = new(0.95f, 0.62f, 0.12f, 1f);
         static readonly Color Bridge = new(0.78f, 0.58f, 0.28f, 1f);
         static readonly Color Blocks = new(1f, 0.22f, 0.22f, 1f);
@@ -555,6 +556,7 @@ namespace RuneMagic
             }
 
             DrawCells();
+            DrawOpenPits();
             DrawSceneLegend();
         }
 
@@ -606,6 +608,7 @@ namespace RuneMagic
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Other stamps", EditorStyles.miniBoldLabel);
             Swatch(Pit, "Pit");
+            Swatch(BlankPit, "Blank space (pit at Play)");
             Swatch(Door, "Door");
             Swatch(AuraMiasma, "Miasma (aura)");
             Swatch(CoverIce, "Ice cover");
@@ -654,6 +657,69 @@ namespace RuneMagic
                 LastStampCount++;
                 Note(color, StampLabel(tile));
                 DrawCellGlow(map, cell, color);
+            }
+        }
+
+        static void DrawOpenPits()
+        {
+            var maps = CollectMaps();
+            Tilemap guide = null;
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+            var maxX = int.MinValue;
+            var maxY = int.MinValue;
+            var occupied = new HashSet<Vector3Int>();
+            for (var i = 0; i < maps.Count; i++)
+            {
+                var map = maps[i];
+                if (map == null || LayerOrder(map) > 2)
+                {
+                    continue;
+                }
+
+                guide = guide != null ? guide : map;
+                foreach (var cell in map.cellBounds.allPositionsWithin)
+                {
+                    if (map.GetTile(cell) == null)
+                    {
+                        continue;
+                    }
+
+                    occupied.Add(new Vector3Int(cell.x, cell.y, 0));
+                    minX = Mathf.Min(minX, cell.x);
+                    minY = Mathf.Min(minY, cell.y);
+                    maxX = Mathf.Max(maxX, cell.x);
+                    maxY = Mathf.Max(maxY, cell.y);
+                }
+            }
+
+            if (guide == null || occupied.Count == 0)
+            {
+                return;
+            }
+
+            var oldZ = Handles.zTest;
+            Handles.zTest = CompareFunction.Always;
+            var any = false;
+            for (var y = minY; y <= maxY; y++)
+            {
+                for (var x = minX; x <= maxX; x++)
+                {
+                    var cell = new Vector3Int(x, y, 0);
+                    if (occupied.Contains(cell))
+                    {
+                        continue;
+                    }
+
+                    any = true;
+                    DrawCellGlow(guide, cell, BlankPit);
+                }
+            }
+
+            Handles.zTest = oldZ;
+            if (any)
+            {
+                Note(BlankPit, "Blank space (pit at Play)");
             }
         }
 
