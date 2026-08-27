@@ -20,7 +20,7 @@ namespace RuneMagic
         [Header("Authoring")]
         [SerializeField] RuneId authoredRune = RuneId.Fire;
         [SerializeField] Kind authoredForm = Kind.Floor;
-        [Tooltip("Your picture for this rune. Shown in the Scene view. Leave empty to use the generated mark at Play.")]
+        [Tooltip("Your picture for this rune. Leave empty for a floating mark.")]
         [SerializeField] Sprite portrait;
         [Tooltip("Catalog / atlas id if you would rather name a sprite than drag one.")]
         [SerializeField] string spriteId;
@@ -40,7 +40,6 @@ namespace RuneMagic
         public RuneSourceKind SourceKind => RuneSourceKind.String;
 
         Transform _picture;
-        TextMesh _name;
 
         public static RuneStele Inscribe(Vector3 origin, RuneId rune)
         {
@@ -88,17 +87,10 @@ namespace RuneMagic
                 var order = form == Kind.Pillar ? 5 : 3;
                 AuthoringUtil.ApplyLook(gameObject, order, spriteId, portrait, null, 1f);
             }
-            else if (form == Kind.Pillar)
-            {
-                RuneSign.MountPillar(transform, rune);
-                _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 1.55f, 0f));
-                _picture = transform.Find("Nature");
-            }
             else
             {
-                RuneSign.MountFloor(transform, rune);
-                _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 0.42f, 0f));
-                _picture = transform.Find("Nature");
+                var hover = form == Kind.Pillar ? 0.55f : 0.28f;
+                _picture = RuneSign.MountMark(transform, rune, hover);
             }
 
             Lookables.Register(this);
@@ -143,10 +135,8 @@ namespace RuneMagic
                 return;
             }
 
-            if (renderer.sprite == null)
-            {
-                renderer.enabled = false;
-            }
+            renderer.sprite = RuneMark.AsSprite(authoredRune, RunePalette.MarkInk(authoredRune));
+            renderer.enabled = authoredRune != RuneId.None;
         }
 
         void OnDisable()
@@ -161,12 +151,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (_name != null)
-            {
-                _name.gameObject.SetActive(GlyphView.IsDevelop);
-            }
-
-            RuneSign.Pulse(_picture, Rune, Time.time, Form == Kind.Pillar ? 0.62f : 0.55f);
+            RuneSign.Pulse(_picture, Rune, Time.time, Form == Kind.Pillar ? 0.95f : 0.9f);
         }
 
         public void Collect(List<RuneId> buffer)

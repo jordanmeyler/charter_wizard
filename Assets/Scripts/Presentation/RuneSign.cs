@@ -8,6 +8,18 @@ namespace RuneMagic
     /// </summary>
     public static class RuneSign
     {
+        /// <summary>
+        /// Just the work-sign, hovering. No slab, shaft, or nature picture.
+        /// </summary>
+        public static Transform MountMark(Transform parent, RuneId rune, float hover = 0.28f, float scale = 0.9f)
+        {
+            var mark = Child(parent, "Mark", new Vector3(0f, hover, 0f), 8);
+            mark.sprite = RuneMark.AsSprite(rune, RunePalette.MarkInk(rune));
+            mark.color = Color.white;
+            mark.transform.localScale = Vector3.one * scale;
+            return mark.transform;
+        }
+
         public static void MountAltar(Transform parent, RuneId rune)
         {
             var baseView = Child(parent, "Altar", Vector3.zero, 5);

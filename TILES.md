@@ -139,7 +139,7 @@ play.
 You control the picture from the Inspector. Nothing here is a tile layer.
 
 **Runes (Inscription / Pillar / Rune).**
-`GameObject → Rune Magic → Inscription` or **Pillar**. Select it in the Scene view. Inspector: `authoredRune` = Fire (or Water, Earth, Air…). Drag your art onto **Portrait**. It shows immediately. Or type a **Sprite Id** from the catalog (`stone-fire`, `cover-ice`, …). Leave both empty if you want the generated mark at Play.
+`GameObject → Rune Magic → Inscription` or **Pillar**. Select it in the Scene view. Inspector: `authoredRune` = Fire (or Water, Earth, Air…). With nothing else set, a **floating mark** is the whole picture — no slab or pillar. Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**.
 
 **Items, torches, plaques, barriers, fog.**
 Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor).
