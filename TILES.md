@@ -90,7 +90,9 @@ middle for the stone.
    and `Earth`, `spriteId` = `ice-block`. List **Cover Cells** as
    the ice-wall cells. Fireball / Melt / Ignite / a flame-pillar
    still melt ice walls even without the Barrier — the Barrier is
-   a target you can click.
+   a target you can click. Melted ice leaves a water covering on
+   the floor that was under the wall. Fire will not run across
+   that water.
 
 ### 2. Air — miasma, then the air stone
 

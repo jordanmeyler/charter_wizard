@@ -84,7 +84,7 @@ namespace RuneMagic
                     {
                         quench += -flam * 0.45f;
                     }
-                    else if (flam > 0f && other.Wet < 0.2f && other.Fire < 0.15f)
+                    else if (flam > 0f && other.Wet < 0.2f && !other.HasWaterCover && other.Fire < 0.15f)
                     {
                         var run = tile.HasOil ? 0.85f : 0.4f;
                         other.Ignite(flam * run);
