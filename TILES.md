@@ -94,6 +94,17 @@ middle for the stone.
    the floor that was under the wall. Fire will not run across
    that water.
 
+The player needs a **Fire** mark in reach so they can write
+Fireball. `GameObject → Rune Magic → Inscription` or **Pillar**,
+Inspector `authoredRune` = Fire, near the room mouth. Do not stamp
+fire on Environment Details and do not expect a painted torch tile
+to burn things. A torch is `GameObject → Rune Magic → Torch` — a
+lock you light with a spell. It sits in the Hierarchy like the
+stone, not on a tile layer. Painted fire (Cover = Fire or Aura =
+Fire) is scenery at rest. Hunger only runs after a player or NPC
+spell starts it, or after a covering a spell left behind (melt
+water, spell-fire on a bush).
+
 ### 2. Air — miasma, then the air stone
 
 Miasma is not a wall. Walking in it throws you back to the last
@@ -160,7 +171,7 @@ A layer named **Enviroment Details** (the typo) still counts as Environment Deta
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
 
-**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. Fire turns that furniture into a pile of ash and leaves the floor — stone stays stone. The coals stay hot, so fire can run from the pile onto a neighboring Plant / Timber / Moss / Grove floor. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
+**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave hot coals. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
 Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. When a blocking table burns to ash, you can walk over the pile. Cover and Aura still apply to that cell (ice, fire, vine, kindled).
 
