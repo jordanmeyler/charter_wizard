@@ -18,6 +18,8 @@ namespace RuneMagic
         public bool PassageOpen { get; private set; }
         public DoorFace DoorFace { get; private set; }
         string _coverId;
+        Sprite _coverLook;
+        float _coverAlpha = 1f;
         bool _openVoid;
 
         /// <summary>
@@ -137,6 +139,18 @@ namespace RuneMagic
         public void PaintCover(string id)
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
+            if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
+            {
+                _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
+            }
+
+            ApplyCover();
+        }
+
+        public void AuthorCoverLook(Sprite sprite, float alpha = 1f)
+        {
+            _coverLook = sprite;
+            _coverAlpha = Mathf.Clamp01(alpha <= 0f ? 1f : alpha);
             ApplyCover();
         }
 
@@ -160,6 +174,11 @@ namespace RuneMagic
         public float Miasma { get; private set; }
         public float Oil { get; private set; }
         public bool Kindled { get; private set; }
+        /// <summary>
+        /// Fire a spell or NPC working started. Authored torches, kindled
+        /// halls, and painted cover stay still until work finds them.
+        /// </summary>
+        public bool LiveFire { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
@@ -313,6 +332,7 @@ namespace RuneMagic
 
             Fire = 0f;
             Kindled = false;
+            LiveFire = false;
             RefreshFx();
             return true;
         }
@@ -397,7 +417,7 @@ namespace RuneMagic
             _hasFoundation = true;
         }
 
-        public void Ignite(float amount)
+        public void Ignite(float amount, bool live = true)
         {
             if (Kind == TileKind.Pit && Material != MaterialId.Water)
             {
@@ -408,12 +428,23 @@ namespace RuneMagic
             {
                 Fire = 0f;
                 Kindled = false;
+                LiveFire = false;
                 RefreshFx();
                 return;
             }
 
             var boost = HasOil ? 1.55f : 1f;
             Fire = Mathf.Clamp01(Fire + amount * boost);
+            if (amount > 0f && live && Fire > 0.05f)
+            {
+                LiveFire = true;
+            }
+
+            if (Fire <= 0.01f)
+            {
+                LiveFire = false;
+            }
+
             if (Fire > 0.05f)
             {
                 Wet = Mathf.Max(0f, Wet - amount);
@@ -453,7 +484,7 @@ namespace RuneMagic
         public void Kindle(float amount = 0.95f)
         {
             Kindled = true;
-            Ignite(amount);
+            Ignite(amount, live: false);
         }
 
         public void KeepKindled()
@@ -465,7 +496,7 @@ namespace RuneMagic
 
             if (Fire < 0.85f)
             {
-                Ignite(0.85f - Fire);
+                Ignite(0.85f - Fire, live: false);
             }
         }
 
@@ -478,6 +509,7 @@ namespace RuneMagic
                 if (Fire <= 0.05f)
                 {
                     Kindled = false;
+                    LiveFire = false;
                 }
             }
 
@@ -997,12 +1029,18 @@ namespace RuneMagic
 
             var view = EnsureCover();
             view.sprite = cover;
+            view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
             view.sortingOrder = _renderer.sortingOrder + 1;
             view.enabled = true;
         }
 
         Sprite ResolveCoverSprite()
         {
+            if (_coverLook != null)
+            {
+                return _coverLook;
+            }
+
             if (!string.IsNullOrEmpty(_coverId))
             {
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||

@@ -31,6 +31,8 @@ each `WorldPaintTile` into a live `WorldTile`.
    no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
+   Miasma and fog are see-through (about 40%). Check **Opacity** in
+   Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
    the floor. Check **Blocks** and drag across a cluster to give that
    group collision.
@@ -97,6 +99,17 @@ middle for the stone.
    the floor that was under the wall. Fire will not run across
    that water.
 
+The player needs a **Fire** mark in reach so they can write
+Fireball. `GameObject → Rune Magic → Inscription` or **Pillar**,
+Inspector `authoredRune` = Fire, near the room mouth. Do not stamp
+fire on Environment Details and do not expect a painted torch tile
+to burn things. A torch is `GameObject → Rune Magic → Torch` — a
+lock you light with a spell. It sits in the Hierarchy like the
+stone, not on a tile layer. Painted fire (Cover = Fire or Aura =
+Fire) is scenery at rest. Hunger only runs after a player or NPC
+spell starts it, or after a covering a spell left behind (melt
+water, spell-fire on a bush).
+
 ### 2. Air — miasma, then the air stone
 
 Miasma is not a wall. Walking in it throws you back to the last
@@ -104,10 +117,13 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind / Material. Check **Aura** =
-   `Miasma`. Turn on **Write onto Cover layer**.
+   `Miasma`. Turn on **Write onto Cover layer**. Miasma is
+   see-through by default (about 40%). Check **Opacity** and
+   drag the slider if you want it thinner or more solid.
 3. Click (or drag) the floor you want fouled — the path to the
    stone, not the doorway if you want them to step in and get
-   thrown back.
+   thrown back. Paint any foggy tile on **Cover** first if you
+   want your own art under the veil.
 4. `GameObject → Rune Magic → Item` on the far side of the fog.
    `catalogId` = `air-stone`.
 5. Optional: `GameObject → Rune Magic → Fog` on those cells if
@@ -145,6 +161,27 @@ over a drop before it collapses.
 Plaques, altars, and teaching columns come after these three
 play.
 
+## Sprites on runes, items, and effects
+
+You control the picture from the Inspector. Nothing here is a tile layer.
+
+**Runes (Inscription / Pillar / Rune).**
+`GameObject → Rune Magic → Inscription` or **Pillar**. Select it in the Scene view. Inspector: `authoredRune` = Fire (or Water, Earth, Air…). With nothing else set, a **floating mark** is the whole picture — no slab or pillar. Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**.
+
+**Items, torches, plaques, barriers, fog.**
+Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor).
+
+**Tile covers and auras (ice look, fire look, miasma, water after a melt).**
+These are tiles, not objects.
+
+1. Select **Cover** in the Hierarchy.
+2. Paint any ice / fire / water / fog tile from any palette — that *is* the picture.
+3. Or stamp in Tile Properties: **Cover** = Ice / Fire / Water, **Write onto Cover layer**. Play then uses the catalog sprites `cover-ice`, `cover-fire`, `cover-water`.
+
+Miasma is **Aura** = Miasma on the Cover layer. The sick look is the runtime overlay (`tile-poison`); you can still paint a foggy tile on Cover if you want your own art under it.
+
+**Spell leftovers** (wet floor after melt, hunger on a bush) draw `tile-wet` / `tile-fire` from the catalog. To change those globally, add or replace those ids in `Assets/Resources/Catalog` / the sprite sheets. A Cover tile you painted stays as the floor look; the wet/fire glow sits on top.
+
 Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
 
 | Place | Old puzzle job | Inspector |
@@ -171,7 +208,7 @@ A layer named **Enviroment Details** (the typo) still counts as Environment Deta
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls.
 
-**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. Fire turns that furniture into a pile of ash and leaves the floor — stone stays stone. The coals stay hot, so fire can run from the pile onto a neighboring Plant / Timber / Moss / Grove floor. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
+**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave hot coals. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
 Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. When a blocking table burns to ash, you can walk over the pile. Cover and Aura still apply to that cell (ice, fire, vine, kindled).
 

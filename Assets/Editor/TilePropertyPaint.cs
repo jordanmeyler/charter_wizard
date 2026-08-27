@@ -28,6 +28,8 @@ namespace RuneMagic
         bool _applyCover;
         bool _applyAura;
         bool _applyBlocks;
+        bool _applyOpacity;
+        float _opacity = 0.42f;
         bool _paint;
         bool _coverLayer;
         Tilemap _hoverMap;
@@ -87,6 +89,10 @@ namespace RuneMagic
             DrawField("Cover", ref _applyCover, () => _cover = (TileCover)EditorGUILayout.EnumPopup(_cover));
             DrawField("Aura", ref _applyAura, () => _aura = (TileAura)EditorGUILayout.EnumPopup(_aura));
             DrawField("Blocks", ref _applyBlocks, () => _blocks = EditorGUILayout.Toggle(_blocks));
+            DrawField("Opacity", ref _applyOpacity, () =>
+            {
+                _opacity = EditorGUILayout.Slider(_opacity, 0f, 1f);
+            });
 
             EditorGUILayout.Space();
             if (_hasHover && _hoverMap != null)
@@ -103,6 +109,7 @@ namespace RuneMagic
                     EditorGUILayout.LabelField("Cover", paint.cover.ToString());
                     EditorGUILayout.LabelField("Aura", paint.aura.ToString());
                     EditorGUILayout.LabelField("Blocks", paint.blocks ? "yes" : "no");
+                    EditorGUILayout.LabelField("Opacity", Mathf.RoundToInt(paint.ResolvedOpacity() * 100f) + "%");
                 }
                 else if (tile != null)
                 {
@@ -112,7 +119,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
+                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
                 MessageType.None);
         }
 
@@ -211,6 +218,7 @@ namespace RuneMagic
             _cover = paint.cover;
             _aura = paint.aura;
             _blocks = paint.blocks;
+            _opacity = paint.opacity > 0.001f ? paint.opacity : paint.ResolvedOpacity();
             Repaint();
         }
 
@@ -235,6 +243,7 @@ namespace RuneMagic
             var cover = _applyCover ? _cover : (current != null ? current.cover : TileCover.None);
             var aura = _applyAura ? _aura : (current != null ? current.aura : TileAura.None);
             var blocks = _applyBlocks ? _blocks : current != null && current.blocks;
+            var opacity = _applyOpacity ? _opacity : (current != null ? current.opacity : 0f);
             if (_coverLayer)
             {
                 kind = current != null ? current.kind : TileKind.Floor;
@@ -242,7 +251,7 @@ namespace RuneMagic
                 blocks = false;
             }
 
-            var authored = EnsureTile(sprite, kind, material, cover, aura, blocks);
+            var authored = EnsureTile(sprite, kind, material, cover, aura, blocks, opacity);
             if (authored == null || authored == raw)
             {
                 return;
@@ -342,9 +351,10 @@ namespace RuneMagic
             MaterialId material,
             TileCover cover,
             TileAura aura,
-            bool blocks)
+            bool blocks,
+            float opacity)
         {
-            var key = Key(sprite, kind, material, cover, aura, blocks);
+            var key = Key(sprite, kind, material, cover, aura, blocks, opacity);
             if (Cache.TryGetValue(key, out var cached) && cached != null)
             {
                 return cached;
@@ -374,6 +384,8 @@ namespace RuneMagic
             tile.cover = cover;
             tile.aura = aura;
             tile.blocks = blocks;
+            tile.opacity = opacity;
+            tile.color = new Color(1f, 1f, 1f, tile.ResolvedOpacity());
             EditorUtility.SetDirty(tile);
             Cache[key] = tile;
             return tile;
@@ -385,7 +397,8 @@ namespace RuneMagic
             MaterialId material,
             TileCover cover,
             TileAura aura,
-            bool blocks)
+            bool blocks,
+            float opacity)
         {
             var guid = "none";
             long local = 0;
@@ -396,7 +409,8 @@ namespace RuneMagic
 
             var sign = local < 0 ? "n" : "p";
             var solid = blocks ? "block" : "open";
-            return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_" + guid + "_" + sign + Mathf.Abs(local);
+            var fade = Mathf.RoundToInt(Mathf.Clamp01(opacity) * 100f);
+            return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_a" + fade + "_" + guid + "_" + sign + Mathf.Abs(local);
         }
     }
 
