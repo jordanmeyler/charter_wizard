@@ -95,7 +95,7 @@ namespace RuneMagic
 
             for (var i = 0; i < covers.Count; i++)
             {
-                any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY) || any;
+                any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY, overlay: true) || any;
             }
 
             for (var i = 0; i < decors.Count; i++)
@@ -219,7 +219,8 @@ namespace RuneMagic
             ref int minX,
             ref int minY,
             ref int maxX,
-            ref int maxY)
+            ref int maxY,
+            bool overlay = false)
         {
             if (map == null)
             {
@@ -268,6 +269,29 @@ namespace RuneMagic
                     var look = paint != null
                         ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
                         : SpriteOf(raw);
+                    if (overlay)
+                    {
+                        if (tile == null)
+                        {
+                            continue;
+                        }
+
+                        var alpha = paint != null ? paint.ResolvedOpacity() : VeilOpacity(raw);
+                        if (look != null)
+                        {
+                            tile.AuthorCoverLook(look, alpha);
+                        }
+
+                        var aura = paint != null ? paint.aura : GuessAura(raw);
+                        ApplyAura(tile, aura);
+                        if (paint != null && paint.cover != TileCover.None)
+                        {
+                            tile.PaintCover(paint.cover);
+                        }
+
+                        continue;
+                    }
+
                     if (look != null)
                     {
                         tile.AuthorLook(look);
@@ -448,6 +472,44 @@ namespace RuneMagic
             }
 
             return MaterialId.Stone;
+        }
+
+        static TileAura GuessAura(TileBase tile)
+        {
+            var name = tile != null ? tile.name : string.Empty;
+            if (NameHas(name, "miasma", "poison", "gas"))
+            {
+                return TileAura.Miasma;
+            }
+
+            if (NameHas(name, "fog", "mist", "smoke", "haze"))
+            {
+                return TileAura.Fog;
+            }
+
+            if (NameHas(name, "fire", "flame", "burn"))
+            {
+                return TileAura.Fire;
+            }
+
+            return TileAura.None;
+        }
+
+        static float VeilOpacity(TileBase tile)
+        {
+            var aura = GuessAura(tile);
+            if (aura == TileAura.Miasma || aura == TileAura.Fog)
+            {
+                return 0.42f;
+            }
+
+            var name = tile != null ? tile.name : string.Empty;
+            if (NameHas(name, "ice", "water", "wet"))
+            {
+                return 0.7f;
+            }
+
+            return 1f;
         }
 
         static bool GuessDetailBlocks(TileBase tile)

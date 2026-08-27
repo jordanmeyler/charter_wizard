@@ -29,6 +29,8 @@ each `WorldPaintTile` into a live `WorldTile`.
    no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
+   Miasma and fog are see-through (about 40%). Check **Opacity** in
+   Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
    the floor. Check **Blocks** and drag across a cluster to give that
    group collision.
@@ -101,10 +103,13 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind / Material. Check **Aura** =
-   `Miasma`. Turn on **Write onto Cover layer**.
+   `Miasma`. Turn on **Write onto Cover layer**. Miasma is
+   see-through by default (about 40%). Check **Opacity** and
+   drag the slider if you want it thinner or more solid.
 3. Click (or drag) the floor you want fouled — the path to the
    stone, not the doorway if you want them to step in and get
-   thrown back.
+   thrown back. Paint any foggy tile on **Cover** first if you
+   want your own art under the veil.
 4. `GameObject → Rune Magic → Item` on the far side of the fog.
    `catalogId` = `air-stone`.
 5. Optional: `GameObject → Rune Magic → Fog` on those cells if

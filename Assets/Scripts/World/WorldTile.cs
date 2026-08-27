@@ -18,6 +18,8 @@ namespace RuneMagic
         public bool PassageOpen { get; private set; }
         public DoorFace DoorFace { get; private set; }
         string _coverId;
+        Sprite _coverLook;
+        float _coverAlpha = 1f;
 
         /// <summary>
         /// Closed masonry and shut doors stop bodies and shots.
@@ -136,6 +138,18 @@ namespace RuneMagic
         public void PaintCover(string id)
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
+            if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
+            {
+                _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
+            }
+
+            ApplyCover();
+        }
+
+        public void AuthorCoverLook(Sprite sprite, float alpha = 1f)
+        {
+            _coverLook = sprite;
+            _coverAlpha = Mathf.Clamp01(alpha <= 0f ? 1f : alpha);
             ApplyCover();
         }
 
@@ -981,12 +995,18 @@ namespace RuneMagic
 
             var view = EnsureCover();
             view.sprite = cover;
+            view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
             view.sortingOrder = _renderer.sortingOrder + 1;
             view.enabled = true;
         }
 
         Sprite ResolveCoverSprite()
         {
+            if (_coverLook != null)
+            {
+                return _coverLook;
+            }
+
             if (!string.IsNullOrEmpty(_coverId))
             {
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||

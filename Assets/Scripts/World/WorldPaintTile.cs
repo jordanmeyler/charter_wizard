@@ -22,8 +22,26 @@ namespace RuneMagic
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
+        [Tooltip("Cover / aura tint. 0 means automatic: miasma and fog are see-through.")]
+        [Range(0f, 1f)]
+        public float opacity;
 
         public bool HasOverlay => aura != TileAura.None || cover != TileCover.None;
+
+        public float ResolvedOpacity()
+        {
+            if (opacity > 0.001f)
+            {
+                return Mathf.Clamp01(opacity);
+            }
+
+            if (aura == TileAura.Miasma || aura == TileAura.Fog)
+            {
+                return 0.42f;
+            }
+
+            return 1f;
+        }
 
         public string CoverId()
         {
@@ -39,7 +57,10 @@ namespace RuneMagic
             }
 
             tileData.colliderType = ColliderType.None;
-            tileData.flags = TileFlags.LockTransform;
+            var alpha = ResolvedOpacity();
+            tileData.color = new Color(1f, 1f, 1f, alpha);
+            color = tileData.color;
+            tileData.flags = TileFlags.LockColor | TileFlags.LockTransform;
         }
 
         public Sprite PreviewSprite(int x = 0, int y = 0)
