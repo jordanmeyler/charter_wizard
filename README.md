@@ -54,7 +54,8 @@ You only move and cast. The adept is an abstract violet robe — no face, only t
 
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
-- **Click a cell in the weave** to draw that rune (only in the Charter).
+- **Click a cell in the weave** to draw that rune (only in the Charter). **Click a floating inscription** in the room to draw that same mark — the Charter opens if it was closed.
+- **Window → Rune Magic → Inscriptions** places any catalog rune as a floating mark (no slab). Click a tile in the Scene view; right-click removes.
 - **Right-click** (or Shift-click) a mark to **remember** it. Remembered marks sit on the wall so you can string them without hunting the weave. The wall does not fill itself.
 - **F1** (or **Play** / **Develop** on the bar) toggles sight. **Play** is the game: abstract marks, no names or element colours. **Develop** is the working ledger: names, letters, recipes, and the full book.
 - The **top-left** panel is a running info box: the room, what you are looking at (`You see …`), statuses, and the last line of play. Mouse-over or the current target fills the look line. Workings are named by the runes you wrote, or by a name you saved for that same composition (Spark is not Fire · Air).
@@ -95,6 +96,7 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Tool | Use it for |
 | --- | --- |
 | Unity `Window → Rune Magic → Authoring` | Create the palette, add a painted map, place prefabs, snap to the grid |
+| Unity `Window → Rune Magic → Inscriptions` | Place any catalog rune as a floating mark; click tiles in the Scene view |
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
 

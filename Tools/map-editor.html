@@ -34,6 +34,9 @@
     .swatch { display: flex; align-items: center; gap: 6px; padding: 3px; cursor: pointer; }
     .swatch i { width: 14px; height: 14px; display: block; border: 1px solid #000; }
     .swatch.active { outline: 1px solid var(--accent); }
+    .rune-grid { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+    .rune-chip { padding: 3px 7px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 11px; }
+    .rune-chip.active { border-color: var(--accent); color: var(--accent); background: #2a2018; }
     .row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
     label.field { display: block; margin: 0 0 8px; color: var(--muted); }
     label.field input, label.field select, label.field textarea { width: 100%; margin-top: 3px; }
@@ -104,8 +107,11 @@
       <label class="field">Plaque / rune text
         <textarea id="propText">Hunger sleeps in the wood.</textarea>
       </label>
+      <h2>Inscription rune</h2>
+      <p class="hint">Every catalog rune. Inscriptions float — no slab. Click a chip, then stamp Inscription.</p>
+      <div id="runeGrid" class="rune-grid"></div>
       <label class="field">Runes (comma)
-        <input id="propRunes" value="Fire, Salt" />
+        <input id="propRunes" value="Fire" />
       </label>
       <label class="field">Heading
         <select id="propDir">
@@ -158,6 +164,14 @@
     ];
     const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
     const PROP_MARK = { plaque: "P", runes: "R", inscription: "n", pillar: "Λ", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
+    const RUNES = [
+      "Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Life","Death","Light","Dark",
+      "Spark","Lightning","Flame","Ember","Cloud","Rain","Wind","Steam","Ice","Snow","Glacier",
+      "Plant","Vine","Ash","Oil","Dust","Sand","Mud","Stone","Lava","Metal","Obsidian","Glass","Crystal",
+      "Acid","Miasma","Poison","Current","Shade","Aether","Inferno","Plasma","Hot","Cold","Wet","Dry",
+      "Animus","Anima"
+    ];
+    let selectedRune = "Fire";
 
     const SANCTUM = {
       id: "sanctum", name: "The Sanctum", spawn: { x: 2, y: 5 },
@@ -269,8 +283,11 @@
         const prop = { type: propTool, x, y };
         if (propTool === "plaque") prop.text = document.getElementById("propText").value;
         if (propTool === "runes" || propTool === "inscription" || propTool === "pillar") {
-          prop.runes = document.getElementById("propRunes").value.split(",").map(s => s.trim()).filter(Boolean);
-          if (propTool === "runes") {
+          if (propTool === "inscription" || propTool === "pillar") {
+            prop.runes = [selectedRune || "Fire"];
+            document.getElementById("propRunes").value = prop.runes[0];
+          } else {
+            prop.runes = document.getElementById("propRunes").value.split(",").map(s => s.trim()).filter(Boolean);
             prop.dir = document.getElementById("propDir").value || "right";
             prop.text = document.getElementById("propText").value;
           }
@@ -321,6 +338,9 @@
             spawnLocal.x >= 0 && spawnLocal.x < room.width &&
             spawnLocal.y >= 0 && spawnLocal.y < room.height;
           const mark = (spawnHere ? "S" : "") ||
+            (prop && (prop.type === "inscription" || prop.type === "pillar") && prop.runes && prop.runes[0]
+              ? prop.runes[0].slice(0, 2)
+              : "") ||
             (prop ? PROP_MARK[prop.type] : "") || KIND_MARK[cell.kind] || "";
           if (mark) el.innerHTML = `<span class="mark">${mark}</span>`;
           el.addEventListener("mousedown", ev => { ev.preventDefault(); painting = true; paintCell(x, y); });
@@ -393,6 +413,17 @@
       ).join("");
       host.querySelectorAll(".swatch").forEach(el => {
         el.onclick = () => { material = el.dataset.mat; propTool = null; draw(); fillSelects(); };
+      });
+      const runes = document.getElementById("runeGrid");
+      runes.innerHTML = RUNES.map(name =>
+        `<button type="button" class="rune-chip${name === selectedRune ? " active" : ""}" data-rune="${name}">${name}</button>`
+      ).join("");
+      runes.querySelectorAll(".rune-chip").forEach(el => {
+        el.onclick = () => {
+          selectedRune = el.dataset.rune;
+          document.getElementById("propRunes").value = selectedRune;
+          fillSelects();
+        };
       });
     }
 

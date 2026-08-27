@@ -114,8 +114,15 @@ namespace RuneMagic
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
             DrawPlace("Charm", "FreeCharm — teaches Fire · Mercury");
             DrawPlace("Rune", "RuneStringSource — a written sentence in the field");
-            DrawPlace("Inscription", "RuneStele floor mark — one teaching rune");
-            DrawPlace("Pillar", "RuneStele standing mark — one teaching rune");
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Inscriptions", GUILayout.Width(72));
+            EditorGUILayout.LabelField("Every rune, floating — click Scene to place", EditorStyles.miniLabel);
+            if (GUILayout.Button("Place", GUILayout.Width(56)))
+            {
+                RunePlaceWindow.Open();
+            }
+
+            EditorGUILayout.EndHorizontal();
             DrawPlace("Arrows", "ArrowVolley — shots down a lane");
             DrawPlace("Chasm", "PitChasm — lock over nearby pits");
             DrawPlace("Fog", "RoomFog — standing breath / poison");

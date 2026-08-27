@@ -235,9 +235,25 @@ namespace RuneMagic
             }
         }
 
-        public static string NameOf(RuneId id) => id == RuneId.None ? "—" : Get(id).Name;
+        public static string NameOf(RuneId id)
+        {
+            if (id == RuneId.None)
+            {
+                return "—";
+            }
 
-        public static string GlyphOf(RuneId id) => id == RuneId.None ? "?" : Get(id).Glyph;
+            return TryGet(id, out var def) ? def.Name : id.ToString();
+        }
+
+        public static string GlyphOf(RuneId id)
+        {
+            if (id == RuneId.None)
+            {
+                return "?";
+            }
+
+            return TryGet(id, out var def) ? def.Glyph : "?";
+        }
 
         public static bool TryParseName(string name, out RuneId id)
         {
@@ -248,6 +264,15 @@ namespace RuneMagic
             }
 
             name = name.Trim();
+            foreach (var def in ById.Values)
+            {
+                if (string.Equals(def.Name, name, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    id = def.Id;
+                    return true;
+                }
+            }
+
             switch (name.ToLowerInvariant())
             {
                 case "life":
@@ -270,22 +295,43 @@ namespace RuneMagic
                 case "forest":
                     id = RuneId.Plant;
                     return true;
-                case "poison":
                 case "blight":
                     id = RuneId.Poison;
                     return true;
             }
 
-            foreach (var def in ById.Values)
+            return System.Enum.TryParse(name, true, out id) && id != RuneId.None && TryGet(id, out _);
+        }
+
+        /// <summary>
+        /// Every named rune, roots first, then the rest of the book.
+        /// Inscriptions can carry any of these — not only the eleven basics.
+        /// </summary>
+        public static RuneId[] PlaceableRunes()
+        {
+            var seen = new System.Collections.Generic.HashSet<RuneId>();
+            var list = new System.Collections.Generic.List<RuneId>(ById.Count);
+            for (var i = 0; i < PlaceableLead.Length; i++)
             {
-                if (string.Equals(def.Name, name, System.StringComparison.OrdinalIgnoreCase))
+                var rune = PlaceableLead[i];
+                if (TryGet(rune, out _) && seen.Add(rune))
                 {
-                    id = def.Id;
-                    return true;
+                    list.Add(rune);
                 }
             }
 
-            return false;
+            var rest = new System.Collections.Generic.List<RuneId>();
+            foreach (var def in ById.Values)
+            {
+                if (seen.Add(def.Id))
+                {
+                    rest.Add(def.Id);
+                }
+            }
+
+            rest.Sort((a, b) => string.Compare(NameOf(a), NameOf(b), System.StringComparison.OrdinalIgnoreCase));
+            list.AddRange(rest);
+            return list.ToArray();
         }
 
         /// <summary>
@@ -297,6 +343,21 @@ namespace RuneMagic
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
             RuneId.Vita, RuneId.Mors,
             RuneId.Lumen, RuneId.Umbra
+        };
+
+        static readonly RuneId[] PlaceableLead =
+        {
+            RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
+            RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
+            RuneId.Vita, RuneId.Mors, RuneId.Lumen, RuneId.Umbra,
+            RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Ember,
+            RuneId.Cloud, RuneId.Rain, RuneId.Wind, RuneId.Steam,
+            RuneId.Ice, RuneId.Snow, RuneId.Glacier,
+            RuneId.Plant, RuneId.Vine, RuneId.Ash, RuneId.Oil,
+            RuneId.Dust, RuneId.Sand, RuneId.Mud, RuneId.Stone,
+            RuneId.Lava, RuneId.Metal, RuneId.Obsidian, RuneId.Glass, RuneId.Crystal,
+            RuneId.Acid, RuneId.Miasma, RuneId.Poison,
+            RuneId.Current, RuneId.Shade, RuneId.Aether
         };
     }
 }
