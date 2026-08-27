@@ -134,20 +134,33 @@ namespace RuneMagic
 
         void OnScene(SceneView view)
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             var map = ResolveMap();
             if (map == null)
             {
-                _hasHover = false;
+                if (_hasHover)
+                {
+                    _hasHover = false;
+                    Repaint();
+                }
+
                 return;
             }
 
             var world = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).origin;
             world.z = 0f;
             var cell = map.WorldToCell(world);
-            _hoverMap = map;
-            _hoverCell = cell;
-            _hasHover = true;
-            Repaint();
+            if (!_hasHover || _hoverMap != map || _hoverCell != cell)
+            {
+                _hoverMap = map;
+                _hoverCell = cell;
+                _hasHover = true;
+                Repaint();
+            }
 
             var look = _coverLayer ? WalkMap() : map;
             var tile = look != null ? look.GetTile(cell) : map.GetTile(cell);
@@ -446,6 +459,7 @@ namespace RuneMagic
         static readonly List<Color> SeenColors = new();
         static readonly List<string> SeenLabels = new();
         static readonly Dictionary<int, int> PerMapCount = new();
+        static readonly HashSet<Vector3Int> OccupiedCells = new();
         static Vector2 _legendScroll;
         public static int LastStampCount { get; private set; }
 
@@ -558,8 +572,9 @@ namespace RuneMagic
                 return;
             }
 
-            DrawCells();
-            DrawOpenPits();
+            var maps = CollectMaps();
+            DrawCells(maps);
+            DrawOpenPits(maps);
             DrawSceneLegend();
         }
 
@@ -626,12 +641,11 @@ namespace RuneMagic
             EditorGUILayout.EndHorizontal();
         }
 
-        static void DrawCells()
+        static void DrawCells(List<Tilemap> maps)
         {
             SeenColors.Clear();
             SeenLabels.Clear();
             LastStampCount = 0;
-            var maps = CollectMaps();
             var oldZ = Handles.zTest;
             Handles.zTest = CompareFunction.Always;
             for (var i = 0; i < maps.Count; i++)
@@ -658,15 +672,14 @@ namespace RuneMagic
             }
         }
 
-        static void DrawOpenPits()
+        static void DrawOpenPits(List<Tilemap> maps)
         {
-            var maps = CollectMaps();
+            OccupiedCells.Clear();
             Tilemap guide = null;
             var minX = int.MaxValue;
             var minY = int.MaxValue;
             var maxX = int.MinValue;
             var maxY = int.MinValue;
-            var occupied = new HashSet<Vector3Int>();
             for (var i = 0; i < maps.Count; i++)
             {
                 var map = maps[i];
@@ -683,7 +696,7 @@ namespace RuneMagic
                         continue;
                     }
 
-                    occupied.Add(new Vector3Int(cell.x, cell.y, 0));
+                    OccupiedCells.Add(new Vector3Int(cell.x, cell.y, 0));
                     minX = Mathf.Min(minX, cell.x);
                     minY = Mathf.Min(minY, cell.y);
                     maxX = Mathf.Max(maxX, cell.x);
@@ -691,7 +704,7 @@ namespace RuneMagic
                 }
             }
 
-            if (guide == null || occupied.Count == 0)
+            if (guide == null || OccupiedCells.Count == 0)
             {
                 return;
             }
@@ -704,7 +717,7 @@ namespace RuneMagic
                 for (var x = minX; x <= maxX; x++)
                 {
                     var cell = new Vector3Int(x, y, 0);
-                    if (occupied.Contains(cell))
+                    if (OccupiedCells.Contains(cell))
                     {
                         continue;
                     }
@@ -954,35 +967,34 @@ namespace RuneMagic
 
         static void DrawSceneLegend()
         {
+            // Repaint-only Scene GUI cannot use GUILayout (needs a Layout pass).
             Handles.BeginGUI();
             var count = Mathf.Min(SeenLabels.Count, 16);
             var extra = SeenLabels.Count - count;
-            var height = 28f + count * 16f + (extra > 0 ? 16f : 0f);
+            var row = 16f;
+            var height = 28f + count * row + (extra > 0 ? row : 0f);
             var box = new Rect(12f, 12f, 188f, height);
             EditorGUI.DrawRect(box, new Color(0.08f, 0.08f, 0.1f, 0.72f));
-            GUILayout.BeginArea(new Rect(box.x + 8f, box.y + 6f, box.width - 16f, box.height - 10f));
-            GUILayout.Label("Stamps", EditorStyles.boldLabel);
+
+            var x = box.x + 8f;
+            var y = box.y + 6f;
+            var width = box.width - 16f;
+            GUI.Label(new Rect(x, y, width, 18f), "Stamps", EditorStyles.boldLabel);
+            y += 18f;
             for (var i = 0; i < count; i++)
             {
-                SceneSwatch(SeenColors[i], SeenLabels[i]);
+                var color = SeenColors[i];
+                EditorGUI.DrawRect(new Rect(x, y + 3f, 10f, 10f), new Color(color.r, color.g, color.b, 1f));
+                GUI.Label(new Rect(x + 14f, y, width - 14f, row), SeenLabels[i], EditorStyles.miniLabel);
+                y += row;
             }
 
             if (extra > 0)
             {
-                GUILayout.Label("+" + extra + " more in Tile Properties", EditorStyles.miniLabel);
+                GUI.Label(new Rect(x, y, width, row), "+" + extra + " more in Tile Properties", EditorStyles.miniLabel);
             }
 
-            GUILayout.EndArea();
             Handles.EndGUI();
-        }
-
-        static void SceneSwatch(Color color, string label)
-        {
-            GUILayout.BeginHorizontal();
-            var rect = GUILayoutUtility.GetRect(10f, 10f, GUILayout.Width(10f), GUILayout.Height(10f));
-            EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
-            GUILayout.Label(label, EditorStyles.miniLabel);
-            GUILayout.EndHorizontal();
         }
     }
 
