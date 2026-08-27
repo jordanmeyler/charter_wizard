@@ -6,7 +6,9 @@ namespace RuneMagic
     /// <summary>
     /// A teaching stone. Floor inscriptions and standing pillars both
     /// show a mark beside a picture, and speak that rune into the weave.
+    /// Drop a Portrait in the Inspector to use your own sprite.
     /// </summary>
+    [ExecuteAlways]
     public sealed class RuneStele : MonoBehaviour, IRuneSource, ILookable
     {
         public enum Kind
@@ -18,6 +20,10 @@ namespace RuneMagic
         [Header("Authoring")]
         [SerializeField] RuneId authoredRune = RuneId.Fire;
         [SerializeField] Kind authoredForm = Kind.Floor;
+        [Tooltip("Your picture for this rune. Shown in the Scene view. Leave empty to use the generated mark at Play.")]
+        [SerializeField] Sprite portrait;
+        [Tooltip("Catalog / atlas id if you would rather name a sprite than drag one.")]
+        [SerializeField] string spriteId;
 
         public RuneId Rune { get; private set; }
         public Kind Form { get; private set; }
@@ -77,19 +83,70 @@ namespace RuneMagic
             authoredForm = form;
             Rune = rune;
             Form = form;
-            if (form == Kind.Pillar)
+            if (HasAuthoredLook())
+            {
+                var order = form == Kind.Pillar ? 5 : 3;
+                AuthoringUtil.ApplyLook(gameObject, order, spriteId, portrait, null, 1f);
+            }
+            else if (form == Kind.Pillar)
             {
                 RuneSign.MountPillar(transform, rune);
                 _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 1.55f, 0f));
+                _picture = transform.Find("Nature");
             }
             else
             {
                 RuneSign.MountFloor(transform, rune);
                 _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 0.42f, 0f));
+                _picture = transform.Find("Nature");
             }
 
-            _picture = transform.Find("Nature");
             Lookables.Register(this);
+        }
+
+        bool HasAuthoredLook()
+        {
+            return portrait != null || !string.IsNullOrEmpty(spriteId);
+        }
+
+        void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                Preview();
+            }
+        }
+
+        void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                Preview();
+            }
+        }
+
+        void Preview()
+        {
+            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            renderer.sortingOrder = authoredForm == Kind.Pillar ? 5 : 3;
+            if (portrait != null)
+            {
+                renderer.sprite = portrait;
+                renderer.enabled = true;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(spriteId))
+            {
+                renderer.sprite = SpriteFactory.Named(spriteId);
+                renderer.enabled = true;
+                return;
+            }
+
+            if (renderer.sprite == null)
+            {
+                renderer.enabled = false;
+            }
         }
 
         void OnDisable()
@@ -99,6 +156,11 @@ namespace RuneMagic
 
         void LateUpdate()
         {
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
             if (_name != null)
             {
                 _name.gameObject.SetActive(GlyphView.IsDevelop);

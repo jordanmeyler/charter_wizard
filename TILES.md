@@ -134,6 +134,27 @@ If you only paint a pit-looking ElvGames tile and never stamp
 Plaques, altars, and teaching columns come after these three
 play.
 
+## Sprites on runes, items, and effects
+
+You control the picture from the Inspector. Nothing here is a tile layer.
+
+**Runes (Inscription / Pillar / Rune).**
+`GameObject → Rune Magic → Inscription` or **Pillar**. Select it in the Scene view. Inspector: `authoredRune` = Fire (or Water, Earth, Air…). Drag your art onto **Portrait**. It shows immediately. Or type a **Sprite Id** from the catalog (`stone-fire`, `cover-ice`, …). Leave both empty if you want the generated mark at Play.
+
+**Items, torches, plaques, barriers, fog.**
+Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor).
+
+**Tile covers and auras (ice look, fire look, miasma, water after a melt).**
+These are tiles, not objects.
+
+1. Select **Cover** in the Hierarchy.
+2. Paint any ice / fire / water / fog tile from any palette — that *is* the picture.
+3. Or stamp in Tile Properties: **Cover** = Ice / Fire / Water, **Write onto Cover layer**. Play then uses the catalog sprites `cover-ice`, `cover-fire`, `cover-water`.
+
+Miasma is **Aura** = Miasma on the Cover layer. The sick look is the runtime overlay (`tile-poison`); you can still paint a foggy tile on Cover if you want your own art under it.
+
+**Spell leftovers** (wet floor after melt, hunger on a bush) draw `tile-wet` / `tile-fire` from the catalog. To change those globally, add or replace those ids in `Assets/Resources/Catalog` / the sprite sheets. A Cover tile you painted stays as the floor look; the wet/fire glow sits on top.
+
 Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
 
 | Place | Old puzzle job | Inspector |

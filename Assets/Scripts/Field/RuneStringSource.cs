@@ -8,11 +8,16 @@ namespace RuneMagic
     /// the mark beside a picture of the thing — a flame for Fire, a
     /// standing body for Salt — so Play can read it without a name.
     /// </summary>
+    [ExecuteAlways]
     public sealed class RuneStringSource : MonoBehaviour, IRuneSource
     {
         [Header("Authoring")]
         [SerializeField] string[] runes = { "Fire" };
         [SerializeField] string dir = "right";
+        [Tooltip("Your picture for this altar. Shown in the Scene view. Leave empty to use the generated mark at Play.")]
+        [SerializeField] Sprite portrait;
+        [Tooltip("Catalog / atlas id if you would rather name a sprite than drag one.")]
+        [SerializeField] string spriteId;
 
         public int StringId { get; private set; }
         public RuneId[] Sequence { get; private set; }
@@ -74,9 +79,49 @@ namespace RuneMagic
         void ShowAltar()
         {
             var rune = Sequence.Length > 0 ? Sequence[0] : RuneId.None;
+            if (portrait != null || !string.IsNullOrEmpty(spriteId))
+            {
+                AuthoringUtil.ApplyLook(gameObject, 5, spriteId, portrait, null, 1f);
+                return;
+            }
+
             RuneSign.MountAltar(transform, rune);
             _picture = transform.Find("Nature");
             _name = RuneSign.NamePlate(transform, rune, new Vector3(0f, 0.95f, 0f));
+        }
+
+        void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                Preview();
+            }
+        }
+
+        void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                Preview();
+            }
+        }
+
+        void Preview()
+        {
+            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            renderer.sortingOrder = 5;
+            if (portrait != null)
+            {
+                renderer.sprite = portrait;
+                renderer.enabled = true;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(spriteId))
+            {
+                renderer.sprite = SpriteFactory.Named(spriteId);
+                renderer.enabled = true;
+            }
         }
 
         void LateUpdate()
