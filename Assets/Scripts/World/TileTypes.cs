@@ -31,6 +31,7 @@ namespace RuneMagic
         Lightning,
         Water,
         Vine,
+        Miasma,
         Cracks,
         Seal
     }

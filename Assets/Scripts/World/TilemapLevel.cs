@@ -288,11 +288,15 @@ namespace RuneMagic
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        var aura = paint != null ? paint.aura : GuessAura(raw);
+                        var aura = ResolveAura(paint, raw);
                         ApplyAura(tile, aura);
                         if (paint != null && paint.cover != TileCover.None)
                         {
                             tile.PaintCover(paint.cover);
+                        }
+                        else if (aura == TileAura.Miasma)
+                        {
+                            tile.PaintCover(TileCover.Miasma);
                         }
 
                         continue;
@@ -305,7 +309,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyAura(tile, paint.aura);
+                        ApplyAura(tile, ResolveAura(paint, raw));
                         if (paint.cover != TileCover.None)
                         {
                             tile.PaintCover(paint.cover);
@@ -433,7 +437,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyAura(tile, paint.aura);
+                        ApplyAura(tile, ResolveAura(paint, raw));
                         if (paint.cover != TileCover.None)
                         {
                             tile.PaintCover(paint.cover);
@@ -522,6 +526,20 @@ namespace RuneMagic
             }
 
             return MaterialId.Stone;
+        }
+
+        static TileAura ResolveAura(WorldPaintTile paint, TileBase raw)
+        {
+            if (paint != null)
+            {
+                var fromPaint = paint.ResolvedAura();
+                if (fromPaint != TileAura.None)
+                {
+                    return fromPaint;
+                }
+            }
+
+            return GuessAura(raw);
         }
 
         static TileAura GuessAura(TileBase tile)

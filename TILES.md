@@ -116,10 +116,12 @@ Miasma is not a wall. Walking in it throws you back to the last
 safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
 
 1. Select **Tiles** so you can see the air room.
-2. Tile Properties: uncheck Kind / Material. Check **Aura** =
-   `Miasma`. Turn on **Write onto Cover layer**. Miasma is
-   see-through by default (about 40%). Check **Opacity** and
-   drag the slider if you want it thinner or more solid.
+2. Tile Properties: uncheck Kind. On **Cover** (or **Write onto
+   Cover layer**), stamp the veil any of these ways — they are
+   the same at Play: **Aura** = `Miasma`, **Cover** = `Miasma`,
+   or **Material** = `Miasma`. Miasma is see-through by default
+   (about 40%). Check **Opacity** and drag the slider if you
+   want it thinner or more solid.
 3. Click (or drag) the floor you want fouled — the path to the
    stone, not the doorway if you want them to step in and get
    thrown back. Paint any foggy tile on **Cover** first if you

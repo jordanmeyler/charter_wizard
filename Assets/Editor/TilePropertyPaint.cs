@@ -107,7 +107,7 @@ namespace RuneMagic
                     EditorGUILayout.LabelField("Kind", paint.kind.ToString());
                     EditorGUILayout.LabelField("Material", paint.material.ToString());
                     EditorGUILayout.LabelField("Cover", paint.cover.ToString());
-                    EditorGUILayout.LabelField("Aura", paint.aura.ToString());
+                    EditorGUILayout.LabelField("Aura", paint.ResolvedAura().ToString());
                     EditorGUILayout.LabelField("Blocks", paint.blocks ? "yes" : "no");
                     EditorGUILayout.LabelField("Opacity", Mathf.RoundToInt(paint.ResolvedOpacity() * 100f) + "%");
                 }
@@ -119,7 +119,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
+                "Select the layer first. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Ice / fire / vine / aura can sit on the same cell, or toggle Write onto Cover layer so they overlay without touching Kind. Miasma on Cover is Aura, Cover, or Material = Miasma — all three foul the floor. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play — erase a hole or leave the map edge empty. Stamp Kind=Pit only when you painted a pit look that would otherwise stay floor.",
                 MessageType.None);
         }
 
@@ -857,7 +857,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (paint.aura == TileAura.Miasma)
+            if (paint.aura == TileAura.Miasma || paint.ResolvedAura() == TileAura.Miasma)
             {
                 color = AuraMiasma;
                 return true;
@@ -891,6 +891,9 @@ namespace RuneMagic
                     return true;
                 case TileCover.Vine:
                     color = CoverVine;
+                    return true;
+                case TileCover.Miasma:
+                    color = AuraMiasma;
                     return true;
                 case TileCover.Cracks:
                 case TileCover.Seal:

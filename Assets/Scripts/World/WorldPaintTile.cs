@@ -26,7 +26,28 @@ namespace RuneMagic
         [Range(0f, 1f)]
         public float opacity;
 
-        public bool HasOverlay => aura != TileAura.None || cover != TileCover.None;
+        public bool HasOverlay =>
+            aura != TileAura.None || cover != TileCover.None || material == MaterialId.Miasma;
+
+        /// <summary>
+        /// Aura stamp, Cover=Miasma, or Material=Miasma on a covering
+        /// all mean the same veil. The Material dropdown is how this
+        /// was getting stamped onto Cover.
+        /// </summary>
+        public TileAura ResolvedAura()
+        {
+            if (aura != TileAura.None)
+            {
+                return aura;
+            }
+
+            if (cover == TileCover.Miasma || material == MaterialId.Miasma)
+            {
+                return TileAura.Miasma;
+            }
+
+            return TileAura.None;
+        }
 
         public float ResolvedOpacity()
         {
@@ -35,7 +56,8 @@ namespace RuneMagic
                 return Mathf.Clamp01(opacity);
             }
 
-            if (aura == TileAura.Miasma || aura == TileAura.Fog)
+            var veil = ResolvedAura();
+            if (veil == TileAura.Miasma || veil == TileAura.Fog)
             {
                 return 0.42f;
             }

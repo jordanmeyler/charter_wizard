@@ -1056,6 +1056,12 @@ namespace RuneMagic
                 {
                     return painted;
                 }
+
+                if (string.Equals(_coverId, "miasma", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-miasma", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-poison");
+                }
             }
 
             return TileAtlas.Cover(ShownMaterial, Coord.x, Coord.y);

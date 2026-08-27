@@ -158,6 +158,7 @@ namespace RuneMagic
             painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.Floor, TileCover.Lightning));
             painted.Add(WriteTile(CoverFolder, "Cover-Water", MaterialId.Stone, TileKind.Floor, TileCover.Water));
             painted.Add(WriteTile(CoverFolder, "Cover-Vine", MaterialId.Dirt, TileKind.Floor, TileCover.Vine));
+            painted.Add(WriteTile(CoverFolder, "Cover-Miasma", MaterialId.Miasma, TileKind.Floor, TileCover.Miasma, TileAura.Miasma));
             painted.Add(WriteTile(CoverFolder, "Cover-Cracks", MaterialId.Stone, TileKind.Floor, TileCover.Cracks));
             painted.Add(WriteTile(CoverFolder, "Cover-Seal", MaterialId.Stone, TileKind.Floor, TileCover.Seal));
             painted.Add(WriteTile(CoverFolder, "Aura-Fire", MaterialId.Stone, TileKind.Floor, TileCover.None, TileAura.Fire));
