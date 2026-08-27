@@ -252,6 +252,7 @@ namespace RuneMagic
                 case MaterialId.Hearth:
                     return "cover-fire";
                 case MaterialId.Acid:
+                case MaterialId.Miasma:
                     return "fx-poison";
                 case MaterialId.Damp:
                     return "fx-wet";

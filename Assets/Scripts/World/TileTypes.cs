@@ -22,6 +22,7 @@ namespace RuneMagic
 
     /// <summary>
     /// Overlay on a walk tile. Ice / fire / lightning are never the floor itself.
+    /// Fog sits at the end so older Cover values stay stable.
     /// </summary>
     public enum TileCover
     {
@@ -31,8 +32,10 @@ namespace RuneMagic
         Lightning,
         Water,
         Vine,
+        Miasma,
         Cracks,
-        Seal
+        Seal,
+        Fog
     }
 
     /// <summary>
