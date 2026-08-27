@@ -320,7 +320,7 @@ namespace RuneMagic
                 case MaterialId.Damp:
                     return "The stood fire-body finds the stone. Rest remembers it was liquid.";
                 default:
-                    return "Hunger finds the ice. It remembers yield.";
+                    return "Hunger finds the ice. Water stands on the floor that was under it.";
             }
         }
 
