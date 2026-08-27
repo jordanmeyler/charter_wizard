@@ -18,6 +18,7 @@ namespace RuneMagic
         public bool PassageOpen { get; private set; }
         public DoorFace DoorFace { get; private set; }
         string _coverId;
+        bool _openVoid;
 
         /// <summary>
         /// Closed masonry and shut doors stop bodies and shots.
@@ -137,6 +138,19 @@ namespace RuneMagic
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
             ApplyCover();
+        }
+
+        /// <summary>
+        /// Blank space baked as a drop — dark void, not a carved hole.
+        /// Stamp Kind=Pit if you want the pit sprite on a painted cell.
+        /// </summary>
+        public void MarkOpenVoid()
+        {
+            _openVoid = true;
+            if (_renderer != null)
+            {
+                ApplyVisual();
+            }
         }
 
         public float Fire { get; private set; }
@@ -823,7 +837,9 @@ namespace RuneMagic
                     case TileKind.Pit:
                         _renderer.sprite = Material == MaterialId.Water
                             ? SpriteFactory.Floor(Material, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
-                            : SpriteFactory.Pit(Coord.x, Coord.y);
+                            : _openVoid
+                                ? SpriteFactory.OpenVoid()
+                                : SpriteFactory.Pit(Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:

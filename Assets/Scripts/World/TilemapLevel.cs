@@ -95,7 +95,7 @@ namespace RuneMagic
 
             for (var i = 0; i < covers.Count; i++)
             {
-                any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY) || any;
+                any = Stamp(grid, covers[i], false, null, ref minX, ref minY, ref maxX, ref maxY, overlay: true) || any;
             }
 
             for (var i = 0; i < decors.Count; i++)
@@ -109,6 +109,7 @@ namespace RuneMagic
                 return null;
             }
 
+            FillOpenVoid(grid, ref minX, ref minY, ref maxX, ref maxY);
             grid.DressLooks();
             WorldSim.Ensure(grid);
             var roomBounds = new RectInt(minX, minY, maxX - minX + 1, maxY - minY + 1);
@@ -219,7 +220,8 @@ namespace RuneMagic
             ref int minX,
             ref int minY,
             ref int maxX,
-            ref int maxY)
+            ref int maxY,
+            bool overlay = false)
         {
             if (map == null)
             {
@@ -255,6 +257,25 @@ namespace RuneMagic
                     var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
                     var underlay = KeepFloorUnder(kind, tile, x, y, out var underFloor);
+                    if (overlay)
+                    {
+                        if (tile == null)
+                        {
+                            continue;
+                        }
+
+                        if (paint != null)
+                        {
+                            ApplyAura(tile, paint.aura);
+                            if (paint.cover != TileCover.None)
+                            {
+                                tile.PaintCover(paint.cover);
+                            }
+                        }
+
+                        continue;
+                    }
+
                     if (tile == null || replace)
                     {
                         tile = grid.Set(x, y, kind, material);
@@ -285,6 +306,50 @@ namespace RuneMagic
             }
 
             return any;
+        }
+
+        /// <summary>
+        /// Unpainted cells are the drop. Floor you never drew, holes
+        /// you erased, and a rim past the painted island all become
+        /// Pit / Void so walking off the ledge returns you.
+        /// Painted walls and pillars keep their cells — they are how
+        /// you cross.
+        /// </summary>
+        const int VoidMargin = 2;
+
+        static void FillOpenVoid(
+            WorldGrid grid,
+            ref int minX,
+            ref int minY,
+            ref int maxX,
+            ref int maxY)
+        {
+            if (grid == null)
+            {
+                return;
+            }
+
+            var x0 = minX - VoidMargin;
+            var y0 = minY - VoidMargin;
+            var x1 = maxX + VoidMargin;
+            var y1 = maxY + VoidMargin;
+            for (var y = y0; y <= y1; y++)
+            {
+                for (var x = x0; x <= x1; x++)
+                {
+                    if (grid.Get(x, y) != null)
+                    {
+                        continue;
+                    }
+
+                    grid.EnsureOpenPit(x, y);
+                }
+            }
+
+            minX = x0;
+            minY = y0;
+            maxX = x1;
+            maxY = y1;
         }
 
         static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y, out MaterialId floor)
