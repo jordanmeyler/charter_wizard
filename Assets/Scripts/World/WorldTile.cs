@@ -146,6 +146,11 @@ namespace RuneMagic
         public float Miasma { get; private set; }
         public float Oil { get; private set; }
         public bool Kindled { get; private set; }
+        /// <summary>
+        /// Fire a spell or NPC working started. Authored torches, kindled
+        /// halls, and painted cover stay still until work finds them.
+        /// </summary>
+        public bool LiveFire { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
@@ -299,6 +304,7 @@ namespace RuneMagic
 
             Fire = 0f;
             Kindled = false;
+            LiveFire = false;
             RefreshFx();
             return true;
         }
@@ -383,7 +389,7 @@ namespace RuneMagic
             _hasFoundation = true;
         }
 
-        public void Ignite(float amount)
+        public void Ignite(float amount, bool live = true)
         {
             if (Kind == TileKind.Pit && Material != MaterialId.Water)
             {
@@ -394,12 +400,23 @@ namespace RuneMagic
             {
                 Fire = 0f;
                 Kindled = false;
+                LiveFire = false;
                 RefreshFx();
                 return;
             }
 
             var boost = HasOil ? 1.55f : 1f;
             Fire = Mathf.Clamp01(Fire + amount * boost);
+            if (amount > 0f && live && Fire > 0.05f)
+            {
+                LiveFire = true;
+            }
+
+            if (Fire <= 0.01f)
+            {
+                LiveFire = false;
+            }
+
             if (Fire > 0.05f)
             {
                 Wet = Mathf.Max(0f, Wet - amount);
@@ -439,7 +456,7 @@ namespace RuneMagic
         public void Kindle(float amount = 0.95f)
         {
             Kindled = true;
-            Ignite(amount);
+            Ignite(amount, live: false);
         }
 
         public void KeepKindled()
@@ -451,7 +468,7 @@ namespace RuneMagic
 
             if (Fire < 0.85f)
             {
-                Ignite(0.85f - Fire);
+                Ignite(0.85f - Fire, live: false);
             }
         }
 
@@ -464,6 +481,7 @@ namespace RuneMagic
                 if (Fire <= 0.05f)
                 {
                     Kindled = false;
+                    LiveFire = false;
                 }
             }
 

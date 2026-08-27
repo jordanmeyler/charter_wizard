@@ -68,9 +68,15 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.Kindled && tile.Wet < 0.15f)
+                if (tile.Kindled && !tile.LiveFire && tile.Wet < 0.15f)
                 {
                     tile.KeepKindled();
+                    continue;
+                }
+
+                if (!tile.LiveFire)
+                {
+                    tile.Ignite(-0.12f, live: false);
                     continue;
                 }
 
