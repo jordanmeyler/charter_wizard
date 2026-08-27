@@ -22,13 +22,13 @@ namespace RuneMagic
         public LevelTileSource tiles = LevelTileSource.Tilemap;
         public string mapId;
         public bool includeJsonProps;
-        [Tooltip("Walk tiles — floor, wall, pit, door. A Floor or Tiles child works.")]
+        [Tooltip("Walk tiles — floor only where Kind is Floor. Extra Floor / Tiles children merge. A Floor or Tiles child works.")]
         public Tilemap tilemap;
         [Tooltip("Optional Walls Tilemap. Merged into the walk grid on Play.")]
         public Tilemap walls;
         [Tooltip("Cover and aura only. A Cover or Coverings child works.")]
         public Tilemap overlays;
-        [Tooltip("Environment Details — plants, rugs, furniture. Own material and optional collision. Burns to an ash pile; fire can run onto a flammable floor.")]
+        [Tooltip("Environment Details — plants, rugs, furniture. Look only unless you stamp Floor or Blocks. Burns to an ash pile; fire can run onto a flammable floor.")]
         public Tilemap decor;
 
         [Header("Spawn")]

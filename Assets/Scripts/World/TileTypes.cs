@@ -6,7 +6,11 @@ namespace RuneMagic
         Wall,
         Pit,
         Bridge,
-        Door
+        Door,
+        /// <summary>
+        /// Look only. Play will not treat this cell as walkable floor.
+        /// </summary>
+        None
     }
 
     /// <summary>
