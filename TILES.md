@@ -21,12 +21,12 @@ each `WorldPaintTile` into a live `WorldTile`.
    Cover / Aura / Blocks, and click those cells. The sprite stays.
    Right-click a cell to copy its properties. Check **Write onto Cover
    layer** to stamp ice / fire / aura without changing the walk cell.
-   **Show stamps** is on by default. Each stamped cell glows in the
-   Scene view — gold stone, brown dirt, blue water, cyan ice, and a
-   different colour per material. Magenta is a pit, green is miasma,
-   red is Blocks. Cells with no glow are look only. Hover still lists
-   the exact stamp. Tile Properties shows how many stamped cells it
-   found.
+   Stamps glow in the **Scene** view (not Game). Nothing to turn on.
+   If colours are missing, click the Scene tab, turn **Gizmos** on at
+   the top-right of that view, and keep Play off. A **Rune Stamps**
+   panel sits in the Scene view; `Window → Rune Magic → Show Stamps`
+   should be checked. Each material has its own colour. Cells with
+   no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / aura over
    those cells if you would rather brush overlays than stamp them.
    Select **Environment Details** for plants and furniture that sit on

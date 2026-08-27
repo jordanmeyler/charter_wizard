@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
@@ -55,7 +56,7 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Paint the map with any palette first. Then turn on Paint and click those cells to assign gameplay. The picture stays; Kind and Material are what Play uses. Right-click a cell to copy its properties. Stamped cells glow in the Scene view — gold stone, brown dirt, and a different colour per material.",
+                "Stamps show in the Scene view — not the Game tab. Nothing else to turn on. If you still see no colours: click the Scene tab, turn on Gizmos at the top-right of that view, and keep Play off. Window → Rune Magic → Show Stamps should be checked.",
                 MessageType.Info);
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
@@ -426,6 +427,7 @@ namespace RuneMagic
         static readonly Color[] MaterialTones;
         static readonly List<Color> SeenColors = new();
         static readonly List<string> SeenLabels = new();
+        static readonly Dictionary<int, int> PerMapCount = new();
         static Vector2 _legendScroll;
         public static int LastStampCount { get; private set; }
 
@@ -459,9 +461,29 @@ namespace RuneMagic
             }
         }
 
+        [InitializeOnLoadMethod]
+        static void HookScene()
+        {
+            SceneView.duringSceneGui -= OnScene;
+            SceneView.duringSceneGui += OnScene;
+        }
+
+        [MenuItem("Window/Rune Magic/Show Stamps", priority = 1)]
+        static void ToggleMenu()
+        {
+            Enabled = !Enabled;
+        }
+
+        [MenuItem("Window/Rune Magic/Show Stamps", true)]
+        static bool ToggleMenuValidate()
+        {
+            Menu.SetChecked("Window/Rune Magic/Show Stamps", Enabled);
+            return true;
+        }
+
         static StampOverlay()
         {
-            SceneView.duringSceneGui += OnScene;
+            HookScene();
             var max = 0;
             foreach (MaterialId id in System.Enum.GetValues(typeof(MaterialId)))
             {
@@ -641,9 +663,50 @@ namespace RuneMagic
                 new Color(color.r, color.g, color.b, 0.95f));
         }
 
+        public static void DrawGizmosFor(Tilemap map)
+        {
+            if (!Enabled || map == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            var n = 0;
+            foreach (var cell in map.cellBounds.allPositionsWithin)
+            {
+                var tile = map.GetTile(cell);
+                if (tile == null || !TryColor(tile, out var color))
+                {
+                    continue;
+                }
+
+                n++;
+                Note(color, StampLabel(tile));
+                var center = map.GetCellCenterWorld(cell);
+                var next = map.GetCellCenterWorld(cell + Vector3Int.right);
+                var up = map.GetCellCenterWorld(cell + Vector3Int.up);
+                var size = new Vector3(
+                    Mathf.Max(0.2f, Vector3.Distance(center, next) * 0.92f),
+                    Mathf.Max(0.2f, Vector3.Distance(center, up) * 0.92f),
+                    0.02f);
+                Gizmos.color = new Color(color.r, color.g, color.b, 0.22f);
+                Gizmos.DrawCube(center, size);
+                Gizmos.color = new Color(color.r, color.g, color.b, 1f);
+                Gizmos.DrawWireCube(center, size);
+            }
+
+            PerMapCount[map.GetInstanceID()] = n;
+            var total = 0;
+            foreach (var pair in PerMapCount)
+            {
+                total += pair.Value;
+            }
+
+            LastStampCount = total;
+        }
+
         static List<Tilemap> CollectMaps()
         {
-            var found = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var found = Object.FindObjectsByType<Tilemap>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             var maps = new List<Tilemap>(found.Length);
             for (var i = 0; i < found.Length; i++)
             {
@@ -857,6 +920,48 @@ namespace RuneMagic
             EditorGUI.DrawRect(rect, new Color(color.r, color.g, color.b, 1f));
             GUILayout.Label(label, EditorStyles.miniLabel);
             GUILayout.EndHorizontal();
+        }
+    }
+
+    [Overlay(typeof(SceneView), "rune-magic-stamps", "Rune Stamps")]
+    sealed class StampSceneOverlay : IMGUIOverlay
+    {
+        public override void OnCreated()
+        {
+            displayed = true;
+        }
+
+        public override void OnGUI()
+        {
+            EditorGUI.BeginChangeCheck();
+            var on = EditorGUILayout.ToggleLeft("Show stamp colours", StampOverlay.Enabled);
+            if (EditorGUI.EndChangeCheck())
+            {
+                StampOverlay.Enabled = on;
+            }
+
+            EditorGUI.BeginChangeCheck();
+            var look = EditorGUILayout.ToggleLeft("Look-only cells", StampOverlay.ShowLookOnly);
+            if (EditorGUI.EndChangeCheck())
+            {
+                StampOverlay.ShowLookOnly = look;
+            }
+
+            GUILayout.Label(
+                StampOverlay.LastStampCount > 0
+                    ? StampOverlay.LastStampCount + " stamped cells"
+                    : "Waiting for Scene gizmos…",
+                EditorStyles.miniLabel);
+        }
+    }
+
+    static class StampGizmos
+    {
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected | GizmoType.Active |
+                   GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy)]
+        static void DrawTilemap(Tilemap map, GizmoType type)
+        {
+            StampOverlay.DrawGizmosFor(map);
         }
     }
 }
