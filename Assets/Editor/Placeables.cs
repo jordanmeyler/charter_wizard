@@ -88,6 +88,9 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Pillar", false, 32)]
         static void Pillar() => SpawnStele(RuneStele.Kind.Pillar);
 
+        [MenuItem("GameObject/Rune Magic/Inscriptions Palette", false, 31)]
+        static void InscriptionPalette() => RunePlaceWindow.Open();
+
         [MenuItem("GameObject/Rune Magic/Arrows", false, 33)]
         static void Arrows() => Spawn("Arrows", typeof(ArrowVolley));
 
@@ -112,26 +115,13 @@ namespace RuneMagic
 
         static void SpawnStele(RuneStele.Kind form)
         {
-            var name = form == RuneStele.Kind.Pillar ? "Rune Pillar" : "Inscription";
-            var host = new GameObject(name);
-            var stele = host.AddComponent<RuneStele>();
-            var so = new SerializedObject(stele);
-            var property = so.FindProperty("authoredForm");
-            if (property != null)
-            {
-                property.enumValueIndex = (int)form;
-                so.ApplyModifiedPropertiesWithoutUndo();
-            }
-
-            if (host.GetComponent<SpriteRenderer>() == null)
-            {
-                host.AddComponent<SpriteRenderer>();
-            }
-
+            var host = new GameObject(RuneStele.NameOf(RuneId.Fire, form));
             host.transform.position = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
                 ? SceneView.lastActiveSceneView.pivot
                 : Vector3.zero);
-            Undo.RegisterCreatedObjectUndo(host, "Create " + name);
+            var stele = host.AddComponent<RuneStele>();
+            stele.Author(RuneId.Fire, form);
+            Undo.RegisterCreatedObjectUndo(host, "Create " + host.name);
             Selection.activeGameObject = host;
         }
 

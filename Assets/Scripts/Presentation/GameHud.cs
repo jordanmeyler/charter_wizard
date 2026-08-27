@@ -828,8 +828,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. Only what is on screen can be drawn; what you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. Draw from the weave. What you have strung stays until you cast or close. Right-click a mark to remember it."),
+                    "Walk while the wall is open. Only what is on screen can be drawn. A floating mark in the room can be drawn with a click. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Draw from the weave, or click a floating mark in the room. What you have strung stays until you cast or close. Right-click a mark to remember it."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(

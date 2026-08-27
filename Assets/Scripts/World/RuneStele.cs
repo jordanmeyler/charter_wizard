@@ -4,11 +4,11 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// A teaching stone. Floor inscriptions and standing pillars both
-    /// show a mark beside a picture, and speak that rune into the weave.
-    /// Drop a Portrait in the Inspector to use your own sprite.
+    /// A teaching mark. Every catalog rune can stand as an inscription.
+    /// With no portrait it is only a floating sign — no slab or shaft.
     /// </summary>
     [ExecuteAlways]
+    [SelectionBase]
     public sealed class RuneStele : MonoBehaviour, IRuneSource, ILookable
     {
         public enum Kind
@@ -16,6 +16,11 @@ namespace RuneMagic
             Floor,
             Pillar
         }
+
+        const string MarkChild = "Mark";
+        public const float FloorHover = 0.42f;
+        public const float PillarHover = 0.62f;
+        public const float PickRadius = 0.85f;
 
         [Header("Authoring")]
         [SerializeField] RuneId authoredRune = RuneId.Fire;
@@ -31,13 +36,14 @@ namespace RuneMagic
 
         public bool IsEmitting => Rune != RuneId.None;
         public Vector3 WorldOrigin => transform.position;
-        public Vector3 WorldPosition => transform.position;
-        public float LookRadius => Form == Kind.Pillar ? 0.7f : 0.55f;
+        public Vector3 WorldPosition => transform.position + Vector3.up * Hover;
+        public float LookRadius => PickRadius;
         public bool CanLook => Rune != RuneId.None;
         public string LookText => Sight.OfRune(Rune);
         public float VoiceRadius => Form == Kind.Pillar ? 3.4f : 2.6f;
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
+        public float Hover => Form == Kind.Pillar ? PillarHover : FloorHover;
 
         Transform _picture;
 
@@ -53,11 +59,41 @@ namespace RuneMagic
 
         static RuneStele Spawn(Vector3 origin, RuneId rune, Kind form)
         {
-            var host = new GameObject(form == Kind.Pillar ? "RunePillar" : "RuneInscription");
+            var host = new GameObject(NameOf(rune, form));
             host.transform.position = origin;
             var stele = host.AddComponent<RuneStele>();
             stele.Bind(rune, form);
             return stele;
+        }
+
+        public static string NameOf(RuneId rune, Kind form)
+        {
+            var mark = rune == RuneId.None ? "Rune" : RuneCatalog.NameOf(rune);
+            return form == Kind.Pillar ? mark + " Pillar" : mark + " Inscription";
+        }
+
+        public static bool TryPick(Vector3 world, out RuneId rune, float extra = 0.2f)
+        {
+            rune = RuneId.None;
+            var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var best = float.MaxValue;
+            for (var i = 0; i < steles.Length; i++)
+            {
+                var stele = steles[i];
+                if (stele == null || !stele.IsEmitting)
+                {
+                    continue;
+                }
+
+                var distance = Vector2.Distance(world, stele.WorldPosition);
+                if (distance <= stele.LookRadius + extra && distance < best)
+                {
+                    best = distance;
+                    rune = stele.Rune;
+                }
+            }
+
+            return rune != RuneId.None;
         }
 
         public void BindFromAuthoring()
@@ -72,28 +108,107 @@ namespace RuneMagic
 
         public void Bind(RuneId rune, Kind form)
         {
-            if (_wired)
-            {
-                return;
-            }
-
             _wired = true;
+            Author(rune, form);
+            Lookables.Register(this);
+        }
+
+        public void Author(RuneId rune, Kind form)
+        {
             authoredRune = rune;
             authoredForm = form;
             Rune = rune;
             Form = form;
-            if (HasAuthoredLook())
+            gameObject.name = NameOf(rune, form);
+            RefreshLook();
+        }
+
+        void RefreshLook()
+        {
+            if (Rune == RuneId.None)
             {
-                var order = form == Kind.Pillar ? 5 : 3;
-                AuthoringUtil.ApplyLook(gameObject, order, spriteId, portrait, null, 1f);
-            }
-            else
-            {
-                var hover = form == Kind.Pillar ? 0.55f : 0.28f;
-                _picture = RuneSign.MountMark(transform, rune, hover);
+                Rune = authoredRune;
+                Form = authoredForm;
             }
 
-            Lookables.Register(this);
+            gameObject.name = NameOf(Rune, Form);
+            if (HasAuthoredLook())
+            {
+                ClearMark();
+                var order = Form == Kind.Pillar ? 5 : 3;
+                AuthoringUtil.ApplyLook(gameObject, order, spriteId, portrait, null, 1f);
+                EnsurePickCollider(transform, 0.4f);
+                return;
+            }
+
+            var host = GetComponent<SpriteRenderer>();
+            if (host != null)
+            {
+                host.enabled = false;
+                host.sprite = null;
+            }
+
+            _picture = EnsureMark();
+            var mark = _picture.GetComponent<SpriteRenderer>();
+            if (mark != null)
+            {
+                mark.sprite = RuneMark.AsSprite(Rune, RunePalette.MarkInk(Rune));
+                mark.color = Color.white;
+                mark.enabled = Rune != RuneId.None;
+                mark.sortingOrder = 8;
+            }
+
+            _picture.localPosition = new Vector3(0f, Hover, 0f);
+            _picture.localScale = Vector3.one;
+            EnsurePickCollider(_picture, 0.48f);
+        }
+
+        Transform EnsureMark()
+        {
+            var child = transform.Find(MarkChild);
+            if (child != null)
+            {
+                return child;
+            }
+
+            var mark = new GameObject(MarkChild);
+            mark.transform.SetParent(transform, false);
+            mark.AddComponent<SpriteRenderer>();
+            return mark.transform;
+        }
+
+        void ClearMark()
+        {
+            _picture = null;
+            var child = transform.Find(MarkChild);
+            if (child != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(child.gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(child.gameObject);
+                }
+            }
+        }
+
+        static void EnsurePickCollider(Transform host, float radius)
+        {
+            if (host == null)
+            {
+                return;
+            }
+
+            var collider = host.GetComponent<CircleCollider2D>();
+            if (collider == null)
+            {
+                collider = host.gameObject.AddComponent<CircleCollider2D>();
+            }
+
+            collider.isTrigger = true;
+            collider.radius = radius;
         }
 
         bool HasAuthoredLook()
@@ -105,39 +220,39 @@ namespace RuneMagic
         {
             if (!Application.isPlaying)
             {
-                Preview();
+                Rune = authoredRune;
+                Form = authoredForm;
+                RefreshLook();
             }
         }
 
         void OnValidate()
         {
-            if (!Application.isPlaying)
+            if (Application.isPlaying)
             {
-                Preview();
+                return;
             }
+
+            Rune = authoredRune;
+            Form = authoredForm;
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += EditorRefresh;
+#endif
         }
 
-        void Preview()
+#if UNITY_EDITOR
+        void EditorRefresh()
         {
-            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            renderer.sortingOrder = authoredForm == Kind.Pillar ? 5 : 3;
-            if (portrait != null)
+            if (this == null || Application.isPlaying)
             {
-                renderer.sprite = portrait;
-                renderer.enabled = true;
                 return;
             }
 
-            if (!string.IsNullOrEmpty(spriteId))
-            {
-                renderer.sprite = SpriteFactory.Named(spriteId);
-                renderer.enabled = true;
-                return;
-            }
-
-            renderer.sprite = RuneMark.AsSprite(authoredRune, RunePalette.MarkInk(authoredRune));
-            renderer.enabled = authoredRune != RuneId.None;
+            Rune = authoredRune;
+            Form = authoredForm;
+            RefreshLook();
         }
+#endif
 
         void OnDisable()
         {
@@ -161,5 +276,13 @@ namespace RuneMagic
                 buffer.Add(Rune);
             }
         }
+
+#if UNITY_EDITOR
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(0.92f, 0.78f, 0.35f, 0.7f);
+            Gizmos.DrawWireSphere(WorldPosition, PickRadius);
+        }
+#endif
     }
 }

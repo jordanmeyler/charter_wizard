@@ -110,7 +110,9 @@ namespace RuneMagic
                 return "a mark that will not speak.";
             }
 
-            return RuneCatalog.Get(rune).Meaning;
+            return RuneCatalog.TryGet(rune, out var def)
+                ? def.Meaning
+                : "a floating mark.";
         }
 
         public static string OfPlaque(string text)

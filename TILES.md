@@ -168,7 +168,7 @@ play.
 You control the picture from the Inspector. Nothing here is a tile layer.
 
 **Runes (Inscription / Pillar / Rune).**
-`GameObject → Rune Magic → Inscription` or **Pillar**. Select it in the Scene view. Inspector: `authoredRune` = Fire (or Water, Earth, Air…). With nothing else set, a **floating mark** is the whole picture — no slab or pillar. Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**.
+Every catalog rune can be an inscription — roots, joins, and reserved names. `Window → Rune Magic → Inscriptions` (or Authoring → Inscriptions **Place**): click a mark, then click a tile in the Scene view. Right-click removes. The Inspector on an inscription is the same grid. With nothing else set, a **floating mark** is the whole picture — no slab, shaft, or base. Hover = Floor (lower) or Pillar (a little higher). Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**. In Play, click a floating mark to draw it into the Charter.
 
 **Items, torches, plaques, barriers, fog.**
 Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor).
@@ -198,8 +198,8 @@ Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `Gam
 | **Fog** | poison / gust room | cover cells |
 | **Plaque** | wall text | text |
 | **Rune** | written sentence on the field | runes, dir |
-| **Inscription** | floor teaching mark | one rune |
-| **Pillar** | standing teaching mark | one rune |
+| **Inscription** | floating teaching mark | any catalog rune |
+| **Pillar** | same mark, a little higher | any catalog rune |
 | **Charm** | Free charm | — |
 | **Crystal** | spawn / death return | — |
 | **Flame Hall** | water-ward lesson at a kindled hall | — |
