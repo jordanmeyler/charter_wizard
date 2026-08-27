@@ -254,7 +254,7 @@ namespace RuneMagic
 
                     var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
-                    var underlay = KeepFloorUnder(kind, tile, x, y);
+                    var underlay = KeepFloorUnder(kind, tile, x, y, out var underFloor);
                     if (tile == null || replace)
                     {
                         tile = grid.Set(x, y, kind, material);
@@ -262,7 +262,7 @@ namespace RuneMagic
 
                     if (underlay != null)
                     {
-                        tile.AuthorUnderlay(underlay);
+                        tile.AuthorUnderlay(underlay, underFloor);
                     }
 
                     var look = paint != null
@@ -287,22 +287,26 @@ namespace RuneMagic
             return any;
         }
 
-        static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y)
+        static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y, out MaterialId floor)
         {
+            floor = MaterialId.Stone;
             if (kind != TileKind.Wall && kind != TileKind.Door)
             {
                 return null;
             }
 
-            if (prior != null && prior.Kind == TileKind.Floor && prior.AuthoredLook != null)
+            if (prior != null && prior.Kind == TileKind.Floor)
             {
-                return prior.AuthoredLook;
+                floor = WorldWork.IsIceBody(prior.Material) ? MaterialId.Stone : prior.Material;
+                if (floor == MaterialId.None)
+                {
+                    floor = MaterialId.Stone;
+                }
+
+                return prior.AuthoredLook != null ? prior.AuthoredLook : SpriteFactory.Floor(floor, x, y);
             }
 
-            var material = prior != null && prior.Kind == TileKind.Floor
-                ? prior.Material
-                : MaterialId.Stone;
-            return SpriteFactory.Floor(material, x, y);
+            return SpriteFactory.Floor(MaterialId.Stone, x, y);
         }
 
         static bool StampDetail(

@@ -40,6 +40,7 @@ namespace RuneMagic
         SpriteRenderer _fx;
         Sprite _authoredLook;
         Sprite _underlayLook;
+        MaterialId _underlayMaterial;
         Sprite _detailLook;
         MaterialId _detailMaterial;
         bool _detailBlocks;
@@ -78,14 +79,20 @@ namespace RuneMagic
         /// Floor under a wall or door. Pack wall tiles leave the cobble
         /// transparent in the same cell; Play used to show the void there.
         /// </summary>
-        public void AuthorUnderlay(Sprite sprite)
+        public void AuthorUnderlay(Sprite sprite, MaterialId floor = MaterialId.Stone)
         {
             _underlayLook = sprite;
+            _underlayMaterial = floor == MaterialId.None ? MaterialId.Stone : floor;
             if (_renderer != null)
             {
                 ApplyUnderlay();
             }
         }
+
+        public bool HasWaterCover =>
+            Material == MaterialId.Water
+            || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// A Decor-layer stamp. Sprite and material sit on top of the
@@ -147,7 +154,9 @@ namespace RuneMagic
         public bool IsPoisonWater =>
             Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
         public float Flammability =>
-            Def.WorldMaterial.Flammability + DetailFlammability + (HasOil ? 1.6f : 0f);
+            HasWaterCover
+                ? -1.6f
+                : Def.WorldMaterial.Flammability + DetailFlammability + (HasOil ? 1.6f : 0f);
         public float Conductivity => Def.WorldMaterial.Conductivity;
         public bool IsPlantish => IsPlantMaterial(Material);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
@@ -381,6 +390,14 @@ namespace RuneMagic
                 return;
             }
 
+            if (amount > 0f && (HasWaterCover || Wet > 0.35f))
+            {
+                Fire = 0f;
+                Kindled = false;
+                RefreshFx();
+                return;
+            }
+
             var boost = HasOil ? 1.55f : 1f;
             Fire = Mathf.Clamp01(Fire + amount * boost);
             if (Fire > 0.05f)
@@ -562,7 +579,21 @@ namespace RuneMagic
 
             if (IsConjured)
             {
-                return RestoreFoundation();
+                var ice = WorldWork.IsIceBody(Material);
+                var restored = RestoreFoundation();
+                if (restored && ice)
+                {
+                    LeaveMeltWater();
+                }
+
+                return restored;
+            }
+
+            if (WorldWork.IsIceBody(Material))
+            {
+                RevealFloorUnderIce();
+                LeaveMeltWater();
+                return true;
             }
 
             var leftover = MatterLaw.MeltsTo(Material);
@@ -580,6 +611,35 @@ namespace RuneMagic
             var kind = Kind == TileKind.Wall ? TileKind.Floor : Kind;
             Reshape(new TileDef(kind, leftover));
             return true;
+        }
+
+        void RevealFloorUnderIce()
+        {
+            var floor = _underlayMaterial != MaterialId.None ? _underlayMaterial : MaterialId.Stone;
+            if (WorldWork.IsIceBody(floor))
+            {
+                floor = MaterialId.Stone;
+            }
+
+            var look = _underlayLook;
+            var kind = Kind == TileKind.Wall || Kind == TileKind.Door ? TileKind.Floor : Kind;
+            if (kind != TileKind.Floor && kind != TileKind.Bridge)
+            {
+                kind = TileKind.Floor;
+            }
+
+            Reshape(new TileDef(kind, floor));
+            if (look != null)
+            {
+                AuthorLook(look);
+            }
+        }
+
+        void LeaveMeltWater()
+        {
+            PaintCover(TileCover.Water);
+            Drench(1f);
+            SmotherGroundFire();
         }
 
         public bool Annihilate()
