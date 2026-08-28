@@ -11,6 +11,8 @@ namespace RuneMagic
     /// <summary>
     /// Builds the conventional Hero_22 Animator: sprite clips plus a
     /// four-state controller. Open Window → Rune Magic → Adept Animator.
+    /// This script stays in Assets/Editor. Clips go to
+    /// Assets/Animations/Adept — do not copy the builder there.
     /// </summary>
     public sealed class AdeptAnimatorBuilder : EditorWindow
     {
