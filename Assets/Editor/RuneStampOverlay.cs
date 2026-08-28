@@ -11,9 +11,11 @@ namespace RuneMagic
     /// <summary>
     /// Scene-view outline for each stamp. Adjacent cells of the same stamp
     /// share one glow so the painted tiles stay readable.
+    /// Named RuneStampOverlay so a leftover StampOverlay class in
+    /// TilePropertyPaint cannot compile as a second copy of this type.
     /// </summary>
     [InitializeOnLoad]
-    static class StampOverlay
+    static class RuneStampOverlay
     {
         const string EnabledPref = "RuneMagic.ShowStampOverlay.v2";
         const string LookOnlyPref = "RuneMagic.ShowStampLookOnly";
@@ -91,7 +93,7 @@ namespace RuneMagic
             return true;
         }
 
-        static StampOverlay()
+        static RuneStampOverlay()
         {
             HookScene();
             var max = 0;
@@ -606,22 +608,22 @@ namespace RuneMagic
         public override void OnGUI()
         {
             EditorGUI.BeginChangeCheck();
-            var on = EditorGUILayout.ToggleLeft("Show stamp colours", StampOverlay.Enabled);
+            var on = EditorGUILayout.ToggleLeft("Show stamp colours", RuneStampOverlay.Enabled);
             if (EditorGUI.EndChangeCheck())
             {
-                StampOverlay.Enabled = on;
+                RuneStampOverlay.Enabled = on;
             }
 
             EditorGUI.BeginChangeCheck();
-            var look = EditorGUILayout.ToggleLeft("Look-only cells", StampOverlay.ShowLookOnly);
+            var look = EditorGUILayout.ToggleLeft("Look-only cells", RuneStampOverlay.ShowLookOnly);
             if (EditorGUI.EndChangeCheck())
             {
-                StampOverlay.ShowLookOnly = look;
+                RuneStampOverlay.ShowLookOnly = look;
             }
 
             GUILayout.Label(
-                StampOverlay.LastStampCount > 0
-                    ? StampOverlay.LastStampCount + " stamped cells"
+                RuneStampOverlay.LastStampCount > 0
+                    ? RuneStampOverlay.LastStampCount + " stamped cells"
                     : "Waiting for Scene gizmos…",
                 EditorStyles.miniLabel);
         }
@@ -633,7 +635,7 @@ namespace RuneMagic
                    GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy)]
         static void DrawTilemap(Tilemap map, GizmoType type)
         {
-            StampOverlay.DrawGizmosFor(map);
+            RuneStampOverlay.DrawGizmosFor(map);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace RuneMagic
         void OnEnable()
         {
             SceneView.duringSceneGui += OnScene;
-            _ = StampOverlay.Enabled;
+            _ = RuneStampOverlay.Enabled;
             SceneView.RepaintAll();
         }
 
@@ -59,23 +59,23 @@ namespace RuneMagic
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
             _coverLayer = EditorGUILayout.Toggle("Write onto Cover layer", _coverLayer);
-            var show = EditorGUILayout.Toggle("Show stamps in Scene view", StampOverlay.Enabled);
-            if (show != StampOverlay.Enabled)
+            var show = EditorGUILayout.Toggle("Show stamps in Scene view", RuneStampOverlay.Enabled);
+            if (show != RuneStampOverlay.Enabled)
             {
-                StampOverlay.Enabled = show;
+                RuneStampOverlay.Enabled = show;
             }
 
-            if (StampOverlay.Enabled)
+            if (RuneStampOverlay.Enabled)
             {
-                var lookOnly = EditorGUILayout.Toggle("Outline look-only cells", StampOverlay.ShowLookOnly);
-                if (lookOnly != StampOverlay.ShowLookOnly)
+                var lookOnly = EditorGUILayout.Toggle("Outline look-only cells", RuneStampOverlay.ShowLookOnly);
+                if (lookOnly != RuneStampOverlay.ShowLookOnly)
                 {
-                    StampOverlay.ShowLookOnly = lookOnly;
+                    RuneStampOverlay.ShowLookOnly = lookOnly;
                 }
 
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("Legend", EditorStyles.boldLabel);
-                StampOverlay.DrawLegendGui();
+                RuneStampOverlay.DrawLegendGui();
             }
 
             EditorGUILayout.Space();
@@ -178,11 +178,11 @@ namespace RuneMagic
                     fill,
                     new Color(0.72f, 0.55f, 1f, 0.9f));
 
-                if (StampOverlay.Enabled)
+                if (RuneStampOverlay.Enabled)
                 {
                     Handles.Label(
                         new Vector3((min.x + max.x) * 0.5f, max.y + 0.08f, 0f),
-                        StampOverlay.Describe(tile));
+                        RuneStampOverlay.Describe(tile));
                 }
             }
 
