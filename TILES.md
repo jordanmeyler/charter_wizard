@@ -40,10 +40,9 @@ each `WorldPaintTile` into a live `WorldTile`.
 7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    and **cover** on a shared brush. Duplicate an asset to make
    a new brush. `Create → Rune Magic → Map Tile` also works.
-8. Drag prefabs from `Assets/Prefabs` (Items/Fire Stone, Gate, Door) or
-   press Place in `Window → Rune Magic → Authoring`. The GameObject
-   menu instantiates those same prefabs. Pack enemies are under
-   `GameObject → Rune Magic → Enemies`.
+8. Drag prefabs from `Assets/Prefabs` (Items/Fire Stone, Enemies/Shade,
+   Gate, Door) or press Place in `Window → Rune Magic → Authoring`.
+   The GameObject menu instantiates those same prefabs.
 9. Leave **Stamp Foundation Into Scene** alone unless you want the old
    generated Floor 1 dumped back onto the Tilemap.
 

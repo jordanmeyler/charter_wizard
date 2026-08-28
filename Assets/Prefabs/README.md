@@ -6,4 +6,4 @@ Stones start in `Assets/Prefabs/Items`. You can move that folder, rename it, or 
 
 `Create / refresh prefabs` writes any missing type (Item, Mite, Torch, Rod, Gate, Door, Barrier, Plaque, Crystal, Charm, Adept, stones, and pack enemies). A Door has closed and open sprites; drag it onto a Gate's **Doors** list.
 
-Enemies write into `Assets/Prefabs/Enemies` the first time you refresh. After that, move the folder if you want — Place still finds them by name.
+Enemies live in `Assets/Prefabs/Enemies` (Shade, Squire, …). Drag one into the Scene the same way as a stone. The other agent can swap portraits and clips on those prefabs; placement does not depend on the art. Move the folder if you want — Place still finds them by name.
