@@ -138,7 +138,7 @@ namespace RuneMagic
 
         static void SpawnEnemy(PackEnemies.Spec spec)
         {
-            if (AuthoringWindow.TryPlace(spec.Name))
+            if (MapAuthoringWindow.TryPlace(spec.Name))
             {
                 return;
             }
@@ -165,7 +165,7 @@ namespace RuneMagic
 
         static void Place(string name)
         {
-            if (!AuthoringWindow.TryPlace(name))
+            if (!MapAuthoringWindow.TryPlace(name))
             {
                 Spawn(name, typeof(WorldItem));
             }
@@ -173,7 +173,7 @@ namespace RuneMagic
 
         static void Spawn(string name, System.Type type)
         {
-            if (AuthoringWindow.TryPlace(name))
+            if (MapAuthoringWindow.TryPlace(name))
             {
                 return;
             }

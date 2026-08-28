@@ -24,7 +24,7 @@ namespace RuneMagic
 
             if (GUILayout.Button("Open Authoring (place items)"))
             {
-                AuthoringWindow.Open();
+                MapAuthoringWindow.Open();
             }
 
             if (GUILayout.Button("Open Adept Animator (Hero_22)"))
