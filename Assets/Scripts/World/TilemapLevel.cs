@@ -679,6 +679,11 @@ namespace RuneMagic
                 return TileCover.Lightning;
             }
 
+            if (NameHas(name, "mud", "mire", "silt"))
+            {
+                return TileCover.Mud;
+            }
+
             return TileCover.None;
         }
 

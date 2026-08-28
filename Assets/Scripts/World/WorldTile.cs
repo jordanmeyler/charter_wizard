@@ -98,6 +98,12 @@ namespace RuneMagic
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase);
 
+        public bool HasIceCover =>
+            Cover == TileCover.Ice
+            || string.Equals(_coverId, "ice", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-ice", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-ice-b", System.StringComparison.OrdinalIgnoreCase);
+
         /// <summary>
         /// A Decor-layer stamp. Sprite and material sit on top of the
         /// walk cell, so a plant can burn off and leave the stone.
@@ -230,12 +236,14 @@ namespace RuneMagic
         /// </summary>
         public bool IsDeepWater =>
             Material == MaterialId.Water &&
-            (Kind == TileKind.Pit || Kind == TileKind.Floor);
+            (Kind == TileKind.Pit || Kind == TileKind.Floor) &&
+            !HasIceCover;
 
         public bool IsSafeStand =>
-            (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
+            ((Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             !IsDeepWater &&
-            Material != MaterialId.Lava;
+            Material != MaterialId.Lava)
+            || HasIceCover;
 
         public bool CanRaiseBarrier =>
             Kind == TileKind.Floor || Kind == TileKind.Bridge;
@@ -365,8 +373,25 @@ namespace RuneMagic
             }
 
             BecomeWalkable(MaterialId.Ice, conjured: true);
+            PaintCover(TileCover.Ice);
             Wet = Mathf.Min(Wet, 0.15f);
             RefreshFx();
+            return true;
+        }
+
+        /// <summary>
+        /// Standard earth over water does not span. Yield meeting
+        /// rest leaves a mud covering. It will not hold you.
+        /// </summary>
+        public bool LayMudCover()
+        {
+            Drench(1f);
+            if (!IsDeepWater)
+            {
+                return SlickMud();
+            }
+
+            PaintCover(TileCover.Mud);
             return true;
         }
 
@@ -1117,6 +1142,15 @@ namespace RuneMagic
                     string.Equals(_coverId, "cover-fog", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return SpriteFactory.Named("tile-fog");
+                }
+
+                if (string.Equals(_coverId, "mud", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-mud", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (TileAtlas.TryGet("floor-mud", out var mud) && mud != null)
+                    {
+                        return mud;
+                    }
                 }
             }
 

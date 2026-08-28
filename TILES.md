@@ -160,8 +160,9 @@ not fill.
 2. Drag `Assets/Prefabs/Items/Earth Stone` onto the far ledge.
 
 Painted walls stay walls. Pillars and wall spells fill pits as
-walkable spans. A later pass will cap how far a bridge can run
-over a drop before it collapses.
+two-tile walkable spans. Standard earth and ice must find a floor
+or a wall at each end, or the span falls. Metal hangs without a
+far bank. Ice freezes water without banks; earth only muds it.
 
 Plaques, altars, and teaching columns come after these three
 play.

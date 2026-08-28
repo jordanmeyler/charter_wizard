@@ -122,6 +122,8 @@ namespace RuneMagic
                 case MaterialId.Water:
                 case MaterialId.Rain:
                     return TileCover.Water;
+                case MaterialId.Mud:
+                    return TileCover.Mud;
                 case MaterialId.Ember:
                 case MaterialId.Hearth:
                 case MaterialId.Lava:
