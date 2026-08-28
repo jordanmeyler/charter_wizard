@@ -108,6 +108,8 @@ Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rog
 
 [`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop. A PNG in [`Assets/Resources/Sprites/`](Assets/Resources/Sprites/) with that same id also replaces the painter — that is the path off the generated look. `python3 Tools/import-sprite.py file.png --id adept` copies and registers it.
 
+On a **Gate** or **Door**, drag a Unity sprite onto **Portrait** — that is the normal Inspector path and skips the generated lock. Spell bodies look up clip ids (`fireball-shot`, `fx-fire`). Particle prefabs go in `Assets/Resources/Fx/{Family}`. See [`ART.md`](ART.md).
+
 | Tool | Use it for |
 | --- | --- |
 | [`Tools/catalog-editor.html`](Tools/catalog-editor.html) | Edit recipes, joins, pixel sprites, and items. Export `spells.json` / `art.json` back into `Assets/Resources/Catalog/`. |

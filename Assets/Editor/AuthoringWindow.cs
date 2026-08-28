@@ -118,7 +118,7 @@ namespace RuneMagic
             EditorGUILayout.Space();
             DrawPlace("Torch", "TorchFixture — keys, lit frames");
             DrawPlace("Rod", "LightningConduit — spark lock");
-            DrawPlace("Gate", "SocketGate — requires pack items, opens Door objects");
+            DrawPlace("Gate", "SocketGate — Requires list, Doors, Portrait replaces generated lock");
             DrawPlace("Door", "WorldDoor — closed / open sprites, blocks when shut");
             DrawPlace("Barrier", "BarrierLock — cover cells, clear material");
             DrawPlace("Plaque", "HintPlaque — readable text");

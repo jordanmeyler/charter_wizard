@@ -14,6 +14,7 @@ namespace RuneMagic
         Vector3 _mid;
         SpellShape _shape;
         ElementLook _look;
+        SpellId _spell;
         float _age;
         float _duration = 0.35f;
         float _potency = 1f;
@@ -22,6 +23,7 @@ namespace RuneMagic
         SpriteRenderer _glow;
         bool _finished;
         bool _impacted;
+        bool _authored;
 
         public static void Play(
             Vector3 from,
@@ -98,17 +100,31 @@ namespace RuneMagic
             }
 
             _shape = shape == SpellShape.None ? SpellShape.Shot : shape;
+            _spell = spell;
             _look = ElementLook.For(material == RuneId.None ? RuneId.Aether : material, spell);
             _duration = DurationFor(_shape, _from, _to, _look.Family);
-            transform.position = _shape == SpellShape.Spread ? _from : _from;
+            transform.position = _from;
 
-            var color = _look.Core;
-            _glow = CreateSprite("Glow", SpriteFactory.Glow(_look.Glow), 18, new Vector3(1.8f, 1.8f, 1f) * _potency);
-            _glow.color = _look.Glow;
-            _body = CreateSprite("Body", BodySprite(), 19, BodyScale());
-            _body.color = color;
+            if (TryAuthoredBody(out var frames))
+            {
+                _authored = true;
+                _body = CreateSprite("Body", frames[0], 19, Vector3.one);
+                _body.color = Color.white;
+                if (frames.Length > 1)
+                {
+                    SpriteAnim.On(_body.gameObject, _body).Play(frames, 10f, true, AuthoredId() ?? "fx");
+                }
+            }
+            else
+            {
+                var color = _look.Core;
+                _glow = CreateSprite("Glow", SpriteFactory.Glow(_look.Glow), 18, new Vector3(1.8f, 1.8f, 1f) * _potency);
+                _glow.color = _look.Glow;
+                _body = CreateSprite("Body", BodySprite(), 19, BodyScale());
+                _body.color = color;
+            }
+
             ElementFx.Stream(transform, _look, _shape, _potency);
-
             return true;
         }
 
@@ -121,6 +137,40 @@ namespace RuneMagic
             renderer.sprite = sprite;
             renderer.sortingOrder = order;
             return renderer;
+        }
+
+        bool TryAuthoredBody(out Sprite[] frames)
+        {
+            var ids = AuthoredIds();
+            for (var i = 0; i < ids.Length; i++)
+            {
+                if (SpriteFactory.TryAuthoredClip(ids[i], out frames))
+                {
+                    return true;
+                }
+            }
+
+            frames = null;
+            return false;
+        }
+
+        string AuthoredId()
+        {
+            var ids = AuthoredIds();
+            return ids.Length > 0 ? ids[0] : null;
+        }
+
+        string[] AuthoredIds()
+        {
+            var family = _look.Family.ToString().ToLowerInvariant();
+            var spell = _spell.ToString().ToLowerInvariant();
+            return new[]
+            {
+                spell + "-shot",
+                spell,
+                family + "-shot",
+                "fx-" + family
+            };
         }
 
         Sprite BodySprite()
@@ -305,13 +355,16 @@ namespace RuneMagic
                     _impacted = true;
                     var impact = _shape == SpellShape.Spread ? _from : _to;
                     ElementFx.Burst(impact, _look, _shape, _potency);
-                    var flash = new GameObject("Impact");
-                    flash.transform.position = impact;
-                    var renderer = flash.AddComponent<SpriteRenderer>();
-                    renderer.sprite = SpriteFactory.Burst(_look.Core);
-                    renderer.sortingOrder = 21;
-                    flash.transform.localScale = Vector3.one * 1.4f * _potency;
-                    Destroy(flash, 0.28f);
+                    if (!_authored)
+                    {
+                        var flash = new GameObject("Impact");
+                        flash.transform.position = impact;
+                        var renderer = flash.AddComponent<SpriteRenderer>();
+                        renderer.sprite = SpriteFactory.Burst(_look.Core);
+                        renderer.sortingOrder = 21;
+                        flash.transform.localScale = Vector3.one * 1.4f * _potency;
+                        Destroy(flash, 0.28f);
+                    }
                 }
             }
             catch (System.Exception)

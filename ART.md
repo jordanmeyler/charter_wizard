@@ -18,6 +18,13 @@ A custom still **overrides** a generated clip. The game looks up art in this ord
 3. A file at `Assets/Resources/Sprites/{id}.png`
 4. The built-in painter
 
+**In the Scene, prefer Unity sprites.** Drag a slice onto a Door or Gate
+**Portrait**. That skips the painter for that object. Spells look up
+clip ids (`fireball-shot`, `fireball`, `fire-shot`, `fx-fire`) on a
+`Sprite Sheet` under `Assets/Resources/SpriteSheets/`, or a PNG with
+that filename. Particle prefabs go in `Assets/Resources/Fx/` — see
+below.
+
 ## What to drop in
 
 | Id | Role | Suggested size | Pivot |
@@ -27,7 +34,9 @@ A custom still **overrides** a generated clip. The game looks up art in this ord
 | `fire-golem-slam`, `warden-cast` | Attack frames | same as the actor | same |
 | `torch`, `torch-lit`, `rod`, `rod-live`, `charm` | Props | 32–48 | `0.5,0.5` |
 | `arrow-shot`, `fireball-shot` | Projectiles | 16–32 | `0.5,0.5` |
+| `{spell}-shot`, `{family}-shot`, `fx-{family}` | Player spell body | 16–32 | `0.5,0.5` |
 | `stone-fire` … `key-spark` | Pack items | 32 | `0.5,0.5` |
+| Gate **Portrait** | Socket lock | any | `0.5,0.5` |
 
 Floors, walls, the door, and dungeon props come from Rogue Adventure (`TileAtlas` / `tiles.json`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `enemy-012`) drop from **GameObject → Rune Magic → Enemies**. Named ids and rects are in [`TILES.md`](TILES.md).
 
@@ -52,6 +61,49 @@ python3 Tools/import-sprite.py ~/art/adept.png --id adept --ppu 16 --pivot 0.5,0
 That copies the file to `Assets/Resources/Sprites/adept.png` and registers `source` in `art.json`. Or drop the PNG in that folder yourself — the id is the filename. Unity must import it as a texture (default is fine; play mode reads it as `Texture2D` and applies point filtering).
 
 In [`Tools/catalog-editor.html`](Tools/catalog-editor.html) you can still paint a still, or import a small PNG into the grid. For anything you care about, use the Resources folder.
+
+## Gate look (Unity Inspector)
+
+Select the **Gate**, not the Door. Drag a slice onto **Portrait**. The
+generated gold socket, glow, and floating name stay off while that
+field is set. Check **Hide Look** to make the lock invisible — it still
+opens the Doors when the pack has the required stones.
+
+## Spells and effects
+
+Casts are still generated painters + code particles until you replace
+them. Two Unity paths:
+
+**1. Sprite / sheet (the flying body).**  
+`Window → Rune Magic → Sprite Sheet`, or `Create → Rune Magic → Sprite
+Sheet`. Save under `Assets/Resources/SpriteSheets/`. Name a clip after
+the spell or the element:
+
+| Id | When it is used |
+|---|---|
+| `fireball-shot` | Fireball, and other Fire shots if no spell-specific clip exists |
+| `fireball` | same, second try |
+| `fire-shot` | any Fire-family shot |
+| `fx-fire` | last Fire fallback |
+| `douse-shot`, `water-shot`, `fx-water` | Water, same pattern |
+| `arrow-shot` | enemy / volley arrows (already wired) |
+
+A PNG at `Assets/Resources/Sprites/fireball-shot.png` is the same id.
+
+**2. Particle prefab (the trail / burst).**  
+Create a Particle System in Unity. Save it as a prefab under
+`Assets/Resources/Fx/`:
+
+- `Fx/FireBurst`, `Fx/FireStream`, `Fx/FireLinger`
+- or one `Fx/Fire` used for all three
+
+Family names: Fire, Flame, Water, Ice, Earth, Air, Lightning, Spark,
+Fog, Poison, Plant, Dark, Light, Steam, Lava. If the prefab is missing,
+the generated particles still play.
+
+Recipes (what a spell *does*) stay in
+[`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json)
+or `Tools/catalog-editor.html`. That file is not the picture.
 
 ## Recommendation
 
