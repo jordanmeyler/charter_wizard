@@ -9,9 +9,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// Builds the conventional Hero_22 Animator: sprite clips plus a
-    /// four-state controller. Safe to run again after you re-slice the sheet.
+    /// four-state controller. Open Window → Rune Magic → Adept Animator.
     /// </summary>
-    public static class AdeptAnimatorBuilder
+    public sealed class AdeptAnimatorBuilder : EditorWindow
     {
         public const string SheetPath = "Assets/ElvGames/Rogue Adventure/Characters/Hero_22.png";
         public const string ClipFolder = "Assets/Animations/Adept";
@@ -21,7 +21,145 @@ namespace RuneMagic
         const string Casting = "Casting";
         const string Airborne = "Airborne";
 
+        Vector2 _scroll;
+
+        [MenuItem("Window/Rune Magic/Adept Animator")]
+        public static void Open()
+        {
+            var window = GetWindow<AdeptAnimatorBuilder>("Adept Animator");
+            window.minSize = new Vector2(420f, 360f);
+            window.Show();
+        }
+
         [MenuItem("Window/Rune Magic/Rebuild Adept Animator")]
+        public static void RebuildMenu()
+        {
+            Rebuild();
+            Open();
+        }
+
+        void OnGUI()
+        {
+            _scroll = EditorGUILayout.BeginScrollView(_scroll);
+            EditorGUILayout.HelpBox(
+                "The adept uses a normal Unity Animator. Each state needs a Motion clip that " +
+                "animates Sprite Renderer → Sprite.\n\n" +
+                "1. Click Build / repair clips below.\n" +
+                "2. Open the controller and click Idle, Walk, Cast, Hop — each Motion field should show a clip, not None.\n" +
+                "3. If a Motion is None, drag the matching clip from Assets/Animations/Adept onto that state.\n" +
+                "4. Press Play. Do not place an Adept in the scene; Play still spawns one.",
+                MessageType.Info);
+
+            DrawStatus();
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Build / repair clips and controller", GUILayout.Height(36)))
+            {
+                Rebuild();
+            }
+
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Select controller (Animator window)"))
+            {
+                Ping(ControllerPath);
+                EditorApplication.ExecuteMenuItem("Window/Animation/Animator");
+            }
+
+            if (GUILayout.Button("Select Hero_22 sheet (Sprite Editor)"))
+            {
+                Ping(SheetPath);
+            }
+
+            if (GUILayout.Button("Open Animation window"))
+            {
+                EditorApplication.ExecuteMenuItem("Window/Animation/Animation");
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Clip → state", EditorStyles.boldLabel);
+            DrawClipRow("Idle", "Adept-Idle", 0, 6);
+            DrawClipRow("Walk", "Adept-Walk", 6, 6);
+            DrawClipRow("Cast", "Adept-Cast", 30, 6);
+            DrawClipRow("Hop", "Adept-Hop", 60, 4);
+            EditorGUILayout.EndScrollView();
+        }
+
+        void DrawStatus()
+        {
+            var sprites = LoadSprites();
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+            var clipsReady = ClipHasSprites("Adept-Idle") && ClipHasSprites("Adept-Walk")
+                && ClipHasSprites("Adept-Cast") && ClipHasSprites("Adept-Hop");
+            if (sprites.Length < 64)
+            {
+                EditorGUILayout.HelpBox(
+                    "Hero_22 is missing slices. Select the texture → Sprite Editor → Slice → " +
+                    "Grid By Cell Size, 32×32, Apply.",
+                    MessageType.Error);
+                return;
+            }
+
+            if (controller == null || !clipsReady)
+            {
+                EditorGUILayout.HelpBox(
+                    "Clips are empty or the controller is missing. Click Build / repair clips.",
+                    MessageType.Warning);
+                return;
+            }
+
+            EditorGUILayout.HelpBox(
+                "Clips have sprite keys and the controller is present. If Play still shows no character, " +
+                "click a state and confirm Motion is assigned.",
+                MessageType.Info);
+        }
+
+        void DrawClipRow(string state, string clipName, int start, int count)
+        {
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{ClipFolder}/{clipName}.anim");
+            var ready = ClipHasSprites(clipName);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"{state}  ←  {clipName}  (frames {start}–{start + count - 1})",
+                ready ? EditorStyles.label : EditorStyles.miniLabel);
+            if (clip != null && GUILayout.Button("Select", GUILayout.Width(64)))
+            {
+                Selection.activeObject = clip;
+                EditorGUIUtility.PingObject(clip);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        [InitializeOnLoadMethod]
+        static void EnsureController()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+
+            EditorApplication.delayCall += () =>
+            {
+                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    return;
+                }
+
+                if (AssetDatabase.LoadAssetAtPath<Texture2D>(SheetPath) == null)
+                {
+                    return;
+                }
+
+                var missing = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath) == null
+                    || !ClipHasSprites("Adept-Idle")
+                    || !ClipHasSprites("Adept-Walk")
+                    || !ClipHasSprites("Adept-Cast")
+                    || !ClipHasSprites("Adept-Hop");
+                if (missing)
+                {
+                    Rebuild();
+                }
+            };
+        }
+
         public static void Rebuild()
         {
             var sprites = LoadSprites();
@@ -39,42 +177,38 @@ namespace RuneMagic
             var cast = WriteClip("Adept-Cast", Slice(sprites, 30, 6), 4f, true);
             var hop = WriteClip("Adept-Hop", Slice(sprites, 60, 4), 7f, true);
             WriteController(idle, walk, cast, hop);
+            AssignPrefab();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
             if (controller != null)
             {
                 EditorGUIUtility.PingObject(controller);
+                Selection.activeObject = controller;
             }
 
-            Debug.Log("Adept Animator rebuilt from Hero_22.");
+            Debug.Log("Adept Animator rebuilt from Hero_22. Idle / Walk / Cast / Hop now have sprite keys.");
         }
 
-        [InitializeOnLoadMethod]
-        static void EnsureController()
+        static bool ClipHasSprites(string name)
         {
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{ClipFolder}/{name}.anim");
+            if (clip == null)
             {
-                return;
+                return false;
             }
 
-            if (AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath) != null)
+            var bindings = AnimationUtility.GetObjectReferenceCurveBindings(clip);
+            for (var i = 0; i < bindings.Length; i++)
             {
-                return;
-            }
-
-            if (AssetDatabase.LoadAssetAtPath<Texture2D>(SheetPath) == null)
-            {
-                return;
-            }
-
-            EditorApplication.delayCall += () =>
-            {
-                if (AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath) == null)
+                var keys = AnimationUtility.GetObjectReferenceCurve(clip, bindings[i]);
+                if (keys != null && keys.Length > 0 && keys[0].value != null)
                 {
-                    Rebuild();
+                    return true;
                 }
-            };
+            }
+
+            return false;
         }
 
         static Sprite[] LoadSprites()
@@ -164,6 +298,7 @@ namespace RuneMagic
             {
                 controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             }
+
             foreach (var leftover in controller.parameters.ToArray())
             {
                 controller.RemoveParameter(leftover);
@@ -201,6 +336,31 @@ namespace RuneMagic
             EditorUtility.SetDirty(controller);
         }
 
+        static void AssignPrefab()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Adept.prefab");
+            var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath);
+            var sprites = LoadSprites();
+            if (prefab == null || controller == null || sprites.Length == 0)
+            {
+                return;
+            }
+
+            var animator = prefab.GetComponent<Animator>() ?? prefab.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
+            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.applyRootMotion = false;
+            var sprite = prefab.GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.sprite = sprites[0];
+                sprite.sortingOrder = 20;
+            }
+
+            EditorUtility.SetDirty(prefab);
+        }
+
         static void Any(AnimatorStateMachine machine, AnimatorState dest, params (string name, bool value)[] conditions)
         {
             var transition = machine.AddAnyStateTransition(dest);
@@ -216,6 +376,19 @@ namespace RuneMagic
                     0f,
                     condition.name);
             }
+        }
+
+        static void Ping(string assetPath)
+        {
+            var asset = AssetDatabase.LoadMainAssetAtPath(assetPath);
+            if (asset == null)
+            {
+                EditorUtility.DisplayDialog("Adept Animator", "Missing " + assetPath, "OK");
+                return;
+            }
+
+            Selection.activeObject = asset;
+            EditorGUIUtility.PingObject(asset);
         }
     }
 }

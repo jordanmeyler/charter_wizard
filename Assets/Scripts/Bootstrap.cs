@@ -255,9 +255,18 @@ namespace RuneMagic
 
         static Sprite AdeptStill()
         {
-            return Resources.Load<RuntimeAnimatorController>(AdeptAvatar.AnimatorResource) != null
-                ? null
-                : SpriteFactory.Named("adept");
+#if UNITY_EDITOR
+            var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(
+                "Assets/ElvGames/Rogue Adventure/Characters/Hero_22.png");
+            for (var i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] is Sprite sprite && sprite.name == "Hero_22_0")
+                {
+                    return sprite;
+                }
+            }
+#endif
+            return SpriteFactory.Named("adept");
         }
 
         static void BindAdeptAnimator(GameObject player)

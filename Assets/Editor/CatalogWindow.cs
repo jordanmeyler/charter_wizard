@@ -27,6 +27,11 @@ namespace RuneMagic
                 AuthoringWindow.Open();
             }
 
+            if (GUILayout.Button("Open Adept Animator (Hero_22)"))
+            {
+                AdeptAnimatorBuilder.Open();
+            }
+
             if (GUILayout.Button("Open Sprite Sheet importer"))
             {
                 SpriteSheetWindow.Open();
