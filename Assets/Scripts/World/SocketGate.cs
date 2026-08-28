@@ -6,7 +6,11 @@ namespace RuneMagic
     /// <summary>
     /// A staged door. It opens when the adept holds this section's
     /// stones — never the running total of every stone on the floor.
+    /// Drag a Portrait to replace the generated lock; leave Look empty
+    /// to hide it. Requires is a list of pack item ids, not child objects.
     /// </summary>
+    [ExecuteAlways]
+    [SelectionBase]
     public sealed class SocketGate : MonoBehaviour, ISpellLock, IRuneSource
     {
         public string DisplayName { get; private set; }
@@ -22,19 +26,32 @@ namespace RuneMagic
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
 
-        [Header("Authoring")]
+        [Header("Lock")]
         [SerializeField] string authoredName = "Gate";
         [SerializeField] string authoredId = "gate";
+        [Tooltip("Pack item ids that open this lock (fire-stone, earth-stone, …). Not objects you attach.")]
         [SerializeField] string[] requires;
         [SerializeField] bool finishes;
         [SerializeField] string note;
-        [SerializeField] string spriteId = "socket-gate";
-        [SerializeField] Sprite portrait;
-        [SerializeField] Sprite[] idleFrames;
         [Tooltip("Door objects this lock opens. Drag WorldDoor objects here.")]
         [SerializeField] WorldDoor[] doors;
         [Tooltip("Legacy tile-door cells. Prefer Door objects.")]
         [SerializeField] Vector2Int[] doorCells;
+
+        [Header("Look")]
+        [Tooltip("Your sprite. When set, Play skips the generated socket, glow, and name.")]
+        [SerializeField] Sprite portrait;
+        [SerializeField] Sprite[] idleFrames;
+        [Tooltip("Catalog / sheet id if you are not using Portrait. Empty still uses the generated socket unless Hide Look is on.")]
+        [SerializeField] string spriteId = "socket-gate";
+        [Tooltip("No picture, glow, or name. The lock still works. Paint tiles on the Tilemap for the look.")]
+        [SerializeField] bool hideLook = true;
+        [Tooltip("Soft generated glow. Ignored when Portrait is set.")]
+        [SerializeField] bool showGlow = true;
+        [Tooltip("Floating name. Ignored when Portrait is set.")]
+        [SerializeField] bool showLabel = true;
+        [Tooltip("Idle scale pulse. Ignored when Portrait is set.")]
+        [SerializeField] bool pulse = true;
 
         string[] _requires;
         string _resolvedNote;
@@ -44,6 +61,10 @@ namespace RuneMagic
         Vector2Int[] _doors;
         float _pulse;
         bool _wired;
+        SpriteRenderer _renderer;
+
+        bool HasAuthoredArt =>
+            portrait != null || (idleFrames != null && idleFrames.Length > 0);
 
         public void Bind(
             string displayName,
@@ -83,15 +104,7 @@ namespace RuneMagic
                 }
             }
 
-            var art = string.IsNullOrEmpty(spriteId) ? "socket-gate" : spriteId;
-            AuthoringUtil.ApplyLook(gameObject, 8, art, portrait, idleFrames, 3f);
-            if (GetComponentInChildren<FixtureGlow>() == null)
-            {
-                FixtureGlow.Attach(transform, new Color(0.85f, 0.72f, 0.28f, 0.7f), 2.1f, 0.18f);
-            }
-
-            WorldLabel.Attach(transform, displayName, new Vector3(0f, 1.05f, 0f),
-                new Color(0.95f, 0.84f, 0.45f));
+            ApplyPlayLook(spriteId);
         }
 
         public void BindFromAuthoring(WorldGrid grid)
@@ -140,6 +153,45 @@ namespace RuneMagic
             return string.IsNullOrEmpty(_resolvedNote)
                 ? $"{DisplayName} takes the stones it asked for. The way opens."
                 : _resolvedNote;
+        }
+
+        void ApplyPlayLook(string id)
+        {
+            if (hideLook)
+            {
+                HideRenderer();
+                return;
+            }
+
+            if (HasAuthoredArt)
+            {
+                AuthoringUtil.ApplyLook(gameObject, 8, string.Empty, portrait, idleFrames, 3f);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                id = "socket-gate";
+            }
+
+            AuthoringUtil.ApplyLook(gameObject, 8, id, null, null, 3f);
+            if (showGlow && GetComponentInChildren<FixtureGlow>() == null)
+            {
+                FixtureGlow.Attach(transform, new Color(0.85f, 0.72f, 0.28f, 0.7f), 2.1f, 0.18f);
+            }
+
+            if (showLabel)
+            {
+                WorldLabel.Attach(transform, DisplayName, new Vector3(0f, 1.05f, 0f),
+                    new Color(0.95f, 0.84f, 0.45f));
+            }
+        }
+
+        void HideRenderer()
+        {
+            _renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            _renderer.sprite = null;
+            _renderer.enabled = false;
         }
 
         void OpenDoors()
@@ -199,13 +251,22 @@ namespace RuneMagic
 
         void Update()
         {
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
             if (Resolved)
             {
                 return;
             }
 
-            _pulse += Time.deltaTime;
-            transform.localScale = Vector3.one * (1f + Mathf.Sin(_pulse * 2.4f) * 0.04f);
+            if (pulse && !HasAuthoredArt)
+            {
+                _pulse += Time.deltaTime;
+                transform.localScale = Vector3.one * (1f + Mathf.Sin(_pulse * 2.4f) * 0.04f);
+            }
+
             if (_director == null)
             {
                 _director = FindFirstObjectByType<SanctumDirector>();
@@ -246,6 +307,65 @@ namespace RuneMagic
         }
 
 #if UNITY_EDITOR
+        void OnEnable()
+        {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
+            ApplyEditorLook();
+        }
+
+        void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
+            UnityEditor.EditorApplication.delayCall += EditorRefresh;
+        }
+
+        void EditorRefresh()
+        {
+            if (this == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            ApplyEditorLook();
+        }
+
+        void ApplyEditorLook()
+        {
+            _renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            _renderer.sortingOrder = 8;
+            if (hideLook)
+            {
+                _renderer.sprite = null;
+                _renderer.enabled = false;
+                return;
+            }
+
+            if (portrait != null)
+            {
+                _renderer.enabled = true;
+                _renderer.sprite = portrait;
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(spriteId))
+            {
+                _renderer.enabled = true;
+                _renderer.sprite = SpriteFactory.Named(spriteId);
+                return;
+            }
+
+            _renderer.sprite = null;
+            _renderer.enabled = false;
+        }
+
         void OnDrawGizmosSelected()
         {
             Gizmos.color = new Color(0.95f, 0.84f, 0.45f, 0.85f);

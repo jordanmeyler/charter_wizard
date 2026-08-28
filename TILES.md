@@ -214,14 +214,21 @@ Snap it to a floor cell. Walking onto it puts that stone in the pack. The blank 
 
 ### 2. The lock (Gate)
 
-Drag `Assets/Prefabs/Gate`. Sit it in front of the door. Inspector:
+Drag `Assets/Prefabs/Gate`. Sit it in front of the door. This is the
+**lock**, not the leaf — **Requires** lives here. Inspector:
 
 - `authoredName` — what the adept reads
-- `requires` — the same catalog ids as the stones (`fire-stone`, `water-stone`, …)
+- `requires` — pack item ids (`fire-stone`, `water-stone`, …). Not objects you attach.
+- `doors` — drag Door objects here
 - `note` — flavour when the stones seat
 - `finishes` — check only if this lock ends the floor
+- **Hide Look** — on by default. No picture. Paint any tiles you want on the Tilemap; the Gate does not stamp a 2×2.
+- **Portrait** — optional single sprite if you want a picture on the Gate itself. Uncheck Hide Look first.
 
 Walk up to the Gate holding every required stone and it turns.
+
+The default look is a generated painter. Same path as the Door: drag a
+slice from your sheet onto **Portrait**. Scene view shows it immediately.
 
 ### 3. The door (an object)
 

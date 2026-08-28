@@ -294,6 +294,13 @@ namespace RuneMagic
         {
             try
             {
+                var authored = SpawnAuthored("Burst", look, position, follow);
+                if (authored != null)
+                {
+                    Object.Destroy(authored, 1.4f);
+                    return authored;
+                }
+
                 Ensure();
                 var host = new GameObject("ElementBurst");
                 host.transform.position = position;
@@ -322,6 +329,12 @@ namespace RuneMagic
         {
             try
             {
+                var authored = SpawnAuthored("Stream", look, follow != null ? follow.position : Vector3.zero, follow);
+                if (authored != null)
+                {
+                    return authored;
+                }
+
                 Ensure();
                 var host = new GameObject("ElementStream");
                 host.transform.SetParent(follow, false);
@@ -345,6 +358,13 @@ namespace RuneMagic
         {
             try
             {
+                var authored = SpawnAuthored("Linger", look, parent != null ? parent.TransformPoint(localOffset) : localOffset, parent);
+                if (authored != null)
+                {
+                    authored.transform.localPosition = localOffset;
+                    return authored;
+                }
+
                 Ensure();
                 var host = new GameObject("ElementLinger");
                 host.transform.SetParent(parent, false);
@@ -362,6 +382,26 @@ namespace RuneMagic
                 Debug.LogWarning("Element linger failed: " + exception.Message);
                 return null;
             }
+        }
+
+        static GameObject SpawnAuthored(string kind, ElementLook look, Vector3 position, Transform parent)
+        {
+            var family = look.Family.ToString();
+            var prefab = Resources.Load<GameObject>("Fx/" + family + kind)
+                ?? Resources.Load<GameObject>("Fx/" + family);
+            if (prefab == null)
+            {
+                return null;
+            }
+
+            var spawned = Object.Instantiate(prefab, position, Quaternion.identity);
+            spawned.name = prefab.name;
+            if (parent != null)
+            {
+                spawned.transform.SetParent(parent, true);
+            }
+
+            return spawned;
         }
 
         public static GameObject VeilCloud(Transform parent, ElementLook look, float radius)

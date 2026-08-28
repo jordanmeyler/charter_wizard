@@ -135,6 +135,50 @@ namespace RuneMagic
             return clip != null && clip.Length > 1;
         }
 
+        /// <summary>
+        /// Art the author dropped in — catalog, sprite sheet, or a PNG
+        /// under Resources/Sprites. Does not return a generated painter.
+        /// </summary>
+        public static bool TryAuthored(string id, out Sprite sprite)
+        {
+            sprite = null;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return false;
+            }
+
+            if (CatalogBook.TrySprite(id, out var custom) && custom != null)
+            {
+                sprite = custom;
+                return true;
+            }
+
+            if (SpriteSheetLibrary.TrySprite(id, out var sheet) && sheet != null)
+            {
+                sprite = sheet;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryAuthoredClip(string id, out Sprite[] frames)
+        {
+            if (SpriteSheetLibrary.TryClip(id, out frames) && frames != null && frames.Length > 0)
+            {
+                return true;
+            }
+
+            if (TryAuthored(id, out var still) && still != null)
+            {
+                frames = new[] { still };
+                return true;
+            }
+
+            frames = null;
+            return false;
+        }
+
         public static Sprite MemoPublic(string key, System.Func<Sprite> build) => Memo(key, build);
 
         public static Sprite RuneMark(RuneId id)

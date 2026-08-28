@@ -53,6 +53,10 @@ MonoBehaviour:
   spriteId: socket-gate
   portrait: {fileID: 0}
   idleFrames: []
+  hideLook: 1
+  showGlow: 1
+  showLabel: 1
+  pulse: 1
   doors: []
   doorCells: []
 --- !u!212 &1272102081706159708
