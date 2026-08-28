@@ -138,6 +138,11 @@ namespace RuneMagic
 
         static void SpawnEnemy(PackEnemies.Spec spec)
         {
+            if (AuthoringWindow.TryPlace(spec.Name))
+            {
+                return;
+            }
+
             var world = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
                 ? SceneView.lastActiveSceneView.pivot
                 : Vector3.zero);

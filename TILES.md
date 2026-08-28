@@ -189,11 +189,11 @@ Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `Gam
 
 ## Stones, the lock, and the door
 
-These are prefabs. Drag them from `Assets/Prefabs` into the Scene, or press **Place** in `Window → Rune Magic → Authoring`. `GameObject → Rune Magic` instantiates the same files.
+These are prefabs. Drag them from `Assets/Prefabs` into the Scene, or press **Place** in `Window → Rune Magic → Authoring`. `GameObject → Rune Magic` instantiates the same files. Stones can live in any folder under Prefabs.
 
 ### 1. Orbs / stones
 
-Drag one from `Assets/Prefabs/Items`:
+Drag one from `Assets/Prefabs` (they ship in `Items/`):
 
 | Prefab | Catalog id |
 |---|---|

@@ -20,8 +20,8 @@ namespace RuneMagic
     /// A pickup from the item catalog. Walking into it teaches a recipe.
     /// Charmed bodies can carry a nearby prize to the adept.
     /// Fragile props do not pick up — they yield to opposed work.
-    /// Drop a prefab from Assets/Prefabs/Items — Fire Stone, Water Stone —
-    /// rather than a blank Item and a typed id.
+    /// Drop a prefab (Fire Stone, Water Stone, …) from any folder under
+    /// Assets/Prefabs rather than a blank Item and a typed id.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
