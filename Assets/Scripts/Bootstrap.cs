@@ -160,9 +160,10 @@ namespace RuneMagic
             halo.sortingOrder = 7;
 
             var sprite = player.AddComponent<SpriteRenderer>();
-            sprite.sprite = SpriteFactory.Named("adept");
+            sprite.sprite = AdeptStill();
             sprite.sortingOrder = 20;
             sprite.color = Color.white;
+            BindAdeptAnimator(player);
 
             var statuses = player.AddComponent<StatusHost>();
             statuses.Bind(CreatureNature.Flesh, new Vector3(0f, 1.42f, 0f));
@@ -196,9 +197,11 @@ namespace RuneMagic
             if (player.GetComponent<SpriteRenderer>() == null)
             {
                 var sprite = player.AddComponent<SpriteRenderer>();
-                sprite.sprite = SpriteFactory.Named("adept");
+                sprite.sprite = AdeptStill();
                 sprite.sortingOrder = 20;
             }
+
+            BindAdeptAnimator(player);
 
             if (player.GetComponent<Rigidbody2D>() == null)
             {
@@ -248,6 +251,38 @@ namespace RuneMagic
             }
 
             return player;
+        }
+
+        static Sprite AdeptStill()
+        {
+            return Resources.Load<RuntimeAnimatorController>(AdeptAvatar.AnimatorResource) != null
+                ? null
+                : SpriteFactory.Named("adept");
+        }
+
+        static void BindAdeptAnimator(GameObject player)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            var controller = Resources.Load<RuntimeAnimatorController>(AdeptAvatar.AnimatorResource);
+            if (controller == null)
+            {
+                return;
+            }
+
+            var animator = player.GetComponent<Animator>();
+            if (animator == null)
+            {
+                animator = player.AddComponent<Animator>();
+            }
+
+            animator.runtimeAnimatorController = controller;
+            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.applyRootMotion = false;
         }
 
         static void BindWorldItems(SanctumDirector director)

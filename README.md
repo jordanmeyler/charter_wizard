@@ -50,7 +50,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 
 ### Controls
 
-You only move and cast. The adept is an abstract violet robe — no face, only the garment and a withheld glow in the cowl. A gold ring marks the nearest lock; it turns cyan while you aim.
+You only move and cast. The adept is Rogue Adventure **Hero_22**, driven by a Unity Animator (`Idle` / `Walk` / `Cast` / `Hop`). A gold ring marks the nearest lock; it turns cyan while you aim.
 
 - **WASD** / arrows move
 - **Space** opens the Charter — a wall of remembered marks, and the room’s weave in a scrolling grid. Space again closes it. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
@@ -100,7 +100,7 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
 
-Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. Procedural painters stay as fallback for the adept. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
+Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. The adept uses a Unity Animator on Hero_22; generated painters stay as a fallback. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
 
 ## Catalog — recipes, sprites, items
 
