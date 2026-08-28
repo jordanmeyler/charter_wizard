@@ -74,26 +74,14 @@ namespace RuneMagic
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
         public bool IsWard => Kind == StatusKind.Ward;
-        public bool NeedsConcentration => IsWard || IsMindAilment(Id);
+        /// <summary>
+        /// Focus holds mind work. Wards and elemental clocks stand
+        /// on their own. A later mind sentence that reuses a mark
+        /// lets the held working go.
+        /// </summary>
+        public bool NeedsConcentration => IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;
-        public RuneId FocusRune
-        {
-            get
-            {
-                if (IsWard)
-                {
-                    switch (Id)
-                    {
-                        case StatusId.Stoneskin: return RuneId.Earth;
-                        case StatusId.Watershield: return RuneId.Water;
-                        case StatusId.Flameward: return RuneId.Fire;
-                        case StatusId.Windward: return RuneId.Air;
-                    }
-                }
-
-                return IsMindAilment(Id) ? RuneId.Sulphur : RuneId.None;
-            }
-        }
+        public RuneId FocusRune => IsMindAilment(Id) ? RuneId.Sulphur : RuneId.None;
 
         public const float PoisonKillSeconds = 6f;
 

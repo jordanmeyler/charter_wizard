@@ -383,19 +383,15 @@ namespace RuneMagic
                 broken.Add("A zero fill budget must not complete a missing rune");
             }
 
-            if (!FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse))
+            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse)
+                || FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
             {
-                broken.Add("Douse must drop a water ward — both use Water");
+                broken.Add("Focus does not hold wards — Douse must not drop a water ward");
             }
 
-            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
+            if (FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
             {
-                broken.Add("Fireball must not drop a water ward");
-            }
-
-            if (!FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
-            {
-                broken.Add("Fireball must drop a flame ward — both use Fire");
+                broken.Add("Fireball must not drop a flame ward — wards keep their own clock");
             }
 
             if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Rage))
@@ -428,14 +424,10 @@ namespace RuneMagic
                 broken.Add("A wall must not drop charm — earth stands without those marks");
             }
 
-            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball))
+            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball)
+                || FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
             {
-                broken.Add("Fireball must not drop stoneskin");
-            }
-
-            if (!FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
-            {
-                broken.Add("Wall must drop stoneskin — both use Earth and Salt");
+                broken.Add("A wall must not drop stoneskin — focus holds mind, not wards");
             }
 
             if (FocusLaw.Breaks(StatusId.Burning, SpellId.Douse))
@@ -569,6 +561,7 @@ namespace RuneMagic
 
             WorldPhysics.Audit(broken);
             SpanLaw.Audit(broken);
+            FocusLaw.Audit(broken);
         }
 
         public static bool TryGet(int number, out CodexEntry entry)
