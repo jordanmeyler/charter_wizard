@@ -11,8 +11,8 @@ namespace RuneMagic
     /// <summary>
     /// Scene-view outline for each stamp. Adjacent cells of the same stamp
     /// share one glow so the painted tiles stay readable.
-    /// Named RuneStampOverlay so a leftover StampOverlay class in
-    /// TilePropertyPaint cannot compile as a second copy of this type.
+    /// Lives only in Assets/Editor — do not copy this script under
+    /// Animations or any other asset folder.
     /// </summary>
     [InitializeOnLoad]
     static class RuneStampOverlay

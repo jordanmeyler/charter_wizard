@@ -8,10 +8,8 @@ namespace RuneMagic
     /// <summary>
     /// Window &gt; Rune Magic &gt; Authoring.
     /// Creates placeable prefabs and snaps them to the grid.
-    /// Named MapAuthoringWindow so a leftover AuthoringWindow script
-    /// in the project cannot compile as a second copy of the same type.
     /// </summary>
-    public sealed class MapAuthoringWindow : EditorWindow
+    public sealed class AuthoringWindow : EditorWindow
     {
         const string PrefabFolder = "Assets/Prefabs";
 
@@ -20,7 +18,7 @@ namespace RuneMagic
         [MenuItem("Window/Rune Magic/Authoring")]
         public static void Open()
         {
-            GetWindow<MapAuthoringWindow>("Authoring");
+            GetWindow<AuthoringWindow>("Authoring");
         }
 
         [MenuItem("GameObject/Rune Magic/Level Authoring", false, 10)]
