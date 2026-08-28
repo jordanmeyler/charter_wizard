@@ -39,6 +39,7 @@ namespace RuneMagic
         SpriteRenderer _underlay;
         SpriteRenderer _overlay;
         SpriteRenderer _cover;
+        SpriteRenderer _coverMark;
         SpriteRenderer _detail;
         SpriteRenderer _fx;
         Sprite _authoredLook;
@@ -855,6 +856,8 @@ namespace RuneMagic
             {
                 buffer.Add(emission[i]);
             }
+
+            CoverCatalog.Speak(Cover, buffer);
         }
 
         void ApplyVisual()
@@ -1027,30 +1030,58 @@ namespace RuneMagic
 
             if (Kind == TileKind.Pit && Material != MaterialId.Water)
             {
-                if (_cover != null)
-                {
-                    _cover.enabled = false;
-                }
-
+                HideCover();
+                HideCoverMark();
                 return;
             }
 
-            var cover = ResolveCoverSprite();
-            if (cover == null)
+            var sheen = ResolveCoverSprite();
+            if (sheen != null)
             {
-                if (_cover != null)
-                {
-                    _cover.enabled = false;
-                }
+                var view = EnsureCover();
+                view.sprite = sheen;
+                view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
+                view.sortingOrder = _renderer.sortingOrder + 1;
+                view.enabled = true;
+            }
+            else
+            {
+                HideCover();
+            }
 
+            ApplyCoverMark();
+        }
+
+        void ApplyCoverMark()
+        {
+            var rune = CoverCatalog.RuneOf(Cover);
+            if (rune == RuneId.None)
+            {
+                HideCoverMark();
                 return;
             }
 
-            var view = EnsureCover();
-            view.sprite = cover;
-            view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
-            view.sortingOrder = _renderer.sortingOrder + 1;
-            view.enabled = true;
+            var mark = EnsureCoverMark();
+            mark.sprite = RuneMark.AsSprite(rune, RunePalette.MarkInk(rune));
+            mark.color = Color.white;
+            mark.sortingOrder = _renderer.sortingOrder + 2;
+            mark.enabled = true;
+        }
+
+        void HideCover()
+        {
+            if (_cover != null)
+            {
+                _cover.enabled = false;
+            }
+        }
+
+        void HideCoverMark()
+        {
+            if (_coverMark != null)
+            {
+                _coverMark.enabled = false;
+            }
         }
 
         Sprite ResolveCoverSprite()
@@ -1103,6 +1134,20 @@ namespace RuneMagic
             child.transform.SetParent(transform, false);
             _cover = child.AddComponent<SpriteRenderer>();
             return _cover;
+        }
+
+        SpriteRenderer EnsureCoverMark()
+        {
+            if (_coverMark != null)
+            {
+                return _coverMark;
+            }
+
+            var child = new GameObject("CoverMark");
+            child.transform.SetParent(transform, false);
+            child.transform.localScale = Vector3.one * 0.62f;
+            _coverMark = child.AddComponent<SpriteRenderer>();
+            return _coverMark;
         }
 
         public void DressNeighborhood(WorldGrid grid)

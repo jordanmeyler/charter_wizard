@@ -82,7 +82,16 @@ namespace RuneMagic
             EditorGUILayout.LabelField("Stamp", EditorStyles.boldLabel);
             DrawField("Kind", ref _applyKind, () => _kind = (TileKind)EditorGUILayout.EnumPopup(_kind));
             DrawField("Material", ref _applyMaterial, () => _material = (MaterialId)EditorGUILayout.EnumPopup(_material));
-            DrawField("Cover", ref _applyCover, () => _cover = (TileCover)EditorGUILayout.EnumPopup(_cover));
+            EditorGUILayout.BeginHorizontal();
+            _applyCover = EditorGUILayout.Toggle(_applyCover, GUILayout.Width(18));
+            EditorGUILayout.PrefixLabel("Cover");
+            EditorGUILayout.LabelField(CoverLabel(_cover), EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
+            using (new EditorGUI.DisabledScope(!_applyCover))
+            {
+                RunePicker.DrawCover(ref _cover);
+            }
+
             DrawField("Blocks", ref _applyBlocks, () => _blocks = EditorGUILayout.Toggle(_blocks));
             DrawField("Opacity", ref _applyOpacity, () =>
             {
@@ -113,8 +122,19 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: ice, fire, water, vine, miasma, fog. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
+        }
+
+        static string CoverLabel(TileCover cover)
+        {
+            if (cover == TileCover.None)
+            {
+                return "None";
+            }
+
+            var rune = CoverCatalog.RuneOf(cover);
+            return rune != RuneId.None ? RuneCatalog.NameOf(rune) : cover.ToString();
         }
 
         static void DrawField(string label, ref bool apply, System.Action drawer)

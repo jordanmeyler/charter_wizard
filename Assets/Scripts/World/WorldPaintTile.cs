@@ -24,7 +24,7 @@ namespace RuneMagic
         public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Prefer Cover. Play still reads this.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and weave.")]
+        [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and the same catalog mark as an inscription.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;

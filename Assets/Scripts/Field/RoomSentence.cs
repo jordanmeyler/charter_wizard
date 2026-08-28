@@ -192,15 +192,12 @@ namespace RuneMagic
 
             if (tile.HasFog)
             {
-                live.Add(RuneId.Air);
-                live.Add(RuneId.Water);
+                CoverCatalog.Speak(TileCover.Fog, live);
             }
 
             if (tile.HasMiasma || tile.IsPoisonWater)
             {
-                live.Add(RuneId.Air);
-                live.Add(RuneId.Acid);
-                live.Add(RuneId.Miasma);
+                CoverCatalog.Speak(TileCover.Miasma, live);
             }
 
             CollectCover(tile, live);
@@ -246,8 +243,8 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A covering answers like its material. Ice cover on stone
-        /// still speaks Ice. Miasma cover still speaks the veil.
+        /// A covering answers the current catalog, same as an inscription
+        /// of that mark. Ice cover on stone still speaks Ice.
         /// </summary>
         static void CollectCover(WorldTile tile, HashSet<RuneId> live)
         {
@@ -256,39 +253,7 @@ namespace RuneMagic
                 return;
             }
 
-            switch (tile.Cover)
-            {
-                case TileCover.Ice:
-                    live.Add(RuneId.Ice);
-                    live.Add(RuneId.Water);
-                    live.Add(RuneId.Earth);
-                    break;
-                case TileCover.Fire:
-                    live.Add(RuneId.Fire);
-                    break;
-                case TileCover.Water:
-                    live.Add(RuneId.Water);
-                    break;
-                case TileCover.Vine:
-                    live.Add(RuneId.Plant);
-                    live.Add(RuneId.Vita);
-                    break;
-                case TileCover.Miasma:
-                    live.Add(RuneId.Air);
-                    live.Add(RuneId.Acid);
-                    live.Add(RuneId.Miasma);
-                    break;
-                case TileCover.Fog:
-                    live.Add(RuneId.Air);
-                    live.Add(RuneId.Water);
-                    live.Add(RuneId.Cloud);
-                    break;
-                case TileCover.Lightning:
-                    live.Add(RuneId.Lightning);
-                    live.Add(RuneId.Spark);
-                    live.Add(RuneId.Air);
-                    break;
-            }
+            CoverCatalog.Speak(tile.Cover, live);
         }
 
         static void EnsureLiveRunes(List<WeaveGlyph> scatter, HashSet<RuneId> live)

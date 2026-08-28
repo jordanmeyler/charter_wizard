@@ -195,44 +195,5 @@ namespace RuneMagic
         }
     }
 
-    static class RunePicker
-    {
-        const float Cell = 44f;
-
-        public static void Draw(ref RuneId current)
-        {
-            var runes = RuneCatalog.PlaceableRunes();
-            var wide = Mathf.Max(4, Mathf.FloorToInt((EditorGUIUtility.currentViewWidth - 28f) / (Cell + 4f)));
-            var rows = Mathf.CeilToInt(runes.Length / (float)wide);
-            var height = rows * (Cell + 18f);
-            var area = GUILayoutUtility.GetRect(wide * (Cell + 4f), height);
-            for (var i = 0; i < runes.Length; i++)
-            {
-                var rune = runes[i];
-                var col = i % wide;
-                var row = i / wide;
-                var rect = new Rect(area.x + col * (Cell + 4f), area.y + row * (Cell + 18f), Cell, Cell);
-                var fill = current == rune
-                    ? new Color(0.92f, 0.78f, 0.28f, 0.55f)
-                    : RunePalette.Card(rune, true);
-                EditorGUI.DrawRect(rect, fill);
-                RuneMark.DrawGui(rect, rune, RunePalette.MarkInk(rune));
-                var label = new Rect(rect.x, rect.yMax, rect.width, 16f);
-                var style = new GUIStyle(EditorStyles.miniLabel)
-                {
-                    alignment = TextAnchor.UpperCenter,
-                    fontSize = 9
-                };
-                style.normal.textColor = current == rune
-                    ? new Color(0.95f, 0.86f, 0.45f)
-                    : new Color(0.82f, 0.78f, 0.7f);
-                GUI.Label(label, RuneCatalog.NameOf(rune), style);
-                if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
-                {
-                    current = rune;
-                }
-            }
-        }
-    }
 }
 #endif

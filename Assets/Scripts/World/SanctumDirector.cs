@@ -2401,7 +2401,8 @@ namespace RuneMagic
 
         bool TryWeaveAt(Vector3 world)
         {
-            if (RuneStele.TryPick(world, out var rune) || RuneStringSource.TryPick(world, out rune))
+            if (RuneStele.TryPick(world, out var rune) || RuneStringSource.TryPick(world, out rune) ||
+                CoverCatalog.TryPick(world, out rune))
             {
                 WeaveFromField(rune);
                 return true;
