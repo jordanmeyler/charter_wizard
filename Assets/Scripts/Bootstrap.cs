@@ -166,7 +166,7 @@ namespace RuneMagic
             BindAdeptAnimator(player);
 
             var statuses = player.AddComponent<StatusHost>();
-            statuses.Bind(CreatureNature.Flesh, new Vector3(0f, 1.42f, 0f));
+            statuses.Bind(CreatureNature.Flesh, new Vector3(0f, 0.92f, 0f));
 
             var body = player.AddComponent<Rigidbody2D>();
             body.gravityScale = 0f;
@@ -175,9 +175,9 @@ namespace RuneMagic
             body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
             var hit = player.AddComponent<CircleCollider2D>();
-            hit.radius = 0.38f;
+            hit.radius = 0.32f;
             player.AddComponent<PlayerMotor2D>();
-            WorldLabel.Attach(player.transform, "Adept", new Vector3(0f, 1.15f, 0f),
+            WorldLabel.Attach(player.transform, "Adept", new Vector3(0f, 0.72f, 0f),
                 new Color(0.95f, 0.86f, 1f), 24);
 
             if (camera != null)
@@ -215,7 +215,7 @@ namespace RuneMagic
             if (player.GetComponent<CircleCollider2D>() == null)
             {
                 var hit = player.AddComponent<CircleCollider2D>();
-                hit.radius = 0.38f;
+                hit.radius = 0.32f;
             }
 
             if (player.GetComponent<PlayerMotor2D>() == null)
@@ -225,7 +225,7 @@ namespace RuneMagic
 
             if (player.GetComponent<StatusHost>() == null)
             {
-                player.AddComponent<StatusHost>().Bind(CreatureNature.Flesh, new Vector3(0f, 1.42f, 0f));
+                player.AddComponent<StatusHost>().Bind(CreatureNature.Flesh, new Vector3(0f, 0.92f, 0f));
             }
 
             if (player.transform.Find("Glow") == null)
@@ -255,9 +255,18 @@ namespace RuneMagic
 
         static Sprite AdeptStill()
         {
-            return Resources.Load<RuntimeAnimatorController>(AdeptAvatar.AnimatorResource) != null
-                ? null
-                : SpriteFactory.Named("adept");
+#if UNITY_EDITOR
+            var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(
+                "Assets/ElvGames/Rogue Adventure/Characters/Hero_22.png");
+            for (var i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] is Sprite sprite && sprite.name == "Hero_22_0")
+                {
+                    return sprite;
+                }
+            }
+#endif
+            return SpriteFactory.Named("adept");
         }
 
         static void BindAdeptAnimator(GameObject player)

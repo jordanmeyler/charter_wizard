@@ -4,9 +4,12 @@ The dungeon tiles are 16×16 Rogue Adventure slices at 16 PPU. Actors
 still fall back to generated painters if you have not dropped a PNG.
 Point-filter, snap the camera to 16 PPU. The adept uses a Unity
 Animator on Rogue Adventure **Hero_22** (`Idle` / `Walk` / `Cast` /
-`Hop`). Rebuild clips with **Window → Rune Magic → Rebuild Adept
-Animator** if you re-slice the sheet. Generated painters stay as a
-fallback for locks and for the player if that controller is missing.
+`Hop`), cropped to **16×16** so one pose is one tile. If the
+controller looks empty, open **Window → Rune Magic → Adept Animator**
+and click **Build / repair clips**. Then click each state and set
+Motion to the matching clip if it says None. Generated painters stay
+as a fallback for locks and for the player if that controller is
+missing.
 
 A custom still **overrides** a generated clip. The game looks up art in this order:
 
@@ -19,7 +22,7 @@ A custom still **overrides** a generated clip. The game looks up art in this ord
 
 | Id | Role | Suggested size | Pivot |
 | --- | --- | --- | --- |
-| `adept` Animator | Hero_22 clips in `Assets/Animations/Adept` | 32×32 | `0.5,0.18` |
+| `adept` Animator | Hero_22 clips in `Assets/Animations/Adept` | 16×16 | `0.5,0.18` |
 | `ash-mite`, `ice-thing`, `fire-golem`, `stone-man`, `warden` | Locks | 48–64 | `0.5,0.32` |
 | `fire-golem-slam`, `warden-cast` | Attack frames | same as the actor | same |
 | `torch`, `torch-lit`, `rod`, `rod-live`, `charm` | Props | 32–48 | `0.5,0.5` |

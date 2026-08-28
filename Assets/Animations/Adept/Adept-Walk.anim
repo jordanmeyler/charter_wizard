@@ -7,7 +7,7 @@ AnimationClip:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Adept-Walk
-  serializedVersion: 6
+  serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
@@ -18,7 +18,8 @@ AnimationClip:
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves:
-  - curve:
+  - serializedVersion: 2
+    curve:
     - time: 0
       value: {fileID: -1601357602, guid: 4126a34522088fd48ba348b82f3ad302, type: 3}
     - time: 0.125
@@ -34,6 +35,7 @@ AnimationClip:
     attribute: m_Sprite
     path: 
     classID: 212
+    flags: 2
     script: {fileID: 0}
   m_SampleRate: 8
   m_WrapMode: 0
