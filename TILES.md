@@ -40,11 +40,10 @@ each `WorldPaintTile` into a live `WorldTile`.
 7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    and **cover** on a shared brush. Duplicate an asset to make
    a new brush. `Create → Rune Magic → Map Tile` also works.
-8. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Door…`
-   and set catalog id, material, formula, or sprite on the Inspector.
-   Stones are Items (`catalogId` = `fire-stone` …). The lock is a Gate.
-   The leaf is a Door object with Closed and Open sprites — drag it onto
-   the Gate. Pack enemies are under `GameObject → Rune Magic → Enemies`.
+8. Drag prefabs from `Assets/Prefabs` (Items/Fire Stone, Gate, Door) or
+   press Place in `Window → Rune Magic → Authoring`. The GameObject
+   menu instantiates those same prefabs. Pack enemies are under
+   `GameObject → Rune Magic → Enemies`.
 9. Leave **Stamp Foundation Into Scene** alone unless you want the old
    generated Floor 1 dumped back onto the Tilemap.
 
@@ -95,9 +94,7 @@ middle for the stone.
 4. Optional look: check **Cover** = `Ice`, **Write onto Cover
    layer**, and stamp the same cells (and the inner floor) so the
    ice reads as ice.
-5. `GameObject → Rune Magic → Item`. Snap to the inner cell.
-   Inspector: `catalogId` = `fire-stone` (sprite `stone-fire` if
-   you want it shown in the editor).
+5. Drag `Assets/Prefabs/Items/Fire Stone` onto the inner cell.
 6. Optional lock sprite: `GameObject → Rune Magic → Barrier` on
    that same cell. `authoredName` = `Ice cage`, formula `Water`
    and `Earth`, `spriteId` = `ice-block`. List **Cover Cells** as
@@ -133,8 +130,7 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
    stone, not the doorway if you want them to step in and get
    thrown back. Paint any foggy tile on **Cover** first if you
    want your own art under the veil.
-4. `GameObject → Rune Magic → Item` on the far side of the fog.
-   `catalogId` = `air-stone`.
+4. Drag `Assets/Prefabs/Items/Air Stone` onto the far side of the fog.
 5. Optional: `GameObject → Rune Magic → Fog` on those cells if
    you want a named lock Gust can target. Painted Cover-Miasma
    already throws you back and vents when air is sent.
@@ -160,8 +156,7 @@ not fill.
 
 1. Leave or erase the crossing — one cell is a small hop; two or
    three in a line is a short gap.
-2. `GameObject → Rune Magic → Item` on the far ledge.
-   `catalogId` = `earth-stone`.
+2. Drag `Assets/Prefabs/Items/Earth Stone` onto the far ledge.
 
 Painted walls stay walls. Pillars and wall spells fill pits as
 walkable spans. A later pass will cap how far a bridge can run
@@ -178,7 +173,7 @@ You control the picture from the Inspector. Nothing here is a tile layer.
 Every catalog rune can be an inscription — roots, joins, and reserved names. `Window → Rune Magic → Inscriptions` (or Authoring → Inscriptions **Place**): click a mark, then click a tile in the Scene view. Right-click removes. The Inspector on an inscription is the same grid. With nothing else set, a **floating mark** is the whole picture — no slab, shaft, or base. Hover = Floor (lower) or Pillar (a little higher). Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**. In Play, click a floating mark to draw it into the Charter.
 
 **Items, torches, plaques, barriers, fog, doors.**
-Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor). A Door has two portraits — closed and open.
+Same pattern. Stones already have their id and sprite on the prefab. For a custom Item, drag a sprite onto **Portrait**, or set `spriteId` / `catalogId`. A Door has two portraits — closed and open.
 
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
@@ -194,30 +189,30 @@ Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `Gam
 
 ## Stones, the lock, and the door
 
-The orbs (stones), the lock, and the door are three objects. Paint a floor gap in the wall, then drop all three from `GameObject → Rune Magic`.
+These are prefabs. Drag them from `Assets/Prefabs` into the Scene, or press **Place** in `Window → Rune Magic → Authoring`. `GameObject → Rune Magic` instantiates the same files. Stones can live in any folder under Prefabs.
 
 ### 1. Orbs / stones
 
-`GameObject → Rune Magic → Item`. Snap to a floor cell. Inspector `catalogId`:
+Drag one from `Assets/Prefabs` (they ship in `Items/`):
 
-| Id | Stone |
+| Prefab | Catalog id |
 |---|---|
-| `fire-stone` | Fire |
-| `water-stone` | Water |
-| `earth-stone` | Earth |
-| `air-stone` | Air |
-| `body-stone` | Body |
-| `spirit-stone` | Spirit |
-| `mind-stone` | Mind |
-| `grove-stone` | Grove |
-| `flood-stone` | Flood |
-| `spark-stone` | Spark |
+| Fire Stone | `fire-stone` |
+| Water Stone | `water-stone` |
+| Earth Stone | `earth-stone` |
+| Air Stone | `air-stone` |
+| Body Stone | `body-stone` |
+| Spirit Stone | `spirit-stone` |
+| Mind Stone | `mind-stone` |
+| Grove Stone | `grove-stone` |
+| Flood Stone | `flood-stone` |
+| Spark Stone | `spark-stone` |
 
-Optional `spriteId` (`stone-fire`, `stone-water`, …) so the picture shows in the editor. Walking onto an Item puts it in the pack.
+Snap it to a floor cell. Walking onto it puts that stone in the pack. The blank **Item** prefab is only for a new catalog row.
 
 ### 2. The lock (Gate)
 
-`GameObject → Rune Magic → Gate`. Sit it in front of the door. Inspector:
+Drag `Assets/Prefabs/Gate`. Sit it in front of the door. Inspector:
 
 - `authoredName` — what the adept reads
 - `requires` — the same catalog ids as the stones (`fire-stone`, `water-stone`, …)
@@ -228,7 +223,7 @@ Walk up to the Gate holding every required stone and it turns.
 
 ### 3. The door (an object)
 
-`GameObject → Rune Magic → Door`. Put it on the floor gap in the wall — not a Door stamp on the Tilemap. Inspector:
+Drag `Assets/Prefabs/Door` onto the floor gap in the wall — not a Door stamp on the Tilemap. Inspector:
 
 - **Start State** — `Closed` or `Open`
 - **Closed Portrait** / **Closed Sprite Id** (`door`) — the shut leaf
@@ -245,7 +240,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 | Place | Old puzzle job | Inspector |
 |---|---|---|
-| **Item** | fire-stone, water-stone, earth-stone, air-stone, body / mind / grove / flood / spark stones, ice-cask | `catalogId` |
+| **Fire Stone** … | orbs — drag `Assets/Prefabs/Items` | already set |
 | **Mite** / **Enemy** | ice-thing, ash-mite, and the rest | formula, keys, sprite |
 | **Torch** | cold torch | keys |
 | **Rod** | storm rod | keys |

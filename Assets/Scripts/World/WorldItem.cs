@@ -20,7 +20,11 @@ namespace RuneMagic
     /// A pickup from the item catalog. Walking into it teaches a recipe.
     /// Charmed bodies can carry a nearby prize to the adept.
     /// Fragile props do not pick up — they yield to opposed work.
+    /// Drop a prefab (Fire Stone, Water Stone, …) from any folder under
+    /// Assets/Prefabs rather than a blank Item and a typed id.
     /// </summary>
+    [ExecuteAlways]
+    [SelectionBase]
     public sealed class WorldItem : MonoBehaviour, ILookable, IWorldMatter, ICarryable
     {
         public bool Collected { get; private set; }
@@ -304,6 +308,57 @@ namespace RuneMagic
             }
 
             Destroy(gameObject);
+        }
+
+        void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                PreviewLook();
+            }
+        }
+
+        void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += EditorRefresh;
+#endif
+        }
+
+#if UNITY_EDITOR
+        void EditorRefresh()
+        {
+            if (this == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            PreviewLook();
+        }
+#endif
+
+        void PreviewLook()
+        {
+            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            renderer.sortingOrder = 5;
+            if (portrait != null)
+            {
+                renderer.sprite = portrait;
+                return;
+            }
+
+            var art = spriteId;
+            if (string.IsNullOrEmpty(art) && CatalogBook.TryItem(catalogId, out var item) && item != null)
+            {
+                art = item.sprite;
+            }
+
+            renderer.sprite = SpriteFactory.Named(string.IsNullOrEmpty(art) ? "charm" : art);
         }
     }
 }

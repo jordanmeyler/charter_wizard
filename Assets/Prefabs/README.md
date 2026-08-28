@@ -1,5 +1,9 @@
 # Prefabs
 
-`Window → Rune Magic → Authoring → Create / refresh prefabs` writes Item, Mite, Torch, Rod, Gate, Door, Barrier, Plaque, Crystal, Charm, and Adept here. Drag them into the scene and set interactions on the Inspector. A Door has closed and open sprites; drag it onto a Gate's **Doors** list.
+Drag these into the Scene. That is the usual Unity path.
 
-Pack enemies are not prefab files — place them with **GameObject → Rune Magic → Enemies** or the Authoring window. `Main.unity` already has a few next to spawn.
+Stones start in `Assets/Prefabs/Items`. You can move that folder, rename it, or nest it — Play does not care, and Authoring Place / `GameObject → Rune Magic` find a prefab by file name anywhere under `Assets/Prefabs`. `Gate` and `Door` sit next to them.
+
+`Create / refresh prefabs` writes any missing type (Item, Mite, Torch, Rod, Gate, Door, Barrier, Plaque, Crystal, Charm, Adept, stones, and pack enemies). A Door has closed and open sprites; drag it onto a Gate's **Doors** list.
+
+Enemies write into `Assets/Prefabs/Enemies` the first time you refresh. After that, move the folder if you want — Place still finds them by name.
