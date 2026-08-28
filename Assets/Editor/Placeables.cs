@@ -10,7 +10,37 @@ namespace RuneMagic
     /// </summary>
     public static class Placeables
     {
-        [MenuItem("GameObject/Rune Magic/Item", false, 20)]
+        [MenuItem("GameObject/Rune Magic/Stones/Fire Stone", false, 20)]
+        static void FireStone() => Place("Fire Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Water Stone", false, 21)]
+        static void WaterStone() => Place("Water Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Earth Stone", false, 22)]
+        static void EarthStone() => Place("Earth Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Air Stone", false, 23)]
+        static void AirStone() => Place("Air Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Body Stone", false, 24)]
+        static void BodyStone() => Place("Body Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Spirit Stone", false, 25)]
+        static void SpiritStone() => Place("Spirit Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Mind Stone", false, 26)]
+        static void MindStone() => Place("Mind Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Grove Stone", false, 27)]
+        static void GroveStone() => Place("Grove Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Flood Stone", false, 28)]
+        static void FloodStone() => Place("Flood Stone");
+
+        [MenuItem("GameObject/Rune Magic/Stones/Spark Stone", false, 29)]
+        static void SparkStone() => Place("Spark Stone");
+
+        [MenuItem("GameObject/Rune Magic/Item", false, 30)]
         static void Item() => Spawn("Item", typeof(WorldItem));
 
         [MenuItem("GameObject/Rune Magic/Decor", false, 21)]
@@ -128,8 +158,21 @@ namespace RuneMagic
             Selection.activeGameObject = host;
         }
 
+        static void Place(string name)
+        {
+            if (!AuthoringWindow.TryPlace(name))
+            {
+                Spawn(name, typeof(WorldItem));
+            }
+        }
+
         static void Spawn(string name, System.Type type)
         {
+            if (AuthoringWindow.TryPlace(name))
+            {
+                return;
+            }
+
             var host = new GameObject(name);
             host.AddComponent(type);
             if (host.GetComponent<SpriteRenderer>() == null)
