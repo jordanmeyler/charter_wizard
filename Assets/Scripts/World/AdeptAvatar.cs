@@ -5,6 +5,7 @@ namespace RuneMagic
     /// <summary>
     /// Marks the player without relying on the Player tag existing in the project.
     /// The adept’s recipe is mind, body, and soul — always in the weave.
+    /// Motion is a Unity Animator on Hero_22 (Idle / Walk / Cast / Hop).
     /// </summary>
     public sealed class AdeptAvatar : MonoBehaviour
     {
@@ -18,12 +19,17 @@ namespace RuneMagic
         };
 
         public const float FlameKillSeconds = 8f;
+        public const string AnimatorResource = "Animations/Adept";
+        public const string MovingParam = "Moving";
+        public const string CastingParam = "Casting";
+        public const string AirborneParam = "Airborne";
 
         float _airborneUntil;
         float _stillUntil;
         float _flameStand;
         SpriteRenderer _sprite;
         SpriteRenderer _glow;
+        Animator _animator;
         SpriteAnim _anim;
         PlayerMotor2D _motor;
         StatusHost _status;
@@ -31,6 +37,7 @@ namespace RuneMagic
         Color _baseColor = Color.white;
         Vector3 _restScale = Vector3.one;
         bool _casting;
+        bool _usesAnimator;
 
         public bool IsAirborne => Time.time < _airborneUntil;
         public static bool WorldHeld { get; private set; }
@@ -94,6 +101,7 @@ namespace RuneMagic
         void Awake()
         {
             _restScale = transform.localScale;
+            BindView();
         }
 
         void Start()
@@ -122,12 +130,6 @@ namespace RuneMagic
                 _status = GetComponent<StatusHost>();
             }
 
-            if (_anim == null && _sprite != null)
-            {
-                _anim = SpriteAnim.On(gameObject, _sprite);
-                _anim.Play("adept-idle", 5f);
-            }
-
             if (_director == null)
             {
                 _director = FindFirstObjectByType<SanctumDirector>();
@@ -140,6 +142,53 @@ namespace RuneMagic
                 {
                     _glow = child.GetComponent<SpriteRenderer>();
                 }
+            }
+
+            BindAnimator();
+        }
+
+        void BindAnimator()
+        {
+            if (_usesAnimator && _animator != null)
+            {
+                return;
+            }
+
+            if (_animator == null)
+            {
+                _animator = GetComponent<Animator>();
+            }
+
+            var controller = _animator != null ? _animator.runtimeAnimatorController : null;
+            if (controller == null)
+            {
+                controller = Resources.Load<RuntimeAnimatorController>(AnimatorResource);
+            }
+
+            if (controller == null)
+            {
+                if (_anim == null && _sprite != null)
+                {
+                    _anim = SpriteAnim.On(gameObject, _sprite);
+                    _anim.Play("adept-idle", 5f);
+                }
+
+                return;
+            }
+
+            if (_animator == null)
+            {
+                _animator = gameObject.AddComponent<Animator>();
+            }
+
+            _animator.runtimeAnimatorController = controller;
+            _animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            _animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            _animator.applyRootMotion = false;
+            _usesAnimator = true;
+            if (_anim != null)
+            {
+                _anim.enabled = false;
             }
         }
 
@@ -154,30 +203,40 @@ namespace RuneMagic
             WorldHeld = Time.time < _stillUntil;
             var moving = _motor != null && _motor.Moving;
             var aiming = _casting || (_director != null && _director.Mode == PlayMode.Aiming);
-            var clip = "adept-idle";
-            var fps = 5f;
-            if (WorldHeld || aiming)
+            if (_usesAnimator && _animator != null)
             {
-                clip = "adept-cast";
-                fps = 4f;
+                _animator.speed = GameHud.EditingName ? 0f : 1f;
+                _animator.SetBool(MovingParam, moving);
+                _animator.SetBool(CastingParam, WorldHeld || aiming);
+                _animator.SetBool(AirborneParam, IsAirborne);
             }
-            else if (IsAirborne)
+            else
             {
-                clip = "adept-hop";
-                fps = 7f;
-            }
-            else if (moving)
-            {
-                clip = "adept-walk";
-                fps = 8f;
+                var clip = "adept-idle";
+                var fps = 5f;
+                if (WorldHeld || aiming)
+                {
+                    clip = "adept-cast";
+                    fps = 4f;
+                }
+                else if (IsAirborne)
+                {
+                    clip = "adept-hop";
+                    fps = 7f;
+                }
+                else if (moving)
+                {
+                    clip = "adept-walk";
+                    fps = 8f;
+                }
+
+                _anim?.Play(clip, fps);
+                var bob = moving || IsAirborne || aiming
+                    ? 1f
+                    : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
+                transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             }
 
-            _anim?.Play(clip, fps);
-
-            var bob = moving || IsAirborne || aiming
-                ? 1f
-                : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
-            transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             if (_glow != null)
             {
                 var pulse = 0.72f + Mathf.Sin(Time.time * 3.2f) * 0.16f;
