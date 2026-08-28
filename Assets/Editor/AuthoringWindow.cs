@@ -50,7 +50,7 @@ namespace RuneMagic
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Environment Details for plants and furniture. Select Cover for ice / fire / aura.\n" +
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
-                "6. GameObject → Rune Magic → Item / Decor / Enemy / Torch… Set catalog id and material on the Inspector.\n" +
+                "6. GameObject → Rune Magic → Item / Decor / Enemy / Torch / Door… Set catalog id and material on the Inspector. A Door has Closed and Open sprites; drag it onto a Gate.\n" +
                 "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
                 "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
@@ -108,7 +108,8 @@ namespace RuneMagic
             EditorGUILayout.Space();
             DrawPlace("Torch", "TorchFixture — keys, lit frames");
             DrawPlace("Rod", "LightningConduit — spark lock");
-            DrawPlace("Gate", "SocketGate — requires pack items");
+            DrawPlace("Gate", "SocketGate — requires pack items, opens Door objects");
+            DrawPlace("Door", "WorldDoor — closed / open sprites, blocks when shut");
             DrawPlace("Barrier", "BarrierLock — cover cells, clear material");
             DrawPlace("Plaque", "HintPlaque — readable text");
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
@@ -193,6 +194,7 @@ namespace RuneMagic
             Write("Torch", typeof(TorchFixture));
             Write("Rod", typeof(LightningConduit));
             Write("Gate", typeof(SocketGate));
+            Write("Door", typeof(WorldDoor));
             Write("Barrier", typeof(BarrierLock));
             Write("Plaque", typeof(HintPlaque));
             Write("Crystal", typeof(SpawnCrystal));

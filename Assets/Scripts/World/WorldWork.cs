@@ -70,7 +70,10 @@ namespace RuneMagic
         }
 
         public static bool BlocksTravel(WorldTile tile) =>
-            tile != null && tile.BlocksTravel;
+            tile != null && (tile.BlocksTravel || WorldDoor.BlocksCell(tile.Coord));
+
+        public static bool BlocksCell(Vector2Int cell, WorldTile tile = null) =>
+            (tile != null && tile.BlocksTravel) || WorldDoor.BlocksCell(cell);
 
         public static bool IsTimeStop(SpellId spell) =>
             spell == SpellId.TimeStop;
@@ -1225,7 +1228,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (!BlocksTravel(tile))
+                if (!BlocksCell(path[i], tile))
                 {
                     land = path[i];
                     continue;
@@ -1250,7 +1253,7 @@ namespace RuneMagic
             for (var i = 1; i < path.Count; i++)
             {
                 var tile = grid.Get(path[i]);
-                if (BlocksTravel(tile))
+                if (BlocksCell(path[i], tile))
                 {
                     return WorldGrid.Center(path[i].x, path[i].y);
                 }
@@ -1296,7 +1299,7 @@ namespace RuneMagic
                 }
 
                 var tile = grid.Get(path[i]);
-                if (BlocksTravel(tile))
+                if (BlocksCell(path[i], tile))
                 {
                     return true;
                 }
@@ -1330,7 +1333,7 @@ namespace RuneMagic
                     break;
                 }
 
-                if (BlocksTravel(tile))
+                if (BlocksCell(path[i], tile))
                 {
                     break;
                 }

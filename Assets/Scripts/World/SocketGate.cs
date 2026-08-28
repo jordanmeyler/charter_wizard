@@ -31,12 +31,16 @@ namespace RuneMagic
         [SerializeField] string spriteId = "socket-gate";
         [SerializeField] Sprite portrait;
         [SerializeField] Sprite[] idleFrames;
+        [Tooltip("Door objects this lock opens. Drag WorldDoor objects here.")]
+        [SerializeField] WorldDoor[] doors;
+        [Tooltip("Legacy tile-door cells. Prefer Door objects.")]
         [SerializeField] Vector2Int[] doorCells;
 
         string[] _requires;
         string _resolvedNote;
         SanctumDirector _director;
         WorldGrid _grid;
+        WorldDoor[] _objectDoors;
         Vector2Int[] _doors;
         float _pulse;
         bool _wired;
@@ -49,7 +53,8 @@ namespace RuneMagic
             string resolvedNote,
             string spriteId,
             WorldGrid grid = null,
-            IList<Vector2Int> doors = null)
+            IList<Vector2Int> doors = null,
+            IList<WorldDoor> objectDoors = null)
         {
             if (_wired)
             {
@@ -68,6 +73,7 @@ namespace RuneMagic
             FinishesFloor = finishesFloor;
             _resolvedNote = resolvedNote;
             _grid = grid;
+            _objectDoors = CopyDoors(objectDoors);
             _doors = doors != null ? new Vector2Int[doors.Count] : System.Array.Empty<Vector2Int>();
             if (doors != null)
             {
@@ -103,7 +109,8 @@ namespace RuneMagic
                 note,
                 spriteId,
                 grid,
-                doorCells != null && doorCells.Length > 0 ? doorCells : null);
+                doorCells != null && doorCells.Length > 0 ? doorCells : null,
+                this.doors);
         }
 
         public void Collect(List<RuneId> buffer)
@@ -137,15 +144,57 @@ namespace RuneMagic
 
         void OpenDoors()
         {
-            if (_grid == null || _doors == null)
+            var opened = false;
+            if (_objectDoors != null)
+            {
+                for (var i = 0; i < _objectDoors.Length; i++)
+                {
+                    if (_objectDoors[i] == null)
+                    {
+                        continue;
+                    }
+
+                    _objectDoors[i].Open();
+                    opened = true;
+                }
+            }
+
+            if (_grid != null && _doors != null)
+            {
+                for (var i = 0; i < _doors.Length; i++)
+                {
+                    _grid.Get(_doors[i])?.OpenDoor();
+                    opened = true;
+                }
+            }
+
+            if (opened)
             {
                 return;
             }
 
-            for (var i = 0; i < _doors.Length; i++)
+            var nearby = new List<WorldDoor>();
+            WorldDoor.Nearby(transform.position, WorldDoor.AutoLinkRadius, nearby);
+            for (var i = 0; i < nearby.Count; i++)
             {
-                _grid.Get(_doors[i])?.OpenDoor();
+                nearby[i]?.Open();
             }
+        }
+
+        static WorldDoor[] CopyDoors(IList<WorldDoor> doors)
+        {
+            if (doors == null || doors.Count == 0)
+            {
+                return System.Array.Empty<WorldDoor>();
+            }
+
+            var copy = new WorldDoor[doors.Count];
+            for (var i = 0; i < doors.Count; i++)
+            {
+                copy[i] = doors[i];
+            }
+
+            return copy;
         }
 
         void Update()
@@ -195,5 +244,30 @@ namespace RuneMagic
 
             return id.Replace("-", " ");
         }
+
+#if UNITY_EDITOR
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(0.95f, 0.84f, 0.45f, 0.85f);
+            if (doors != null)
+            {
+                for (var i = 0; i < doors.Length; i++)
+                {
+                    if (doors[i] == null)
+                    {
+                        continue;
+                    }
+
+                    Gizmos.DrawLine(transform.position, doors[i].transform.position);
+                }
+            }
+
+            if ((doors == null || doors.Length == 0) && (doorCells == null || doorCells.Length == 0))
+            {
+                Gizmos.color = new Color(0.95f, 0.84f, 0.45f, 0.25f);
+                Gizmos.DrawWireSphere(transform.position, WorldDoor.AutoLinkRadius);
+            }
+        }
+#endif
     }
 }

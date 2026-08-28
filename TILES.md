@@ -40,9 +40,11 @@ each `WorldPaintTile` into a live `WorldTile`.
 7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    and **cover** on a shared brush. Duplicate an asset to make
    a new brush. `Create → Rune Magic → Map Tile` also works.
-8. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch…`
+8. Place objects with `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Door…`
    and set catalog id, material, formula, or sprite on the Inspector.
-   Pack enemies are under `GameObject → Rune Magic → Enemies`.
+   Stones are Items (`catalogId` = `fire-stone` …). The lock is a Gate.
+   The leaf is a Door object with Closed and Open sprites — drag it onto
+   the Gate. Pack enemies are under `GameObject → Rune Magic → Enemies`.
 9. Leave **Stamp Foundation Into Scene** alone unless you want the old
    generated Floor 1 dumped back onto the Tilemap.
 
@@ -175,8 +177,8 @@ You control the picture from the Inspector. Nothing here is a tile layer.
 **Runes (Inscription / Pillar / Rune).**
 Every catalog rune can be an inscription — roots, joins, and reserved names. `Window → Rune Magic → Inscriptions` (or Authoring → Inscriptions **Place**): click a mark, then click a tile in the Scene view. Right-click removes. The Inspector on an inscription is the same grid. With nothing else set, a **floating mark** is the whole picture — no slab, shaft, or base. Hover = Floor (lower) or Pillar (a little higher). Drag your art onto **Portrait** when you have a palette of your own. Or type a **Sprite Id**. In Play, click a floating mark to draw it into the Charter.
 
-**Items, torches, plaques, barriers, fog.**
-Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor).
+**Items, torches, plaques, barriers, fog, doors.**
+Same pattern. Select the object. Drag a sprite onto **Portrait**, or set `spriteId` / `catalogId` (items use `fire-stone` and can take `spriteId` = `stone-fire` to show that art in the editor). A Door has two portraits — closed and open.
 
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
@@ -190,13 +192,65 @@ what the cell answers in the weave — same as that material.
 
 Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
 
+## Stones, the lock, and the door
+
+The orbs (stones), the lock, and the door are three objects. Paint a floor gap in the wall, then drop all three from `GameObject → Rune Magic`.
+
+### 1. Orbs / stones
+
+`GameObject → Rune Magic → Item`. Snap to a floor cell. Inspector `catalogId`:
+
+| Id | Stone |
+|---|---|
+| `fire-stone` | Fire |
+| `water-stone` | Water |
+| `earth-stone` | Earth |
+| `air-stone` | Air |
+| `body-stone` | Body |
+| `spirit-stone` | Spirit |
+| `mind-stone` | Mind |
+| `grove-stone` | Grove |
+| `flood-stone` | Flood |
+| `spark-stone` | Spark |
+
+Optional `spriteId` (`stone-fire`, `stone-water`, …) so the picture shows in the editor. Walking onto an Item puts it in the pack.
+
+### 2. The lock (Gate)
+
+`GameObject → Rune Magic → Gate`. Sit it in front of the door. Inspector:
+
+- `authoredName` — what the adept reads
+- `requires` — the same catalog ids as the stones (`fire-stone`, `water-stone`, …)
+- `note` — flavour when the stones seat
+- `finishes` — check only if this lock ends the floor
+
+Walk up to the Gate holding every required stone and it turns.
+
+### 3. The door (an object)
+
+`GameObject → Rune Magic → Door`. Put it on the floor gap in the wall — not a Door stamp on the Tilemap. Inspector:
+
+- **Start State** — `Closed` or `Open`
+- **Closed Portrait** / **Closed Sprite Id** (`door`) — the shut leaf
+- **Open Portrait** / **Open Sprite Id** (`door-open`) — the open way
+- **Block Width / Height** — how many cells the leaf covers (1×1 is one cell; 3×1 seals a three-wide hall)
+
+Drag your own closed and open sprites onto the two Portrait fields. The Scene gizmo is amber when shut, green when open. Toggle **Start State** to preview the other picture.
+
+On the Gate, drag that Door into **Doors**. When the lock turns, those objects open: collider drops, the open sprite shows, walking and shots go through.
+
+If **Doors** and **Door Cells** are both empty, the Gate opens any Door standing within about four tiles.
+
+Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**). Prefer the Door object when you want your own open and closed art.
+
 | Place | Old puzzle job | Inspector |
 |---|---|---|
 | **Item** | fire-stone, water-stone, earth-stone, air-stone, body / mind / grove / flood / spark stones, ice-cask | `catalogId` |
 | **Mite** / **Enemy** | ice-thing, ash-mite, and the rest | formula, keys, sprite |
 | **Torch** | cold torch | keys |
 | **Rod** | storm rod | keys |
-| **Gate** | Gate of Elements | `requires` item ids |
+| **Gate** | Gate of Elements | `requires` item ids, **Doors** |
+| **Door** | wooden leaf with open / closed states | start state, closed / open sprites |
 | **Barrier** | ice cage | formula, cover cells, clear material |
 | **Chasm** | pit lock | nearby pits, or list cells |
 | **Arrows** | arrow volley | dir, cover cells |
@@ -291,9 +345,10 @@ stamps keep working. The actual ice/fire/lightning look is a **cover**.
 | `pillar-broken` | Crypt | Broken stump |
 | `stalagmite` | Cavern | Rock cluster |
 
-One door sprite. The exit is still three cells wide so a closed gate
-seals the hall; only the **center** cell draws the wooden leaf. The
-two jambs draw stone wall.
+One door sprite. Prefer `GameObject → Rune Magic → Door` for a leaf
+you can open and close. A three-wide hall still wants stone jambs;
+set the Door **Block Width** to 3, or drop one Door on the centre
+cell. Tile `Kind = Door` is the leftover baked leaf.
 
 ## Coverings (element swaps)
 

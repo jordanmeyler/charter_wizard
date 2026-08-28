@@ -173,6 +173,12 @@ namespace RuneMagic
                 decors[i].BindFromAuthoring();
             }
 
+            var doors = Object.FindObjectsByType<WorldDoor>(FindObjectsSortMode.None);
+            for (var i = 0; i < doors.Length; i++)
+            {
+                doors[i].BindFromAuthoring(build.Grid);
+            }
+
             var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
             for (var i = 0; i < steles.Length; i++)
             {
