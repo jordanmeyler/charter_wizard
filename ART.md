@@ -4,9 +4,11 @@ The dungeon tiles are 16×16 Rogue Adventure slices at 16 PPU. Actors
 still fall back to generated painters if you have not dropped a PNG.
 Point-filter, snap the camera to 16 PPU. The adept uses a Unity
 Animator on Rogue Adventure **Hero_22** (`Idle` / `Walk` / `Cast` /
-`Hop`). Rebuild clips with **Window → Rune Magic → Rebuild Adept
-Animator** if you re-slice the sheet. Generated painters stay as a
-fallback for locks and for the player if that controller is missing.
+`Hop`). If the controller looks empty, open **Window → Rune Magic →
+Adept Animator** and click **Build / repair clips**. Then click each
+state and set Motion to the matching clip if it says None. Generated
+painters stay as a fallback for locks and for the player if that
+controller is missing.
 
 A custom still **overrides** a generated clip. The game looks up art in this order:
 
