@@ -150,7 +150,6 @@ namespace RuneMagic
             }
 
             player.transform.position = spawn;
-            player.AddComponent<AdeptAvatar>();
 
             var glow = new GameObject("Glow");
             glow.transform.SetParent(player.transform, false);
@@ -163,6 +162,7 @@ namespace RuneMagic
             sprite.sprite = AdeptStill();
             sprite.sortingOrder = 20;
             sprite.color = Color.white;
+            player.AddComponent<AdeptAvatar>();
             BindAdeptAnimator(player);
 
             var statuses = player.AddComponent<StatusHost>();
@@ -203,14 +203,16 @@ namespace RuneMagic
 
             BindAdeptAnimator(player);
 
-            if (player.GetComponent<Rigidbody2D>() == null)
+            var body = player.GetComponent<Rigidbody2D>();
+            if (body == null)
             {
-                var body = player.AddComponent<Rigidbody2D>();
+                body = player.AddComponent<Rigidbody2D>();
                 body.gravityScale = 0f;
                 body.freezeRotation = true;
                 body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-                body.interpolation = RigidbodyInterpolation2D.Interpolate;
             }
+
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
             if (player.GetComponent<CircleCollider2D>() == null)
             {
@@ -288,10 +290,7 @@ namespace RuneMagic
                 animator = player.AddComponent<Animator>();
             }
 
-            animator.runtimeAnimatorController = controller;
-            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
-            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            animator.applyRootMotion = false;
+            AdeptAvatar.ApplyController(animator, controller);
         }
 
         static void BindWorldItems(SanctumDirector director)

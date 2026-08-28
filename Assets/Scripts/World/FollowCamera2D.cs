@@ -11,6 +11,8 @@ namespace RuneMagic
         public float pixelsPerUnit = 16f;
         bool _snapped;
         Vector3 _look;
+        Transform _bound;
+        PlayerMotor2D _motor;
 
         void LateUpdate()
         {
@@ -19,12 +21,20 @@ namespace RuneMagic
                 return;
             }
 
-            var motor = Target.GetComponent<PlayerMotor2D>();
-            var ahead = motor != null && motor.Moving
-                ? (Vector3)(motor.Facing * lookAhead)
+            if (_bound != Target)
+            {
+                _bound = Target;
+                _motor = Target.GetComponent<PlayerMotor2D>();
+            }
+
+            var ahead = _motor != null && _motor.Moving
+                ? (Vector3)(_motor.Facing * lookAhead)
                 : Vector3.zero;
             _look = Vector3.Lerp(_look, ahead, 1f - Mathf.Exp(-4f * Time.deltaTime));
-            var desired = TargetPoint() + _look;
+            // Follow the interpolated transform, not Rigidbody2D.position.
+            // The body only steps at the physics tick, which made the
+            // dungeon hitch even though the adept was sliding smoothly.
+            var desired = Target.position + _look;
             desired.z = -10f;
             if (!_snapped)
             {
@@ -44,17 +54,6 @@ namespace RuneMagic
             }
 
             transform.position = next;
-        }
-
-        Vector3 TargetPoint()
-        {
-            var body = Target.GetComponent<Rigidbody2D>();
-            if (body != null)
-            {
-                return new Vector3(body.position.x, body.position.y, 0f);
-            }
-
-            return Target.position;
         }
 
         Vector3 Snap(Vector3 point)

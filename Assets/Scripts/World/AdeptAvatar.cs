@@ -107,6 +107,11 @@ namespace RuneMagic
         void Start()
         {
             BindView();
+            if (_usesAnimator && _animator != null)
+            {
+                _animator.Rebind();
+                _animator.Update(0f);
+            }
         }
 
         void BindView()
@@ -154,6 +159,15 @@ namespace RuneMagic
                 return;
             }
 
+            // Mecanim cannot bind SpriteRenderer.sprite until the renderer
+            // exists. Binding earlier (Awake, before Bootstrap adds it) is
+            // why toggling Write Defaults in Play suddenly made clips show:
+            // that toggle rebinds against the live renderer.
+            if (_sprite == null)
+            {
+                return;
+            }
+
             if (_animator == null)
             {
                 _animator = GetComponent<Animator>();
@@ -167,7 +181,7 @@ namespace RuneMagic
 
             if (controller == null)
             {
-                if (_anim == null && _sprite != null)
+                if (_anim == null)
                 {
                     _anim = SpriteAnim.On(gameObject, _sprite);
                     _anim.Play("adept-idle", 5f);
@@ -181,15 +195,32 @@ namespace RuneMagic
                 _animator = gameObject.AddComponent<Animator>();
             }
 
-            _animator.runtimeAnimatorController = controller;
-            _animator.updateMode = AnimatorUpdateMode.UnscaledTime;
-            _animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            _animator.applyRootMotion = false;
+            if (_sprite.sprite == null)
+            {
+                _sprite.sprite = SpriteFactory.Named("adept");
+            }
+
+            ApplyController(_animator, controller);
+            _animator.Rebind();
+            _animator.Update(0f);
             _usesAnimator = true;
             if (_anim != null)
             {
                 _anim.enabled = false;
             }
+        }
+
+        public static void ApplyController(Animator animator, RuntimeAnimatorController controller)
+        {
+            if (animator == null || controller == null)
+            {
+                return;
+            }
+
+            animator.runtimeAnimatorController = controller;
+            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.applyRootMotion = false;
         }
 
         void OnDisable()
@@ -236,7 +267,10 @@ namespace RuneMagic
                     : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
                 transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
             }
+        }
 
+        void LateUpdate()
+        {
             if (_glow != null)
             {
                 var pulse = 0.72f + Mathf.Sin(Time.time * 3.2f) * 0.16f;

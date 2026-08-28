@@ -51,7 +51,10 @@ namespace RuneMagic
                 "4. Press Play. Do not place an Adept in the scene; Play still spawns one.\n\n" +
                 "Sprites are 16×16 at 16 PPU, same as the dungeon tiles. " +
                 "Do not re-slice Hero_22 as a 16×16 grid — that cuts each pose in four. " +
-                "Build / repair crops the 16×16 character out of each 32×32 pack cell.",
+                "Build / repair crops the 16×16 character out of each 32×32 pack cell.\n\n" +
+                "Each clip also keys SpriteRenderer color alpha so Mecanim evaluates " +
+                "the sprite frames. Sprite-only clips sit in the Animator but never " +
+                "draw until you toggle Write Defaults in Play.",
                 MessageType.Info);
 
             DrawStatus();
@@ -335,6 +338,16 @@ namespace RuneMagic
 
             clip.name = name;
             clip.frameRate = fps;
+            foreach (var leftover in AnimationUtility.GetCurveBindings(clip))
+            {
+                AnimationUtility.SetEditorCurve(clip, leftover, null);
+            }
+
+            foreach (var leftover in AnimationUtility.GetObjectReferenceCurveBindings(clip))
+            {
+                AnimationUtility.SetObjectReferenceCurve(clip, leftover, null);
+            }
+
             var binding = EditorCurveBinding.PPtrCurve(string.Empty, typeof(SpriteRenderer), "m_Sprite");
             var keys = new ObjectReferenceKeyframe[frames.Length];
             for (var i = 0; i < frames.Length; i++)
@@ -347,6 +360,11 @@ namespace RuneMagic
             }
 
             AnimationUtility.SetObjectReferenceCurve(clip, binding, keys);
+            // Sprite-only clips do not evaluate in Play until Write Defaults
+            // is toggled. A constant float curve keeps Mecanim awake.
+            var last = frames.Length / Mathf.Max(1f, fps);
+            var keepAlive = EditorCurveBinding.FloatCurve(string.Empty, typeof(SpriteRenderer), "m_Color.a");
+            AnimationUtility.SetEditorCurve(clip, keepAlive, AnimationCurve.Constant(0f, last, 1f));
             var settings = AnimationUtility.GetAnimationClipSettings(clip);
             settings.loopTime = loop;
             AnimationUtility.SetAnimationClipSettings(clip, settings);
@@ -384,13 +402,24 @@ namespace RuneMagic
 
             var idleState = machine.AddState("Idle", new Vector3(320f, 0f, 0f));
             idleState.motion = idle;
+            idleState.writeDefaultValues = true;
             var walkState = machine.AddState("Walk", new Vector3(320f, 80f, 0f));
             walkState.motion = walk;
+            walkState.writeDefaultValues = true;
             var castState = machine.AddState("Cast", new Vector3(320f, 160f, 0f));
             castState.motion = cast;
+            castState.writeDefaultValues = true;
             var hopState = machine.AddState("Hop", new Vector3(320f, 240f, 0f));
             hopState.motion = hop;
+            hopState.writeDefaultValues = true;
             machine.defaultState = idleState;
+
+            var layers = controller.layers;
+            if (layers.Length > 0)
+            {
+                layers[0].defaultWeight = 1f;
+                controller.layers = layers;
+            }
 
             Any(machine, castState, (Casting, true));
             Any(machine, hopState, (Casting, false), (Airborne, true));
