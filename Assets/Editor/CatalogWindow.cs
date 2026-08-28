@@ -19,7 +19,7 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Recipes live in Assets/Resources/Catalog/spells.json — that is the master book the game loads. Sprites and items live in art.json. Place items in the Scene with Window → Rune Magic → Authoring. Sprite sheets: Window → Rune Magic → Sprite Sheet.",
+                "Recipes live in Assets/Resources/Catalog/spells.json — that is the master book the game loads. Sprites and items live in art.json. Stones are prefabs under Assets/Prefabs/Items — drag them into the Scene. Sprite sheets: Window → Rune Magic → Sprite Sheet.",
                 MessageType.Info);
 
             if (GUILayout.Button("Open Authoring (place items)"))
