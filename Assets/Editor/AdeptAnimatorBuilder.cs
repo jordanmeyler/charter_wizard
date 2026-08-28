@@ -47,7 +47,10 @@ namespace RuneMagic
                 "1. Click Build / repair clips below.\n" +
                 "2. Open the controller and click Idle, Walk, Cast, Hop — each Motion field should show a clip, not None.\n" +
                 "3. If a Motion is None, drag the matching clip from Assets/Animations/Adept onto that state.\n" +
-                "4. Press Play. Do not place an Adept in the scene; Play still spawns one.",
+                "4. Press Play. Do not place an Adept in the scene; Play still spawns one.\n\n" +
+                "Sprites are 16×16 at 16 PPU, same as the dungeon tiles. " +
+                "Do not re-slice Hero_22 as a 16×16 grid — that cuts each pose in four. " +
+                "Build / repair crops the 16×16 character out of each 32×32 pack cell.",
                 MessageType.Info);
 
             DrawStatus();
@@ -92,8 +95,7 @@ namespace RuneMagic
             if (sprites.Length < 64)
             {
                 EditorGUILayout.HelpBox(
-                    "Hero_22 is missing slices. Select the texture → Sprite Editor → Slice → " +
-                    "Grid By Cell Size, 32×32, Apply.",
+                    "Hero_22 is missing pose slices. Click Build / repair — it crops each pose to 16×16, same as the tiles.",
                     MessageType.Error);
                 return;
             }
@@ -148,11 +150,14 @@ namespace RuneMagic
                     return;
                 }
 
+                var sprites = LoadSprites();
+                var oversized = sprites.Length > 0 && sprites[0].rect.width > 16.5f;
                 var missing = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath) == null
                     || !ClipHasSprites("Adept-Idle")
                     || !ClipHasSprites("Adept-Walk")
                     || !ClipHasSprites("Adept-Cast")
-                    || !ClipHasSprites("Adept-Hop");
+                    || !ClipHasSprites("Adept-Hop")
+                    || oversized;
                 if (missing)
                 {
                     Rebuild();
@@ -162,12 +167,12 @@ namespace RuneMagic
 
         public static void Rebuild()
         {
+            CropSheetToTiles();
             var sprites = LoadSprites();
             if (sprites.Length < 64)
             {
                 Debug.LogError(
-                    "Hero_22 needs its 32×32 slices. Select the texture, Sprite Editor, " +
-                    "Slice → Grid By Cell Size 32×32, then Apply.");
+                    "Hero_22 is missing pose slices. Reimport the texture, then click Build / repair.");
                 return;
             }
 
@@ -209,6 +214,46 @@ namespace RuneMagic
             }
 
             return false;
+        }
+
+        static void CropSheetToTiles()
+        {
+            var importer = AssetImporter.GetAtPath(SheetPath) as TextureImporter;
+            if (importer == null)
+            {
+                return;
+            }
+
+            importer.spritePixelsPerUnit = 16f;
+            importer.filterMode = FilterMode.Point;
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+            var sheet = importer.spritesheet;
+            if (sheet == null || sheet.Length == 0)
+            {
+                return;
+            }
+
+            var changed = false;
+            for (var i = 0; i < sheet.Length; i++)
+            {
+                var data = sheet[i];
+                var rect = data.rect;
+                if (Mathf.Approximately(rect.width, 32f) && Mathf.Approximately(rect.height, 32f))
+                {
+                    data.rect = new Rect(rect.x + 8f, rect.y, 16f, 16f);
+                    changed = true;
+                }
+
+                data.alignment = SpriteAlignment.Custom;
+                data.pivot = new Vector2(0.5f, 0.18f);
+                sheet[i] = data;
+            }
+
+            importer.spritesheet = sheet;
+            if (changed)
+            {
+                importer.SaveAndReimport();
+            }
         }
 
         static Sprite[] LoadSprites()
