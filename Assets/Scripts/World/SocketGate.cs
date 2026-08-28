@@ -44,8 +44,8 @@ namespace RuneMagic
         [SerializeField] Sprite[] idleFrames;
         [Tooltip("Catalog / sheet id if you are not using Portrait. Empty still uses the generated socket unless Hide Look is on.")]
         [SerializeField] string spriteId = "socket-gate";
-        [Tooltip("No picture, glow, or name. The lock still works.")]
-        [SerializeField] bool hideLook;
+        [Tooltip("No picture, glow, or name. The lock still works. Paint tiles on the Tilemap for the look.")]
+        [SerializeField] bool hideLook = true;
         [Tooltip("Soft generated glow. Ignored when Portrait is set.")]
         [SerializeField] bool showGlow = true;
         [Tooltip("Floating name. Ignored when Portrait is set.")]

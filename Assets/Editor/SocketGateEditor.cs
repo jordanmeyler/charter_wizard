@@ -11,7 +11,7 @@ namespace RuneMagic
         {
             serializedObject.Update();
             EditorGUILayout.HelpBox(
-                "This is the lock, not the door. Requires is a list of pack item ids (fire-stone, …). Drag Door objects into Doors. Drag a sprite onto Portrait to replace the generated gold lock.",
+                "This is the lock, not the door. It does not stamp tiles — paint those on the Tilemap. Hide Look (on by default) draws nothing. Uncheck it and set Portrait only if you want one sprite on the Gate itself.",
                 MessageType.Info);
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("authoredName"));

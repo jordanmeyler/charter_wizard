@@ -222,9 +222,8 @@ Drag `Assets/Prefabs/Gate`. Sit it in front of the door. This is the
 - `doors` — drag Door objects here
 - `note` — flavour when the stones seat
 - `finishes` — check only if this lock ends the floor
-- **Portrait** — your sprite. Replaces the generated gold socket, glow, and name.
-- **Sprite Id** — catalog id if you are not using Portrait
-- **Hide Look** — no picture; the lock still opens the Doors
+- **Hide Look** — on by default. No picture. Paint any tiles you want on the Tilemap; the Gate does not stamp a 2×2.
+- **Portrait** — optional single sprite if you want a picture on the Gate itself. Uncheck Hide Look first.
 
 Walk up to the Gate holding every required stone and it turns.
 

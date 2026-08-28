@@ -64,10 +64,12 @@ In [`Tools/catalog-editor.html`](Tools/catalog-editor.html) you can still paint 
 
 ## Gate look (Unity Inspector)
 
-Select the **Gate**, not the Door. Drag a slice onto **Portrait**. The
-generated gold socket, glow, and floating name stay off while that
-field is set. Check **Hide Look** to make the lock invisible — it still
-opens the Doors when the pack has the required stones.
+Select the **Gate**, not the Door. **Hide Look** is on by default — the
+lock draws nothing. Paint your tiles on the Tilemap (any number of
+cells). The Gate does not take a 2×2 stamp.
+
+To put one picture on the Gate itself, uncheck **Hide Look** and drag a
+slice onto **Portrait**.
 
 ## Spells and effects
 
