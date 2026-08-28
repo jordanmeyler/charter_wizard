@@ -81,8 +81,9 @@ only when you painted a hole look that would otherwise stay floor.
 
 ### 1. Fire — fire stone frozen in ice
 
-Ice has to *block*. Cover-Ice is walkable and answers Ice in the
-weave; it does not stop you. Stamp walls for a cage.
+Ice has to *block*. Cover-Ice is walkable and answers Ice
+(Water · Earth) in the weave — the same mark as an Ice inscription.
+It does not stop you. Stamp walls for a cage.
 Stamp a ring (or U) of **ice walls**, leave one floor cell in the
 middle for the stone.
 
@@ -121,10 +122,11 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind. On **Cover** (or **Write onto
-   Cover layer**), check **Cover** = `Miasma`. Material =
-   `Miasma` on that layer is the same stamp. Miasma is
-   see-through by default (about 40%). Check **Opacity** and
-   drag the slider if you want it thinner or more solid.
+   Cover layer**), pick the **Miasma** mark. Material =
+   `Miasma` on that layer is the same stamp. The cell speaks
+   Cloud · Acid · Miasma. Miasma is see-through by default
+   (about 40%). Check **Opacity** and drag the slider if you
+   want it thinner or more solid.
 3. Click (or drag) the floor you want fouled — the path to the
    stone, not the doorway if you want them to step in and get
    thrown back. Paint any foggy tile on **Cover** first if you
@@ -176,11 +178,12 @@ Same pattern. Stones already have their id and sprite on the prefab. For a custo
 
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
-what the cell answers in the weave — same as that material.
+the same catalog mark as an inscription — Ice is Water · Earth,
+Vine is Plant · Mercury, Miasma is Cloud · Acid, Fog is Cloud.
 
 1. Select **Cover** in the Hierarchy.
-2. Paint any ice / fire / water / fog tile from any palette — that *is* the picture.
-3. Or stamp in Tile Properties: **Cover** = Ice / Fire / Water / Miasma, **Write onto Cover layer**. Play then uses the catalog sprites (`cover-ice`, `tile-poison` for miasma).
+2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
+3. Or stamp in Tile Properties: pick the **mark** (same chips as Inscriptions), **Write onto Cover layer**. Play draws that generated sign on the cell. Click the cover to draw the rune into the Charter. Painted sheen stays underneath when you supplied one (`cover-ice`, `tile-poison` for miasma).
 
 **Spell leftovers** (wet floor after melt, hunger on a bush) draw `tile-wet` / `tile-fire` from the catalog. To change those globally, add or replace those ids in `Assets/Resources/Catalog` / the sprite sheets. A Cover tile you painted stays as the floor look; the wet/fire glow sits on top.
 
@@ -347,16 +350,19 @@ cell. Tile `Kind = Door` is the leftover baked leaf.
 ## Coverings (element swaps)
 
 Freeze / burn / charge / flood swap the covering, not the walk family.
+Each spoken cover uses the same generated mark as that rune.
 
-| Cover | Sprite | Source |
-|---|---|---|
-| `ice` | `cover-ice` | Sanctuary — ice over stone |
-| `fire` | `cover-fire` | Hell — lava / fire |
-| `lightning` | `cover-lightning` | Atlantis — charged seal |
-| `water` | `cover-water` | Cavern water tile |
-| `vine` | `cover-vine` | Jungle vines |
-| `cracks` | `cover-cracks` | Crypt cracks |
-| `seal` | `cover-seal` | Atlantis seal |
+| Cover | Speaks | Sheen | Mark |
+|---|---|---|---|
+| `ice` | Ice · Water · Earth | Sanctuary — ice over stone | Ice |
+| `fire` | Fire | Hell — lava / fire | Fire |
+| `lightning` | Lightning · Spark · Air | Atlantis — charged seal | Lightning |
+| `water` | Water | Cavern water tile | Water |
+| `vine` | Vine · Plant · Mercury | Jungle vines | Vine |
+| `miasma` | Miasma · Cloud · Acid | Poison veil | Miasma |
+| `fog` | Cloud · Air · Water | Cloud veil | Cloud |
+| `cracks` | — (look only) | Crypt cracks | — |
+| `seal` | — (look only) | Atlantis seal | — |
 
 ## Props (reuse these)
 
