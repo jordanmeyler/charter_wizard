@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 
 namespace RuneMagic
@@ -227,12 +228,23 @@ namespace RuneMagic
             importer.spritePixelsPerUnit = 16f;
             importer.filterMode = FilterMode.Point;
             importer.spriteImportMode = SpriteImportMode.Multiple;
-            var sheet = importer.spritesheet;
+
+            var factory = new SpriteDataProviderFactories();
+            factory.Init();
+            var dataProvider = factory.GetSpriteEditorDataProviderFromObject(importer);
+            if (dataProvider == null)
+            {
+                return;
+            }
+
+            dataProvider.InitSpriteEditorDataProvider();
+            var sheet = dataProvider.GetSpriteRects();
             if (sheet == null || sheet.Length == 0)
             {
                 return;
             }
 
+            var pivot = new Vector2(0.5f, 0.18f);
             var changed = false;
             for (var i = 0; i < sheet.Length; i++)
             {
@@ -244,16 +256,22 @@ namespace RuneMagic
                     changed = true;
                 }
 
-                data.alignment = SpriteAlignment.Custom;
-                data.pivot = new Vector2(0.5f, 0.18f);
-                sheet[i] = data;
+                if (data.alignment != SpriteAlignment.Custom || data.pivot != pivot)
+                {
+                    data.alignment = SpriteAlignment.Custom;
+                    data.pivot = pivot;
+                    changed = true;
+                }
             }
 
-            importer.spritesheet = sheet;
-            if (changed)
+            if (!changed)
             {
-                importer.SaveAndReimport();
+                return;
             }
+
+            dataProvider.SetSpriteRects(sheet);
+            dataProvider.Apply();
+            importer.SaveAndReimport();
         }
 
         static Sprite[] LoadSprites()
