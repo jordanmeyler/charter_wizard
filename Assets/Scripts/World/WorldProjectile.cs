@@ -132,7 +132,8 @@ namespace RuneMagic
 
         bool BlocksAt(Vector2 point)
         {
-            return WorldWork.BlocksTravel(_grid != null ? _grid.TileAtWorld(point) : null);
+            var tile = _grid != null ? _grid.TileAtWorld(point) : null;
+            return WorldWork.BlocksCell(WorldWork.CoordOf(point), tile);
         }
 
         void BreakOnBody()
@@ -166,6 +167,13 @@ namespace RuneMagic
 
             var tile = other.GetComponent<WorldTile>();
             if (tile != null && tile.BlocksTravel)
+            {
+                BreakOnBody();
+                return;
+            }
+
+            var door = other.GetComponent<WorldDoor>();
+            if (door != null && !door.IsOpen && door.BlocksWhenClosed)
             {
                 BreakOnBody();
                 return;

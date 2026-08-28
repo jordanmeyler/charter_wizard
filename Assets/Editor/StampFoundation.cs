@@ -460,7 +460,7 @@ namespace RuneMagic
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or
-                    TorchFixture or SocketGate or FreeCharm or SpawnCrystal or BarrierLock)
+                    TorchFixture or SocketGate or WorldDoor or FreeCharm or SpawnCrystal or BarrierLock)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

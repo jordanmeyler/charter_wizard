@@ -813,7 +813,7 @@ namespace RuneMagic
             }
 
             var tile = _grid.TileAtWorld(point);
-            return WorldWork.BlocksTravel(tile);
+            return WorldWork.BlocksCell(WorldWork.CoordOf(point), tile);
         }
 
         void Face(Vector2 direction)

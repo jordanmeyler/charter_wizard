@@ -123,6 +123,24 @@ namespace RuneMagic
         public static string OfCrystal() =>
             "the first standing body. Death sends you back here.";
 
+        public static string OfDoor(WorldDoor door)
+        {
+            if (door == null)
+            {
+                return "a door.";
+            }
+
+            var name = door.DisplayName;
+            if (door.IsOpen)
+            {
+                return string.IsNullOrEmpty(name) ? "an open way." : "an open " + LowerStart(name) + ".";
+            }
+
+            return string.IsNullOrEmpty(name)
+                ? "a shut door."
+                : name + ", shut.";
+        }
+
         public static string OfFormula(string formulaId)
         {
             switch ((formulaId ?? string.Empty).ToLowerInvariant())
