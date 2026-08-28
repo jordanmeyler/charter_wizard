@@ -306,12 +306,8 @@ namespace RuneMagic
                 broken.Add("Later spans must work in water unless the square forbids it");
             }
 
-            if (NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
-                || NeedsEndAnchors(SpanGrade.Ice, false, true))
-            {
-                // expected true — keep the clause for the inverse checks
-            }
-            else
+            if (!NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
+                || !NeedsEndAnchors(SpanGrade.Ice, false, true))
             {
                 broken.Add("Standard earth and ice over a pit must join two floors");
             }
