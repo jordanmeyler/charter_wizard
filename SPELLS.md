@@ -131,7 +131,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 | **Vine** | Plant · Mercury | The vegetable body sent. | Climbing green |
 | **Wind** | Air · Mercury | Breath going. | A push |
 | **Current** | Water · Mercury | Yield going. | A flow |
-| **Metal** | Lava · Earth | Hungry earth given more rest, then stilled. | Hard. The spark’s road |
+| **Metal** | Lava · Spark · Earth | Hungry earth given spark, then stilled. Fire · Earth · Fire · Air · Earth. | Hard. Conducts heat and the spark |
 | **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
 | **Glacier** | Ice · Stone | Ice given Stone. | Ice that ordinary fire cannot take. Witchfire can |
 | **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
@@ -278,8 +278,8 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 82 | The vegetable body waking as a mass. | Forest | Water · Salt · Earth · Life · Earth | Plant · Life · Earth | Remote | Neither |
 | 83 | Yield given a body and sent. A remote flood. The monsoon. | Monsoon | Water · Salt · Mercury | — | Remote | Restrain |
 | 84 | Rest sent without a body. Loose dirt. It smothers ground-fire. | Dirt toss | Earth · Mercury | — | Shot | Neither |
-| 85 | Hungry earth given more rest, then asked to stand. A column of iron. It hangs without a far bank. | Metal-pillar | Fire · Earth · Earth · Salt · Earth | Metal · Salt · Earth | Pillar | Neither |
-| 86 | A body of iron asked to stand as more iron. Over a gap it needs no far rest. | Metal-wall | Fire · Earth · Earth · Salt · Fire · Earth · Earth | Metal · Salt · Metal | Pillar | Neither |
+| 85 | Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank. | Metal-pillar | Fire · Earth · Fire · Air · Earth · Salt · Earth | Metal · Salt · Earth | Pillar | Neither |
+| 86 | A body of iron asked to stand as more iron. Over a gap it needs no far rest. | Metal-wall | Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth | Metal · Salt · Metal | Pillar | Neither |
 
 **Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Forest is also a spell (`Plant · Life · Earth`), not a rune. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb.
 
@@ -287,7 +287,7 @@ Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire,
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 
-**Focus holds mind spells.** Lull, Terror, Rage, Command, Charm, and Confuse stay until you write another sentence that reuses a mark from the held working. Charm is Life · Sulphur · Mercury — a later Fireball (Mercury) lets it go; a wall (Earth · Salt) does not. A fizzle shows the hold breaking. Wards keep their own clock — only one stands at a time. Elemental work stands on its own: a wall does not vanish, a flame does not snuff itself, and burning, poison, stun, and frozen keep their own clocks. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
+**Focus holds mind spells.** Lull, Terror, Rage, Command, Charm, Confuse, and the four wards (they all write Sulphur) stay until you write another sentence that reuses a mark from the held working. Charm is Life · Sulphur · Mercury — a later Fireball (Mercury) lets it go; a wall (Earth · Salt) does not. A ward is the same hold: Wall drops stoneskin (Earth · Salt). A fizzle shows the hold breaking. Only one ward stands at a time. Elemental work stands on its own: a wall does not vanish, a flame does not snuff itself, and burning, poison, stun, and frozen keep their own clocks. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poisoned flesh dies shortly; fire, ice, and earth do not take poison.
 
 No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
 

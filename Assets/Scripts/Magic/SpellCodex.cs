@@ -166,8 +166,8 @@ namespace RuneMagic
             E(82, SpellBook.GrowHeal, SpellId.Forest, "The vegetable body waking as a mass.", "Forest", "Water · Salt · Earth · Life · Earth", "Plant · Life · Earth", "Remote", SpellOutcome.Neither),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
-            E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given more rest, then asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
-            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Earth · Salt · Fire · Earth · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither)
+            E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
+            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -383,15 +383,19 @@ namespace RuneMagic
                 broken.Add("A zero fill budget must not complete a missing rune");
             }
 
-            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse)
-                || FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
+            if (!FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse))
             {
-                broken.Add("Focus does not hold wards — Douse must not drop a water ward");
+                broken.Add("Douse must drop a water ward — both use Water");
             }
 
-            if (FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
+            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
             {
-                broken.Add("Fireball must not drop a flame ward — wards keep their own clock");
+                broken.Add("Fireball must not drop a water ward");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
+            {
+                broken.Add("Fireball must drop a flame ward — both use Fire");
             }
 
             if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Rage))
@@ -424,10 +428,14 @@ namespace RuneMagic
                 broken.Add("A wall must not drop charm — earth stands without those marks");
             }
 
-            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball)
-                || FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
+            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball))
             {
-                broken.Add("A wall must not drop stoneskin — focus holds mind, not wards");
+                broken.Add("Fireball must not drop stoneskin");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
+            {
+                broken.Add("Wall must drop stoneskin — both use Earth and Salt");
             }
 
             if (FocusLaw.Breaks(StatusId.Burning, SpellId.Douse))
@@ -523,6 +531,15 @@ namespace RuneMagic
                 || iceBirth[1] != RuneId.Earth)
             {
                 broken.Add("Ice must be Water · Earth");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Metal, out var metalBirth)
+                || metalBirth.Count != 3
+                || metalBirth[0] != RuneId.Lava
+                || metalBirth[1] != RuneId.Spark
+                || metalBirth[2] != RuneId.Earth)
+            {
+                broken.Add("Metal must be Lava · Spark · Earth — Fire · Earth · Fire · Air · Earth");
             }
 
             if (RuneCatalog.TryParseName("Grotto", out _)

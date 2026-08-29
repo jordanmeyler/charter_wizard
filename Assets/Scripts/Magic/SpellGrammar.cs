@@ -214,7 +214,7 @@ namespace RuneMagic
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 
             Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt · Earth. Hungry earth given a body and asked to rest.");
-            Register(RuneId.Metal, RuneId.Earth, SpellShape.Pillar, SpellId.MetalPillar, "Metal-pillar", "Compressed. Catalog: Metal · Salt · Earth. Iron asked to rest as a column. It hangs without a far bank.");
+            Register(RuneId.Metal, RuneId.Earth, SpellShape.Pillar, SpellId.MetalPillar, "Metal-pillar", "Compressed. Catalog: Metal · Salt · Earth. Lava · Spark · Earth asked to stand. It hangs without a far bank.");
             Register(RuneId.Stone, RuneId.Mercury, SpellShape.Remote, SpellId.Shatter, "Shatter", "Compressed. Catalog: Earth · Salt · Earth · Air · Mercury. A stood wall given breath and sent. Matter comes apart.");
         }
 

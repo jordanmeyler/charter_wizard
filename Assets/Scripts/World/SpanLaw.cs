@@ -117,14 +117,14 @@ namespace RuneMagic
         /// </summary>
         public static bool ShouldWiden(SpanGrade grade, bool overWater, bool overPit, bool dropped)
         {
-            if (dropped)
-            {
-                return false;
-            }
-
             if (overPit)
             {
                 return true;
+            }
+
+            if (dropped)
+            {
+                return false;
             }
 
             return overWater && WorksOnWater(grade) && grade != SpanGrade.Ice;

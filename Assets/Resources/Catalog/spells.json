@@ -157,6 +157,7 @@
       "rune": "Metal",
       "sources": [
         "Lava",
+        "Spark",
         "Earth"
       ]
     },
@@ -1397,8 +1398,8 @@
       "id": "MetalPillar",
       "book": "Cross",
       "name": "Metal-pillar",
-      "want": "Hungry earth given more rest, then asked to stand. A column of iron. It hangs without a far bank.",
-      "recipe": "Fire \u00b7 Earth \u00b7 Earth \u00b7 Salt \u00b7 Earth",
+      "want": "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.",
+      "recipe": "Fire \u00b7 Earth \u00b7 Fire \u00b7 Air \u00b7 Earth \u00b7 Salt \u00b7 Earth",
       "via": "Metal \u00b7 Salt \u00b7 Earth",
       "form": "Pillar",
       "outcome": "Neither",
@@ -1411,7 +1412,7 @@
       "book": "Cross",
       "name": "Metal-wall",
       "want": "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.",
-      "recipe": "Fire \u00b7 Earth \u00b7 Earth \u00b7 Salt \u00b7 Fire \u00b7 Earth \u00b7 Earth",
+      "recipe": "Fire \u00b7 Earth \u00b7 Fire \u00b7 Air \u00b7 Earth \u00b7 Salt \u00b7 Fire \u00b7 Earth \u00b7 Fire \u00b7 Air \u00b7 Earth",
       "via": "Metal \u00b7 Salt \u00b7 Metal",
       "form": "Pillar",
       "outcome": "Neither",

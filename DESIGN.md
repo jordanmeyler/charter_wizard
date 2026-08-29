@@ -78,7 +78,7 @@ There is **no hit-point bar**. A spell kills, restrains, or does neither (traver
 
 **Statuses share one host.** Burning, Frozen, Soaked, Stunned, Sleeping, Rooted, Frightened, Raging, Charmed, Confused, Poisoned are debuffs. Veiled is a hide buff. **Wards** are the four elements given a body and held on you (`Element · Salt · Sulphur`). Only one ward stands at a time.
 
-**Focus.** Focus holds **mind spells**. Charm, Command, Lull, Rage, Terror, and Confuse stay until you write another sentence that reuses a mark from the held working. A fizzle plays on them when the hold breaks. Wards keep their own clock — only one stands at a time, and a later Fireball does not drop stoneskin. Hunger, poison, frost, and stun exist of their own accord. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze a living body. **Freeze** (`Ice · Sulphur`) and weather like **Snowfall** / **Snowstorm** do. Poisoned flesh dies in a few seconds; fire, ice, and earth shrug it off.
+**Focus.** Focus holds **mind spells** — ailments and wards. They all write Sulphur. Charm, Command, Lull, Rage, Terror, Confuse, and the four wards stay until you write another sentence that reuses a mark from the held working. A fizzle plays when the hold breaks. Wall drops stoneskin (Earth · Salt). Fireball drops a flame ward (Fire) but not stoneskin. Only one ward stands at a time. Hunger, poison, frost, and stun exist of their own accord. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze a living body. **Freeze** (`Ice · Sulphur`) and weather like **Snowfall** / **Snowstorm** do. Poisoned flesh dies in a few seconds; fire, ice, and earth shrug it off.
 
 The four roots are a square. Adjacent sides have a winner. Opposites do not touch.
 
@@ -243,7 +243,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. Weather is spells (Storm, Fog, Darkness, Thunder, Blizzard), not runes. **76** Water-pillar. **77–78** Oil. **79–80** Poison / Miasma. **81** Plasma. **82** Forest (a spell; Grove is gone). **71** Grotto (`Plant · Dark`). **83** Monsoon. **84** Dirt toss. **85–86** Metal-pillar / Metal-wall. **Focus holds mind spells.** Wards and elemental work keep their own clocks.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. Weather is spells (Storm, Fog, Darkness, Thunder, Blizzard), not runes. **76** Water-pillar. **77–78** Oil. **79–80** Poison / Miasma. **81** Plasma. **82** Forest (a spell; Grove is gone). **71** Grotto (`Plant · Dark`). **83** Monsoon. **84** Dirt toss. **85–86** Metal-pillar / Metal-wall (`Lava · Spark · Earth`). **Focus holds mind spells**, including wards. Elemental clocks stand on their own.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
 - [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.

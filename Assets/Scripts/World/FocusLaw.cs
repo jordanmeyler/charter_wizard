@@ -5,9 +5,10 @@ namespace RuneMagic
 {
     /// <summary>
     /// Focus holds mind spells. Charm, command, lull, rage, terror,
-    /// and confuse stay until another sentence reuses a mark from
-    /// the held working. Wards keep their own clock. Elemental work
-    /// (a wall, a flame, burning, poison, ice) stands on its own.
+    /// confuse, and the four wards (they all write Sulphur) stay
+    /// until another sentence reuses a mark from the held working.
+    /// Elemental work (a wall, a flame, burning, poison, ice) stands
+    /// on its own.
     /// </summary>
     public static class FocusLaw
     {
@@ -18,17 +19,13 @@ namespace RuneMagic
                 return false;
             }
 
-            if (StatusSpec.IsMindAilment(SpellVerb.Of(spell).Status))
+            var status = SpellVerb.Of(spell).Status;
+            if (StatusSpec.IsMindAilment(status) || StatusSpec.Of(status).IsWard)
             {
                 return true;
             }
 
-            if (!SpellCodex.TryGet(spell, out var entry) || entry.Book != SpellBook.Mind)
-            {
-                return false;
-            }
-
-            return !StatusSpec.Of(SpellVerb.Of(spell).Status).IsWard;
+            return SpellCodex.TryGet(spell, out var entry) && entry.Book == SpellBook.Mind;
         }
 
         public static bool Holds(StatusId id) =>
@@ -132,6 +129,10 @@ namespace RuneMagic
                 case StatusId.Charmed: return SpellId.Charm;
                 case StatusId.Confused: return SpellId.Confuse;
                 case StatusId.Frightened: return SpellId.Terror;
+                case StatusId.Stoneskin: return SpellId.Stoneskin;
+                case StatusId.Watershield: return SpellId.Watershield;
+                case StatusId.Flameward: return SpellId.Flameward;
+                case StatusId.Windward: return SpellId.Windward;
                 default: return SpellId.None;
             }
         }
@@ -188,24 +189,24 @@ namespace RuneMagic
                 broken.Add("Focus must hold the mind sentences");
             }
 
-            if (IsMindSpell(SpellId.Stoneskin)
-                || IsMindSpell(SpellId.Watershield)
-                || IsMindSpell(SpellId.Flameward)
-                || IsMindSpell(SpellId.Windward)
+            if (!IsMindSpell(SpellId.Stoneskin)
+                || !IsMindSpell(SpellId.Watershield)
+                || !IsMindSpell(SpellId.Flameward)
+                || !IsMindSpell(SpellId.Windward)
                 || IsMindSpell(SpellId.Wall)
                 || IsMindSpell(SpellId.Fireball))
             {
-                broken.Add("Wards and elemental work are not mind spells");
+                broken.Add("Wards are mind spells; walls and fireballs are not");
             }
 
-            if (Holds(StatusId.Stoneskin)
-                || Holds(StatusId.Watershield)
+            if (!Holds(StatusId.Stoneskin)
+                || !Holds(StatusId.Watershield)
                 || Holds(StatusId.Burning)
                 || Holds(StatusId.Frozen)
                 || Holds(StatusId.Poisoned)
                 || Holds(StatusId.Stunned))
             {
-                broken.Add("Focus must not hold wards or elemental clocks");
+                broken.Add("Focus holds wards and mind ailments, not elemental clocks");
             }
 
             if (!Holds(StatusId.Charmed) || !Holds(StatusId.Sleeping))
@@ -213,11 +214,12 @@ namespace RuneMagic
                 broken.Add("Focus must hold charm and sleep");
             }
 
-            if (Breaks(StatusId.Stoneskin, SpellId.Wall)
-                || Breaks(StatusId.Watershield, SpellId.Douse)
-                || Breaks(StatusId.Flameward, SpellId.Fireball))
+            if (!Breaks(StatusId.Stoneskin, SpellId.Wall)
+                || !Breaks(StatusId.Watershield, SpellId.Douse)
+                || !Breaks(StatusId.Flameward, SpellId.Fireball)
+                || Breaks(StatusId.Stoneskin, SpellId.Fireball))
             {
-                broken.Add("A later sentence must not drop a ward — wards keep their own clock");
+                broken.Add("A shared mark drops a ward; Fireball must not drop stoneskin");
             }
         }
     }

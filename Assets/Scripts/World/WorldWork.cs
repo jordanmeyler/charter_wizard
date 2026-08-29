@@ -1099,19 +1099,19 @@ namespace RuneMagic
             var work = SpanLaw.ShouldWiden(grade, hasWater, hasPit, dropSpan)
                 ? SpanLaw.Widen(cells)
                 : cells;
-            var spanning = (hasPit && !dropSpan) || (hasWater && (SpanLaw.WorksOnWater(grade) || SpanLaw.MudsWater(grade) || SpanLaw.LosesToWater(grade)));
+            var spanning = hasPit || (hasWater && (SpanLaw.WorksOnWater(grade) || SpanLaw.MudsWater(grade) || SpanLaw.LosesToWater(grade)));
 
             var filled = 0;
             var barred = 0;
             var mudded = 0;
             var frozen = 0;
             var refused = 0;
+            var falling = dropSpan ? new List<WorldTile>() : null;
 
             for (var i = 0; i < work.Count; i++)
             {
                 var tile = grid.Get(work[i]);
-                var fillingPit = !dropSpan
-                    && FillsGaps(spell)
+                var fillingPit = FillsGaps(spell)
                     && (tile == null || tile.Kind == TileKind.Pit)
                     && (tile == null || !tile.IsDeepWater);
                 if (tile == null && fillingPit)
@@ -1171,13 +1171,13 @@ namespace RuneMagic
 
                 if (tile.Kind == TileKind.Pit && FillsGaps(spell))
                 {
-                    if (dropSpan)
-                    {
-                        continue;
-                    }
-
                     tile.BecomeWalkable(material, conjured: true);
                     filled++;
+                    if (dropSpan)
+                    {
+                        falling.Add(tile);
+                    }
+
                     continue;
                 }
 
@@ -1196,6 +1196,14 @@ namespace RuneMagic
             if (filled > 0)
             {
                 grid.DressLooks();
+            }
+
+            if (falling != null && falling.Count > 0)
+            {
+                SpanFall.Begin(grid, falling);
+                return form == RaisedForm.Pillar
+                    ? "The column finds no rest at both ends. It falls."
+                    : "The span finds no floor or wall at each end. It falls.";
             }
 
             if (dropSpan && filled == 0 && mudded == 0 && frozen == 0)

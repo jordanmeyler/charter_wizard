@@ -432,7 +432,7 @@ namespace RuneMagic
             }
 
             director.Log(spec.IsWard
-                ? $"The {spec.Name} falls. Another hold takes its place."
+                ? $"The {spec.Name} loses its hold. A mark from that sentence was asked to do other work."
                 : $"{name}'s {spec.Name} lifts. Focus broke — a mark from that sentence was reused.");
         }
 

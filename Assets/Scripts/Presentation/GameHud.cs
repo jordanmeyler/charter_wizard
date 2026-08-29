@@ -1263,7 +1263,7 @@ namespace RuneMagic
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
-                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Earth) or a spell to string it if those runes are in view. Esc closes.",
+                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Spark · Earth) or a spell to string it if those runes are in view. Esc closes.",
                     "Your book. Workings you have kept, and marks you remember. Click a page to send it if those marks are in view. Esc closes."),
                 subtitle);
 
@@ -1363,7 +1363,7 @@ namespace RuneMagic
             GUI.Label(new Rect(0, y, 900, 22), "All runes", heading);
             y += 22f;
             GUI.Label(new Rect(0, y, 1100, 18),
-                "Every named mark. A join is born from others — Metal is Lava · Earth, Spark is Fire · Air. Click a wrought name to string it.",
+                "Every named mark. A join is born from others — Metal is Lava · Spark · Earth, Spark is Fire · Air. Click a wrought name to string it.",
                 muted);
             y += 20f;
             if (loadable)
