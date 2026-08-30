@@ -579,6 +579,17 @@ namespace RuneMagic
             WorldPhysics.Audit(broken);
             SpanLaw.Audit(broken);
             FocusLaw.Audit(broken);
+            RuneCatalog.AuditLedger(broken);
+
+            if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _))
+            {
+                broken.Add("Metal-pillar and Metal-wall must be written in the developer book");
+            }
+
+            if (Entries.Length < 86)
+            {
+                broken.Add("The written book must keep every catalog spell, including 85–86 Metal");
+            }
         }
 
         public static bool TryGet(int number, out CodexEntry entry)

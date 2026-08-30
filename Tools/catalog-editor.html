@@ -51,7 +51,13 @@
     let tab = "spells";
     let index = 0;
     let paint = 1;
-    const RUNES = ["Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Light","Dark","Life","Death","Spark","Cloud","Mud","Lava","Steam","Dust","Ice","Stone","Plant","Lightning","Ash","Flame","Ember","Metal","Acid","Crystal","Glacier","Inferno","Plasma","Snow","Blizzard","Sandstorm","Vine","Forest","Wind","Current","Obsidian","Glass","Sand","Thunder","Storm","Rain","Shade","Blight"];
+    const RUNES = [
+      "Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Life","Death","Light","Dark",
+      "Spark","Lightning","Flame","Ember","Cloud","Wind","Steam","Ice","Glacier",
+      "Plant","Vine","Ash","Oil","Dust","Sand","Mud","Stone","Lava","Metal","Obsidian","Glass","Crystal",
+      "Acid","Miasma","Poison","Inferno","Plasma","Current","Shade","Aether",
+      "Hot","Cold","Wet","Dry","Animus","Anima","Male","Female"
+    ];
 
     const $ = id => document.getElementById(id);
     document.querySelectorAll(".tab").forEach(btn => btn.onclick = () => { tab = btn.dataset.tab; index = 0; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b===btn)); draw(); });
@@ -113,7 +119,7 @@
       if (tab === "joins") return `
         <label>Wrought rune <input name="rune" value="${esc(item.rune)}"></label>
         <label>Born from (comma) <input name="sources" value="${esc((item.sources||[]).join(", "))}"></label>
-        <p class="hint">Fire, Air → Spark. Steam, Metal → Acid. Water, Earth → Ice. Earth, Water → Mud. The Charter unfolds these when it reads a tile.</p>`;
+        <p class="hint">Fire, Air → Spark. Steam, Metal → Acid. Water, Earth → Ice. Water, Dust → Mud. Lava, Spark, Earth → Metal. Weather names are spells, not runes.</p>`;
       if (tab === "sprites") return spriteForm(item);
       return `
         <div class="grid2">

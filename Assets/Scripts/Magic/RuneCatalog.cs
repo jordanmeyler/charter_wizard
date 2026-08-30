@@ -335,6 +335,118 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Developer Grimoire pages. Roots and operators stay first; every
+        /// named mark that is not in those lines is appended so a new join
+        /// cannot fall off the book.
+        /// </summary>
+        public static System.Collections.Generic.IReadOnlyList<LedgerGroup> LedgerGroups()
+        {
+            var used = new System.Collections.Generic.HashSet<RuneId>();
+            var groups = new System.Collections.Generic.List<LedgerGroup>(6);
+            AddLedgerGroup(groups, used, "Roots",
+                RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water);
+            AddLedgerGroup(groups, used, "Body, spirit, mind",
+                RuneId.Salt, RuneId.Mercury, RuneId.Sulphur);
+            AddLedgerGroup(groups, used, "Life, death, veils",
+                RuneId.Vita, RuneId.Mors, RuneId.Lumen, RuneId.Umbra);
+
+            var wrought = new System.Collections.Generic.List<RuneId>();
+            var births = ChainBook.AllBirths;
+            for (var i = 0; i < births.Count; i++)
+            {
+                var rune = births[i].Rune;
+                if (TryGet(rune, out _) && used.Add(rune))
+                {
+                    wrought.Add(rune);
+                }
+            }
+
+            wrought.Sort((a, b) => string.Compare(NameOf(a), NameOf(b), System.StringComparison.OrdinalIgnoreCase));
+            if (wrought.Count > 0)
+            {
+                groups.Add(new LedgerGroup("Wrought joins", wrought));
+            }
+
+            AddLedgerGroup(groups, used, "Reserved / later",
+                RuneId.Hot, RuneId.Cold, RuneId.Wet, RuneId.Dry,
+                RuneId.Animus, RuneId.Anima, RuneId.Male, RuneId.Female);
+
+            var leftover = new System.Collections.Generic.List<RuneId>();
+            foreach (var def in ById.Values)
+            {
+                if (used.Add(def.Id))
+                {
+                    leftover.Add(def.Id);
+                }
+            }
+
+            leftover.Sort((a, b) => string.Compare(NameOf(a), NameOf(b), System.StringComparison.OrdinalIgnoreCase));
+            if (leftover.Count > 0)
+            {
+                groups.Add(new LedgerGroup("Named runes", leftover));
+            }
+
+            return groups;
+        }
+
+        static void AddLedgerGroup(
+            System.Collections.Generic.List<LedgerGroup> groups,
+            System.Collections.Generic.HashSet<RuneId> used,
+            string title,
+            params RuneId[] runes)
+        {
+            var listed = new System.Collections.Generic.List<RuneId>(runes.Length);
+            for (var i = 0; i < runes.Length; i++)
+            {
+                var rune = runes[i];
+                if (rune != RuneId.None && TryGet(rune, out _) && used.Add(rune))
+                {
+                    listed.Add(rune);
+                }
+            }
+
+            if (listed.Count > 0)
+            {
+                groups.Add(new LedgerGroup(title, listed));
+            }
+        }
+
+        public static void AuditLedger(System.Collections.Generic.List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            var seen = new System.Collections.Generic.HashSet<RuneId>();
+            foreach (var group in LedgerGroups())
+            {
+                for (var i = 0; i < group.Runes.Count; i++)
+                {
+                    var rune = group.Runes[i];
+                    if (!TryGet(rune, out var def))
+                    {
+                        broken.Add($"developer ledger {group.Title} lists unnamed {rune}");
+                        continue;
+                    }
+
+                    if (!seen.Add(rune))
+                    {
+                        broken.Add($"{def.Name} is listed twice in the developer ledger");
+                    }
+                }
+            }
+
+            foreach (var def in ById.Values)
+            {
+                if (!seen.Contains(def.Id))
+                {
+                    broken.Add($"{def.Name} is named but missing from the developer ledger");
+                }
+            }
+        }
+
+        /// <summary>
         /// The eleven writeable concepts. Primordial runes are not in this list.
         /// </summary>
         public static readonly RuneId[] BasicRunes =
@@ -351,13 +463,25 @@ namespace RuneMagic
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
             RuneId.Vita, RuneId.Mors, RuneId.Lumen, RuneId.Umbra,
             RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Ember,
-            RuneId.Cloud, RuneId.Rain, RuneId.Wind, RuneId.Steam,
-            RuneId.Ice, RuneId.Snow, RuneId.Glacier,
+            RuneId.Cloud, RuneId.Wind, RuneId.Steam,
+            RuneId.Ice, RuneId.Glacier,
             RuneId.Plant, RuneId.Vine, RuneId.Ash, RuneId.Oil,
             RuneId.Dust, RuneId.Sand, RuneId.Mud, RuneId.Stone,
             RuneId.Lava, RuneId.Metal, RuneId.Obsidian, RuneId.Glass, RuneId.Crystal,
-            RuneId.Acid, RuneId.Miasma, RuneId.Poison,
+            RuneId.Acid, RuneId.Miasma, RuneId.Poison, RuneId.Inferno, RuneId.Plasma,
             RuneId.Current, RuneId.Shade, RuneId.Aether
         };
+    }
+
+    public readonly struct LedgerGroup
+    {
+        public LedgerGroup(string title, System.Collections.Generic.IReadOnlyList<RuneId> runes)
+        {
+            Title = title ?? string.Empty;
+            Runes = runes ?? System.Array.Empty<RuneId>();
+        }
+
+        public string Title { get; }
+        public System.Collections.Generic.IReadOnlyList<RuneId> Runes { get; }
     }
 }
