@@ -245,10 +245,10 @@ namespace RuneMagic
                     RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant, RuneId.Vita),
 
                 new WorldMaterial(MaterialId.Metal, "iron plate",
-                    "Hungry earth given more rest, then stilled.",
+                    "Hungry earth given spark, then stilled. It conducts heat and the bolt.",
                     RuneId.Metal, MaterialPaint.Metal,
                     new Color(0.42f, 0.44f, 0.48f), new Color(0.34f, 0.36f, 0.4f), false,
-                    RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Metal),
+                    RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Spark, RuneId.Metal),
 
                 new WorldMaterial(MaterialId.SaltCrust, "salt crust",
                     "A body laid over rest. White on the floor.",

@@ -11,8 +11,9 @@ namespace RuneMagic
     public static class WorldWork
     {
         public const int MaxWallLength = 10;
-        // Later: a span over pits should collapse past a shorter reach
-        // than a barrier on solid floor. MaxWallLength stays the hard cap.
+        // A span over a hollow is two tiles wide. Basic earth and ice
+        // must find floor or wall at each end, or they fall. Metal
+        // hangs without a far bank. MaxWallLength stays the hard cap.
         public const int HopTiles = 4;
         public const float FlightSeconds = 10f;
         public const float TimeStopSeconds = 8f;
@@ -79,7 +80,7 @@ namespace RuneMagic
             spell == SpellId.TimeStop;
 
         public static bool NeedsSpan(SpellId spell) =>
-            spell == SpellId.Wall || spell == SpellId.IceWall;
+            spell == SpellId.Wall || spell == SpellId.IceWall || spell == SpellId.MetalWall;
 
         public static bool IsPillar(SpellId spell)
         {
@@ -89,9 +90,11 @@ namespace RuneMagic
                 case SpellId.IcePillar:
                 case SpellId.IceWall:
                 case SpellId.Wall:
+                case SpellId.MetalWall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
                 case SpellId.EarthPillar:
+                case SpellId.MetalPillar:
                 case SpellId.Menhir:
                 case SpellId.LavaPillar:
                 case SpellId.WaterPillar:
@@ -453,6 +456,11 @@ namespace RuneMagic
             if (spell == SpellId.IcePillar || spell == SpellId.IceWall)
             {
                 return MaterialId.Ice;
+            }
+
+            if (spell == SpellId.MetalPillar || spell == SpellId.MetalWall)
+            {
+                return MaterialId.Metal;
             }
 
             if (spell == SpellId.FlamePillar)
@@ -1058,6 +1066,7 @@ namespace RuneMagic
             Vector3 to)
         {
             var material = MaterialFor(element, spell);
+            var grade = SpanLaw.GradeOf(spell, material);
             var cells = NeedsSpan(spell)
                 ? Span(CoordOf(from), CoordOf(to))
                 : new List<Vector2Int> { CoordOf(to) };
@@ -1065,28 +1074,49 @@ namespace RuneMagic
             {
                 cells = CollectWet(grid, CoordOf(to), 2);
             }
+
             var caster = CoordOf(origin);
             var form = IsSinglePillar(spell) ? RaisedForm.Pillar : RaisedForm.Wall;
-            var crossesGap = false;
+            var hasPit = false;
+            var hasWater = false;
             for (var i = 0; i < cells.Count; i++)
             {
-                var probe = grid.Get(cells[i]);
-                if (probe == null || probe.Kind == TileKind.Pit)
+                var seat = SpanLaw.SeatOf(grid.Get(cells[i]));
+                if (seat == SpanSeat.Pit)
                 {
-                    crossesGap = true;
-                    break;
+                    hasPit = true;
+                }
+                else if (seat == SpanSeat.Water)
+                {
+                    hasWater = true;
                 }
             }
 
+            var supported = SpanLaw.SpanIsSupported(cells, cell => SpanLaw.SeatOf(grid.Get(cell)));
+            var dropSpan = hasPit
+                && SpanLaw.NeedsEndAnchors(grade, hasWater, hasPit)
+                && !supported;
+            var work = SpanLaw.ShouldWiden(grade, hasWater, hasPit, dropSpan)
+                ? SpanLaw.Widen(cells)
+                : cells;
+            var spanning = hasPit || (hasWater && (SpanLaw.WorksOnWater(grade) || SpanLaw.MudsWater(grade) || SpanLaw.LosesToWater(grade)));
+
             var filled = 0;
             var barred = 0;
+            var mudded = 0;
+            var frozen = 0;
+            var refused = 0;
+            var falling = dropSpan ? new List<WorldTile>() : null;
 
-            for (var i = 0; i < cells.Count; i++)
+            for (var i = 0; i < work.Count; i++)
             {
-                var tile = grid.Get(cells[i]);
-                if (tile == null && FillsGaps(spell))
+                var tile = grid.Get(work[i]);
+                var fillingPit = FillsGaps(spell)
+                    && (tile == null || tile.Kind == TileKind.Pit)
+                    && (tile == null || !tile.IsDeepWater);
+                if (tile == null && fillingPit)
                 {
-                    tile = grid.EnsureOpenPit(cells[i].x, cells[i].y);
+                    tile = grid.EnsureOpenPit(work[i].x, work[i].y);
                 }
 
                 if (tile == null)
@@ -1101,10 +1131,38 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (tile.IsDeepWater && FreezesWater(spell))
+                if (tile.IsDeepWater)
                 {
-                    if (tile.FreezeSolid())
+                    if (SpanLaw.FreezesWater(grade) || FreezesWater(spell))
                     {
+                        if (tile.FreezeSolid())
+                        {
+                            frozen++;
+                            filled++;
+                        }
+
+                        continue;
+                    }
+
+                    if (SpanLaw.MudsWater(grade))
+                    {
+                        if (tile.LayMudCover())
+                        {
+                            mudded++;
+                        }
+
+                        continue;
+                    }
+
+                    if (SpanLaw.LosesToWater(grade))
+                    {
+                        refused++;
+                        continue;
+                    }
+
+                    if (SpanLaw.WorksOnWater(grade) && FillsGaps(spell))
+                    {
+                        tile.BecomeWalkable(material, conjured: true);
                         filled++;
                     }
 
@@ -1115,15 +1173,20 @@ namespace RuneMagic
                 {
                     tile.BecomeWalkable(material, conjured: true);
                     filled++;
+                    if (dropSpan)
+                    {
+                        falling.Add(tile);
+                    }
+
                     continue;
                 }
 
-                if (crossesGap)
+                if (spanning)
                 {
                     continue;
                 }
 
-                if (RaisesBarrier(spell) && cells[i] != caster && tile.CanRaiseBarrier)
+                if (RaisesBarrier(spell) && work[i] != caster && tile.CanRaiseBarrier)
                 {
                     tile.BecomeBarrier(material, form);
                     barred++;
@@ -1133,6 +1196,31 @@ namespace RuneMagic
             if (filled > 0)
             {
                 grid.DressLooks();
+            }
+
+            if (falling != null && falling.Count > 0)
+            {
+                SpanFall.Begin(grid, falling);
+                return form == RaisedForm.Pillar
+                    ? "The column finds no rest at both ends. It falls."
+                    : "The span finds no floor or wall at each end. It falls.";
+            }
+
+            if (dropSpan && filled == 0 && mudded == 0 && frozen == 0)
+            {
+                return form == RaisedForm.Pillar
+                    ? "The column finds no rest at both ends. It falls."
+                    : "The span finds no floor or wall at each end. It falls.";
+            }
+
+            if (refused > 0 && filled == 0 && barred == 0 && mudded == 0 && frozen == 0)
+            {
+                return "Hunger cannot stand on yield. The work goes out.";
+            }
+
+            if (mudded > 0 && filled == 0)
+            {
+                return "Rest meeting yield. Mud covers the water. It will not hold you.";
             }
 
             if (filled > 0 && barred > 0)
@@ -1156,7 +1244,7 @@ namespace RuneMagic
                         : "The channel boils dry. You can walk the bed.";
                 }
 
-                if (FreezesWater(spell))
+                if (frozen > 0 || (FreezesWater(spell) && SpanLaw.FreezesWater(grade)))
                 {
                     return filled == 1
                         ? "Yield given a body. That water is ice."
@@ -1183,6 +1271,13 @@ namespace RuneMagic
                 return barred == 1
                     ? "A column stands in the way."
                     : "A wall stands from end to end.";
+            }
+
+            if (dropSpan)
+            {
+                return form == RaisedForm.Pillar
+                    ? "The column finds no rest at both ends. It falls."
+                    : "The span finds no floor or wall at each end. It falls.";
             }
 
             return string.Empty;

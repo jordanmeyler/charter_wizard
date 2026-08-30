@@ -74,6 +74,11 @@ namespace RuneMagic
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
         public bool IsWard => Kind == StatusKind.Ward;
+        /// <summary>
+        /// Focus holds mind work — ailments and wards. Wards use
+        /// Sulphur; they are mind spells. A later sentence that
+        /// reuses a mark lets the held working go.
+        /// </summary>
         public bool NeedsConcentration => IsWard || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;
         public RuneId FocusRune

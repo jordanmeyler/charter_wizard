@@ -961,8 +961,10 @@ namespace RuneMagic
             if (WorldWork.NeedsSpan(spell))
             {
                 return spell == SpellId.IceWall
-                    ? "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Fire thaws ice."
-                    : "Click the near end, then the far end. Across a pit it is a span; on the floor it is a wall that stays. Water melts basic earth.";
+                    ? "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Ice freezes water without banks. Fire thaws ice."
+                    : spell == SpellId.MetalWall
+                    ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Iron needs no far rest, and it will stand on water."
+                    : "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Water takes mud, not a bridge.";
             }
 
             if (WorldWork.IsSkyStrike(spell))
@@ -977,7 +979,7 @@ namespace RuneMagic
 
             if (WorldWork.IsPillar(spell))
             {
-                return "Click the ground. A column stands there until another element unmakes it. A hollow takes it and holds. Standing fire unmakes flesh.";
+                return "Click the ground. A column stands there until another element unmakes it. Over a pit it follows the same law as a wall: two tiles wide, and basic earth or ice must join two floors. Ice freezes water without banks. Standing fire unmakes flesh.";
             }
 
             if (WorldWork.LaysVeil(spell))

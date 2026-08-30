@@ -31,8 +31,8 @@ namespace RuneMagic
         public static readonly SpellId[] PitKeys =
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.EarthPillar, SpellId.RaisedEarth,
-            SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall,
-            SpellId.FlamePillar, SpellId.IcePillar, SpellId.VineRise,
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall,
+            SpellId.FlamePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise,
             SpellId.Hop, SpellId.Flight
         };
 
@@ -51,8 +51,8 @@ namespace RuneMagic
 
         public static readonly SpellId[] ArrowKeys =
         {
-            SpellId.Wall, SpellId.IceWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar,
-            SpellId.IcePillar, SpellId.VineRise, SpellId.Menhir, SpellId.Bridge
+            SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar,
+            SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise, SpellId.Menhir, SpellId.Bridge
         };
 
         public static SanctumBuild Build(MapFile map, bool includeProps = true)

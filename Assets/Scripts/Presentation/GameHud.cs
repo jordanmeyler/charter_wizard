@@ -371,7 +371,7 @@ namespace RuneMagic
         void DrawDevelopBookPage(Rect view, float row, float inner)
         {
             var catalog = SpellCodex.All;
-            var births = ChainBook.AllBirths;
+            var groups = RuneCatalog.LedgerGroups();
             _bookScroll = GUI.BeginScrollView(view, _bookScroll, new Rect(0, 0, view.width - 18, inner));
             for (var i = 0; i < catalog.Count; i++)
             {
@@ -383,28 +383,37 @@ namespace RuneMagic
 
             var y = catalog.Count * row + 6f;
             var heading = Label(12, FontStyle.Bold, new Color(0.92f, 0.82f, 0.5f));
-            GUI.Label(new Rect(4, y, view.width - 24, 18), "Wrought joins", heading);
-            y += 22f;
             var nameStyle = Label(12, FontStyle.Bold, new Color(0.9f, 0.92f, 0.96f));
             var recipeStyle = Label(11, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
-            for (var i = 0; i < births.Count; i++)
+            for (var g = 0; g < groups.Count; g++)
             {
-                var birth = births[i];
-                var line = new Rect(0, y, view.width - 18, row - 2);
-                var previous = GUI.color;
-                GUI.color = new Color(0.1f, 0.11f, 0.14f, 0.55f);
-                GUI.DrawTexture(line, Texture2D.whiteTexture);
-                GUI.color = previous;
-                DrawMiniMark(new Rect(line.x + 4, line.y + 4, 24, 24), birth.Rune);
-                GUI.Label(new Rect(line.x + 34, line.y + 2, 90, 16), RuneCatalog.NameOf(birth.Rune), nameStyle);
-                GUI.Label(new Rect(line.x + 34, line.y + 16, line.width - 70, 16), birth.Recipe, recipeStyle);
-                var play = new Rect(line.xMax - 32, line.y + 3, 28, line.height - 6);
-                if (DrawIconAction(play, CastIcon(), true, new Color(0.22f, 0.32f, 0.42f)))
-                {
-                    _director.LoadBirth(birth.Rune);
-                }
-
+                var group = groups[g];
+                GUI.Label(new Rect(4, y, view.width - 24, 18), group.Title, heading);
                 y += row;
+                for (var i = 0; i < group.Runes.Count; i++)
+                {
+                    var rune = group.Runes[i];
+                    var line = new Rect(0, y, view.width - 18, row - 2);
+                    var previous = GUI.color;
+                    GUI.color = new Color(0.1f, 0.11f, 0.14f, 0.55f);
+                    GUI.DrawTexture(line, Texture2D.whiteTexture);
+                    GUI.color = previous;
+                    DrawMiniMark(new Rect(line.x + 4, line.y + 4, 24, 24), rune);
+                    GUI.Label(new Rect(line.x + 34, line.y + 2, 90, 16), RuneCatalog.NameOf(rune), nameStyle);
+                    var born = ChainBook.BirthNameText(rune);
+                    GUI.Label(new Rect(line.x + 34, line.y + 16, line.width - 70, 16),
+                        string.IsNullOrEmpty(born) ? "—" : born, recipeStyle);
+                    if (ChainBook.IsWrought(rune))
+                    {
+                        var play = new Rect(line.xMax - 32, line.y + 3, 28, line.height - 6);
+                        if (DrawIconAction(play, CastIcon(), true, new Color(0.22f, 0.32f, 0.42f)))
+                        {
+                            _director.LoadBirth(rune);
+                        }
+                    }
+
+                    y += row;
+                }
             }
 
             GUI.EndScrollView();
@@ -417,7 +426,19 @@ namespace RuneMagic
                 return _director.Grimoire.KeptWorkings.Count;
             }
 
-            return SpellCodex.All.Count + 1 + ChainBook.AllBirths.Count;
+            return SpellCodex.All.Count + LedgerRuneRows();
+        }
+
+        static int LedgerRuneRows()
+        {
+            var rows = 0;
+            var groups = RuneCatalog.LedgerGroups();
+            for (var i = 0; i < groups.Count; i++)
+            {
+                rows += 1 + groups[i].Runes.Count;
+            }
+
+            return rows;
         }
 
         static CastAttempt FromKept(KeptWorking kept) =>
@@ -1263,7 +1284,7 @@ namespace RuneMagic
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
-                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Earth) or a spell to string it if those runes are in view. Esc closes.",
+                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Spark · Earth) or a spell to string it if those runes are in view. Esc closes.",
                     "Your book. Workings you have kept, and marks you remember. Click a page to send it if those marks are in view. Esc closes."),
                 subtitle);
 
@@ -1360,10 +1381,10 @@ namespace RuneMagic
         {
             CatalogBook.EnsureLoaded();
             y += 8f;
-            GUI.Label(new Rect(0, y, 900, 22), "All runes", heading);
+            GUI.Label(new Rect(0, y, 900, 22), $"All runes · {RuneCatalog.All.Count} named", heading);
             y += 22f;
             GUI.Label(new Rect(0, y, 1100, 18),
-                "Every named mark. A join is born from others — Metal is Lava · Earth, Spark is Fire · Air. Click a wrought name to string it.",
+                "Every named mark. A join is born from others — Metal is Lava · Spark · Earth, Spark is Fire · Air. Click a wrought name to string it.",
                 muted);
             y += 20f;
             if (loadable)
@@ -1374,16 +1395,12 @@ namespace RuneMagic
                 y += 20f;
             }
 
-            y = DrawRuneGroup(y, heading, row, muted, loadable, "Roots",
-                RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water);
-            y = DrawRuneGroup(y, heading, row, muted, loadable, "Body, spirit, mind",
-                RuneId.Salt, RuneId.Mercury, RuneId.Sulphur);
-            y = DrawRuneGroup(y, heading, row, muted, loadable, "Life, death, veils",
-                RuneId.Vita, RuneId.Mors, RuneId.Lumen, RuneId.Umbra);
-            y = DrawBirthGroup(y, heading, row, muted, loadable, "Wrought joins", ChainBook.AllBirths);
-            y = DrawRuneGroup(y, heading, row, muted, loadable, "Reserved / later",
-                RuneId.Hot, RuneId.Cold, RuneId.Wet, RuneId.Dry,
-                RuneId.Animus, RuneId.Anima, RuneId.Male, RuneId.Female);
+            var groups = RuneCatalog.LedgerGroups();
+            for (var i = 0; i < groups.Count; i++)
+            {
+                y = DrawRuneGroup(y, heading, row, muted, loadable, groups[i].Title, groups[i].Runes);
+            }
+
             return y;
         }
 
@@ -1394,43 +1411,18 @@ namespace RuneMagic
             GUIStyle muted,
             bool loadable,
             string title,
-            params RuneId[] runes)
+            IReadOnlyList<RuneId> runes)
         {
-            if (runes == null || runes.Length == 0)
+            if (runes == null || runes.Count == 0)
             {
                 return y;
             }
 
             GUI.Label(new Rect(0, y, 900, 22), title, heading);
             y += 24f;
-            for (var i = 0; i < runes.Length; i++)
+            for (var i = 0; i < runes.Count; i++)
             {
                 y = DrawRuneLine(y, row, muted, loadable, runes[i]);
-            }
-
-            y += 10f;
-            return y;
-        }
-
-        float DrawBirthGroup(
-            float y,
-            GUIStyle heading,
-            GUIStyle row,
-            GUIStyle muted,
-            bool loadable,
-            string title,
-            IReadOnlyList<ChainBook.Birth> births)
-        {
-            if (births == null || births.Count == 0)
-            {
-                return y;
-            }
-
-            GUI.Label(new Rect(0, y, 900, 22), title, heading);
-            y += 24f;
-            for (var i = 0; i < births.Count; i++)
-            {
-                y = DrawRuneLine(y, row, muted, loadable, births[i].Rune);
             }
 
             y += 10f;
@@ -1468,7 +1460,7 @@ namespace RuneMagic
         float DrawCodex(float y, GUIStyle heading, GUIStyle row, GUIStyle muted, bool loadable)
         {
             y += 8f;
-            GUI.Label(new Rect(0, y, 900, 22), "Written spells", heading);
+            GUI.Label(new Rect(0, y, 900, 22), $"Written spells · {SpellCodex.All.Count}", heading);
             y += 22f;
             GUI.Label(new Rect(0, y, 1100, 18),
                 "Every catalog chain. Joins fold (Fire · Air is Spark). A via-form is the same story from a wrought rune already in the field.",
@@ -1525,11 +1517,17 @@ namespace RuneMagic
         static float CodexHeight()
         {
             CatalogBook.EnsureLoaded();
-            var runes = RuneCatalog.All.Count + 8;
+            var groups = RuneCatalog.LedgerGroups();
+            var runes = 0;
+            for (var i = 0; i < groups.Count; i++)
+            {
+                runes += groups[i].Runes.Count;
+            }
+
             var spells = SpellCodex.All.Count;
             var materials = MaterialCatalog.All.Count;
-            return 280f + runes * 20f + spells * 20f + 12 * 28f
-                + materials * 20f + ChainBook.BirthCount * 4f + 200f;
+            return 280f + groups.Count * 34f + runes * 20f + spells * 20f + 12 * 28f
+                + materials * 20f + 200f;
         }
 
         void DrawRuneCard(Rect rect, RuneId rune, System.Action onClick, bool available, bool oneSpace = false, RuneId chunk = RuneId.None)

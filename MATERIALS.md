@@ -47,7 +47,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Void** | — (tear) | — | The Drop pits |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
 | **Scoured** | Air · Earth · Dust | Dust | Storm Cell wind-cut stone |
-| **Metal** | Fire · Earth · Lava · Metal | Metal | Storm Cell plate |
+| **Metal** | Fire · Earth · Lava · Spark · Metal | Metal | Storm Cell plate. Lava · Spark · Earth. Conducts heat and the spark. |
 
 ---
 

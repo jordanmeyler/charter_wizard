@@ -4,16 +4,36 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Concentration. Wards and mind ailments are held by the sentence
-    /// that wrote them, not by a clock. A later spell that reuses any
-    /// of those marks lets the working go. Elemental work (a wall, a
-    /// flame, burning, poison, ice) stands on its own.
+    /// Focus holds mind spells. Charm, command, lull, rage, terror,
+    /// confuse, and the four wards (they all write Sulphur) stay
+    /// until another sentence reuses a mark from the held working.
+    /// Elemental work (a wall, a flame, burning, poison, ice) stands
+    /// on its own.
     /// </summary>
     public static class FocusLaw
     {
+        public static bool IsMindSpell(SpellId spell)
+        {
+            if (spell == SpellId.None)
+            {
+                return false;
+            }
+
+            var status = SpellVerb.Of(spell).Status;
+            if (StatusSpec.IsMindAilment(status) || StatusSpec.Of(status).IsWard)
+            {
+                return true;
+            }
+
+            return SpellCodex.TryGet(spell, out var entry) && entry.Book == SpellBook.Mind;
+        }
+
+        public static bool Holds(StatusId id) =>
+            StatusSpec.Of(id).NeedsFocus;
+
         public static bool Breaks(StatusId held, SpellId next)
         {
-            if (!StatusSpec.Of(held).NeedsConcentration || next == SpellId.None)
+            if (!Holds(held) || next == SpellId.None)
             {
                 return false;
             }
@@ -150,6 +170,57 @@ namespace RuneMagic
             }
 
             return unique;
+        }
+
+        public static void Audit(List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            if (!IsMindSpell(SpellId.Charm)
+                || !IsMindSpell(SpellId.Command)
+                || !IsMindSpell(SpellId.Lull)
+                || !IsMindSpell(SpellId.Rage)
+                || !IsMindSpell(SpellId.Terror)
+                || !IsMindSpell(SpellId.Confuse))
+            {
+                broken.Add("Focus must hold the mind sentences");
+            }
+
+            if (!IsMindSpell(SpellId.Stoneskin)
+                || !IsMindSpell(SpellId.Watershield)
+                || !IsMindSpell(SpellId.Flameward)
+                || !IsMindSpell(SpellId.Windward)
+                || IsMindSpell(SpellId.Wall)
+                || IsMindSpell(SpellId.Fireball))
+            {
+                broken.Add("Wards are mind spells; walls and fireballs are not");
+            }
+
+            if (!Holds(StatusId.Stoneskin)
+                || !Holds(StatusId.Watershield)
+                || Holds(StatusId.Burning)
+                || Holds(StatusId.Frozen)
+                || Holds(StatusId.Poisoned)
+                || Holds(StatusId.Stunned))
+            {
+                broken.Add("Focus holds wards and mind ailments, not elemental clocks");
+            }
+
+            if (!Holds(StatusId.Charmed) || !Holds(StatusId.Sleeping))
+            {
+                broken.Add("Focus must hold charm and sleep");
+            }
+
+            if (!Breaks(StatusId.Stoneskin, SpellId.Wall)
+                || !Breaks(StatusId.Watershield, SpellId.Douse)
+                || !Breaks(StatusId.Flameward, SpellId.Fireball)
+                || Breaks(StatusId.Stoneskin, SpellId.Fireball))
+            {
+                broken.Add("A shared mark drops a ward; Fireball must not drop stoneskin");
+            }
         }
     }
 }
