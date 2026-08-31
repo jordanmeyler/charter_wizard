@@ -41,7 +41,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Ash** | Fire · Plant · Ash | Ash | Ash Court floor |
 | **Ember** | Fire · Ash · Ember | Ember | Ash Court bed |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
-| **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall |
+| **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall. Tree and Wood-wall stand this wood. |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
 | **Moss** | Water · Salt · Earth · Plant · Life | Plant | Chapel corners |
 | **Void** | — (tear) | — | The Drop pits |

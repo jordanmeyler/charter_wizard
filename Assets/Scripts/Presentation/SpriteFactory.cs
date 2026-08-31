@@ -286,6 +286,12 @@ namespace RuneMagic
 
         public static Sprite Wall(MaterialId material, int x, int y)
         {
+            if (material == MaterialId.Timber)
+            {
+                var timberSeed = Hash(x, y, (int)material + 17);
+                return Memo($"wall:{material}:{timberSeed}", () => PaintTreeWall(MaterialCatalog.Of(material), timberSeed));
+            }
+
             var atlas = TileAtlas.Wall(material, x, y);
             if (atlas != null)
             {
@@ -598,6 +604,12 @@ namespace RuneMagic
 
         public static Sprite Column(MaterialId material, int x, int y)
         {
+            if (material == MaterialId.Timber)
+            {
+                var timberSeed = Hash(x, y, (int)material + 41);
+                return Memo($"column:{material}:{timberSeed}", () => PaintTreeColumn(MaterialCatalog.Of(material), timberSeed));
+            }
+
             var atlas = TileAtlas.Column(material);
             if (atlas != null)
             {
@@ -1609,6 +1621,9 @@ namespace RuneMagic
                 case MaterialPaint.Moss:
                     PaintVineWall(canvas, brick, rng);
                     break;
+                case MaterialPaint.Planks:
+                    PaintTreeWall(canvas, brick, rng);
+                    break;
                 default:
                     PaintBrickWall(canvas, brick, rng);
                     break;
@@ -1667,6 +1682,54 @@ namespace RuneMagic
             }
 
             canvas.SoftCircle(16, 34, 10, new Color(1f, 0.4f, 0.08f, 0.4f));
+        }
+
+        static Sprite PaintTreeWall(WorldMaterial material, int seed)
+        {
+            var canvas = new PixelCanvas(32, 40);
+            var rng = new HashRng(seed == 0 ? 5 : seed);
+            PaintTreeWall(canvas, material != null ? material.WallTone : new Color(0.42f, 0.26f, 0.14f), rng);
+            canvas.DitherBand(0, 4, new Color(0f, 0f, 0f, 0.18f), 0.5f);
+            return canvas.ToSprite(32, new Vector2(0.5f, 0.4f));
+        }
+
+        static void PaintTreeWall(PixelCanvas canvas, Color wood, HashRng rng)
+        {
+            canvas.Clear(Color.Lerp(wood, new Color(0.08f, 0.12f, 0.06f), 0.62f));
+            var bark = Color.Lerp(wood, new Color(0.18f, 0.1f, 0.05f), 0.35f);
+            var leaf = new Color(0.2f, 0.42f, 0.16f, 0.95f);
+            var leafDark = new Color(0.12f, 0.3f, 0.1f, 0.9f);
+            for (var i = 0; i < 3; i++)
+            {
+                var x = 4 + i * 10 + rng.Range(-1, 2);
+                var trunkH = rng.Range(16, 22);
+                canvas.FillRounded(x, 2, 4, trunkH, 1, rng.Jitter(bark, 0.06f));
+                canvas.Fill(x + 1, 4, 1, trunkH - 4, Color.Lerp(bark, Color.white, 0.12f));
+                canvas.FillCircle(x + 2, trunkH + 6, 7, leafDark);
+                canvas.FillCircle(x, trunkH + 10, 5, leaf);
+                canvas.FillCircle(x + 4, trunkH + 9, 5, Color.Lerp(leaf, Color.black, 0.15f));
+            }
+
+            canvas.Fill(0, 0, 32, 4, Color.Lerp(wood, new Color(0.16f, 0.12f, 0.06f), 0.4f));
+        }
+
+        static Sprite PaintTreeColumn(WorldMaterial material, int seed)
+        {
+            var canvas = new PixelCanvas(32, 64);
+            var rng = new HashRng(seed == 0 ? 13 : seed);
+            var wood = material != null ? material.WallTone : new Color(0.42f, 0.26f, 0.14f);
+            var bark = Color.Lerp(wood, new Color(0.16f, 0.09f, 0.04f), 0.4f);
+            var leaf = new Color(0.22f, 0.46f, 0.16f);
+            canvas.Clear(Clear);
+            canvas.FillRounded(13, 2, 6, 28, 1, bark);
+            canvas.Fill(15, 6, 2, 22, Color.Lerp(bark, Color.white, 0.16f));
+            canvas.FillCircle(16, 40, 11, Color.Lerp(leaf, Color.black, 0.2f));
+            canvas.FillCircle(11, 46, 8, leaf);
+            canvas.FillCircle(21, 45, 8, Color.Lerp(leaf, Color.black, 0.12f));
+            canvas.FillCircle(16, 50, 7, Color.Lerp(leaf, Color.white, 0.08f));
+            canvas.FillCircle(14 + rng.Range(0, 3), 38 + rng.Range(0, 3), 3, new Color(0.34f, 0.58f, 0.2f, 0.85f));
+            canvas.Fill(10, 2, 12, 3, Color.Lerp(wood, new Color(0.16f, 0.12f, 0.06f), 0.35f));
+            return canvas.ToSprite(32, new Vector2(0.5f, 0.18f));
         }
 
         static void PaintVineWall(PixelCanvas canvas, Color leaf, HashRng rng)

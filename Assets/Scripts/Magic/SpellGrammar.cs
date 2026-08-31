@@ -106,7 +106,9 @@ namespace RuneMagic
         Monsoon,
         DirtToss,
         MetalPillar,
-        MetalWall
+        MetalWall,
+        Tree,
+        WoodWall
     }
 
     public readonly struct SpellRecipe
@@ -202,6 +204,7 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Water · Dust · Salt. Soft ground given a body.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Remote, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent.");
             Register(RuneId.Vine, RuneId.Earth, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
+            Register(RuneId.Plant, RuneId.Earth, SpellShape.Pillar, SpellId.Tree, "Tree", "Compressed. Catalog: Plant · Salt · Earth. A vegetable body given a standing body and asked to rest.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Forest, "Forest", "Compressed. Catalog: Plant · Life · Earth. The vegetable body waking as a mass.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");

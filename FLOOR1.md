@@ -26,7 +26,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
 | An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Dirt toss). A body of rest sent is **Earth · Salt · Mercury** (Hurled stone). |
-| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Water-pillar), **Water · Earth · Salt · Earth** (Ice-pillar) |
+| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Water-pillar), **Water · Earth · Salt · Earth** (Ice-pillar), **Plant · Salt · Earth** (Tree), **Plant · Salt · Plant** (Wood-wall) |
 | A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
@@ -57,6 +57,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 82 | **Forest** | Water · Salt · Earth · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
 | 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
 | 84 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
+| 87 | **Tree** | Water · Salt · Earth · Salt · Earth | A vegetable body stood as a tree. `Plant · Salt · Earth`. Hunger eats it. |
+| 88 | **Wood-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | A line of trees. `Plant · Salt · Plant`. Same banks as earth. Hunger eats it. |
 
 ---
 

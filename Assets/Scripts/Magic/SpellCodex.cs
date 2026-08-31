@@ -167,7 +167,9 @@ namespace RuneMagic
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
             E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
-            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither)
+            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither),
+            E(87, SpellBook.GrowHeal, SpellId.Tree, "A vegetable body given a standing body and asked to rest. A tree. Over a pit it must join two floors, or it falls. Hunger eats it.", "Tree", "Water · Salt · Earth · Salt · Earth", "Plant · Salt · Earth", "Pillar", SpellOutcome.Neither),
+            E(88, SpellBook.GrowHeal, SpellId.WoodWall, "A body of plant asked to stand as more plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. Hunger eats it.", "Wood-wall", "Water · Salt · Earth · Salt · Water · Salt · Earth", "Plant · Salt · Plant", "Pillar", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -586,9 +588,48 @@ namespace RuneMagic
                 broken.Add("Metal-pillar and Metal-wall must be written in the developer book");
             }
 
-            if (Entries.Length < 86)
+            var tree = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Earth });
+            var treeExact = ChainBook.CollectExact(tree, SpellShape.None);
+            if (treeExact.Count == 0 || treeExact[0].Spell != SpellId.Tree)
             {
-                broken.Add("The written book must keep every catalog spell, including 85–86 Metal");
+                broken.Add("Plant · Salt · Earth should be Tree");
+            }
+
+            var treeRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt, RuneId.Earth
+            });
+            var treeFromRoots = ChainBook.CollectExact(treeRoots, SpellShape.None);
+            if (treeFromRoots.Count == 0 || treeFromRoots[0].Spell != SpellId.Tree)
+            {
+                broken.Add("Water · Salt · Earth · Salt · Earth should be Tree");
+            }
+
+            var woodWall = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Plant });
+            var woodWallExact = ChainBook.CollectExact(woodWall, SpellShape.None);
+            if (woodWallExact.Count == 0 || woodWallExact[0].Spell != SpellId.WoodWall)
+            {
+                broken.Add("Plant · Salt · Plant should be Wood-wall");
+            }
+
+            var woodWallRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt, RuneId.Water, RuneId.Salt, RuneId.Earth
+            });
+            var woodWallFromRoots = ChainBook.CollectExact(woodWallRoots, SpellShape.None);
+            if (woodWallFromRoots.Count == 0 || woodWallFromRoots[0].Spell != SpellId.WoodWall)
+            {
+                broken.Add("Water · Salt · Earth · Salt · Water · Salt · Earth should be Wood-wall");
+            }
+
+            if (!TryGet(SpellId.Tree, out _) || !TryGet(SpellId.WoodWall, out _))
+            {
+                broken.Add("Tree and Wood-wall must be written in the developer book");
+            }
+
+            if (Entries.Length < 88)
+            {
+                broken.Add("The written book must keep every catalog spell, including 87–88 Tree and Wood-wall");
             }
         }
 

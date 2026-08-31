@@ -1418,6 +1418,32 @@
       "outcome": "Neither",
       "gate": "",
       "work": "MetalWall"
+    },
+    {
+      "number": 87,
+      "id": "Tree",
+      "book": "GrowHeal",
+      "name": "Tree",
+      "want": "A vegetable body given a standing body and asked to rest. A tree. Over a pit it must join two floors, or it falls. Hunger eats it.",
+      "recipe": "Water \u00b7 Salt \u00b7 Earth \u00b7 Salt \u00b7 Earth",
+      "via": "Plant \u00b7 Salt \u00b7 Earth",
+      "form": "Pillar",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Tree"
+    },
+    {
+      "number": 88,
+      "id": "WoodWall",
+      "book": "GrowHeal",
+      "name": "Wood-wall",
+      "want": "A body of plant asked to stand as more plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. Hunger eats it.",
+      "recipe": "Water \u00b7 Salt \u00b7 Earth \u00b7 Salt \u00b7 Water \u00b7 Salt \u00b7 Earth",
+      "via": "Plant \u00b7 Salt \u00b7 Plant",
+      "form": "Pillar",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "WoodWall"
     }
   ]
 }

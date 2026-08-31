@@ -44,11 +44,13 @@ PITS = [
     "FlamePillar",
     "IcePillar",
     "VineRise",
+    "Tree",
+    "WoodWall",
     "Hop",
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Menhir", "Bridge"]
+ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Tree", "WoodWall", "Menhir", "Bridge"]
 MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",

@@ -29,6 +29,7 @@ namespace RuneMagic
         Ice,
         Metal,
         Fire,
+        Plant,
         Advanced
     }
 
@@ -72,6 +73,11 @@ namespace RuneMagic
                 || WorldWork.IsBasicEarth(material))
             {
                 return SpanGrade.BasicEarth;
+            }
+
+            if (spell == SpellId.Tree || spell == SpellId.WoodWall)
+            {
+                return SpanGrade.Plant;
             }
 
             return SpanGrade.Advanced;
@@ -306,10 +312,17 @@ namespace RuneMagic
                 broken.Add("Later spans must work in water unless the square forbids it");
             }
 
-            if (!NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
-                || !NeedsEndAnchors(SpanGrade.Ice, false, true))
+            if (GradeOf(SpellId.Tree, MaterialId.Timber) != SpanGrade.Plant
+                || GradeOf(SpellId.WoodWall, MaterialId.Timber) != SpanGrade.Plant)
             {
-                broken.Add("Standard earth and ice over a pit must join two floors");
+                broken.Add("Tree and wood-wall must share plant’s span grade");
+            }
+
+            if (!NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
+                || !NeedsEndAnchors(SpanGrade.Ice, false, true)
+                || !NeedsEndAnchors(SpanGrade.Plant, false, true))
+            {
+                broken.Add("Standard earth, ice, and a line of trees over a pit must join two floors");
             }
 
             if (NeedsEndAnchors(SpanGrade.Ice, true, false))
@@ -321,6 +334,13 @@ namespace RuneMagic
                 || NeedsEndAnchors(SpanGrade.Advanced, true, true))
             {
                 broken.Add("Metal and later work must hang without a far rest");
+            }
+
+            if (MudsWater(SpanGrade.Plant)
+                || WorksOnWater(SpanGrade.Plant)
+                || LosesToWater(SpanGrade.Plant))
+            {
+                broken.Add("Wood does not mud water, freeze it, or hang on it");
             }
 
             if (MudsWater(SpanGrade.BasicEarth) == false
