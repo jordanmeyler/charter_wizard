@@ -16,7 +16,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Frozen Hall** | Ice cage (ice-thing optional) | Any fire-bearing sentence (Fireball, Melt, Ignite…). Witchfire for harder ice. | Fire: heat, melt, burn. |
 | **The Ember Vault** | Flame curtain (golem slams) | Douse (`Water · Mercury`), Water-jet, Rain, Flood | Water: douse, fill, cool. Hop or Stoneskin the slam. |
 | **The Arrow Gauntlet** | Real arrow shots down a lane, pits on either side | Earth-pillar (`Earth · Salt`) or Wall | Earth: rest given a body. Shots kill; a wall or Stoneskin breaks them. No walk-around. |
-| **The Sundered Heights** | Miasma on the floor | Gust (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
+| **The Sundered Heights** | Miasma on the floor | Wind (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The flaming hall** | Kindled floor, no water nearby | Water ward (`Water · Salt · Sulphur`); Douse if you fetch yield | First ward. Columns write the sentence at the mouth. |
 | **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. The same water ward turns the shot. |
@@ -30,7 +30,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 
 The old four-room slice (`sanctum`) is still in `Assets/Resources/Maps/`. Point `index.json` at it to boot that map.
 
-Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for this floor. Water drowns. Ice freezes that water into a floor. Water work fills a connected pit smaller than 4×4 with drowning water. Larger hollows stay open until you hop, span, freeze, or grow a plant across. You cannot swim.
+Douse, Command, Wind, and Earth-pillar are new ordinary sentences written for this floor. Water drowns. Ice freezes that water into a floor. Water work fills a connected pit smaller than 4×4 with drowning water. Larger hollows stay open until you hop, span, freeze, or grow a plant across. You cannot swim.
 
 | Design rule | In this slice |
 | --- | --- |
@@ -39,7 +39,7 @@ Douse, Command, Gust, and Earth-pillar are new ordinary sentences written for th
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
 | Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
-| Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Water · Dust. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
+| Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Earth · Water. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
 ## Open and play

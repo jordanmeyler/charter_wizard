@@ -35,7 +35,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | --- | --- | --- | --- |
 | 52 | **Douse** | Water · Mercury | Parallel to Fireball. Yield sent. The first water verb. |
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
-| 54 | **Gust** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
+| 54 | **Wind** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 | 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
 | 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Arrows and slams break. Hunger sent still finds you. |
 | 57 | **Water ward** | Water · Salt · Sulphur | Hunger breaks. Wear it against the wizard and a burning floor. |
@@ -50,7 +50,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
-| 69 | **Swamp** | Water · Dust · Mercury · Salt | A watery swamp from your feet. Yield meeting grit, going, then stood. |
+| 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
 | 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
 | 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
 | 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
@@ -105,7 +105,7 @@ Walk in from the west. A labelled **Water** waits near the mouth. A **Fire Golem
 Walk in from the north. A labelled **Earth** waits near the mouth. An **arrow volley** fires real shots south down the lane. A stood body — Earth-pillar (`Earth · Salt`) or Wall — breaks them. Hop over a volley if you are quick. Stoneskin breaks arrows on your skin. **Pits on either side** keep the stone on that lane — there is no walk-around. The shots have to stop, or you take them.
 
 ### Air · "The Sundered Heights" — *gust, clear*
-Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is **miasma** — not a wall. Walking in it throws you back. **Gust** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
+Walk in from the north. A labelled **Air** waits near the mouth. The back of the room is **miasma** — not a wall. Walking in it throws you back. **Wind** (`Air · Mercury`) or Gale pushes the breath out. The Air stone sits in the once-fouled air.
 
 ### Door I · Gate of Elements
 Four sockets on the hub’s north wall. Walk up holding the four element stones and they seat themselves. The north door opens into the aspect foyer.
@@ -126,7 +126,7 @@ The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the f
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Gust, Gale…). A flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"

@@ -59,14 +59,14 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | --- | --- | --- | --- |
 | **Ice** | Water · Earth · Ice | Ice | Hard water. Thaws. Not Death. Freeze a pool and you can walk it. |
 | **Water** | Water · Salt | Water | A pool — yield holding a vessel. **It drowns.** Water work fills a connected pit smaller than 4×4 with this water. Ice asks it to stand. |
-| **Mud** | Water · Dust · Mud | Mud | Soft ground. Yield meeting grit. |
-| **Sand** | Air · Earth · Dust · Salt · Sand | Sand | Grit given a body. |
-| **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight. Sand and mud start here. |
+| **Mud** | Earth · Water · Mud | Mud | Soft ground. Rest meeting yield. Water · Earth is Ice. |
+| **Sand** | Air · Earth · Dust | Dust | The same grit as dust. A paint, not a second rune. |
+| **Dust** | Air · Earth · Dust | Dust | Rest that lost its weight. Sand is the same thing. |
 | **Lava** | Fire · Earth · Lava | Lava | Earth that cannot stay earth |
 | **Steam** | Fire · Water · Steam | Steam | Violent hot veil |
-| **Glass** | Sand · Flame · Earth · Glass | Glass | Grains, hunger, rest |
+| **Glass** | Dust · Flame · Earth · Glass | Glass | Grains, witchfire, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
-| **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched. Melt, Shatter, and hunger's thaw will not take it |
+| **Obsidian** | Fire · Earth · Lava · Salt · Water · Obsidian | Obsidian | Hungry earth quenched. Lava · Salt · Water. Melt, Shatter, and hunger's thaw will not take it |
 | **Grove** | Water · Salt · Earth · Plant · Life | Plant | Living plant as a mass. Forest is a spell, not a rune. |
 | **Plant** | Water · Salt · Earth · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
@@ -115,4 +115,4 @@ Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs to
 | Metal | 0 | 1.6 | The spark’s favourite road. |
 | Vein | 0 | 0.85 | Spark in the stone. |
 
-The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).
+The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).

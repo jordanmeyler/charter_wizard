@@ -251,6 +251,19 @@ namespace RuneMagic
 
             if (hasWater && hasEarth && !hasSalt && !hasPlant)
             {
+                for (var i = 0; i < formula.Count; i++)
+                {
+                    if (formula[i] == RuneId.Earth)
+                    {
+                        return MaterialId.Mud;
+                    }
+
+                    if (formula[i] == RuneId.Water)
+                    {
+                        return hasStone ? MaterialId.Glacier : MaterialId.Ice;
+                    }
+                }
+
                 return hasStone ? MaterialId.Glacier : MaterialId.Ice;
             }
 
@@ -360,6 +373,11 @@ namespace RuneMagic
                 broken.Add("Witchfire must carry Flame heat");
             }
 
+            if (HeatOf(SpellId.Plasma) != Heat.Inferno)
+            {
+                broken.Add("Plasma must carry Inferno heat");
+            }
+
             if (HeatOf(SpellId.Rage) != Heat.None
                 || HeatOf(SpellId.Frenzy) != Heat.None
                 || HeatOf(SpellId.Gust) != Heat.None
@@ -426,6 +444,14 @@ namespace RuneMagic
                 || flame[2] != RuneId.Fire)
             {
                 broken.Add("Flame must be born Fire · Sulphur · Fire");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Plasma, out var plasma)
+                || plasma.Count != 2
+                || plasma[0] != RuneId.Flame
+                || plasma[1] != RuneId.Lightning)
+            {
+                broken.Add("Plasma must be born Flame · Lightning");
             }
 
             if (!SpellCodex.TryGet(SpellId.Witchfire, out var witch)
