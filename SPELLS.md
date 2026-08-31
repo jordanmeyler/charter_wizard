@@ -184,7 +184,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Salt · Water | Lava · Salt · Water | Remote | Neither |
 | 29 | A vegetable body marked living, from the feet. | Sprout | Water · Salt · Earth · Life | Plant · Life | Spread | Neither |
-| 30 | The vegetable body sent. It holds them, or it climbs. A spell — the field speaks Plant. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Remote | Restrain / Neither |
+| 30 | The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. A spell — the field speaks Plant. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Shot | Restrain / Neither |
 | 31 | The sent plant asked to stand. | Vine-rise | Water · Salt · Earth · Mercury · Earth | Plant · Mercury · Earth | Pillar | Neither / Restrain |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |

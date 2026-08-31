@@ -90,10 +90,16 @@ namespace RuneMagic
                     {
                         quench += -flam * 0.45f;
                     }
-                    else if (flam > 0f && other.Wet < 0.2f && !other.HasWaterCover && other.Fire < 0.15f)
+                    else if (other.Wet < 0.2f && !other.HasWaterCover && other.Fire < 0.15f)
                     {
-                        var run = tile.HasOil ? 0.85f : 0.4f;
-                        other.Ignite(flam * run);
+                        var wick = tile.HasOil || tile.HasVine || other.HasVine || other.HasOil;
+                        var catchable = flam > 0f || other.HasVine || other.HasOil;
+                        if (catchable)
+                        {
+                            var run = wick ? 0.9f : 0.4f;
+                            var fuel = flam > 0f ? flam : 1.2f;
+                            other.Ignite(fuel * run);
+                        }
                     }
                 }
 
@@ -106,6 +112,11 @@ namespace RuneMagic
                 if (tile.Fire > 0.55f && (tile.IsPlantish || tile.HasPlantishDetail))
                 {
                     tile.BurnDown();
+                }
+
+                if (tile.Fire > 0.55f && tile.HasVine)
+                {
+                    tile.BurnVine();
                 }
             }
         }

@@ -64,6 +64,7 @@ namespace RuneMagic
                 case SpellId.OilShot:
                 case SpellId.Poison:
                 case SpellId.Plasma:
+                case SpellId.Vine:
                     return true;
                 default:
                     return false;
@@ -215,6 +216,9 @@ namespace RuneMagic
 
         public static bool IsOilWork(SpellId spell) =>
             spell == SpellId.OilShot;
+
+        public static bool IsVineWork(SpellId spell) =>
+            spell == SpellId.Vine;
 
         public static bool IsPlasmaWork(SpellId spell) =>
             MatterLaw.IsPlasmaWork(spell);
@@ -675,6 +679,16 @@ namespace RuneMagic
                 }
             }
 
+            if (IsVineWork(spell))
+            {
+                var climbed = LayVine(grid, cells);
+                VineStrand.Lay(grid, origin, to);
+                if (climbed > 0)
+                {
+                    notes.Add("The vegetable body climbs. Hunger can run this line as a wick.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -781,6 +795,26 @@ namespace RuneMagic
             {
                 var tile = grid.Get(cells[i]);
                 if (tile != null && tile.SlickOil())
+                {
+                    changed++;
+                }
+            }
+
+            return changed;
+        }
+
+        public static int LayVine(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile != null && tile.LayVine())
                 {
                     changed++;
                 }
@@ -964,7 +998,8 @@ namespace RuneMagic
                 || spell == SpellId.Gust || spell == SpellId.Push || spell == SpellId.Scald
                 || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.Douse
                 || spell == SpellId.IceSpear || spell == SpellId.LightningBolt
-                || spell == SpellId.BrilliantArc || spell == SpellId.Blackout)
+                || spell == SpellId.BrilliantArc || spell == SpellId.Blackout
+                || spell == SpellId.Vine)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }

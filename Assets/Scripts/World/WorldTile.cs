@@ -217,12 +217,18 @@ namespace RuneMagic
         public bool HasFog => Fog > 0.2f;
         public bool HasMiasma => Miasma > 0.2f;
         public bool HasOil => Oil > 0.2f || Material == MaterialId.Oil;
+        public bool HasVine =>
+            Cover == TileCover.Vine
+            || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase);
         public bool IsPoisonWater =>
             Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
         public float Flammability =>
             HasWaterCover
                 ? -1.6f
-                : Def.WorldMaterial.Flammability + DetailFlammability + (HasOil ? 1.6f : 0f);
+                : Def.WorldMaterial.Flammability + DetailFlammability
+                    + (HasOil ? 1.6f : 0f)
+                    + (HasVine ? 1.4f : 0f);
         public float Conductivity => Def.WorldMaterial.Conductivity;
         public bool IsPlantish => IsPlantMaterial(Material);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
@@ -549,6 +555,53 @@ namespace RuneMagic
 
             RefreshFx();
             return true;
+        }
+
+        /// <summary>
+        /// A climbing body on the walk. Hunger runs it like a wick.
+        /// </summary>
+        public bool LayVine()
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            if (IsDeepWater || Material == MaterialId.Lava)
+            {
+                return false;
+            }
+
+            if (HasVine)
+            {
+                if (IsBurning)
+                {
+                    Ignite(0.45f);
+                }
+
+                return true;
+            }
+
+            PaintCover(TileCover.Vine);
+            if (IsBurning)
+            {
+                Ignite(0.55f);
+            }
+
+            RefreshFx();
+            return true;
+        }
+
+        public void BurnVine()
+        {
+            if (!HasVine)
+            {
+                return;
+            }
+
+            _coverLook = null;
+            PaintCover(TileCover.None);
+            RefreshFx();
         }
 
         /// <summary>

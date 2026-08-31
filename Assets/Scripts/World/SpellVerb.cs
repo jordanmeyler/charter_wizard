@@ -22,7 +22,8 @@ namespace RuneMagic
         Foul,
         Vent,
         Dirt,
-        Slick
+        Slick,
+        Vine
     }
 
     /// <summary>
@@ -127,9 +128,10 @@ namespace RuneMagic
                 case SpellId.Balm:
                 case SpellId.Chorus:
                     return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.None, 0f, TileVerb.Grow);
-                case SpellId.Vine:
                 case SpellId.Quagmire:
                     return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.Rooted, 4f, TileVerb.Wet);
+                case SpellId.Vine:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Rooted, 4f, TileVerb.Vine);
                 case SpellId.Lull:
                 case SpellId.GraveSleep:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Sleeping, 6f, TileVerb.None);

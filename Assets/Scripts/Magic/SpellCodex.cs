@@ -111,7 +111,7 @@ namespace RuneMagic
             E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth asked to go.", "Lava-flood", "Fire · Earth · Mercury", "Lava · Mercury", "Remote", SpellOutcome.Kill),
             E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Salt · Water", "Lava · Salt · Water", "Remote", SpellOutcome.Neither),
             E(29, SpellBook.GrowHeal, SpellId.Sprout, "A vegetable body marked living, from the feet.", "Sprout", "Water · Salt · Earth · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
-            E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. It holds them, or it climbs.", "Vine", "Water · Salt · Earth · Mercury", "Plant · Mercury", "Remote", SpellOutcome.Restrain),
+            E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. A spell — the field speaks Plant.", "Vine", "Water · Salt · Earth · Mercury", "Plant · Mercury", "Shot", SpellOutcome.Restrain),
             E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Salt · Earth · Mercury · Earth", "Plant · Mercury · Earth", "Pillar", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
@@ -475,7 +475,8 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.Douse)
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
                 || !WorldWork.StopsOnWalls(SpellId.Push)
-                || !WorldWork.StopsOnWalls(SpellId.LightningBolt))
+                || !WorldWork.StopsOnWalls(SpellId.LightningBolt)
+                || !WorldWork.StopsOnWalls(SpellId.Vine))
             {
                 broken.Add("A flying shot must stop on a wall");
             }
@@ -688,6 +689,7 @@ namespace RuneMagic
             WorldPhysics.Audit(broken);
             SpanLaw.Audit(broken);
             FocusLaw.Audit(broken);
+            VitalLaw.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
             if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _) || !TryGet(SpellId.ObsidianWall, out _))

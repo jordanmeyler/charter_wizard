@@ -603,10 +603,10 @@
       "id": "Vine",
       "book": "Hold",
       "name": "Vine",
-      "want": "The vegetable body sent. It holds them, or it climbs. A spell — the field speaks Plant.",
+      "want": "The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. A spell — the field speaks Plant.",
       "recipe": "Water · Salt · Earth · Mercury",
       "via": "Plant · Mercury",
-      "form": "Remote",
+      "form": "Shot",
       "outcome": "Restrain",
       "gate": "",
       "work": "Vine"

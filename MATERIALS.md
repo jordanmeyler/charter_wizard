@@ -98,7 +98,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
 | **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
+Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
 
 | Material | Flam | Cond | Note |
 | --- | --- | --- | --- |

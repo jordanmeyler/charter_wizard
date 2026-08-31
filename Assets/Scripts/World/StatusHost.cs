@@ -196,10 +196,15 @@ namespace RuneMagic
             var parts = new List<string>(_effects.Count);
             for (var i = 0; i < _effects.Count; i++)
             {
-                if (_effects[i].Remaining > 0f)
+                if (_effects[i].Remaining <= 0f)
                 {
-                    parts.Add(_effects[i].Spec.Name);
+                    continue;
                 }
+
+                var spec = _effects[i].Spec;
+                parts.Add(spec.IsMeter
+                    ? $"{spec.Name} {_effects[i].Remaining:0.0}"
+                    : spec.Name);
             }
 
             return string.Join(" · ", parts);
@@ -213,7 +218,7 @@ namespace RuneMagic
             }
 
             var spec = StatusSpec.Of(id);
-            if (!spec.NeedsConcentration && seconds <= 0f)
+            if (!spec.NeedsConcentration && !spec.IsMeter && seconds <= 0f)
             {
                 return string.Empty;
             }
@@ -238,10 +243,29 @@ namespace RuneMagic
                 return $"{name} will not take {spec.Name}.";
             }
 
-            var held = spec.NeedsConcentration ? float.PositiveInfinity : scale * seconds;
+            if (id == StatusId.Soaked)
+            {
+                Drop(StatusId.Burning, false);
+            }
+
+            var held = spec.NeedsConcentration
+                ? float.PositiveInfinity
+                : spec.IsMeter
+                    ? MeterCapacity(id)
+                    : scale * seconds;
+            if (spec.IsMeter && held <= 0f)
+            {
+                return $"{name} will not take {spec.Name}.";
+            }
+
             if (id == StatusId.Burning || id == StatusId.Stunned || id == StatusId.Frozen)
             {
                 Drop(StatusId.Sleeping, false);
+            }
+
+            if (id == StatusId.Burning)
+            {
+                Drop(StatusId.Soaked, false);
             }
 
             if (spec.IsWard)
@@ -258,9 +282,13 @@ namespace RuneMagic
             {
                 if (_effects[i].Id == id)
                 {
-                    _effects[i].Remaining = spec.NeedsConcentration
-                        ? float.PositiveInfinity
-                        : Mathf.Max(_effects[i].Remaining, held);
+                    if (!spec.IsMeter)
+                    {
+                        _effects[i].Remaining = spec.NeedsConcentration
+                            ? float.PositiveInfinity
+                            : Mathf.Max(_effects[i].Remaining, held);
+                    }
+
                     _effects[i].Caster = caster ?? _effects[i].Caster;
                     if (runes.Count > 0)
                     {
@@ -273,13 +301,46 @@ namespace RuneMagic
                     }
 
                     RefreshChip();
-                    return $"{name} is {spec.Name}.";
+                    return spec.IsMeter
+                        ? $"{name} is {spec.Name} ({_effects[i].Remaining:0})."
+                        : $"{name} is {spec.Name}.";
                 }
             }
 
             _effects.Add(new StatusInstance(id, held, caster, runes, source));
             RefreshChip();
-            return $"{name} is {spec.Name}.";
+            return spec.IsMeter
+                ? $"{name} is {spec.Name} ({held:0})."
+                : $"{name} is {spec.Name}.";
+        }
+
+        public float MeterLeft(StatusId id)
+        {
+            for (var i = 0; i < _effects.Count; i++)
+            {
+                if (_effects[i].Id == id && _effects[i].Remaining > 0f)
+                {
+                    return _effects[i].Remaining;
+                }
+            }
+
+            return 0f;
+        }
+
+        public float MeterFraction(StatusId id)
+        {
+            var capacity = MeterCapacity(id);
+            if (capacity <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Clamp01(MeterLeft(id) / capacity);
+        }
+
+        float MeterCapacity(StatusId id)
+        {
+            return VitalLaw.Seconds(id, Nature, AdeptAvatar.IsAdept(this));
         }
 
         public static int ReleaseAll(Component caster, IReadOnlyList<RuneId> used, StatusId keep, SpellId keepSpell = SpellId.None)
@@ -520,8 +581,9 @@ namespace RuneMagic
                 }
 
                 var id = _effects[i].Id;
+                var fatal = _effects[i].Spec.IsMeter;
                 _effects.RemoveAt(i);
-                if (id == StatusId.Poisoned)
+                if (fatal)
                 {
                     OnFatal?.Invoke(id);
                 }
@@ -545,7 +607,7 @@ namespace RuneMagic
             var grid = FindFirstObjectByType<WorldGrid>();
             if (WorldPhysics.AuraAt(grid, transform.position, out var kind) && kind == VeilKind.Poison)
             {
-                Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
+                Apply(StatusId.Poisoned, VitalLaw.AdeptPoisonSeconds);
             }
         }
 
