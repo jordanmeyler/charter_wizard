@@ -1170,6 +1170,18 @@ namespace RuneMagic
                         continue;
                     }
 
+                    if (SpanLaw.GrowsOverWater(grade) && FillsGaps(spell))
+                    {
+                        if (tile.GrowOverWater(spell == SpellId.Tree || spell == SpellId.WoodWall
+                            ? MaterialId.Grove
+                            : MaterialId.Plant))
+                        {
+                            filled++;
+                        }
+
+                        continue;
+                    }
+
                     if (SpanLaw.WorksOnWater(grade) && FillsGaps(spell))
                     {
                         tile.BecomeWalkable(material, conjured: true);
@@ -1259,6 +1271,13 @@ namespace RuneMagic
                     return filled == 1
                         ? "Yield given a body. That water is ice."
                         : "Hard water stands. The pool will hold you.";
+                }
+
+                if (hasWater && SpanLaw.GrowsOverWater(grade))
+                {
+                    return filled == 1
+                        ? "Green covers the water. You can walk it."
+                        : "A vegetable cover takes the pool. You can walk it.";
                 }
 
                 if (spell == SpellId.Tree || spell == SpellId.WoodWall)

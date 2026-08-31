@@ -95,7 +95,7 @@ namespace RuneMagic
                 return false;
             }
 
-            if (grade == SpanGrade.Ice && overWater && !overPit)
+            if ((grade == SpanGrade.Ice || grade == SpanGrade.Plant) && overWater && !overPit)
             {
                 return false;
             }
@@ -106,7 +106,11 @@ namespace RuneMagic
         public static bool WorksOnWater(SpanGrade grade) =>
             grade == SpanGrade.Ice
             || grade == SpanGrade.Metal
+            || grade == SpanGrade.Plant
             || grade == SpanGrade.Advanced;
+
+        public static bool GrowsOverWater(SpanGrade grade) =>
+            grade == SpanGrade.Plant;
 
         public static bool LosesToWater(SpanGrade grade) =>
             grade == SpanGrade.Fire;
@@ -133,7 +137,7 @@ namespace RuneMagic
                 return false;
             }
 
-            return overWater && WorksOnWater(grade) && grade != SpanGrade.Ice;
+            return overWater && WorksOnWater(grade) && grade != SpanGrade.Ice && grade != SpanGrade.Plant;
         }
 
         public static bool IsAnchorSeat(SpanSeat seat) =>
@@ -325,9 +329,10 @@ namespace RuneMagic
                 broken.Add("Standard earth, ice, and a line of trees over a pit must join two floors");
             }
 
-            if (NeedsEndAnchors(SpanGrade.Ice, true, false))
+            if (NeedsEndAnchors(SpanGrade.Ice, true, false)
+                || NeedsEndAnchors(SpanGrade.Plant, true, false))
             {
-                broken.Add("Ice over water must not ask for a start or end bank");
+                broken.Add("Ice and plant over water must not ask for a start or end bank");
             }
 
             if (NeedsEndAnchors(SpanGrade.Metal, false, true)
@@ -337,10 +342,11 @@ namespace RuneMagic
             }
 
             if (MudsWater(SpanGrade.Plant)
-                || WorksOnWater(SpanGrade.Plant)
+                || !WorksOnWater(SpanGrade.Plant)
+                || !GrowsOverWater(SpanGrade.Plant)
                 || LosesToWater(SpanGrade.Plant))
             {
-                broken.Add("Wood does not mud water, freeze it, or hang on it");
+                broken.Add("Plant grows a walkable cover over water; it does not mud it");
             }
 
             if (MudsWater(SpanGrade.BasicEarth) == false

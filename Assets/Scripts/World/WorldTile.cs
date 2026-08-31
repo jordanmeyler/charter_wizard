@@ -380,6 +380,27 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// A vegetable body over yield. Green covers the water
+        /// and holds you, the way ice does, and the way a watered
+        /// plant already climbs a hollow.
+        /// </summary>
+        public bool GrowOverWater(MaterialId material = MaterialId.Plant)
+        {
+            if (!IsDeepWater)
+            {
+                return false;
+            }
+
+            var body = WorldWork.IsPlantBody(material) ? material : MaterialId.Plant;
+            BecomeWalkable(body, conjured: true);
+            PaintCover(TileCover.Vine);
+            Drench(0.55f);
+            Grow(1);
+            RefreshFx();
+            return true;
+        }
+
+        /// <summary>
         /// Standard earth over water does not span. Yield meeting
         /// rest leaves a mud covering. It will not hold you.
         /// </summary>

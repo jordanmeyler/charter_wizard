@@ -57,8 +57,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 82 | **Forest** | Water · Salt · Earth · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
 | 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
 | 84 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
-| 87 | **Tree** | Water · Salt · Earth · Salt · Earth | A vegetable body stood as a tree. `Plant · Salt · Earth`. Hunger eats it. |
-| 88 | **Wood-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | A line of trees. `Plant · Salt · Plant`. Same banks as earth. Hunger eats it. |
+| 87 | **Tree** | Water · Salt · Earth · Salt · Earth | A vegetable body stood as a tree. `Plant · Salt · Earth`. On water it grows a walkable cover. Hunger eats it. |
+| 88 | **Wood-wall** | Water · Salt · Earth · Salt · Water · Salt · Earth | A line of trees. `Plant · Salt · Plant`. Same banks as earth over a pit; on water, a walkable cover. Hunger eats it. |
 
 ---
 

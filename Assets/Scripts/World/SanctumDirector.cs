@@ -965,7 +965,7 @@ namespace RuneMagic
                     : spell == SpellId.MetalWall
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Iron needs no far rest, and it will stand on water."
                     : spell == SpellId.WoodWall
-                    ? "Click the near end, then the far end. A line of trees. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Hunger eats the wood."
+                    ? "Click the near end, then the far end. A line of trees. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats the wood."
                     : "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Water takes mud, not a bridge.";
             }
 
@@ -982,7 +982,7 @@ namespace RuneMagic
             if (WorldWork.IsPillar(spell))
             {
                 return spell == SpellId.Tree
-                    ? "Click the ground. A tree stands there until hunger eats it. Over a pit it must join two floors, or it falls."
+                    ? "Click the ground. A tree stands there until hunger eats it. Over a pit it must join two floors, or it falls. On water it grows a walkable cover without banks."
                     : "Click the ground. A column stands there until another element unmakes it. Over a pit it follows the same law as a wall: two tiles wide, and basic earth or ice must join two floors. Ice freezes water without banks. Standing fire unmakes flesh.";
             }
 

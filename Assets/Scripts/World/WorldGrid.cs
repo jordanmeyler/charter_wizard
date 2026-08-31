@@ -147,8 +147,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A watered plant can climb one adjacent hollow. The new body
-        /// is plant, then grove, and can keep crossing a gap.
+        /// A watered plant can climb one adjacent hollow or pool.
+        /// Water takes a walkable plant cover. A dry pit takes
+        /// plant, then grove, and can keep crossing a gap.
         /// </summary>
         public bool SpreadPlant(WorldTile from)
         {
@@ -161,12 +162,18 @@ namespace RuneMagic
             for (var i = 0; i < neighbors.Count; i++)
             {
                 var other = neighbors[i];
+                var grown = from.Growth >= 2 ? MaterialId.Grove : MaterialId.Plant;
+                if (other.IsDeepWater)
+                {
+                    return other.GrowOverWater(grown);
+                }
+
                 if (other.Kind != TileKind.Pit)
                 {
                     continue;
                 }
 
-                other.BecomeWalkable(from.Growth >= 2 ? MaterialId.Grove : MaterialId.Plant);
+                other.BecomeWalkable(grown);
                 other.Drench(0.55f);
                 other.Grow(1);
                 return true;
