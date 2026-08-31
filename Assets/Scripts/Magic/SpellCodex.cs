@@ -151,7 +151,7 @@ namespace RuneMagic
             E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(69, SpellBook.Hold, SpellId.Swamp, "Rest meeting yield, going, given a body around your feet. A watery swamp.", "Swamp", "Earth · Water · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
-            E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
+            E(70, SpellBook.End, SpellId.Witchfire, "Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Animus · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
             E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Salt · Earth · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither),
             E(72, SpellBook.Weather, SpellId.Thunder, "The arc meeting rest.", "Thunder", "Fire · Air · Earth", "Lightning · Earth", "Remote", SpellOutcome.Neither),
             E(73, SpellBook.SeeHide, SpellId.Darkness, "The hanging veil is withheld. Nothing in the vicinity can see.", "Darkness", "Air · Water · Dark", "Cloud · Dark", "Remote", SpellOutcome.Neither),
@@ -162,7 +162,7 @@ namespace RuneMagic
             E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. A later fire sentence would make it a bomb.", "Oil-pillar", "Water · Salt · Earth · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
             E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Spread", SpellOutcome.Kill),
-            E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Sulphur · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
+            E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
             E(82, SpellBook.GrowHeal, SpellId.Forest, "The vegetable body waking as a mass.", "Forest", "Water · Salt · Earth · Life · Earth", "Plant · Life · Earth", "Remote", SpellOutcome.Neither),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
@@ -586,6 +586,24 @@ namespace RuneMagic
                 || obsidianBirth[2] != RuneId.Water)
             {
                 broken.Add("Obsidian must be Lava · Salt · Water");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Flame, out var flameBirth)
+                || flameBirth.Count != 3
+                || flameBirth[0] != RuneId.Fire
+                || flameBirth[1] != RuneId.Animus
+                || flameBirth[2] != RuneId.Fire)
+            {
+                broken.Add("Flame must be Fire · Animus · Fire");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Glacier, out var glacierBirth)
+                || glacierBirth.Count != 3
+                || glacierBirth[0] != RuneId.Ice
+                || glacierBirth[1] != RuneId.Animus
+                || glacierBirth[2] != RuneId.Ice)
+            {
+                broken.Add("Glacier must be Ice · Animus · Ice");
             }
 
             if (!ChainBook.TryBirth(RuneId.Plasma, out var plasmaBirth)

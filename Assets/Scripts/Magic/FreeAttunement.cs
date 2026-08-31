@@ -124,6 +124,7 @@ namespace RuneMagic
                     return RuneId.Earth;
                 case RuneId.Water:
                 case RuneId.Ice:
+                case RuneId.Glacier:
                 case RuneId.Current:
                 case RuneId.Anima:
                     return RuneId.Water;

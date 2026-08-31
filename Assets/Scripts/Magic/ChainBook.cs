@@ -46,7 +46,7 @@ namespace RuneMagic
             SetBirth(RuneId.Mud, RuneId.Earth, RuneId.Water);
             SetBirth(RuneId.Stone, RuneId.Earth, RuneId.Salt);
             SetBirth(RuneId.Plant, RuneId.Water, RuneId.Salt, RuneId.Earth);
-            SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Sulphur, RuneId.Fire);
+            SetBirth(RuneId.Flame, RuneId.Fire, RuneId.Animus, RuneId.Fire);
             SetBirth(RuneId.Animus, RuneId.Fire, RuneId.Sulphur, RuneId.Air);
             SetBirth(RuneId.Anima, RuneId.Water, RuneId.Sulphur, RuneId.Earth);
             SetBirth(RuneId.Ember, RuneId.Fire, RuneId.Mors);
@@ -58,7 +58,7 @@ namespace RuneMagic
             SetBirth(RuneId.Poison, RuneId.Plant, RuneId.Mors);
             SetBirth(RuneId.Metal, RuneId.Lava, RuneId.Spark, RuneId.Earth);
             SetBirth(RuneId.Crystal, RuneId.Stone, RuneId.Water);
-            SetBirth(RuneId.Glacier, RuneId.Ice, RuneId.Stone);
+            SetBirth(RuneId.Glacier, RuneId.Ice, RuneId.Animus, RuneId.Ice);
             SetBirth(RuneId.Acid, RuneId.Steam, RuneId.Metal);
             SetBirth(RuneId.Plasma, RuneId.Flame, RuneId.Lightning);
             SetBirth(RuneId.Oil, RuneId.Plant, RuneId.Fire, RuneId.Earth);

@@ -212,8 +212,14 @@ namespace RuneMagic
             {
                 case MaterialId.Ice:
                 case MaterialId.Snow:
-                case MaterialId.Glacier:
                     live.Add(RuneId.Ice);
+                    live.Add(RuneId.Water);
+                    live.Add(RuneId.Earth);
+                    break;
+                case MaterialId.Glacier:
+                    live.Add(RuneId.Glacier);
+                    live.Add(RuneId.Ice);
+                    live.Add(RuneId.Animus);
                     live.Add(RuneId.Water);
                     live.Add(RuneId.Earth);
                     break;

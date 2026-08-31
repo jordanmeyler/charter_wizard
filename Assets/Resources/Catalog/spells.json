@@ -76,7 +76,7 @@
       "rune": "Flame",
       "sources": [
         "Fire",
-        "Sulphur",
+        "Animus",
         "Fire"
       ]
     },
@@ -167,7 +167,8 @@
       "rune": "Glacier",
       "sources": [
         "Ice",
-        "Stone"
+        "Animus",
+        "Ice"
       ]
     },
     {
@@ -1176,8 +1177,8 @@
       "id": "Witchfire",
       "book": "End",
       "name": "Witchfire",
-      "want": "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.",
-      "recipe": "Fire · Sulphur · Fire · Mercury",
+      "want": "Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot.",
+      "recipe": "Fire · Animus · Fire · Mercury",
       "via": "Flame · Mercury",
       "form": "Remote",
       "outcome": "Kill",
@@ -1334,7 +1335,7 @@
       "book": "End",
       "name": "Plasma",
       "want": "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.",
-      "recipe": "Fire · Sulphur · Fire · Fire · Air · Air · Mercury",
+      "recipe": "Fire · Animus · Fire · Fire · Air · Air · Mercury",
       "via": "Plasma · Mercury",
       "form": "Shot",
       "outcome": "Kill",

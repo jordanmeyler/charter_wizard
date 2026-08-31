@@ -340,10 +340,10 @@ namespace RuneMagic
                     RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Glacier, "glacier",
-                    "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
+                    "Ice given logos and its own perpetuity. Ordinary fire cannot take it. Witchfire can.",
                     RuneId.Glacier, MaterialPaint.Glacier,
                     new Color(0.7f, 0.82f, 0.88f), new Color(0.48f, 0.58f, 0.66f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Animus, RuneId.Glacier),
 
                 new WorldMaterial(MaterialId.Acid, "acid slick",
                     "Steam forced through Metal.",

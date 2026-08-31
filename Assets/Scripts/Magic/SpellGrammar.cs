@@ -146,7 +146,7 @@ namespace RuneMagic
         static SpellGrammar()
         {
             Register(RuneId.Fire, RuneId.Mercury, SpellShape.Shot, SpellId.Fireball, "Fireball", "Compressed. Catalog: Fire · Mercury. Hunger sent.");
-            Register(RuneId.Flame, RuneId.Mercury, SpellShape.Remote, SpellId.Witchfire, "Witchfire", "Compressed. Catalog: Fire · Sulphur · Fire · Mercury. Fire of the mind, made fire, and sent.");
+            Register(RuneId.Flame, RuneId.Mercury, SpellShape.Remote, SpellId.Witchfire, "Witchfire", "Compressed. Catalog: Fire · Animus · Fire · Mercury. Fire given logos and its own perpetuity, then sent.");
             Register(RuneId.Fire, RuneId.Salt, SpellShape.Pillar, SpellId.FlamePillar, "Flame-pillar", "A standing column of fire.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Self, SpellId.Flameward, "Flame ward", "Compressed. Catalog: Fire · Salt · Sulphur. Hunger given a body, then the mind holds it on you.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");

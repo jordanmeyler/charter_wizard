@@ -51,7 +51,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
 | 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
-| 70 | **Witchfire** | Fire · Sulphur · Fire · Mercury | Fire of the mind, made fire, and sent. |
+| 70 | **Witchfire** | Fire · Animus · Fire · Mercury | Fire given logos and its own perpetuity, then sent. |
 | 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
 | 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
 | 82 | **Forest** | Water · Salt · Earth · Life · Earth | The vegetable body waking as a mass. Grove is gone. |
@@ -96,7 +96,7 @@ Each room is attached to the hub and **open**. The obstacle sits deeper in, arou
 Four altars point at the four rooms. Each one shows the mark **and** the nature (flame, water, rock, gale). A Fire altar stands on the west so the first verb is available before you step into the frozen hall. Floors are dungeon stone, dirt, or water; ice, fire, and lightning sit as objects and coverings that swap when an element lands. The Gate of Elements sits against the north wall. One wooden door, tall enough for the adept, is the leaf — the jambs are stone. A **crystal** stands on the spawn tile — death returns you here. Around it the floor is inscribed **body · spirit · mind** (Salt, Mercury, Sulphur), and three pillars hold the same signs. Moss and plant sit beside it so you can water them and watch them grow, or set them alight and watch hunger run. You are always Salt · Sulphur · Mercury — stand by an element altar and `Element · Salt · Sulphur` writes that ward.
 
 ### Fire · "The Frozen Hall" — *heat, melt, burn, light*
-Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wanders the south wall (optional). The Fire stone sits in a small **ice cage** at the back. Any fire-bearing sentence melts the ice — Fireball, Melt, Ignite, a flame-pillar. Witchfire (`Fire · Sulphur · Fire · Mercury`) is stronger fire; it is not required here.
+Walk in from the east. A labelled **Fire** waits near the mouth. An ice-thing wanders the south wall (optional). The Fire stone sits in a small **ice cage** at the back. Any fire-bearing sentence melts the ice — Fireball, Melt, Ignite, a flame-pillar. Witchfire (`Fire · Animus · Fire · Mercury`) is stronger fire; it is not required here.
 
 ### Water · "The Ember Vault" — *douse, flow, fill, cool*
 Walk in from the west. A labelled **Water** waits near the mouth. A **Fire Golem** slams anyone in reach — hop or Stoneskin survives the blow; Douse / Water-jet / Rain still unmake it. Plant and moss sit by the Water altar: water them and they grow. A **flame curtain** holds the Water stone in the east alcove. Douse / Water-jet / Rain / Flood / Smother.

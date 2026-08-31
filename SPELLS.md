@@ -121,7 +121,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
-| **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. A cousin of Animus — the same root asserted twice. | Violet fire. Melts what ordinary fire cannot |
+| **Flame** | Fire · Animus · Fire | Witchfire. Fire given logos and its own perpetuity. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
 | **Animus** | Fire · Sulphur · Air | Logos. Assertiveness, decisiveness, challenge. Hunger given mind and breath. Gives a work a magical quality. | A standing will. Male is the old name |
 | **Anima** | Water · Sulphur · Earth | Eros. Receptivity, empathy, intuition, connection. Yield given mind and rest. Opens a work to many, and can heal. | A standing welcome. Female is the old name |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
@@ -132,7 +132,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 | **Current** | Water · Mercury | Yield going. | A flow |
 | **Metal** | Lava · Spark · Earth | Hungry earth given spark, then stilled. Fire · Earth · Fire · Air · Earth. | Hard. Conducts heat and the spark |
 | **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
-| **Glacier** | Ice · Stone | Ice given Stone. Animus is the same *class* of upgrade (a nature asserted), written as logos rather than more rest. | Ice that ordinary fire cannot take. Witchfire can |
+| **Glacier** | Ice · Animus · Ice | Ice given logos and its own perpetuity. Ordinary fire cannot take it. | Ice that ordinary fire cannot take. Witchfire can |
 | **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
 | **Plasma** | Flame · Lightning | Witchfire joined to the bolt. Eats ordinary matter. | Obsidian, wardstone, and aegis refuse it |
 
@@ -261,7 +261,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 67 | A spark given form from the air, moving at something. It falls from the sky. Walls will not hide them. | Lightning strike | Fire · Air · Salt · Air · Mercury | Spark · Salt · Air · Mercury | Remote | Kill |
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
 | 69 | Rest meeting yield, going, given a body around your feet. A watery swamp. | Swamp | Earth · Water · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
-| 70 | Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Sulphur · Fire · Mercury | Flame · Mercury | Remote | Kill |
+| 70 | Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Animus · Fire · Mercury | Flame · Mercury | Remote | Kill |
 | 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Salt · Earth · Dark | Plant · Dark | Remote | Neither |
 | 72 | The arc meeting rest. | Thunder | Fire · Air · Earth | Lightning · Earth | Remote | Neither |
 | 73 | The hanging veil is withheld. Nothing in the vicinity can see. | Darkness | Air · Water · Dark | Cloud · Dark | Remote | Neither |
@@ -272,7 +272,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 78 | A stood wick. A later fire sentence would make it a bomb. | Oil-pillar | Water · Salt · Earth · Fire · Earth · Salt · Earth | Oil · Salt · Earth | Pillar | Neither |
 | 79 | The grave of a plant, sent. | Poison | Water · Salt · Earth · Death · Mercury | Poison · Mercury | Shot | Kill |
 | 80 | The hanging veil forced through acid. Foul breath. | Miasma | Cloud · Acid | — | Spread | Kill |
-| 81 | Witchfire joined to the bolt and sent. Ordinary matter ends. | Plasma | Fire · Sulphur · Fire · Fire · Air · Air · Mercury | Flame · Lightning · Mercury | Shot | Kill |
+| 81 | Witchfire joined to the bolt and sent. Ordinary matter ends. | Plasma | Fire · Animus · Fire · Fire · Air · Air · Mercury | Flame · Lightning · Mercury | Shot | Kill |
 | 82 | The vegetable body waking as a mass. | Forest | Water · Salt · Earth · Life · Earth | Plant · Life · Earth | Remote | Neither |
 | 83 | Yield given a body and sent. A remote flood. The monsoon. | Monsoon | Water · Salt · Mercury | — | Remote | Restrain |
 | 84 | Rest sent without a body. Loose dirt. It smothers ground-fire. | Dirt toss | Earth · Mercury | — | Shot | Neither |
@@ -285,11 +285,11 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 
 **Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Forest is also a spell (`Plant · Life · Earth`), not a rune. **Vine is a spell** (`Plant · Mercury`); vine on the field speaks Plant. **Wind is a spell** (`Air · Mercury`) — a better name for the old gust. Inferno is not a rune; plasma is witchfire joined to the bolt. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb.
 
-**Anima** is `Water · Sulphur · Earth` — eros. Add it (or write it) and a sentence opens to many, or becomes care. Balm is Anima sent. Chorus is Anima stood around the feet. **Animus** is `Fire · Sulphur · Air` — logos. Add it and a sentence is asserted into a higher nature, the way Flame is fire of the mind made fire and Glacier is ice given Stone. Drive is Animus sent. Male and Female are the old names; they parse as Animus and Anima. Touching a *soul* is still Free or divine — these two are stances of mind, not soul-work.
+**Anima** is `Water · Sulphur · Earth` — eros. Add it (or write it) and a sentence opens to many, or becomes care. Balm is Anima sent. Chorus is Anima stood around the feet. **Animus** is `Fire · Sulphur · Air` — logos. Add it and a sentence is asserted into a higher nature. **Flame** is fire given logos and fire again (`Fire · Animus · Fire`). **Glacier** is ice given logos and ice again (`Ice · Animus · Ice`). Drive is Animus sent. Male and Female are the old names; they parse as Animus and Anima. Touching a *soul* is still Free or divine — these two are stances of mind, not soul-work.
 
-Order keeps them apart from older sentences. `Fire · Air` is Spark. `Fire · Sulphur · Air` is Animus. `Water · Earth` is Ice. `Water · Sulphur · Earth` is Anima. `Fire · Sulphur · Fire` is Flame. `Water · Earth · Sulphur` is Freeze.
+Order keeps them apart from older sentences. `Fire · Air` is Spark. `Fire · Sulphur · Air` is Animus. `Fire · Animus · Fire` is Flame. `Water · Earth` is Ice. `Water · Sulphur · Earth` is Anima. `Ice · Animus · Ice` is Glacier. `Water · Earth · Sulphur` is Freeze.
 
-Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Plasma** eats ordinary matter. **Obsidian**, **wardstone**, and **aegis** refuse almost all of that work. Use them when a wall must stay.
+Fire is raw hunger (orange). **Flame** is Fire · Animus · Fire — witchfire, fire given logos and its own perpetuity. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). **Sulphur** turns a sentence into a status — wards, Rage, Freeze, Jolt. Heat lives on the recipe: any fire-bearing sentence melts ice it crosses. Logos on ice does not count as hunger, so a glacier stays cold. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Plasma** eats ordinary matter. **Obsidian**, **wardstone**, and **aegis** refuse almost all of that work. Use them when a wall must stay.
 
 The four wards are the same sentence with a different root. Water douses Fire. Fire scorches Earth. Earth stands against Air. Air dries Water. Only one ward stands at a time. Stoneskin also stops a physical blow — that is rest standing, not the square.
 

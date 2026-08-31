@@ -76,7 +76,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
 | **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
 | **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
-| **Glacier** | Water · Earth · Ice · Stone · Glacier | Glacier | Ice given Stone. Ordinary fire cannot take it; witchfire can |
+| **Glacier** | Water · Earth · Ice · Animus · Glacier | Glacier | Ice given logos and ice again. Ordinary fire cannot take it; witchfire can |
 | **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
 | **Damp stone** | Water · Stone | Water | Wet rest, not ice |
 | **Dirt** | Earth | Earth | Loose rest from Dirt toss. Smothers ground-fire. |
