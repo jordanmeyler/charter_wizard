@@ -72,7 +72,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
 | **Snow** | Air · Water · Cloud · Ice | Ice | Weather left on the stone, not a rune |
-| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. |
+| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
 | **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
 | **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
 | **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
@@ -102,6 +102,7 @@ Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs to
 
 | Material | Flam | Cond | Note |
 | --- | --- | --- | --- |
+| Oil | 2.2 | 0.05 | Fuel. Flame flashes across connected oil, much faster than timber. |
 | Plant | 1.5 | 0.05 | Catches fast. Burns to Ash. |
 | Grove | 1.35 | 0.1 | Living mass. |
 | Timber | 1.2 | 0 | Wood. |

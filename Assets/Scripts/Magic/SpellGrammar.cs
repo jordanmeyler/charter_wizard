@@ -111,7 +111,10 @@ namespace RuneMagic
         Balm,
         Chorus,
         Tree,
-        WoodWall
+        WoodWall,
+        OilPuddle,
+        OilGeyser,
+        OilSlick
     }
 
     public readonly struct SpellRecipe
@@ -214,6 +217,9 @@ namespace RuneMagic
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
             Register(RuneId.Oil, RuneId.Mercury, SpellShape.Shot, SpellId.OilShot, "Oil shot", "Compressed. Catalog: Oil · Mercury. Fuel sent. Fire grows.");
+            Register(RuneId.Oil, RuneId.Salt, SpellShape.Remote, SpellId.OilPuddle, "Oil puddle", "Compressed. Catalog: Oil · Salt. Fuel given a standing body. A puddle.");
+            Register(RuneId.Oil, RuneId.Mercury, SpellShape.Remote, SpellId.OilGeyser, "Oil geyser", "Compressed. Catalog: Oil · Salt · Mercury. A stood fountain. Hunger that finds it will not leave.");
+            Register(RuneId.Oil, RuneId.Salt, SpellShape.Spread, SpellId.OilSlick, "Oil slick", "Compressed. Catalog: Oil · Salt · Oil. Fuel given a body, then more fuel. It runs outward.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");
             Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison", "Compressed. Catalog: Plant · Death · Mercury. The grave of a plant, sent.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");

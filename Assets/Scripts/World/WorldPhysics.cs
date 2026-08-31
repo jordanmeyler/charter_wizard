@@ -104,7 +104,8 @@ namespace RuneMagic
 
         public static SpellShape ShapeOf(SpellId spell)
         {
-            if (spell == SpellId.Monsoon || spell == SpellId.Rain || spell == SpellId.StormCall)
+            if (spell == SpellId.Monsoon || spell == SpellId.Rain || spell == SpellId.StormCall
+                || WorldWork.IsOilCover(spell))
             {
                 return SpellShape.Remote;
             }
@@ -724,6 +725,31 @@ namespace RuneMagic
             if (!WorldWork.IsOilWork(SpellId.OilShot) || WorldWork.IsFireWork(SpellId.OilShot))
             {
                 broken.Add("Oil shot must slick and grow fire, not detonate a wick");
+            }
+
+            if (!WorldWork.IsOilWork(SpellId.OilPuddle)
+                || !WorldWork.IsOilWork(SpellId.OilGeyser)
+                || !WorldWork.IsOilWork(SpellId.OilSlick)
+                || WorldWork.IsFireWork(SpellId.OilPuddle)
+                || WorldWork.IsFireWork(SpellId.OilGeyser)
+                || WorldWork.IsFireWork(SpellId.OilSlick)
+                || ShapeOf(SpellId.OilPuddle) != SpellShape.Remote
+                || ShapeOf(SpellId.OilGeyser) != SpellShape.Remote
+                || ShapeOf(SpellId.OilSlick) != SpellShape.Remote)
+            {
+                broken.Add("Oil puddle, geyser, and slick must lay fuel at a point, not as hunger");
+            }
+
+            if (SpellVerb.Of(SpellId.OilPuddle).Tiles != TileVerb.Slick
+                || SpellVerb.Of(SpellId.OilGeyser).Tiles != TileVerb.Slick
+                || SpellVerb.Of(SpellId.OilSlick).Radius < 3.5f)
+            {
+                broken.Add("Oil puddle and geyser slick the floor; a slick must cover a wide radius");
+            }
+
+            if (WorldSim.OilFireRun < WorldSim.DryFireRun * 4f)
+            {
+                broken.Add("Oil must spread flame much faster than dry matter");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness

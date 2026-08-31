@@ -398,7 +398,10 @@ namespace RuneMagic
                 || HeatOf(SpellId.Frenzy) != Heat.None
                 || HeatOf(SpellId.Gust) != Heat.None
                 || HeatOf(SpellId.OilShot) != Heat.None
-                || HeatOf(SpellId.OilPillar) != Heat.None)
+                || HeatOf(SpellId.OilPillar) != Heat.None
+                || HeatOf(SpellId.OilPuddle) != Heat.None
+                || HeatOf(SpellId.OilGeyser) != Heat.None
+                || HeatOf(SpellId.OilSlick) != Heat.None)
             {
                 broken.Add("Mind-fire, breath, and oil fuel must not count as heat");
             }

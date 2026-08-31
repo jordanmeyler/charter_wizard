@@ -176,6 +176,12 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
                 case SpellId.OilShot:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.OilPuddle:
+                    return new SpellVerb(SpellTarget.Area, 1.35f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.OilGeyser:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.OilSlick:
+                    return new SpellVerb(SpellTarget.Area, 4.2f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.OilPillar:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Plasma:

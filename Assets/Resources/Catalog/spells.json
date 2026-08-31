@@ -1478,6 +1478,51 @@
       "outcome": "Neither",
       "gate": "",
       "work": "WoodWall"
+    },
+    {
+      "number": 93,
+      "id": "OilPuddle",
+      "book": "End",
+      "name": "Oil puddle",
+      "want": "Fuel given a standing body. A puddle. Surfaces hold flame.",
+      "recipe": "Water · Salt · Earth · Fire · Earth · Salt",
+      "via": "Oil · Salt",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "OilPuddle",
+      "target": "Area",
+      "radius": 1.35
+    },
+    {
+      "number": 94,
+      "id": "OilGeyser",
+      "book": "End",
+      "name": "Oil geyser",
+      "want": "A stood fountain of fuel, sent to a point. Hunger that finds it will not leave — it burns as hall-fire does, until yield is thrown.",
+      "recipe": "Water · Salt · Earth · Fire · Earth · Salt · Mercury",
+      "via": "Oil · Salt · Mercury",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "OilGeyser",
+      "target": "Single",
+      "radius": 1.1
+    },
+    {
+      "number": 95,
+      "id": "OilSlick",
+      "book": "End",
+      "name": "Oil slick",
+      "want": "Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor.",
+      "recipe": "Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth",
+      "via": "Oil · Salt · Oil",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "OilSlick",
+      "target": "Area",
+      "radius": 4.2
     }
   ]
 }
