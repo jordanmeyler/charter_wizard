@@ -29,6 +29,7 @@ namespace RuneMagic
         Ice,
         Metal,
         Fire,
+        Plant,
         Advanced
     }
 
@@ -74,6 +75,11 @@ namespace RuneMagic
                 return SpanGrade.BasicEarth;
             }
 
+            if (spell == SpellId.Tree || spell == SpellId.WoodWall)
+            {
+                return SpanGrade.Plant;
+            }
+
             return SpanGrade.Advanced;
         }
 
@@ -89,7 +95,7 @@ namespace RuneMagic
                 return false;
             }
 
-            if (grade == SpanGrade.Ice && overWater && !overPit)
+            if ((grade == SpanGrade.Ice || grade == SpanGrade.Plant) && overWater && !overPit)
             {
                 return false;
             }
@@ -100,7 +106,11 @@ namespace RuneMagic
         public static bool WorksOnWater(SpanGrade grade) =>
             grade == SpanGrade.Ice
             || grade == SpanGrade.Metal
+            || grade == SpanGrade.Plant
             || grade == SpanGrade.Advanced;
+
+        public static bool GrowsOverWater(SpanGrade grade) =>
+            grade == SpanGrade.Plant;
 
         public static bool LosesToWater(SpanGrade grade) =>
             grade == SpanGrade.Fire;
@@ -127,7 +137,7 @@ namespace RuneMagic
                 return false;
             }
 
-            return overWater && WorksOnWater(grade) && grade != SpanGrade.Ice;
+            return overWater && WorksOnWater(grade) && grade != SpanGrade.Ice && grade != SpanGrade.Plant;
         }
 
         public static bool IsAnchorSeat(SpanSeat seat) =>
@@ -307,21 +317,37 @@ namespace RuneMagic
                 broken.Add("Later spans must work in water unless the square forbids it");
             }
 
-            if (!NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
-                || !NeedsEndAnchors(SpanGrade.Ice, false, true))
+            if (GradeOf(SpellId.Tree, MaterialId.Timber) != SpanGrade.Plant
+                || GradeOf(SpellId.WoodWall, MaterialId.Timber) != SpanGrade.Plant)
             {
-                broken.Add("Standard earth and ice over a pit must join two floors");
+                broken.Add("Tree and wood-wall must share plant’s span grade");
             }
 
-            if (NeedsEndAnchors(SpanGrade.Ice, true, false))
+            if (!NeedsEndAnchors(SpanGrade.BasicEarth, false, true)
+                || !NeedsEndAnchors(SpanGrade.Ice, false, true)
+                || !NeedsEndAnchors(SpanGrade.Plant, false, true))
             {
-                broken.Add("Ice over water must not ask for a start or end bank");
+                broken.Add("Standard earth, ice, and a line of trees over a pit must join two floors");
+            }
+
+            if (NeedsEndAnchors(SpanGrade.Ice, true, false)
+                || NeedsEndAnchors(SpanGrade.Plant, true, false))
+            {
+                broken.Add("Ice and plant over water must not ask for a start or end bank");
             }
 
             if (NeedsEndAnchors(SpanGrade.Metal, false, true)
                 || NeedsEndAnchors(SpanGrade.Advanced, true, true))
             {
                 broken.Add("Metal and later work must hang without a far rest");
+            }
+
+            if (MudsWater(SpanGrade.Plant)
+                || !WorksOnWater(SpanGrade.Plant)
+                || !GrowsOverWater(SpanGrade.Plant)
+                || LosesToWater(SpanGrade.Plant))
+            {
+                broken.Add("Plant grows a walkable cover over water; it does not mud it");
             }
 
             if (MudsWater(SpanGrade.BasicEarth) == false

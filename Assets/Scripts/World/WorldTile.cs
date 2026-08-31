@@ -98,6 +98,13 @@ namespace RuneMagic
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase);
 
+        public bool HasPlantCover =>
+            Cover == TileCover.Vine
+            || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-plant", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-grove", System.StringComparison.OrdinalIgnoreCase);
+
         public bool HasIceCover =>
             Cover == TileCover.Ice
             || string.Equals(_coverId, "ice", System.StringComparison.OrdinalIgnoreCase)
@@ -375,6 +382,27 @@ namespace RuneMagic
             BecomeWalkable(MaterialId.Ice, conjured: true);
             PaintCover(TileCover.Ice);
             Wet = Mathf.Min(Wet, 0.15f);
+            RefreshFx();
+            return true;
+        }
+
+        /// <summary>
+        /// A vegetable body over yield. Green covers the water
+        /// and holds you, the way ice does, and the way a watered
+        /// plant already climbs a hollow.
+        /// </summary>
+        public bool GrowOverWater(MaterialId material = MaterialId.Plant)
+        {
+            if (!IsDeepWater)
+            {
+                return false;
+            }
+
+            var body = WorldWork.IsPlantBody(material) ? material : MaterialId.Plant;
+            BecomeWalkable(body, conjured: true);
+            PaintCover(TileCover.Vine);
+            Drench(0.55f);
+            Grow(1);
             RefreshFx();
             return true;
         }

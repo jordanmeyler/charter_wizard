@@ -109,7 +109,9 @@ namespace RuneMagic
         MetalWall,
         ObsidianWall,
         Balm,
-        Chorus
+        Chorus,
+        Tree,
+        WoodWall
     }
 
     public readonly struct SpellRecipe
@@ -208,8 +210,8 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Soft ground given a body.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Remote, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A spell, not a rune.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
+            Register(RuneId.Plant, RuneId.Salt, SpellShape.Pillar, SpellId.Tree, "Tree", "Compressed. Catalog: Plant · Life · Salt. A living vegetable body given a standing body.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
-            Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Forest, "Forest", "Compressed. Catalog: Plant · Life · Earth. The vegetable body waking as a mass.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
             Register(RuneId.Oil, RuneId.Mercury, SpellShape.Shot, SpellId.OilShot, "Oil shot", "Compressed. Catalog: Oil · Mercury. Fuel sent. Fire grows.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");

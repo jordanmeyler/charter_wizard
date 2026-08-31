@@ -147,29 +147,81 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A watered plant can climb one adjacent hollow. The new body
-        /// is plant, then grove, and can keep crossing a gap.
+        /// A watered plant can climb one adjacent hollow or pool.
+        /// Water floor and water covering take a walkable plant cover.
+        /// A dry pit takes plant, then grove. One neighbor per call
+        /// so a pool fills slowly.
         /// </summary>
         public bool SpreadPlant(WorldTile from)
         {
-            if (from == null || !from.IsPlantish || from.Growth < 1)
+            if (from == null || (!from.IsPlantish && !from.HasPlantCover && !from.HasPlantishDetail))
+            {
+                return false;
+            }
+
+            if (from.IsPlantish && from.Growth < 1 && !from.HasPlantCover)
             {
                 return false;
             }
 
             var neighbors = Neighbors(from.Coord);
+            var grown = from.Growth >= 2 || from.Material == MaterialId.Grove
+                ? MaterialId.Grove
+                : MaterialId.Plant;
             for (var i = 0; i < neighbors.Count; i++)
             {
                 var other = neighbors[i];
+                if (other.IsPlantish || other.HasPlantCover)
+                {
+                    continue;
+                }
+
+                if (other.IsDeepWater)
+                {
+                    return other.GrowOverWater(grown);
+                }
+
+                if (other.HasWaterCover)
+                {
+                    other.PaintCover(TileCover.Vine);
+                    other.Drench(0.55f);
+                    return true;
+                }
+
                 if (other.Kind != TileKind.Pit)
                 {
                     continue;
                 }
 
-                other.BecomeWalkable(from.Growth >= 2 ? MaterialId.Grove : MaterialId.Plant);
+                other.BecomeWalkable(grown);
                 other.Drench(0.55f);
                 other.Grow(1);
                 return true;
+            }
+
+            return false;
+        }
+
+        public bool TouchesOpenWater(WorldTile tile)
+        {
+            if (tile == null)
+            {
+                return false;
+            }
+
+            var neighbors = Neighbors(tile.Coord);
+            for (var i = 0; i < neighbors.Count; i++)
+            {
+                var other = neighbors[i];
+                if (other.IsPlantish || other.HasPlantCover)
+                {
+                    continue;
+                }
+
+                if (other.IsDeepWater || other.HasWaterCover)
+                {
+                    return true;
+                }
             }
 
             return false;

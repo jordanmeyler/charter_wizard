@@ -154,9 +154,13 @@ namespace RuneMagic
                     case TileVerb.Douse:
                     case TileVerb.Wet:
                         tile.Drench(1f);
-                        if (tile.IsPlantish)
+                        if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
                         {
-                            tile.Grow(1);
+                            if (tile.IsPlantish)
+                            {
+                                tile.Grow(1);
+                            }
+
                             if (grid.SpreadPlant(tile))
                             {
                                 changed++;
@@ -171,9 +175,13 @@ namespace RuneMagic
                             tile.PlantHere();
                             changed++;
                         }
-                        else if (tile.IsPlantish)
+                        else if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
                         {
-                            tile.Grow(1);
+                            if (tile.IsPlantish)
+                            {
+                                tile.Grow(1);
+                            }
+
                             grid.SpreadPlant(tile);
                             changed++;
                         }

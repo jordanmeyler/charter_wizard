@@ -1343,19 +1343,6 @@
       "work": "Plasma"
     },
     {
-      "number": 82,
-      "id": "Forest",
-      "book": "GrowHeal",
-      "name": "Forest",
-      "want": "The vegetable body waking as a mass.",
-      "recipe": "Water · Salt · Earth · Life · Earth",
-      "via": "Plant · Life · Earth",
-      "form": "Remote",
-      "outcome": "Neither",
-      "gate": "",
-      "work": "Forest"
-    },
-    {
       "number": 83,
       "id": "Monsoon",
       "book": "Weather",
@@ -1465,6 +1452,32 @@
       "target": "Single",
       "status": "Burning",
       "statusSeconds": 4.5
+    },
+    {
+      "number": 91,
+      "id": "Tree",
+      "book": "GrowHeal",
+      "name": "Tree",
+      "want": "A living vegetable body given a standing body. A tree. Over a pit it must join two floors, or it falls. On water it grows a walkable cover without banks. Hunger eats it.",
+      "recipe": "Water \u00b7 Salt \u00b7 Earth \u00b7 Life \u00b7 Salt",
+      "via": "Plant \u00b7 Life \u00b7 Salt",
+      "form": "Pillar",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Tree"
+    },
+    {
+      "number": 92,
+      "id": "WoodWall",
+      "book": "GrowHeal",
+      "name": "Wood-wall",
+      "want": "A living plant asked to stand as more living plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats it.",
+      "recipe": "Water \u00b7 Salt \u00b7 Earth \u00b7 Life \u00b7 Salt \u00b7 Water \u00b7 Salt \u00b7 Earth \u00b7 Life",
+      "via": "Plant \u00b7 Life \u00b7 Salt \u00b7 Plant \u00b7 Life",
+      "form": "Pillar",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "WoodWall"
     }
   ]
 }

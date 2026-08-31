@@ -316,7 +316,7 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Salt, RuneId.Water, RuneId.Obsidian),
 
                 new WorldMaterial(MaterialId.Grove, "grove",
-                    "Living plant as a mass. Forest-work, not a rune.",
+                    "Living plant as a mass. Tree-work, not a rune.",
                     RuneId.Plant, MaterialPaint.Grove,
                     new Color(0.16f, 0.32f, 0.14f), new Color(0.14f, 0.26f, 0.12f), false,
                     RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Plant, RuneId.Vita),
