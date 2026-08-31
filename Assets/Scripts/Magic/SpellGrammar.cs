@@ -107,6 +107,9 @@ namespace RuneMagic
         DirtToss,
         MetalPillar,
         MetalWall,
+        ObsidianWall,
+        Balm,
+        Chorus,
         Tree,
         WoodWall
     }
@@ -145,13 +148,14 @@ namespace RuneMagic
         static SpellGrammar()
         {
             Register(RuneId.Fire, RuneId.Mercury, SpellShape.Shot, SpellId.Fireball, "Fireball", "Compressed. Catalog: Fire · Mercury. Hunger sent.");
-            Register(RuneId.Flame, RuneId.Mercury, SpellShape.Remote, SpellId.Witchfire, "Witchfire", "Compressed. Catalog: Fire · Sulphur · Fire · Mercury. Fire of the mind, made fire, and sent.");
+            Register(RuneId.Flame, RuneId.Mercury, SpellShape.Remote, SpellId.Witchfire, "Witchfire", "Compressed. Catalog: Fire · Animus · Fire · Mercury. Fire given logos and its own perpetuity, then sent.");
             Register(RuneId.Fire, RuneId.Salt, SpellShape.Pillar, SpellId.FlamePillar, "Flame-pillar", "A standing column of fire.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Self, SpellId.Flameward, "Flame ward", "Compressed. Catalog: Fire · Salt · Sulphur. Hunger given a body, then the mind holds it on you.");
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");
             Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death-work. Hunger marked by the grave, placed on a flame.");
             Register(RuneId.Fire, RuneId.Lumen, SpellShape.Shot, SpellId.SunLance, "Sun-lance", "Light riding fire.");
-            Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Projective fire. It goes out and does not return.");
+            Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Compressed. Catalog: Animus · Mercury. Hunger given mind and breath, then sent.");
+            Register(RuneId.Animus, RuneId.Mercury, SpellShape.Shot, SpellId.Drive, "Drive", "Compressed. Catalog: Fire · Sulphur · Air · Mercury. Logos sent.");
             Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
@@ -169,6 +173,8 @@ namespace RuneMagic
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
             Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Darkness, "Darkness", "Yield withheld. The room cannot see.");
             Register(RuneId.Water, RuneId.Anima, SpellShape.Remote, SpellId.Draw, "Draw", "Receptive pull. It calls, it does not strike.");
+            Register(RuneId.Anima, RuneId.Mercury, SpellShape.Spread, SpellId.Balm, "Balm", "Compressed. Catalog: Anima · Mercury. Care sent. It heals.");
+            Register(RuneId.Anima, RuneId.Salt, SpellShape.Spread, SpellId.Chorus, "Chorus", "Compressed. Catalog: Anima · Salt. Care given a body around the feet. The work opens to many.");
 
             Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent.");
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury when the bolt already stands.");
@@ -186,7 +192,7 @@ namespace RuneMagic
             Register(RuneId.Earth, RuneId.Mors, SpellShape.Spread, SpellId.GraveDust, "Grave-dust", "Death-work. Rest marked by the grave.");
             Register(RuneId.Earth, RuneId.Umbra, SpellShape.Remote, SpellId.ShadowWell, "Shadow-well", "A dark hollow opened at a point.");
 
-            Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gust, "Gust", "Compressed. Catalog: Air · Mercury. Breath sent.");
+            Register(RuneId.Air, RuneId.Mercury, SpellShape.Shot, SpellId.Gust, "Wind", "Compressed. Catalog: Air · Mercury. Breath sent. Wind.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Shot, SpellId.Push, "Push", "Compressed. Catalog: Air · Salt · Mercury. Breath given a body and sent. Wind that pushes.");
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Remote, SpellId.LightningStrike, "Lightning strike", "Compressed. Catalog: Fire · Air · Salt · Air · Mercury. A spark given form from the air, falling from the sky.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
@@ -200,10 +206,10 @@ namespace RuneMagic
             Register(RuneId.Steam, RuneId.Mercury, SpellShape.Shot, SpellId.Scald, "Scald", "Violent Fire+Water in motion.");
             Register(RuneId.Dust, RuneId.Mercury, SpellShape.Shot, SpellId.ScatterDust, "Scatter-dust", "Violent Air+Earth in motion.");
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
-            Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Water · Dust · Mercury · Salt. A watery swamp from the feet.");
-            Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Water · Dust · Salt. Soft ground given a body.");
-            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Remote, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent.");
-            Register(RuneId.Vine, RuneId.Earth, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
+            Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Earth · Water · Mercury · Salt. A watery swamp from the feet.");
+            Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Soft ground given a body.");
+            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Remote, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A spell, not a rune.");
+            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
             Register(RuneId.Plant, RuneId.Salt, SpellShape.Pillar, SpellId.Tree, "Tree", "Compressed. Catalog: Plant · Life · Salt. A living vegetable body given a standing body.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
@@ -211,7 +217,8 @@ namespace RuneMagic
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");
             Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison", "Compressed. Catalog: Plant · Death · Mercury. The grave of a plant, sent.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
-            Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Inferno joined to Spark and sent. Ordinary matter ends.");
+            Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");
+            Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 

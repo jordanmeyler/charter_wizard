@@ -44,7 +44,7 @@ namespace RuneMagic
         static readonly SpellId[] PitKeys =
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.RaisedEarth,
-            SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.WoodWall,
+            SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall, SpellId.WoodWall,
             SpellId.FlamePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise, SpellId.Tree,
             SpellId.Hop, SpellId.Flight
         };

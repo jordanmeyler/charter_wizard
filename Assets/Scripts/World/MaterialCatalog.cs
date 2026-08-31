@@ -268,16 +268,16 @@ namespace RuneMagic
                     RuneId.Water, RuneId.Earth, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Sand, "sand",
-                    "Grit given a body. Dust · Salt.",
-                    RuneId.Sand, MaterialPaint.Sand,
+                    "The same grit as dust. Breath forced through rest. Air · Earth.",
+                    RuneId.Dust, MaterialPaint.Sand,
                     new Color(0.72f, 0.6f, 0.38f), new Color(0.58f, 0.48f, 0.3f), false,
-                    RuneId.Air, RuneId.Earth, RuneId.Dust, RuneId.Salt, RuneId.Sand),
+                    RuneId.Air, RuneId.Earth, RuneId.Dust),
 
                 new WorldMaterial(MaterialId.Mud, "mud",
-                    "Yield meeting grit. Soft ground.",
+                    "Rest meeting yield. Soft ground. Earth · Water.",
                     RuneId.Mud, MaterialPaint.Mud,
                     new Color(0.32f, 0.22f, 0.14f), new Color(0.28f, 0.2f, 0.14f), false,
-                    RuneId.Water, RuneId.Dust, RuneId.Mud),
+                    RuneId.Earth, RuneId.Water, RuneId.Mud),
 
                 new WorldMaterial(MaterialId.Lava, "lava",
                     "Hunger meeting rest. Earth that cannot stay earth.",
@@ -292,16 +292,16 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Water, RuneId.Steam),
 
                 new WorldMaterial(MaterialId.Dust, "dust",
-                    "Breath forced through rest. Rest that has lost its weight.",
+                    "Breath forced through rest. The same grit as sand.",
                     RuneId.Dust, MaterialPaint.Dust,
                     new Color(0.52f, 0.46f, 0.38f), new Color(0.4f, 0.36f, 0.3f), false,
                     RuneId.Air, RuneId.Earth, RuneId.Dust),
 
                 new WorldMaterial(MaterialId.Glass, "glass",
-                    "Grains meet hunger, then rest. Sand · Flame · Earth.",
+                    "Grains meet witchfire, then rest. Dust · Flame · Earth.",
                     RuneId.Glass, MaterialPaint.Glass,
                     new Color(0.28f, 0.42f, 0.46f), new Color(0.22f, 0.32f, 0.36f), false,
-                    RuneId.Sand, RuneId.Flame, RuneId.Earth, RuneId.Glass),
+                    RuneId.Dust, RuneId.Flame, RuneId.Earth, RuneId.Glass),
 
                 new WorldMaterial(MaterialId.Crystal, "crystal",
                     "Stone grown with yield.",
@@ -310,10 +310,10 @@ namespace RuneMagic
                     RuneId.Earth, RuneId.Salt, RuneId.Stone, RuneId.Water, RuneId.Crystal),
 
                 new WorldMaterial(MaterialId.Obsidian, "obsidian",
-                    "Hungry earth quenched and given a body. Melt, Shatter, and hunger's thaw will not take it.",
+                    "Hungry earth quenched and given a body. Melt, Shatter, and hunger's thaw will not take it. Lava · Salt · Water.",
                     RuneId.Obsidian, MaterialPaint.Obsidian,
                     new Color(0.08f, 0.06f, 0.1f), new Color(0.1f, 0.08f, 0.12f), false,
-                    RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Water, RuneId.Salt, RuneId.Obsidian),
+                    RuneId.Fire, RuneId.Earth, RuneId.Lava, RuneId.Salt, RuneId.Water, RuneId.Obsidian),
 
                 new WorldMaterial(MaterialId.Grove, "grove",
                     "Living plant as a mass. Tree-work, not a rune.",
@@ -340,10 +340,10 @@ namespace RuneMagic
                     RuneId.Air, RuneId.Water, RuneId.Cloud, RuneId.Ice),
 
                 new WorldMaterial(MaterialId.Glacier, "glacier",
-                    "Ice given Stone. Ordinary fire cannot take it. Witchfire can.",
+                    "Ice given logos and its own perpetuity. Ordinary fire cannot take it. Witchfire can.",
                     RuneId.Glacier, MaterialPaint.Glacier,
                     new Color(0.7f, 0.82f, 0.88f), new Color(0.48f, 0.58f, 0.66f), false,
-                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Glacier),
+                    RuneId.Water, RuneId.Earth, RuneId.Ice, RuneId.Animus, RuneId.Glacier),
 
                 new WorldMaterial(MaterialId.Acid, "acid slick",
                     "Steam forced through Metal.",
@@ -516,7 +516,7 @@ namespace RuneMagic
                 case RuneId.Vita: return MaterialId.Grove;
                 case RuneId.Dust: return MaterialId.Dust;
                 case RuneId.Ice: return MaterialId.Ice;
-                case RuneId.Sand: return MaterialId.Sand;
+                case RuneId.Sand: return MaterialId.Dust;
                 case RuneId.Mud: return MaterialId.Mud;
                 case RuneId.Lava: return MaterialId.Lava;
                 case RuneId.Steam: return MaterialId.Steam;

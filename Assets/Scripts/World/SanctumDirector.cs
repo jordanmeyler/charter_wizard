@@ -966,6 +966,8 @@ namespace RuneMagic
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Iron needs no far rest, and it will stand on water."
                     : spell == SpellId.WoodWall
                     ? "Click the near end, then the far end. A line of trees. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats the wood."
+                    : spell == SpellId.ObsidianWall
+                    ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Black glass needs no far rest. Melt, Shatter, and hunger's thaw will not take it."
                     : "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Water takes mud, not a bridge.";
             }
 

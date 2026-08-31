@@ -272,9 +272,11 @@ namespace RuneMagic
             switch (shape)
             {
                 case SpellShape.Shot:
-                    return IsAny(material, RuneId.Fire, RuneId.Air, RuneId.Spark);
+                    return IsAny(material, RuneId.Fire, RuneId.Air, RuneId.Spark, RuneId.Ice, RuneId.Lava);
                 case SpellShape.Remote:
-                    return IsAny(material, RuneId.Fire, RuneId.Spark);
+                    return IsAny(material, RuneId.Fire, RuneId.Spark, RuneId.Ice, RuneId.Stone);
+                case SpellShape.Pillar:
+                    return IsAny(material, RuneId.Ice, RuneId.Stone, RuneId.Lava);
                 default:
                     return false;
             }
@@ -284,12 +286,12 @@ namespace RuneMagic
         {
             switch (shape)
             {
+                case SpellShape.Spread:
+                    return IsAny(material, RuneId.Water, RuneId.Earth, RuneId.Plant, RuneId.Ice, RuneId.Mud);
                 case SpellShape.Remote:
                     return IsAny(material, RuneId.Water, RuneId.Earth, RuneId.Plant);
-                case SpellShape.Spread:
-                    return material == RuneId.Water;
-                case SpellShape.Pillar:
-                    return material == RuneId.Water;
+                case SpellShape.Self:
+                    return IsAny(material, RuneId.Water, RuneId.Vita);
                 default:
                     return false;
             }

@@ -83,6 +83,7 @@ namespace RuneMagic
             spell == SpellId.Wall
             || spell == SpellId.IceWall
             || spell == SpellId.MetalWall
+            || spell == SpellId.ObsidianWall
             || spell == SpellId.WoodWall;
 
         public static bool IsPillar(SpellId spell)
@@ -94,6 +95,7 @@ namespace RuneMagic
                 case SpellId.IceWall:
                 case SpellId.Wall:
                 case SpellId.MetalWall:
+                case SpellId.ObsidianWall:
                 case SpellId.WoodWall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
@@ -453,7 +455,7 @@ namespace RuneMagic
 
         public static MaterialId MaterialFor(RuneId element, SpellId spell)
         {
-            if (spell == SpellId.ObsidianPath)
+            if (spell == SpellId.ObsidianPath || spell == SpellId.ObsidianWall)
             {
                 return MaterialId.Obsidian;
             }
