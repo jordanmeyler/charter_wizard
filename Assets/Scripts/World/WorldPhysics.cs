@@ -742,6 +742,7 @@ namespace RuneMagic
             }
 
             MatterLaw.Audit(broken);
+            ChargeLaw.Audit(broken);
         }
 
         static List<Vector2Int> CellsAlong(WorldGrid grid, Vector3 from, Vector3 to, float width)

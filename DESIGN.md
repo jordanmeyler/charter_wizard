@@ -191,9 +191,9 @@ Each material now carries two numbers you can tweak in `MaterialCatalog.Flag`:
 | Flag | Negative | Zero | Positive |
 | --- | --- | --- | --- |
 | **Flammability** | Fire-retardant — puts nearby fire out (water −1.6, ice −0.85, rain −1.1) | Will not burn | How readily it catches and how far hunger runs (plant 1.5, timber 1.2, grove 1.35) |
-| **Conductivity** | — | Insulator | How freely a spark travels (metal 1.6, water 1.25, vein 0.85) |
+| **Conductivity** | Insulator — wood and plants disrupt the path (timber −0.9, plant −1.1, grove −1.2) | Neutral — may hold a spark but will not pass it (stone, dirt, sand) | How freely a spark travels (metal 1.6, water 1.25, vein 0.85) |
 
-Tiles keep live state: **Fire**, **Wet**, **Charge**, **Growth**. Plant a vegetable body (`Sprout`) and water it — the patch grows toward Grove. Fire spreads onto flammable neighbors and burns plants to Ash. Retardant neighbors quench. Charge walks conductive tiles. Overlays (`tile-fire`, `tile-wet`, `tile-charge`, `tile-grow`) make the reaction visible.
+Tiles keep live state: **Fire**, **Wet**, **Charge**, **Growth**. Plant a vegetable body (`Sprout`) and water it — the patch grows toward Grove. Fire spreads onto flammable neighbors and burns plants to Ash. Retardant neighbors quench. Charge walks **conductive** tiles (metal, water, wet stone, vein). Neutral stone can take a bolt but will not pass it unless a neighbor conducts. Wood and plants **insulate** — they break the path, even on metal. Overlays (`tile-fire`, `tile-wet`, `tile-charge`, `tile-grow`) make the reaction visible.
 
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — charge runs the pool.

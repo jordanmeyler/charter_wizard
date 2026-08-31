@@ -188,7 +188,7 @@ namespace RuneMagic
 
                         break;
                     case TileVerb.Charge:
-                        if (tile.Conductivity > 0.05f)
+                        if (ChargeLaw.AcceptsDirectCharge(tile.Conductivity))
                         {
                             tile.ChargeAt(1f);
                             changed++;
