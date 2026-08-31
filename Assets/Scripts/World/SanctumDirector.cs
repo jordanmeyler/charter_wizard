@@ -115,6 +115,19 @@ namespace RuneMagic
         public void BindPlayer(GameObject player)
         {
             _player = player != null ? player.transform : null;
+            var host = StatusHost.On(player != null ? player.transform : null);
+            if (host != null)
+            {
+                host.OnFatal = id =>
+                {
+                    if (!VitalLaw.IsMeter(id))
+                    {
+                        return;
+                    }
+
+                    KillPlayer(DeathCause.Plain(VitalLaw.FatalNote(id, string.Empty, true)));
+                };
+            }
         }
 
         public void BindTapestry(RuneTapestry tapestry)
@@ -207,7 +220,6 @@ namespace RuneMagic
                 if (host == null || !host.Fends(Essence.Poison))
                 {
                     PlacePlayer(player, _safePoint, "The breath is foul. Send air through it.");
-                    adept?.TickFlame(false, false);
                     FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
                     return;
                 }
@@ -217,7 +229,7 @@ namespace RuneMagic
                 var host = StatusHost.On(player);
                 if (host == null || !host.Fends(Essence.Poison))
                 {
-                    host?.Apply(StatusId.Poisoned, StatusSpec.PoisonKillSeconds);
+                    host?.Apply(StatusId.Poisoned, VitalLaw.AdeptPoisonSeconds);
                 }
             }
 
@@ -227,22 +239,13 @@ namespace RuneMagic
                 var inFire = Underfoot.IsBurning;
                 if (inFire)
                 {
-                    host?.Apply(StatusId.Burning, 2.4f);
+                    host?.Apply(StatusId.Burning, VitalLaw.AdeptBurnSeconds);
                     var warded = host != null && host.Fends(Essence.Fire);
                     if (Underfoot.Kindled && !warded && (adept == null || !adept.IsAirborne))
                     {
                         KillPlayer(DeathCause.Plain(
                             "The flaming hall finds you. Wear a water ward, or throw yield first."));
                     }
-                    else if (adept != null && adept.TickFlame(true, warded))
-                    {
-                        KillPlayer(DeathCause.Plain(
-                            "The floor is hunger. Eight breaths without a water ward."));
-                    }
-                }
-                else
-                {
-                    adept?.TickFlame(false, false);
                 }
 
                 if (Underfoot.Material == MaterialId.Lava && (host == null || !host.Fends(Essence.Fire)))
@@ -250,11 +253,6 @@ namespace RuneMagic
                     KillPlayer(DeathCause.Plain("Hungry earth finds you."));
                 }
             }
-            else
-            {
-                adept?.TickFlame(false, false);
-            }
-
             if (Underfoot != null && WorldWork.BurnsOccupants(Underfoot) && (adept == null || !adept.IsAirborne))
             {
                 var host = StatusHost.On(player);
@@ -2097,13 +2095,18 @@ namespace RuneMagic
                 }
 
                 var tile = Grid.TileAtWorld(encounter.WorldPosition);
+                var host = StatusHost.On(body);
+                if (tile != null && tile.IsBurning)
+                {
+                    host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
+                }
+
                 if (!WorldWork.BurnsOccupants(tile))
                 {
                     continue;
                 }
 
-                var host = StatusHost.On(body);
-                host?.Apply(StatusId.Burning, 3f);
+                host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
                 if (Accepts(encounter, SpellId.FlamePillar) || Accepts(encounter, SpellId.LavaPillar))
                 {
                     UnmakeLock(encounter, $"{encounter.DisplayName} cannot stand in the flame. They fall.");

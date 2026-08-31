@@ -236,6 +236,13 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Vine:
+                        if (tile.LayVine())
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -277,7 +284,9 @@ namespace RuneMagic
                                         ? "A sick mist stands on the floor."
                                         : verb.Tiles == TileVerb.Dirt
                                             ? "Loose rest lands. Ground-fire dies. Earth speaks here."
-                                            : "Yield finds the floor.");
+                                            : verb.Tiles == TileVerb.Vine
+                                                ? "The vegetable body climbs. Hunger can run this line as a wick."
+                                                : "Yield finds the floor.");
             }
         }
 

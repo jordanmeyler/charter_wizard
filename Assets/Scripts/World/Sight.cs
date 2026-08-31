@@ -79,6 +79,13 @@ namespace RuneMagic
                 return "foul breath hanging on this tile. Send air through it.";
             }
 
+            if (tile.HasVine)
+            {
+                return tile.IsBurning
+                    ? "a climbing vine taking hunger. The wick is running."
+                    : "a climbing vine. Hunger can run it as a wick.";
+            }
+
             if (tile.IsBurning)
             {
                 return "hunger standing on the floor.";

@@ -249,6 +249,8 @@ namespace RuneMagic
                 y += 22f;
             }
 
+            y = DrawVitalMeters(y);
+
             var holding = _director.ConcentrationLine();
             if (!string.IsNullOrEmpty(holding))
             {
@@ -259,6 +261,39 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
             GUI.Label(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
+        }
+
+        float DrawVitalMeters(float y)
+        {
+            var host = StatusHost.On(AdeptAvatar.Find());
+            if (host == null)
+            {
+                return y;
+            }
+
+            y = DrawVitalMeter(y, host, StatusId.Burning, new Color(1f, 0.42f, 0.12f), "Burning");
+            y = DrawVitalMeter(y, host, StatusId.Poisoned, new Color(0.42f, 0.82f, 0.22f), "Poison");
+            return y;
+        }
+
+        float DrawVitalMeter(float y, StatusHost host, StatusId id, Color color, string label)
+        {
+            if (host == null || !host.Has(id))
+            {
+                return y;
+            }
+
+            var left = host.MeterLeft(id);
+            var frac = host.MeterFraction(id);
+            var previous = GUI.color;
+            GUI.Label(new Rect(28, y, 90, 14), $"{label} {left:0.0}",
+                Label(12, FontStyle.Bold, color));
+            GUI.color = new Color(0.12f, 0.1f, 0.08f, 0.85f);
+            GUI.DrawTexture(new Rect(120, y + 3, 200, 8), Texture2D.whiteTexture);
+            GUI.color = color;
+            GUI.DrawTexture(new Rect(120, y + 3, 200f * frac, 8), Texture2D.whiteTexture);
+            GUI.color = previous;
+            return y + 16f;
         }
 
         void DrawCastLedger()

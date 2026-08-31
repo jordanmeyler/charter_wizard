@@ -99,11 +99,13 @@ namespace RuneMagic
             _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
             _status.OnFatal = id =>
             {
-                if (id == StatusId.Poisoned && !Resolved)
+                if (Resolved || !VitalLaw.IsMeter(id))
                 {
-                    FindFirstObjectByType<SanctumDirector>()?.UnmakeLock(this,
-                        $"{DisplayName} cannot hold the foul breath. They fall.");
+                    return;
                 }
+
+                FindFirstObjectByType<SanctumDirector>()?.UnmakeLock(this,
+                    VitalLaw.FatalNote(id, DisplayName, false));
             };
             var kind = CombatOf(formulaId, attack);
             var combat = AuthoringUtil.GetOrAdd<CombatActor>(gameObject);
