@@ -73,6 +73,7 @@ namespace RuneMagic
             {
                 case SpellId.Fireball:
                 case SpellId.SunLance:
+                case SpellId.Drive:
                 case SpellId.Scald:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Burning, 4.5f, TileVerb.Ignite);
                 case SpellId.FlamePillar:
@@ -123,6 +124,8 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.Soaked, 6f, TileVerb.Wet);
                 case SpellId.Sprout:
                 case SpellId.Grove:
+                case SpellId.Balm:
+                case SpellId.Chorus:
                     return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.Vine:
                 case SpellId.Quagmire:

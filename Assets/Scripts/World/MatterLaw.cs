@@ -72,6 +72,13 @@ namespace RuneMagic
                 return Heat.Flame;
             }
 
+            // Animus is logos, not hunger. Ice given will stays cold even
+            // when the Animus birth unfolds through Fire.
+            if (IsLogosIce(recipe))
+            {
+                return Heat.None;
+            }
+
             if (!Has(recipe, RuneId.Fire) && !Has(recipe, RuneId.Lava) && !Has(recipe, RuneId.Ember))
             {
                 return Heat.None;
@@ -196,7 +203,7 @@ namespace RuneMagic
             var hasWater = false;
             var hasSalt = false;
             var hasEarth = false;
-            var hasStone = false;
+            var hasIce = false;
             var hasVita = false;
             var hasPlant = false;
             for (var i = 0; i < formula.Count; i++)
@@ -229,7 +236,7 @@ namespace RuneMagic
 
                 if (rune == RuneId.Ice)
                 {
-                    return MaterialId.Ice;
+                    hasIce = true;
                 }
 
                 if (rune == RuneId.Mud)
@@ -245,13 +252,35 @@ namespace RuneMagic
                 hasWater |= rune == RuneId.Water;
                 hasSalt |= rune == RuneId.Salt;
                 hasEarth |= rune == RuneId.Earth;
-                hasStone |= rune == RuneId.Stone;
                 hasVita |= rune == RuneId.Vita;
+            }
+
+            if (IsLogosIce(formula) && !hasSalt && !hasPlant)
+            {
+                return MaterialId.Glacier;
+            }
+
+            if (hasIce)
+            {
+                return MaterialId.Ice;
             }
 
             if (hasWater && hasEarth && !hasSalt && !hasPlant)
             {
-                return hasStone ? MaterialId.Glacier : MaterialId.Ice;
+                for (var i = 0; i < formula.Count; i++)
+                {
+                    if (formula[i] == RuneId.Earth)
+                    {
+                        return MaterialId.Mud;
+                    }
+
+                    if (formula[i] == RuneId.Water)
+                    {
+                        return MaterialId.Ice;
+                    }
+                }
+
+                return MaterialId.Ice;
             }
 
             if (hasEarth && hasSalt)
@@ -307,7 +336,7 @@ namespace RuneMagic
             switch (material)
             {
                 case MaterialId.Glacier:
-                    return "Witchfire finds the stone-ice. What ordinary hunger could not take, yields.";
+                    return "Witchfire finds ice given logos. What ordinary hunger could not take, yields.";
                 case MaterialId.Glass:
                     return "Witchfire remembers the grains. The glass forgets it was liquid.";
                 case MaterialId.Snow:
@@ -358,6 +387,11 @@ namespace RuneMagic
             if (HeatOf(SpellId.Witchfire) != Heat.Flame)
             {
                 broken.Add("Witchfire must carry Flame heat");
+            }
+
+            if (HeatOf(SpellId.Plasma) != Heat.Inferno)
+            {
+                broken.Add("Plasma must carry Inferno heat");
             }
 
             if (HeatOf(SpellId.Rage) != Heat.None
@@ -422,17 +456,80 @@ namespace RuneMagic
             if (!ChainBook.TryBirth(RuneId.Flame, out var flame)
                 || flame.Count != 3
                 || flame[0] != RuneId.Fire
-                || flame[1] != RuneId.Sulphur
+                || flame[1] != RuneId.Animus
                 || flame[2] != RuneId.Fire)
             {
-                broken.Add("Flame must be born Fire · Sulphur · Fire");
+                broken.Add("Flame must be born Fire · Animus · Fire");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Glacier, out var glacier)
+                || glacier.Count != 3
+                || glacier[0] != RuneId.Ice
+                || glacier[1] != RuneId.Animus
+                || glacier[2] != RuneId.Ice)
+            {
+                broken.Add("Glacier must be born Ice · Animus · Ice");
+            }
+
+            if (HeatOf(ChainBook.Parse("Ice · Animus · Ice")) != Heat.None
+                || HeatOf(ChainBook.Parse("Water · Earth · Fire · Sulphur · Air · Water · Earth")) != Heat.None)
+            {
+                broken.Add("Ice given logos must not count as heat");
+            }
+
+            if (HeatOf(ChainBook.Parse("Fire · Animus · Fire")) != Heat.Flame)
+            {
+                broken.Add("Fire given logos and its own perpetuity must carry Flame heat");
+            }
+
+            if (MatterOf(ChainBook.Parse("Ice · Animus · Ice")) != MaterialId.Glacier
+                || MatterOf(ChainBook.Parse("Ice")) != MaterialId.Ice
+                || MatterOf(ChainBook.Parse("Ice · Stone")) == MaterialId.Glacier)
+            {
+                broken.Add("Glacier is Ice · Animus · Ice, not Ice · Stone");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Plasma, out var plasma)
+                || plasma.Count != 2
+                || plasma[0] != RuneId.Flame
+                || plasma[1] != RuneId.Lightning)
+            {
+                broken.Add("Plasma must be born Flame · Lightning");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Anima, out var anima)
+                || anima.Count != 3
+                || anima[0] != RuneId.Water
+                || anima[1] != RuneId.Sulphur
+                || anima[2] != RuneId.Earth)
+            {
+                broken.Add("Anima must be born Water · Sulphur · Earth");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Animus, out var animus)
+                || animus.Count != 3
+                || animus[0] != RuneId.Fire
+                || animus[1] != RuneId.Sulphur
+                || animus[2] != RuneId.Air)
+            {
+                broken.Add("Animus must be born Fire · Sulphur · Air");
+            }
+
+            if (HeatOf(SpellId.Balm) != Heat.None || HeatOf(SpellId.Chorus) != Heat.None)
+            {
+                broken.Add("Anima-work must not count as heat");
+            }
+
+            if (HeatOf(SpellId.Drive) != Heat.Fire)
+            {
+                broken.Add("Drive must carry Fire heat");
             }
 
             if (!SpellCodex.TryGet(SpellId.Witchfire, out var witch)
-                || !ChainBook.SameStory(witch.RecipeRunes, ChainBook.Parse("Fire · Sulphur · Fire · Mercury"))
+                || !ChainBook.SameStory(witch.RecipeRunes, ChainBook.Parse("Fire · Animus · Fire · Mercury"))
                 || !ChainBook.SameStory(witch.ViaRunes, ChainBook.Parse("Flame · Mercury")))
             {
-                broken.Add("Witchfire must be Fire · Sulphur · Fire · Mercury, via Flame · Mercury");
+                broken.Add("Witchfire must be Fire · Animus · Fire · Mercury, via Flame · Mercury");
             }
 
             if (SpellCodex.TryGet(SpellId.FlamePillar, out var pillar)
@@ -453,8 +550,49 @@ namespace RuneMagic
             for (var i = 0; i + 2 < recipe.Count; i++)
             {
                 if (recipe[i] == RuneId.Fire
-                    && recipe[i + 1] == RuneId.Sulphur
+                    && recipe[i + 1] == RuneId.Animus
                     && recipe[i + 2] == RuneId.Fire)
+                {
+                    return true;
+                }
+            }
+
+            for (var i = 0; i + 4 < recipe.Count; i++)
+            {
+                if (recipe[i] == RuneId.Fire
+                    && recipe[i + 1] == RuneId.Fire
+                    && recipe[i + 2] == RuneId.Sulphur
+                    && recipe[i + 3] == RuneId.Air
+                    && recipe[i + 4] == RuneId.Fire)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool IsLogosIce(IReadOnlyList<RuneId> recipe)
+        {
+            if (Has(recipe, RuneId.Glacier))
+            {
+                return true;
+            }
+
+            if (Has(recipe, RuneId.Ice) && Has(recipe, RuneId.Animus))
+            {
+                return true;
+            }
+
+            for (var i = 0; i + 6 < recipe.Count; i++)
+            {
+                if (recipe[i] == RuneId.Water
+                    && recipe[i + 1] == RuneId.Earth
+                    && recipe[i + 2] == RuneId.Fire
+                    && recipe[i + 3] == RuneId.Sulphur
+                    && recipe[i + 4] == RuneId.Air
+                    && recipe[i + 5] == RuneId.Water
+                    && recipe[i + 6] == RuneId.Earth)
                 {
                     return true;
                 }

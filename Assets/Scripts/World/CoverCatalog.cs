@@ -5,8 +5,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
-    /// Ice is Water · Earth. Vine is Plant · Mercury. Miasma is
-    /// Cloud · Acid. Fog is the Cloud veil — weather, not its own rune.
+    /// Ice is Water · Earth. Vine cover speaks Plant — Vine is a
+    /// spell, not a rune. Miasma is Cloud · Acid. Fog is the Cloud
+    /// veil — weather, not its own rune.
     /// </summary>
     public static class CoverCatalog
     {
@@ -30,7 +31,7 @@ namespace RuneMagic
                 case TileCover.Fire: return RuneId.Fire;
                 case TileCover.Lightning: return RuneId.Lightning;
                 case TileCover.Water: return RuneId.Water;
-                case TileCover.Vine: return RuneId.Vine;
+                case TileCover.Vine: return RuneId.Plant;
                 case TileCover.Miasma: return RuneId.Miasma;
                 case TileCover.Fog: return RuneId.Cloud;
                 case TileCover.Mud: return RuneId.Mud;
@@ -53,7 +54,6 @@ namespace RuneMagic
                     return TileCover.Lightning;
                 case RuneId.Water:
                     return TileCover.Water;
-                case RuneId.Vine:
                 case RuneId.Plant:
                     return TileCover.Vine;
                 case RuneId.Miasma:

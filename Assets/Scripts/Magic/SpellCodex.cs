@@ -107,19 +107,19 @@ namespace RuneMagic
             E(23, SpellBook.Cross, SpellId.Wall, "A body of rest asked to rest as more rest. A wall. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. Water takes mud, not a bridge.", "Wall", "Earth · Salt · Earth", "Stone · Earth", "Pillar", SpellOutcome.Neither),
             E(24, SpellBook.Cross, SpellId.Pit, "Rest asked to go, given breath so it leaves a hollow.", "Pit", "Earth · Mercury · Air", "", "Remote", SpellOutcome.Neither),
             E(25, SpellBook.Cross, SpellId.Bridge, "A body of rest given breath and sent across. A two-tile span that must find floor or wall at each end, or it falls. Water takes mud, not a bridge.", "Bridge", "Earth · Salt · Air · Mercury", "Stone · Air · Mercury", "Remote", SpellOutcome.Neither),
-            E(26, SpellBook.Hold, SpellId.Quagmire, "Yield meeting grit, given a body. It holds them.", "Quagmire", "Water · Dust · Salt", "Mud · Salt", "Spread", SpellOutcome.Restrain),
+            E(26, SpellBook.Hold, SpellId.Quagmire, "Rest meeting yield, given a body. It holds them.", "Quagmire", "Earth · Water · Salt", "Mud · Salt", "Spread", SpellOutcome.Restrain),
             E(27, SpellBook.End, SpellId.LavaFlood, "Hungry earth asked to go.", "Lava-flood", "Fire · Earth · Mercury", "Lava · Mercury", "Remote", SpellOutcome.Kill),
-            E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Water · Salt", "Lava · Water · Salt", "Remote", SpellOutcome.Neither),
+            E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Salt · Water", "Lava · Salt · Water", "Remote", SpellOutcome.Neither),
             E(29, SpellBook.GrowHeal, SpellId.Sprout, "A vegetable body marked living, from the feet.", "Sprout", "Water · Salt · Earth · Life", "Plant · Life", "Spread", SpellOutcome.Neither),
             E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. It holds them, or it climbs.", "Vine", "Water · Salt · Earth · Mercury", "Plant · Mercury", "Remote", SpellOutcome.Restrain),
-            E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Salt · Earth · Mercury · Earth", "Vine · Earth", "Pillar", SpellOutcome.Neither),
+            E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Salt · Earth · Mercury · Earth", "Plant · Mercury · Earth", "Pillar", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Spread", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
             E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "Wind · Air", "Shot", SpellOutcome.Restrain),
+            E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "", "Shot", SpellOutcome.Restrain),
             E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see.", "Veil", "Dark · Life · Salt · Air", "", "Spread", SpellOutcome.Neither),
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(41, SpellBook.Grave, SpellId.Blight, "A vegetable body, then the grave, given a body. Verdure rots.", "Blight", "Water · Salt · Earth · Death · Salt", "Poison · Salt", "Spread", SpellOutcome.Kill, "Either"),
@@ -135,7 +135,7 @@ namespace RuneMagic
             E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Water · Earth · Dark · Life · Death · Sulphur · Salt", "Ice · Dark · Life · Death · Sulphur · Salt", "Spread", SpellOutcome.Restrain, "Free"),
             E(52, SpellBook.Weather, SpellId.Douse, "Yield sent. Water thrown. Hunger ends.", "Douse", "Water · Mercury", "", "Shot", SpellOutcome.Neither),
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. A simple wind.", "Gust", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
+            E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. Wind.", "Wind", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
             E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth. Over a pit it must join two floors, or it falls. Water takes mud, not a span.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar),
             E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Arrows break. Hunger sent still finds you.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Hunger breaks.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
@@ -146,28 +146,32 @@ namespace RuneMagic
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it freezes without banks. It will thaw.", "Ice-wall", "Water · Earth · Salt · Water · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
             E(64, SpellBook.Hold, SpellId.Freeze, "Hard water held as a condition. They freeze.", "Freeze", "Water · Earth · Sulphur", "Ice · Sulphur", "Remote", SpellOutcome.Restrain),
-            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Water · Earth · Air · Mercury", "Cloud · Ice · Wind", "Remote", SpellOutcome.Restrain),
+            E(65, SpellBook.Weather, SpellId.Snowstorm, "The veil given ice’s story, then driven. They freeze.", "Snowstorm", "Air · Water · Water · Earth · Air · Mercury", "Cloud · Ice · Air · Mercury", "Remote", SpellOutcome.Restrain),
             E(66, SpellBook.Weather, SpellId.Push, "Breath given a body and sent. Wind that pushes the person.", "Push", "Air · Salt · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(67, SpellBook.End, SpellId.LightningStrike, "A spark given form from the air, moving at something. It falls from the sky.", "Lightning strike", "Fire · Air · Salt · Air · Mercury", "Spark · Salt · Air · Mercury", "Remote", SpellOutcome.Kill),
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
-            E(69, SpellBook.Hold, SpellId.Swamp, "Yield meeting grit, going, given a body around your feet. A watery swamp.", "Swamp", "Water · Dust · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
-            E(70, SpellBook.End, SpellId.Witchfire, "Fire of the mind, made fire, and sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Sulphur · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
+            E(69, SpellBook.Hold, SpellId.Swamp, "Rest meeting yield, going, given a body around your feet. A watery swamp.", "Swamp", "Earth · Water · Mercury · Salt", "Mud · Mercury · Salt", "Spread", SpellOutcome.Restrain),
+            E(70, SpellBook.End, SpellId.Witchfire, "Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Animus · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
             E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Salt · Earth · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither),
             E(72, SpellBook.Weather, SpellId.Thunder, "The arc meeting rest.", "Thunder", "Fire · Air · Earth", "Lightning · Earth", "Remote", SpellOutcome.Neither),
             E(73, SpellBook.SeeHide, SpellId.Darkness, "The hanging veil is withheld. Nothing in the vicinity can see.", "Darkness", "Air · Water · Dark", "Cloud · Dark", "Remote", SpellOutcome.Neither),
-            E(74, SpellBook.Weather, SpellId.Blizzard, "The veil given ice, a body, going, and wind.", "Blizzard", "Air · Water · Salt · Water · Earth · Mercury · Air · Mercury", "Cloud · Salt · Ice · Mercury · Wind", "Remote", SpellOutcome.Restrain),
-            E(75, SpellBook.Weather, SpellId.Sandstorm, "Breath going, driving grit.", "Sandstorm", "Air · Mercury · Air · Earth · Mercury", "Wind · Dust · Mercury", "Remote", SpellOutcome.Neither),
+            E(74, SpellBook.Weather, SpellId.Blizzard, "The veil given ice, a body, going, and wind.", "Blizzard", "Air · Water · Salt · Water · Earth · Mercury · Air · Mercury", "Cloud · Salt · Ice · Mercury · Air · Mercury", "Remote", SpellOutcome.Restrain),
+            E(75, SpellBook.Weather, SpellId.Sandstorm, "Breath going, driving grit.", "Sandstorm", "Air · Mercury · Air · Earth · Mercury", "Air · Mercury · Dust · Mercury", "Remote", SpellOutcome.Neither),
             E(76, SpellBook.Cross, SpellId.WaterPillar, "Yield and rest given a standing body. A column of water.", "Water-pillar", "Water · Earth · Salt", "Ice · Salt", "Pillar", SpellOutcome.Neither),
             E(77, SpellBook.End, SpellId.OilShot, "Fuel sent. Surfaces hold flame. Fire already standing grows.", "Oil shot", "Water · Salt · Earth · Fire · Earth · Mercury", "Oil · Mercury", "Shot", SpellOutcome.Neither),
             E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. A later fire sentence would make it a bomb.", "Oil-pillar", "Water · Salt · Earth · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
             E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Spread", SpellOutcome.Kill),
-            E(81, SpellBook.End, SpellId.Plasma, "Inferno joined to Spark and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Fire · Salt · Fire · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
+            E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
             E(82, SpellBook.GrowHeal, SpellId.Forest, "The vegetable body waking as a mass.", "Forest", "Water · Salt · Earth · Life · Earth", "Plant · Life · Earth", "Remote", SpellOutcome.Neither),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
             E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
-            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither)
+            E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither),
+            E(87, SpellBook.Cross, SpellId.ObsidianWall, "A body of black glass asked to stand as more black glass. A wall. Melt, Shatter, and hunger's thaw will not take it. Over a gap it needs no far rest.", "Obsidian-wall", "Fire · Earth · Salt · Water · Salt · Fire · Earth · Salt · Water", "Obsidian · Salt · Obsidian", "Pillar", SpellOutcome.Neither),
+            E(88, SpellBook.GrowHeal, SpellId.Balm, "Care sent. Yield given mind and rest, then sent. It heals.", "Balm", "Water · Sulphur · Earth · Mercury", "Anima · Mercury", "Spread", SpellOutcome.Neither),
+            E(89, SpellBook.GrowHeal, SpellId.Chorus, "Care given a body around the feet. The work opens to many.", "Chorus", "Water · Sulphur · Earth · Salt", "Anima · Salt", "Spread", SpellOutcome.Neither),
+            E(90, SpellBook.End, SpellId.Drive, "Hunger given mind and breath, then sent. Logos sent. It goes out and does not return.", "Drive", "Fire · Sulphur · Air · Mercury", "Animus · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -546,9 +550,113 @@ namespace RuneMagic
                 || RuneCatalog.TryParseName("Storm", out _)
                 || RuneCatalog.TryParseName("Thunder", out _)
                 || RuneCatalog.TryParseName("Rain", out _)
+                || RuneCatalog.TryParseName("Vine", out _)
+                || RuneCatalog.TryParseName("Wind", out _)
+                || RuneCatalog.TryParseName("Inferno", out _)
                 || RuneCatalog.TryParseName("Grove", out var groveId) && groveId != RuneId.Plant)
             {
-                broken.Add("Weather names and Grove must not be runes — Forest and weather are spells");
+                broken.Add("Weather names, Vine, Wind, Inferno, and Grove must not be runes — those are spells or unused");
+            }
+
+            if (!RuneCatalog.TryParseName("Sand", out var sandId) || sandId != RuneId.Dust)
+            {
+                broken.Add("Sand must be the same grit as Dust");
+            }
+
+            if (ChainBook.TryBirth(RuneId.Vine, out _)
+                || ChainBook.TryBirth(RuneId.Wind, out _)
+                || ChainBook.TryBirth(RuneId.Inferno, out _)
+                || ChainBook.TryBirth(RuneId.Sand, out _))
+            {
+                broken.Add("Vine, Wind, Inferno, and Sand must not be wrought joins");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Mud, out var mudBirth)
+                || mudBirth.Count != 2
+                || mudBirth[0] != RuneId.Earth
+                || mudBirth[1] != RuneId.Water)
+            {
+                broken.Add("Mud must be Earth · Water — Water · Earth is Ice");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Obsidian, out var obsidianBirth)
+                || obsidianBirth.Count != 3
+                || obsidianBirth[0] != RuneId.Lava
+                || obsidianBirth[1] != RuneId.Salt
+                || obsidianBirth[2] != RuneId.Water)
+            {
+                broken.Add("Obsidian must be Lava · Salt · Water");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Flame, out var flameBirth)
+                || flameBirth.Count != 3
+                || flameBirth[0] != RuneId.Fire
+                || flameBirth[1] != RuneId.Animus
+                || flameBirth[2] != RuneId.Fire)
+            {
+                broken.Add("Flame must be Fire · Animus · Fire");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Glacier, out var glacierBirth)
+                || glacierBirth.Count != 3
+                || glacierBirth[0] != RuneId.Ice
+                || glacierBirth[1] != RuneId.Animus
+                || glacierBirth[2] != RuneId.Ice)
+            {
+                broken.Add("Glacier must be Ice · Animus · Ice");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Plasma, out var plasmaBirth)
+                || plasmaBirth.Count != 2
+                || plasmaBirth[0] != RuneId.Flame
+                || plasmaBirth[1] != RuneId.Lightning)
+            {
+                broken.Add("Plasma must be Flame · Lightning");
+            }
+
+            var mudJoin = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Water });
+            if (ChainBook.CollectExact(mudJoin, SpellShape.None).Count != 0)
+            {
+                broken.Add("Earth · Water joins to Mud, not a spell");
+            }
+
+            var quagmire = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Water, RuneId.Salt });
+            var quagmireExact = ChainBook.CollectExact(quagmire, SpellShape.None);
+            if (quagmireExact.Count == 0 || quagmireExact[0].Spell != SpellId.Quagmire)
+            {
+                broken.Add("Earth · Water · Salt should be Quagmire");
+            }
+
+            var wind = Composition.FromSequence(new[] { RuneId.Air, RuneId.Mercury });
+            var windExact = ChainBook.CollectExact(wind, SpellShape.None);
+            if (windExact.Count == 0 || windExact[0].Spell != SpellId.Gust)
+            {
+                broken.Add("Air · Mercury should be Wind");
+            }
+
+            var obsidianWall = Composition.FromSequence(new[] { RuneId.Obsidian, RuneId.Salt, RuneId.Obsidian });
+            var obsidianWallExact = ChainBook.CollectExact(obsidianWall, SpellShape.None);
+            if (obsidianWallExact.Count == 0 || obsidianWallExact[0].Spell != SpellId.ObsidianWall)
+            {
+                broken.Add("Obsidian · Salt · Obsidian should be Obsidian-wall");
+            }
+
+            var obsidianWallRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Lava, RuneId.Salt, RuneId.Water, RuneId.Salt,
+                RuneId.Lava, RuneId.Salt, RuneId.Water
+            });
+            var obsidianWallFromRoots = ChainBook.CollectExact(obsidianWallRoots, SpellShape.None);
+            if (obsidianWallFromRoots.Count == 0 || obsidianWallFromRoots[0].Spell != SpellId.ObsidianWall)
+            {
+                broken.Add("Lava · Salt · Water · Salt · Lava · Salt · Water should be Obsidian-wall");
+            }
+
+            var plasma = Composition.FromSequence(new[] { RuneId.Flame, RuneId.Lightning, RuneId.Mercury });
+            var plasmaExact = ChainBook.CollectExact(plasma, SpellShape.None);
+            if (plasmaExact.Count == 0 || plasmaExact[0].Spell != SpellId.Plasma)
+            {
+                broken.Add("Flame · Lightning · Mercury should be Plasma");
             }
 
             if (!TryGet(SpellId.Grotto, out var grotto)
@@ -581,14 +689,59 @@ namespace RuneMagic
             FocusLaw.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
-            if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _))
+            if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _) || !TryGet(SpellId.ObsidianWall, out _))
             {
-                broken.Add("Metal-pillar and Metal-wall must be written in the developer book");
+                broken.Add("Metal-pillar, Metal-wall, and Obsidian-wall must be written in the developer book");
             }
 
-            if (Entries.Length < 86)
+            if (!ChainBook.TryBirth(RuneId.Anima, out var animaBirth)
+                || animaBirth.Count != 3
+                || animaBirth[0] != RuneId.Water
+                || animaBirth[1] != RuneId.Sulphur
+                || animaBirth[2] != RuneId.Earth)
             {
-                broken.Add("The written book must keep every catalog spell, including 85–86 Metal");
+                broken.Add("Anima must be Water · Sulphur · Earth");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Animus, out var animusBirth)
+                || animusBirth.Count != 3
+                || animusBirth[0] != RuneId.Fire
+                || animusBirth[1] != RuneId.Sulphur
+                || animusBirth[2] != RuneId.Air)
+            {
+                broken.Add("Animus must be Fire · Sulphur · Air");
+            }
+
+            if (!RuneCatalog.TryParseName("Male", out var maleId) || maleId != RuneId.Animus
+                || !RuneCatalog.TryParseName("Female", out var femaleId) || femaleId != RuneId.Anima)
+            {
+                broken.Add("Male and Female must be Animus and Anima");
+            }
+
+            var balm = Composition.FromSequence(new[] { RuneId.Anima, RuneId.Mercury });
+            var balmExact = ChainBook.CollectExact(balm, SpellShape.None);
+            if (balmExact.Count == 0 || balmExact[0].Spell != SpellId.Balm)
+            {
+                broken.Add("Anima · Mercury should be Balm");
+            }
+
+            var chorus = Composition.FromSequence(new[] { RuneId.Anima, RuneId.Salt });
+            var chorusExact = ChainBook.CollectExact(chorus, SpellShape.None);
+            if (chorusExact.Count == 0 || chorusExact[0].Spell != SpellId.Chorus)
+            {
+                broken.Add("Anima · Salt should be Chorus");
+            }
+
+            var drive = Composition.FromSequence(new[] { RuneId.Animus, RuneId.Mercury });
+            var driveExact = ChainBook.CollectExact(drive, SpellShape.None);
+            if (driveExact.Count == 0 || driveExact[0].Spell != SpellId.Drive)
+            {
+                broken.Add("Animus · Mercury should be Drive");
+            }
+
+            if (Entries.Length < 90)
+            {
+                broken.Add("The written book must keep every catalog spell, including 88–90 Anima and Animus");
             }
         }
 

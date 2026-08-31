@@ -113,6 +113,7 @@ namespace RuneMagic
                 case RuneId.Flame:
                 case RuneId.Ember:
                 case RuneId.Inferno:
+                case RuneId.Animus:
                     return RuneId.Fire;
                 case RuneId.Air:
                 case RuneId.Wind:
@@ -123,7 +124,9 @@ namespace RuneMagic
                     return RuneId.Earth;
                 case RuneId.Water:
                 case RuneId.Ice:
+                case RuneId.Glacier:
                 case RuneId.Current:
+                case RuneId.Anima:
                     return RuneId.Water;
                 case RuneId.Spark:
                 case RuneId.Lightning:
