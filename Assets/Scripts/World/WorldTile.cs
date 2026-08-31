@@ -1199,6 +1199,15 @@ namespace RuneMagic
 
             if (!string.IsNullOrEmpty(_coverId))
             {
+                // Water cover without a painted sheen generates the Water
+                // mark. cover-water is the same opaque pool as floor-water
+                // and would hide the tile the author already stamped.
+                if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return null;
+                }
+
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||
                             _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
                     ? _coverId
@@ -1486,7 +1495,9 @@ namespace RuneMagic
             }
 
             _animFrame = frame;
-            if (SpriteFactory.Animates(ShownMaterial) &&
+            var keepAuthored = _authoredLook != null && _telegraph == MaterialId.None && !IsConjured;
+            if (!keepAuthored &&
+                SpriteFactory.Animates(ShownMaterial) &&
                 (Kind == TileKind.Floor || (Kind == TileKind.Bridge && (_telegraph != MaterialId.None || IsConjured)) || (Kind == TileKind.Pit && Material == MaterialId.Water)))
             {
                 _renderer.sprite = SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, frame);

@@ -122,7 +122,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
         }
 
@@ -268,7 +268,7 @@ namespace RuneMagic
             }
 
             var current = raw as WorldPaintTile;
-            var sprite = SpriteOf(raw);
+            var sprite = SpriteOf(map, cell, raw);
             var kind = _applyKind ? _kind : (current != null ? current.kind : GuessKind(raw));
             var material = _applyMaterial ? _material : (current != null ? current.material : GuessMaterial(raw));
             var cover = _applyCover ? _cover : (current != null ? current.ResolvedCover() : TileCover.None);
@@ -282,6 +282,12 @@ namespace RuneMagic
                 if (cover == TileCover.None)
                 {
                     cover = WorldPaintTile.CoverFromMaterial(_applyMaterial ? _material : material);
+                }
+
+                if (sprite == null)
+                {
+                    var walk = WalkMap();
+                    sprite = walk != null ? SpriteOf(walk, cell, walk.GetTile(cell)) : null;
                 }
             }
 
@@ -364,8 +370,17 @@ namespace RuneMagic
             return TilemapLevel.FindPaintedMap();
         }
 
-        static Sprite SpriteOf(TileBase tile)
+        static Sprite SpriteOf(Tilemap map, Vector3Int cell, TileBase tile)
         {
+            if (map != null)
+            {
+                var shown = map.GetSprite(cell);
+                if (shown != null)
+                {
+                    return shown;
+                }
+            }
+
             return tile is Tile painted ? painted.sprite : null;
         }
 
