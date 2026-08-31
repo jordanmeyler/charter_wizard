@@ -615,10 +615,10 @@
       "id": "Vine",
       "book": "Hold",
       "name": "Vine",
-      "want": "The vegetable body sent. It holds them, or it climbs.",
+      "want": "The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick.",
       "recipe": "Water \u00b7 Salt \u00b7 Earth \u00b7 Mercury",
       "via": "Plant \u00b7 Mercury",
-      "form": "Remote",
+      "form": "Shot",
       "outcome": "Restrain",
       "gate": "",
       "work": "Vine"

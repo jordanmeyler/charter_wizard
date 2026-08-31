@@ -200,7 +200,7 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "Mud asked to live, from the feet.");
             Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Water · Dust · Mercury · Salt. A watery swamp from the feet.");
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Water · Dust · Salt. Soft ground given a body.");
-            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Remote, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent.");
+            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Shot, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A climbing line, and a wick.");
             Register(RuneId.Vine, RuneId.Earth, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Forest, "Forest", "Compressed. Catalog: Plant · Life · Earth. The vegetable body waking as a mass.");

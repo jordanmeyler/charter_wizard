@@ -78,9 +78,12 @@ namespace RuneMagic
         /// Focus holds mind work — ailments and wards. Wards use
         /// Sulphur; they are mind spells. A later sentence that
         /// reuses a mark lets the held working go.
+        /// Burning and poison are meters: they run down to ash or death.
         /// </summary>
         public bool NeedsConcentration => IsWard || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;
+        public bool IsMeter => VitalLaw.IsMeter(Id);
+        public StatusClock Clock => VitalLaw.ClockOf(Id);
         public RuneId FocusRune
         {
             get
@@ -100,7 +103,7 @@ namespace RuneMagic
             }
         }
 
-        public const float PoisonKillSeconds = 6f;
+        public const float PoisonKillSeconds = VitalLaw.AdeptPoisonSeconds;
 
         public static StatusSpec Of(StatusId id)
         {
@@ -177,7 +180,9 @@ namespace RuneMagic
         public StatusInstance(StatusId id, float seconds, Component caster = null, IReadOnlyList<RuneId> heldRunes = null, SpellId source = SpellId.None)
         {
             Id = id;
-            Remaining = StatusSpec.Of(id).NeedsConcentration ? float.PositiveInfinity : Mathf.Max(0.05f, seconds);
+            Remaining = StatusSpec.Of(id).NeedsConcentration
+                ? float.PositiveInfinity
+                : Mathf.Max(StatusSpec.Of(id).IsMeter ? 0f : 0.05f, seconds);
             Caster = caster;
             HeldRunes = heldRunes ?? System.Array.Empty<RuneId>();
             SourceSpell = source;

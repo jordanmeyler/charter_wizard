@@ -180,7 +180,7 @@ Same pattern. Stones already have their id and sprite on the prefab. For a custo
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
 the same catalog mark as an inscription — Ice is Water · Earth,
-Vine is Plant · Mercury, Miasma is Cloud · Acid, Fog is Cloud.
+Vine is Plant · Mercury — a climbing shot that hunger can run as a wick. Miasma is Cloud · Acid, Fog is Cloud.
 
 1. Select **Cover** in the Hierarchy.
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.

@@ -133,7 +133,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Crystal, RuneFamily.Material, "Crystal", "Cr", "Stone grown with Water."),
                 new RuneDef(RuneId.Glacier, RuneFamily.Material, "Glacier", "Gc", "Ice given Stone. Still water that will not thaw easily."),
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
-                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "The vegetable body sent. Plant · Mercury."),
+                new RuneDef(RuneId.Vine, RuneFamily.Material, "Vine", "Vn", "The vegetable body sent. A climbing line, and a wick. Plant · Mercury."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
                 new RuneDef(RuneId.Oil, RuneFamily.Material, "Oil", "Ol", "A vegetable body pressed with hunger and rest. Plant · Fire · Earth. It holds flame."),
                 new RuneDef(RuneId.Miasma, RuneFamily.Material, "Miasma", "Mi", "The hanging veil forced through acid. Cloud · Acid. Foul breath."),

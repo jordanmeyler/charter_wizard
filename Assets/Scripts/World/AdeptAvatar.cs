@@ -18,7 +18,7 @@ namespace RuneMagic
             RuneId.Mercury
         };
 
-        public const float FlameKillSeconds = 8f;
+        public const float FlameKillSeconds = VitalLaw.AdeptBurnSeconds;
         public const string AnimatorResource = "Animations/Adept";
         public const string MovingParam = "Moving";
         public const string CastingParam = "Casting";

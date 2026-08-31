@@ -114,6 +114,31 @@ namespace RuneMagic
                 new Color(1f, 0.72f, 0.3f));
             Lookables.Register(this);
             WorldMatter.Register(this);
+            BindBurnable();
+        }
+
+        void BindBurnable()
+        {
+            if (!MatterLaw.TryParse(AuthoredMatter(), out var material) || !VitalLaw.CanBurn(material))
+            {
+                return;
+            }
+
+            var burnable = AuthoringUtil.GetOrAdd<Burnable>(gameObject);
+            burnable.Bind(VitalLaw.ItemBurnSeconds(material), note =>
+            {
+                if (Collected)
+                {
+                    return;
+                }
+
+                Collected = true;
+                _carrier = null;
+                _log?.Invoke(string.IsNullOrEmpty(note)
+                    ? "Hunger finishes the timber. Ash is what remains."
+                    : note);
+                Destroy(gameObject);
+            });
         }
 
         void OnDisable()

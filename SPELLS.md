@@ -128,7 +128,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 | **Glass** | Sand · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
 | **Obsidian** | Lava · Water · Salt | Hungry earth quenched and given a body. | Black glass. A path. Melt, Shatter, and hunger's thaw will not take it |
 | **Ash** | Fire · Plant | What hunger leaves of a vegetable body. | Grey dust. Not grave-work |
-| **Vine** | Plant · Mercury | The vegetable body sent. | Climbing green |
+| **Vine** | Plant · Mercury | The vegetable body sent. A climbing line, and a wick. | Climbing green |
 | **Wind** | Air · Mercury | Breath going. | A push |
 | **Current** | Water · Mercury | Yield going. | A flow |
 | **Metal** | Lava · Spark · Earth | Hungry earth given spark, then stilled. Fire · Earth · Fire · Air · Earth. | Hard. Conducts heat and the spark |
@@ -186,7 +186,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Water · Salt | Lava · Water · Salt | Remote | Neither |
 | 29 | A vegetable body marked living, from the feet. | Sprout | Water · Salt · Earth · Life | Plant · Life | Spread | Neither |
-| 30 | The vegetable body sent. It holds them, or it climbs. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Remote | Restrain / Neither |
+| 30 | The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Shot | Restrain / Neither |
 | 31 | The sent plant asked to stand. | Vine-rise | Water · Salt · Earth · Mercury · Earth | Vine · Earth | Pillar | Neither / Restrain |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |

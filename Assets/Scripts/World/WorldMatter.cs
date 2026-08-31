@@ -96,12 +96,32 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (!body.Available || !body.Fragile || !body.YieldsTo(sweep.Spell))
+                if (!body.Available)
                 {
                     continue;
                 }
 
                 if (CellVolume.SegmentDistance(sweep.From, sweep.To, body.WorldPosition) > sweep.Width + WorldPhysics.BodyRadius)
+                {
+                    continue;
+                }
+
+                if (WorldWork.IsFireWork(sweep.Spell) && body is Component host)
+                {
+                    var burnable = Burnable.On(host);
+                    if (burnable != null && burnable.Ignite())
+                    {
+                        broken++;
+                        if (string.IsNullOrEmpty(note))
+                        {
+                            note = "Hunger finds the timber. It will burn to ash.";
+                        }
+
+                        continue;
+                    }
+                }
+
+                if (!body.Fragile || !body.YieldsTo(sweep.Spell))
                 {
                     continue;
                 }

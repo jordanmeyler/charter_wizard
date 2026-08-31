@@ -52,7 +52,7 @@ namespace RuneMagic
             Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Hunger leaves a vegetable body as Ash.");
             Add(RuneId.Ash, RuneId.Earth, RuneId.Oil, BlendKind.Stable, "Pressed vegetable hunger given rest. Ash · Earth → Oil.");
             Add(RuneId.Plant, RuneId.Mors, RuneId.Poison, BlendKind.Stable, "The vegetable body, then the grave. Plant · Death → Poison.");
-            Add(RuneId.Plant, RuneId.Mercury, RuneId.Vine, BlendKind.Stable, "The vegetable body sent. Plant · Mercury → Vine.");
+            Add(RuneId.Plant, RuneId.Mercury, RuneId.Vine, BlendKind.Stable, "The vegetable body sent. A climbing line, and a wick. Plant · Mercury → Vine.");
             Add(RuneId.Cloud, RuneId.Acid, RuneId.Miasma, BlendKind.Violent, "The hanging veil forced through acid. Cloud · Acid → Miasma.");
         }
 

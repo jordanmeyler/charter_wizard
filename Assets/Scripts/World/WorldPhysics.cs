@@ -181,7 +181,8 @@ namespace RuneMagic
                 || WorldWork.IsWaterWork(spell)
                 || WorldWork.IsShatterWork(spell)
                 || WorldWork.IsBoulderWork(spell)
-                || WorldWork.IsLightWork(spell);
+                || WorldWork.IsLightWork(spell)
+                || WorldWork.IsVineWork(spell);
         }
 
         public static ISpellVolume VolumeOf(ISpellLock encounter)
@@ -466,8 +467,8 @@ namespace RuneMagic
                 }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
-                    var oiled = tile.HasOil || tile.Material == MaterialId.Oil;
-                    tile.Ignite(oiled ? 1.4f : 0.85f);
+                    var wick = tile.HasOil || tile.Material == MaterialId.Oil || tile.HasVine;
+                    tile.Ignite(wick ? 1.4f : 0.85f);
                     if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
                     {
                         DetonateOil(grid, tile.Coord);
@@ -724,6 +725,13 @@ namespace RuneMagic
             if (!WorldWork.IsOilWork(SpellId.OilShot) || WorldWork.IsFireWork(SpellId.OilShot))
             {
                 broken.Add("Oil shot must slick and grow fire, not detonate a wick");
+            }
+
+            if (!WorldWork.IsVineWork(SpellId.Vine)
+                || !SweepsPath(SpellId.Vine, SpellShape.Shot)
+                || SpellVerb.Of(SpellId.Vine).Tiles != TileVerb.Vine)
+            {
+                broken.Add("Vine must send a climbing body that hunger can run as a wick");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
