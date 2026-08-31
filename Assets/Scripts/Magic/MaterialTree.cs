@@ -35,24 +35,20 @@ namespace RuneMagic
         {
             Add(RuneId.Fire, RuneId.Air, RuneId.Spark, BlendKind.Stable, "Hunger given breath. Fire · Air → Spark.");
             Add(RuneId.Air, RuneId.Water, RuneId.Cloud, BlendKind.Stable, "Breath holding yield. Air · Water → Cloud.");
-            Add(RuneId.Water, RuneId.Earth, RuneId.Ice, BlendKind.Stable, "Yield meeting rest. Water · Earth → Ice.");
+            AddDirected(RuneId.Water, RuneId.Earth, RuneId.Ice, BlendKind.Stable, "Yield meeting rest. Water · Earth → Ice.");
+            AddDirected(RuneId.Earth, RuneId.Water, RuneId.Mud, BlendKind.Stable, "Rest meeting yield. Earth · Water → Mud.");
             Add(RuneId.Fire, RuneId.Earth, RuneId.Lava, BlendKind.Stable, "Hunger meeting rest. Fire · Earth → Lava.");
 
             Add(RuneId.Fire, RuneId.Water, RuneId.Steam, BlendKind.Violent, "Hunger forced through yield. Fire · Water → Steam.");
-            Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Breath forced through rest. Air · Earth → Dust.");
-            Add(RuneId.Water, RuneId.Dust, RuneId.Mud, BlendKind.Stable, "Yield meeting grit. Water · Dust → Mud.");
+            Add(RuneId.Air, RuneId.Earth, RuneId.Dust, BlendKind.Violent, "Breath forced through rest. Air · Earth → Dust. The same grit as sand.");
 
             Add(RuneId.Spark, RuneId.Air, RuneId.Lightning, BlendKind.Stable, "The seed stretched through more breath. Spark · Air → Lightning.");
-            Add(RuneId.Lava, RuneId.Water, RuneId.Obsidian, BlendKind.Violent, "Hungry earth quenched. Lava · Water → Obsidian.");
-            Add(RuneId.Mud, RuneId.Air, RuneId.Sand, BlendKind.Stable, "Mud given breath until it dries. Mud · Air → Sand.");
-            Add(RuneId.Sand, RuneId.Fire, RuneId.Glass, BlendKind.Stable, "Grains meet hunger, then rest. Sand · Flame · Earth → Glass.");
             Add(RuneId.Stone, RuneId.Water, RuneId.Crystal, BlendKind.Stable, "Stone grown with yield. Stone · Water → Crystal.");
-            Add(RuneId.Ice, RuneId.Stone, RuneId.Glacier, BlendKind.Stable, "Still water given stone. Ice · Stone → Glacier.");
             Add(RuneId.Steam, RuneId.Metal, RuneId.Acid, BlendKind.Violent, "Steam forced through Metal → Acid.");
             Add(RuneId.Fire, RuneId.Plant, RuneId.Ash, BlendKind.Stable, "Hunger leaves a vegetable body as Ash.");
             Add(RuneId.Ash, RuneId.Earth, RuneId.Oil, BlendKind.Stable, "Pressed vegetable hunger given rest. Ash · Earth → Oil.");
             Add(RuneId.Plant, RuneId.Mors, RuneId.Poison, BlendKind.Stable, "The vegetable body, then the grave. Plant · Death → Poison.");
-            Add(RuneId.Plant, RuneId.Mercury, RuneId.Vine, BlendKind.Stable, "The vegetable body sent. A climbing line, and a wick. Plant · Mercury → Vine.");
+            Add(RuneId.Flame, RuneId.Lightning, RuneId.Plasma, BlendKind.Violent, "Witchfire joined to the bolt. Flame · Lightning → Plasma.");
             Add(RuneId.Cloud, RuneId.Acid, RuneId.Miasma, BlendKind.Violent, "The hanging veil forced through acid. Cloud · Acid → Miasma.");
         }
 
@@ -60,13 +56,18 @@ namespace RuneMagic
 
         static void Add(RuneId left, RuneId right, RuneId result, BlendKind kind, string note)
         {
+            AddDirected(left, right, result, kind, note);
+            if (left != right)
+            {
+                Blends[(right, left)] = new BlendResult(result, kind, note);
+            }
+        }
+
+        static void AddDirected(RuneId left, RuneId right, RuneId result, BlendKind kind, string note)
+        {
             var blend = new BlendResult(result, kind, note);
             Canonical.Add((left, right, blend));
             Blends[(left, right)] = blend;
-            if (left != right)
-            {
-                Blends[(right, left)] = blend;
-            }
         }
 
         public static bool TryBlend(RuneId left, RuneId right, out BlendResult result)

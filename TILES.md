@@ -118,7 +118,7 @@ water, spell-fire on a bush).
 ### 2. Air — miasma, then the air stone
 
 Miasma is not a wall. Walking in it throws you back to the last
-safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
+safe floor. **Wind** (`Air · Mercury`) or Gale clears it.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind. On **Cover** (or **Write onto
@@ -133,7 +133,7 @@ safe floor. **Gust** (`Air · Mercury`) or Gale clears it.
    want your own art under the veil.
 4. Drag `Assets/Prefabs/Items/Air Stone` onto the far side of the fog.
 5. Optional: `GameObject → Rune Magic → Fog` on those cells if
-   you want a named lock Gust can target. Painted Cover-Miasma
+   you want a named lock Wind can target. Painted Cover-Miasma
    already throws you back and vents when air is sent.
 
 ### 3. Earth — pits and the drop
@@ -180,7 +180,7 @@ Same pattern. Stones already have their id and sprite on the prefab. For a custo
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
 the same catalog mark as an inscription — Ice is Water · Earth,
-Vine is Plant · Mercury — a climbing shot that hunger can run as a wick. Miasma is Cloud · Acid, Fog is Cloud.
+Vine cover speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a rune, and hunger can run it as a wick. Miasma is Cloud · Acid, Fog is Cloud.
 
 1. Select **Cover** in the Hierarchy.
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
@@ -366,7 +366,7 @@ Each spoken cover uses the same generated mark as that rune.
 | `fire` | Fire | Hell — lava / fire | Fire |
 | `lightning` | Lightning · Spark · Air | Atlantis — charged seal | Lightning |
 | `water` | Water | Cavern water tile | Water |
-| `vine` | Vine · Plant · Mercury | Jungle vines | Vine |
+| `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |
 | `miasma` | Miasma · Cloud · Acid | Poison veil | Miasma |
 | `fog` | Cloud · Air · Water | Cloud veil | Cloud |
 | `cracks` | — (look only) | Crypt cracks | — |

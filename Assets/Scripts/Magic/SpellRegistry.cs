@@ -26,6 +26,12 @@ namespace RuneMagic
                 return known;
             }
 
+            if (key.Equals("wind", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Gust);
+                return SpellId.Gust;
+            }
+
             if (System.Enum.TryParse(key, true, out SpellId enumerated) && enumerated != SpellId.None)
             {
                 Remember(key, enumerated);
