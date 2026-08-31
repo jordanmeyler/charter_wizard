@@ -67,7 +67,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Glass** | Sand · Flame · Earth · Glass | Glass | Grains, hunger, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
 | **Obsidian** | Fire · Earth · Lava · Water · Salt · Obsidian | Obsidian | Hungry earth quenched. Melt, Shatter, and hunger's thaw will not take it |
-| **Grove** | Water · Salt · Earth · Plant · Life | Plant | Living plant as a mass. Forest is a spell, not a rune. |
+| **Grove** | Water · Salt · Earth · Plant · Life | Plant | Living plant as a mass. Tree is the stood spell, not a rune. |
 | **Plant** | Water · Salt · Earth · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
@@ -98,7 +98,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
 | **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across an adjacent pit**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
+Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
 
 | Material | Flam | Cond | Note |
 | --- | --- | --- | --- |

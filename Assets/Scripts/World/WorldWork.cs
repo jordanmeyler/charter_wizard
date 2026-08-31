@@ -673,15 +673,6 @@ namespace RuneMagic
                 }
             }
 
-            if (spell == SpellId.Forest)
-            {
-                var grown = GrowForest(grid, cells);
-                if (grown > 0)
-                {
-                    notes.Add("The vegetable body wakes as a mass.");
-                }
-            }
-
             return FirstFilled(notes);
         }
 
@@ -944,7 +935,6 @@ namespace RuneMagic
                 case SpellId.Quagmire:
                 case SpellId.Sprout:
                 case SpellId.Grove:
-                case SpellId.Forest:
                 case SpellId.Darkness:
                 case SpellId.Miasma:
                 case SpellId.Monsoon:

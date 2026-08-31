@@ -98,6 +98,13 @@ namespace RuneMagic
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase);
 
+        public bool HasPlantCover =>
+            Cover == TileCover.Vine
+            || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-plant", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-grove", System.StringComparison.OrdinalIgnoreCase);
+
         public bool HasIceCover =>
             Cover == TileCover.Ice
             || string.Equals(_coverId, "ice", System.StringComparison.OrdinalIgnoreCase)
