@@ -107,7 +107,9 @@ namespace RuneMagic
         DirtToss,
         MetalPillar,
         MetalWall,
-        ObsidianWall
+        ObsidianWall,
+        Balm,
+        Chorus
     }
 
     public readonly struct SpellRecipe
@@ -150,7 +152,8 @@ namespace RuneMagic
             Register(RuneId.Fire, RuneId.Sulphur, SpellShape.Spread, SpellId.Frenzy, "Frenzy", "Heat in the thoughts, from the feet out.");
             Register(RuneId.Fire, RuneId.Mors, SpellShape.Remote, SpellId.Snuff, "Snuff", "Death-work. Hunger marked by the grave, placed on a flame.");
             Register(RuneId.Fire, RuneId.Lumen, SpellShape.Shot, SpellId.SunLance, "Sun-lance", "Light riding fire.");
-            Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Projective fire. It goes out and does not return.");
+            Register(RuneId.Fire, RuneId.Animus, SpellShape.Shot, SpellId.Drive, "Drive", "Compressed. Catalog: Animus · Mercury. Hunger given mind and breath, then sent.");
+            Register(RuneId.Animus, RuneId.Mercury, SpellShape.Shot, SpellId.Drive, "Drive", "Compressed. Catalog: Fire · Sulphur · Air · Mercury. Logos sent.");
             Register(RuneId.Fire, RuneId.Umbra, SpellShape.Remote, SpellId.Smother, "Smother", "Dark laid over a flame.");
 
             Register(RuneId.Water, RuneId.Mercury, SpellShape.Shot, SpellId.WaterJet, "Water-jet", "Water thrown as a line.");
@@ -168,6 +171,8 @@ namespace RuneMagic
             Register(RuneId.Water, RuneId.Vita, SpellShape.Spread, SpellId.Spring, "Spring", "Life welling from the feet.");
             Register(RuneId.Water, RuneId.Umbra, SpellShape.Spread, SpellId.Darkness, "Darkness", "Yield withheld. The room cannot see.");
             Register(RuneId.Water, RuneId.Anima, SpellShape.Remote, SpellId.Draw, "Draw", "Receptive pull. It calls, it does not strike.");
+            Register(RuneId.Anima, RuneId.Mercury, SpellShape.Spread, SpellId.Balm, "Balm", "Compressed. Catalog: Anima · Mercury. Care sent. It heals.");
+            Register(RuneId.Anima, RuneId.Salt, SpellShape.Spread, SpellId.Chorus, "Chorus", "Compressed. Catalog: Anima · Salt. Care given a body around the feet. The work opens to many.");
 
             Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent.");
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury when the bolt already stands.");

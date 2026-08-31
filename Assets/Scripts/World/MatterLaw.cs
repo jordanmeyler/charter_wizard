@@ -454,6 +454,34 @@ namespace RuneMagic
                 broken.Add("Plasma must be born Flame · Lightning");
             }
 
+            if (!ChainBook.TryBirth(RuneId.Anima, out var anima)
+                || anima.Count != 3
+                || anima[0] != RuneId.Water
+                || anima[1] != RuneId.Sulphur
+                || anima[2] != RuneId.Earth)
+            {
+                broken.Add("Anima must be born Water · Sulphur · Earth");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Animus, out var animus)
+                || animus.Count != 3
+                || animus[0] != RuneId.Fire
+                || animus[1] != RuneId.Sulphur
+                || animus[2] != RuneId.Air)
+            {
+                broken.Add("Animus must be born Fire · Sulphur · Air");
+            }
+
+            if (HeatOf(SpellId.Balm) != Heat.None || HeatOf(SpellId.Chorus) != Heat.None)
+            {
+                broken.Add("Anima-work must not count as heat");
+            }
+
+            if (HeatOf(SpellId.Drive) != Heat.Fire)
+            {
+                broken.Add("Drive must carry Fire heat");
+            }
+
             if (!SpellCodex.TryGet(SpellId.Witchfire, out var witch)
                 || !ChainBook.SameStory(witch.RecipeRunes, ChainBook.Parse("Fire · Sulphur · Fire · Mercury"))
                 || !ChainBook.SameStory(witch.ViaRunes, ChainBook.Parse("Flame · Mercury")))

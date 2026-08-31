@@ -144,20 +144,17 @@ namespace RuneMagic
 
                 new RuneDef(RuneId.Vita, RuneFamily.Existential, "Life", "Vi", "Marks a living recipe. Shown as written — Life is not unfolded. Soulless creatures carry it; the adept’s soul is Mercury instead."),
                 new RuneDef(RuneId.Mors, RuneFamily.Existential, "Death", "Mo", "Modifier. The grave. Reserved for Free and arcane work. Not in ordinary recipes."),
-                new RuneDef(RuneId.Male, RuneFamily.Existential, "Male", "Ma", "Old name for projective polarity. Use Animus."),
-                new RuneDef(RuneId.Female, RuneFamily.Existential, "Female", "Fe", "Old name for receptive polarity. Use Anima."),
-
                 new RuneDef(RuneId.Hot, RuneFamily.PrimordialMundane, "Hot", "Ht", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Cold, RuneFamily.PrimordialMundane, "Cold", "Cd", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Wet, RuneFamily.PrimordialMundane, "Wet", "Wt", "Mundane quality. Knowledge-gated; synthesizable."),
                 new RuneDef(RuneId.Dry, RuneFamily.PrimordialMundane, "Dry", "Dr", "Mundane quality. Knowledge-gated; synthesizable."),
 
-                new RuneDef(RuneId.Animus, RuneFamily.PrimordialDivine, "Animus", "As", "Projective soul. Drive, force, the going-out."),
-                new RuneDef(RuneId.Anima, RuneFamily.PrimordialDivine, "Anima", "Aa", "Receptive soul. Draw, welcome, the taking-in."),
                 new RuneDef(RuneId.Lumen, RuneFamily.PrimordialDivine, "Light", "Lu", "Shown. The veil is lifted."),
                 new RuneDef(RuneId.Umbra, RuneFamily.PrimordialDivine, "Dark", "Um", "Withheld. The veil is drawn."),
 
-                new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Witchfire. Fire of the mind, made fire. Fire · Sulphur · Fire."),
+                new RuneDef(RuneId.Flame, RuneFamily.Material, "Flame", "Fl", "Witchfire. Fire of the mind, made fire. Fire · Sulphur · Fire. A cousin of Animus — the same root asserted twice."),
+                new RuneDef(RuneId.Animus, RuneFamily.Material, "Animus", "As", "Logos. Assertiveness, decisiveness, challenge. Hunger given mind and breath. Fire · Sulphur · Air. Gives a work a magical quality."),
+                new RuneDef(RuneId.Anima, RuneFamily.Material, "Anima", "Aa", "Eros. Receptivity, empathy, intuition, emotional connection. Yield given mind and rest. Water · Sulphur · Earth. Opens a work to many, and can make it healing."),
                 new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),
                 new RuneDef(RuneId.Ember, RuneFamily.Material, "Ember", "Em", "Hunger after the grave takes its motion. Fire · Death."),
                 new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt.")
@@ -184,8 +181,8 @@ namespace RuneMagic
 
         /// <summary>
         /// Operators, poles, and veils — the non-root concepts a compressed
-        /// slice still treats as the last rune of a pair. Animus/Anima remain
-        /// for reserved recipes. Aether, qualities, and Male/Female do not count.
+        /// slice still treats as the last rune of a pair. Animus/Anima are
+        /// wrought eros/logos. Aether and the quality runes do not count.
         /// </summary>
         public static bool IsFormAspect(RuneId id)
         {
@@ -223,6 +220,8 @@ namespace RuneMagic
                 case RuneId.Mors: return "Death";
                 case RuneId.Lumen: return "Light";
                 case RuneId.Umbra: return "Dark";
+                case RuneId.Animus: return "Logos";
+                case RuneId.Anima: return "Eros";
                 case RuneId.Hot: return "Hot";
                 case RuneId.Cold: return "Cold";
                 case RuneId.Wet: return "Wet";
@@ -293,6 +292,14 @@ namespace RuneMagic
                     return true;
                 case "sand":
                     id = RuneId.Dust;
+                    return true;
+                case "male":
+                case "logos":
+                    id = RuneId.Animus;
+                    return true;
+                case "female":
+                case "eros":
+                    id = RuneId.Anima;
                     return true;
                 case "blight":
                     id = RuneId.Poison;
@@ -367,8 +374,7 @@ namespace RuneMagic
             }
 
             AddLedgerGroup(groups, used, "Reserved / later",
-                RuneId.Hot, RuneId.Cold, RuneId.Wet, RuneId.Dry,
-                RuneId.Animus, RuneId.Anima, RuneId.Male, RuneId.Female);
+                RuneId.Hot, RuneId.Cold, RuneId.Wet, RuneId.Dry);
 
             var leftover = new System.Collections.Generic.List<RuneId>();
             foreach (var def in ById.Values)
@@ -461,7 +467,7 @@ namespace RuneMagic
             RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
             RuneId.Vita, RuneId.Mors, RuneId.Lumen, RuneId.Umbra,
-            RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Ember,
+            RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Animus, RuneId.Anima, RuneId.Ember,
             RuneId.Cloud, RuneId.Steam,
             RuneId.Ice, RuneId.Glacier,
             RuneId.Plant, RuneId.Ash, RuneId.Oil,

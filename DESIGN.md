@@ -45,7 +45,7 @@ Each rune is a **concept**, not a mechanic. Players will eventually see effects,
 
 A join is not a modifier. **Fire · Air** becomes **Spark**, which is its own rune and combines again (**Spark · Air → Lightning**). Two runes birth a join or wait as a clause. Three or more is a spell. Longer chains are stories.
 
-Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are **out of this pass**. They stay in the catalog as reserved names and are not on the Charter wall.
+Hot, Cold, Wet, Dry, and Aether stay reserved. **Anima** (`Water · Sulphur · Earth`) and **Animus** (`Fire · Sulphur · Air`) are wrought — eros and logos, not a second pair of sexed runes. Male and Female are the old names for those two.
 
 ---
 
@@ -63,7 +63,9 @@ A chain is a sentence, left to right. Two roots meeting become a third:
 | Air · Earth | **Dust** | Breath forced through rest. Grit. The same thing as sand. |
 | Earth · Water | **Mud** | Rest meeting yield. Soft ground. Order is the sentence — Water · Earth is Ice. |
 
-Then the wrought rune combines again: **Spark · Air → Lightning**, **Steam · Metal → Acid**, **Cloud · Acid → Miasma**, **Plant · Fire · Earth → Oil**, **Flame · Lightning → Plasma**, **Lava · Salt · Water → Obsidian**. Ice is **Water · Earth**. Mud is **Earth · Water**. **Water · Earth · Salt** is water-pillar. **Water · Salt · Earth** is Plant. Forest is a spell (Plant · Life · Earth), not a rune. **Vine** is a spell (`Plant · Mercury`), not a rune — vine cover speaks Plant. **Wind** is a spell (`Air · Mercury`), not a rune. **Grotto** is the cave-spell (`Plant · Dark`), not a rune. Weather is Cloud written as a sentence. The Grimoire lists every birth.
+Then the wrought rune combines again: **Spark · Air → Lightning**, **Steam · Metal → Acid**, **Cloud · Acid → Miasma**, **Plant · Fire · Earth → Oil**, **Flame · Lightning → Plasma**, **Lava · Salt · Water → Obsidian**, **Fire · Sulphur · Air → Animus**, **Water · Sulphur · Earth → Anima**. Ice is **Water · Earth**. Mud is **Earth · Water**. **Water · Earth · Salt** is water-pillar. **Water · Salt · Earth** is Plant. Forest is a spell (Plant · Life · Earth), not a rune. **Vine** is a spell (`Plant · Mercury`), not a rune — vine cover speaks Plant. **Wind** is a spell (`Air · Mercury`), not a rune. **Grotto** is the cave-spell (`Plant · Dark`), not a rune. Weather is Cloud written as a sentence. The Grimoire lists every birth.
+
+**Anima** (eros) opens a work to many and can make it healing. **Animus** (logos) asserts a work into a higher nature — Flame and Glacier are that class of upgrade, written with tighter recipes. Drive is Animus sent. Balm and Chorus are Anima sent or stood.
 
 The quality square (Hot/Cold, Wet/Dry) belongs to the primordial pass and is not used to explain joins right now.
 
@@ -118,7 +120,7 @@ The catalog chains now resolve in play. Fire is Fire · Mercury. Lightning is Fi
 
 - **Soulless life** — beasts, plants, bugs. Animate matter, **no soul, no magic.** Creating this is sanctioned.
 - **Ensouled life** — carries a soul; **a soul grants magic across all races.** The player is ensouled. The adept’s recipe is **mind · body · soul** (Sulphur · Salt · Mercury). That sentence is always in the weave. Soulless life does not carry Mercury.
-- **The soul rule: Charter magic cannot touch souls.** Soulless creation/terrain-golems are legal; inserting, binding, commanding, or extracting a soul is **Free or divine-tier only.** This re-derives the forbidden acts (true mind-control, necromancy, the Anima/Animus soul-primordials).
+- **The soul rule: Charter magic cannot touch souls.** Soulless creation/terrain-golems are legal; inserting, binding, commanding, or extracting a soul is **Free or divine-tier only.** Anima and Animus are eros and logos — stances of mind — not a license to touch a soul.
 
 **Creatures are rune-formulas** that (1) state the weakness (strip a load-bearing rune or hit an opposed element), (2) tell the history (born vs raised; place-fingerprints), (3) set difficulty by complexity. They speak in the Charter weave as a grouped recipe, **as written** — Life is a mark, not a join to unfold. The ash mite is **Fire · Salt · Life** (soulless living). The adept is **Sulphur · Salt · Mercury** (mind, body, soul). Undead reads `{… Mors · Aether}`; ensouled carries Mercury → **can cast back**; soulless cannot.
 
@@ -126,7 +128,7 @@ The catalog chains now resolve in play. Fire is Fire · Mercury. Lightning is Fi
 
 ## 6. Aether as prima materia
 
-Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projective: **Vita, Animus, Lumen**) and a **Dark aspect** (luna · receptive: **Mors, Anima, Umbra**). Opposed pairs: Vita⟷Mors, Animus⟷Anima, Lumen⟷Umbra (expandable). *Male=light/female=dark is the traditional Sol/Luna coding, invertible.*
+Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projective: **Vita, Lumen**) and a **Dark aspect** (luna · receptive: **Mors, Umbra**). Opposed pairs: Vita⟷Mors, Lumen⟷Umbra. **Animus** and **Anima** are now wrought logos/eros (`Fire · Sulphur · Air`, `Water · Sulphur · Earth`), not a second sexed pair on Aether. Male and Female parse as those two joins.
 
 ---
 
@@ -245,10 +247,10 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 
 ## 12. Open threads
 
-- [~] **Spell catalog** — written story-chains in `SPELLS.md`. Weather is spells (Storm, Fog, Darkness, Thunder, Blizzard), not runes. **76** Water-pillar. **77–78** Oil. **79–80** Poison / Miasma. **81** Plasma (`Flame · Lightning`). **82** Forest (a spell; Grove is gone). **71** Grotto (`Plant · Dark`). **83** Monsoon. **84** Dirt toss. **85–86** Metal-pillar / Metal-wall (`Lava · Spark · Earth`). **87** Obsidian-wall (`Lava · Salt · Water · Salt · Lava · Salt · Water`). Vine and Wind are spells, not runes. **Focus holds mind spells**, including wards. Elemental clocks stand on their own.
+- [~] **Spell catalog** — written story-chains in `SPELLS.md`. Weather is spells (Storm, Fog, Darkness, Thunder, Blizzard), not runes. **76** Water-pillar. **77–78** Oil. **79–80** Poison / Miasma. **81** Plasma (`Flame · Lightning`). **82** Forest (a spell; Grove is gone). **71** Grotto (`Plant · Dark`). **83** Monsoon. **84** Dirt toss. **85–86** Metal-pillar / Metal-wall (`Lava · Spark · Earth`). **87** Obsidian-wall (`Lava · Salt · Water · Salt · Lava · Salt · Water`). **88–90** Balm, Chorus, Drive (`Anima · Mercury`, `Anima · Salt`, `Animus · Mercury`). Vine and Wind are spells, not runes. **Focus holds mind spells**, including wards. Elemental clocks stand on their own.
 - [~] **First floor** — The Foundation. Hub, four element wings, Door I, three aspect sanctums, Door II, then the Wrought Courts (keys, inner doors, Door III). See [`FLOOR1.md`](FLOOR1.md). Connected water (vault basin → Door I moat) and steam-secrets on the Fire return-trip are still open.
 - [x] **Free-mage reliability** — attunement (focus) + items/mediums (off-focus). *(Resolved.)*
-- [ ] **Male/Female role** — projective/receptive utility, sacred generative pair, or both.
+- [x] **Anima / Animus** — eros and logos, born `Water · Sulphur · Earth` and `Fire · Sulphur · Air`. Male/Female are the old names. Anima opens (AoE, heal). Animus asserts (magical quality; Drive is the first send).
 - [~] **Death rune** — reserved for grave-work and Free. Not in ordinary ice/stone/pit recipes. Charter fizzles the worst of it.
 - [x] **Formation vs aspect** — aspect is nature; formation is written in the chain (Earth stands, Mercury-into is Remote, breath+Mercury is Shot). No cast-time Remote / Pillar fork.
 - [~] **Field economy** — tiles are materials with full signatures plus **flammability** and **conductivity** numbers. Fire, wet, charge, and growth now tick. Plants grow across pits. Water fills small hollows and **drowns** until ice freezes it. The weave is Charter-only: a sideways-scrolling boustrophedon of **what the camera can see**. A wrought join on screen appears as itself; its basics are scattered through the grid. Runes not on screen cannot be drawn, except **Air** (breathable rooms) and the adept’s **mind · body · soul**. Creature recipes hang as written when the being is on screen. Casters show the marks they are writing over their heads. Depletion still open. Primordial runes later. Catalog: [`MATERIALS.md`](MATERIALS.md).

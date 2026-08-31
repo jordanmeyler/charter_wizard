@@ -81,6 +81,22 @@
       ]
     },
     {
+      "rune": "Animus",
+      "sources": [
+        "Fire",
+        "Sulphur",
+        "Air"
+      ]
+    },
+    {
+      "rune": "Anima",
+      "sources": [
+        "Water",
+        "Sulphur",
+        "Earth"
+      ]
+    },
+    {
       "rune": "Ember",
       "sources": [
         "Fire",
@@ -1402,6 +1418,52 @@
       "outcome": "Neither",
       "gate": "",
       "work": "ObsidianWall"
+    },
+    {
+      "number": 88,
+      "id": "Balm",
+      "book": "GrowHeal",
+      "name": "Balm",
+      "want": "Care sent. Yield given mind and rest, then sent. It heals.",
+      "recipe": "Water · Sulphur · Earth · Mercury",
+      "via": "Anima · Mercury",
+      "form": "Spread",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Balm",
+      "target": "Area",
+      "radius": 2.2
+    },
+    {
+      "number": 89,
+      "id": "Chorus",
+      "book": "GrowHeal",
+      "name": "Chorus",
+      "want": "Care given a body around the feet. The work opens to many.",
+      "recipe": "Water · Sulphur · Earth · Salt",
+      "via": "Anima · Salt",
+      "form": "Spread",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Chorus",
+      "target": "Area",
+      "radius": 2.2
+    },
+    {
+      "number": 90,
+      "id": "Drive",
+      "book": "End",
+      "name": "Drive",
+      "want": "Hunger given mind and breath, then sent. Logos sent. It goes out and does not return.",
+      "recipe": "Fire · Sulphur · Air · Mercury",
+      "via": "Animus · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "Drive",
+      "target": "Single",
+      "status": "Burning",
+      "statusSeconds": 4.5
     }
   ]
 }

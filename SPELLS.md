@@ -6,7 +6,7 @@ World substances — what you stamp on a tile — live beside this book in [`MAT
 
 Players will eventually see **effects, not names**. If you only watch what the world does, the chain has to be the only explanation that fits.
 
-Primordial runes (Hot, Cold, Wet, Dry, Aether, Animus, Anima) are out of this pass.
+Hot, Cold, Wet, Dry, and Aether stay reserved. **Anima** and **Animus** are wrought now — eros and logos, born with Sulphur. Male and Female are the old names for those two.
 
 There is no damage. A spell **kills**, **restrains**, or does **neither**.
 
@@ -121,7 +121,9 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
-| **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. | Violet fire. Melts what ordinary fire cannot |
+| **Flame** | Fire · Sulphur · Fire | Witchfire. Fire of the mind, made fire. Stronger than hunger. A cousin of Animus — the same root asserted twice. | Violet fire. Melts what ordinary fire cannot |
+| **Animus** | Fire · Sulphur · Air | Logos. Assertiveness, decisiveness, challenge. Hunger given mind and breath. Gives a work a magical quality. | A standing will. Male is the old name |
+| **Anima** | Water · Sulphur · Earth | Eros. Receptivity, empathy, intuition, connection. Yield given mind and rest. Opens a work to many, and can heal. | A standing welcome. Female is the old name |
 | **Stone** | Earth · Salt | Rest given a body. | Hard mass |
 | **Plant** | Water · Salt · Earth | Yield given a body, then rest. Fiber, a seed. | Not living until Life. Grotto is the cave-spell (`Plant · Dark`), not a rune |
 | **Glass** | Dust · Flame · Earth | Grains, a fire-body, asked to rest. | They remember being liquid |
@@ -130,7 +132,7 @@ Weather is a **spell**, not a rune. Storm is Cloud · Salt · Lightning · Mercu
 | **Current** | Water · Mercury | Yield going. | A flow |
 | **Metal** | Lava · Spark · Earth | Hungry earth given spark, then stilled. Fire · Earth · Fire · Air · Earth. | Hard. Conducts heat and the spark |
 | **Crystal** | Stone · Water | Stone grown with yield. | Clear rest |
-| **Glacier** | Ice · Stone | Ice given Stone. | Ice that ordinary fire cannot take. Witchfire can |
+| **Glacier** | Ice · Stone | Ice given Stone. Animus is the same *class* of upgrade (a nature asserted), written as logos rather than more rest. | Ice that ordinary fire cannot take. Witchfire can |
 | **Acid** | Steam · Metal | Steam forced through Metal. | Eating liquid |
 | **Plasma** | Flame · Lightning | Witchfire joined to the bolt. Eats ordinary matter. | Obsidian, wardstone, and aegis refuse it |
 
@@ -277,8 +279,15 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 85 | Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank. | Metal-pillar | Fire · Earth · Fire · Air · Earth · Salt · Earth | Metal · Salt · Earth | Pillar | Neither |
 | 86 | A body of iron asked to stand as more iron. Over a gap it needs no far rest. | Metal-wall | Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth | Metal · Salt · Metal | Pillar | Neither |
 | 87 | A body of black glass asked to stand as more black glass. Melt, Shatter, and hunger's thaw will not take it. Over a gap it needs no far rest. | Obsidian-wall | Fire · Earth · Salt · Water · Salt · Fire · Earth · Salt · Water | Obsidian · Salt · Obsidian | Pillar | Neither |
+| 88 | Care sent. Yield given mind and rest, then sent. It heals. | Balm | Water · Sulphur · Earth · Mercury | Anima · Mercury | Spread | Neither |
+| 89 | Care given a body around the feet. The work opens to many. | Chorus | Water · Sulphur · Earth · Salt | Anima · Salt | Spread | Neither |
+| 90 | Hunger given mind and breath, then sent. Logos sent. It goes out and does not return. | Drive | Fire · Sulphur · Air · Mercury | Animus · Mercury | Shot | Kill |
 
 **Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Forest is also a spell (`Plant · Life · Earth`), not a rune. **Vine is a spell** (`Plant · Mercury`); vine on the field speaks Plant. **Wind is a spell** (`Air · Mercury`) — a better name for the old gust. Inferno is not a rune; plasma is witchfire joined to the bolt. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb.
+
+**Anima** is `Water · Sulphur · Earth` — eros. Add it (or write it) and a sentence opens to many, or becomes care. Balm is Anima sent. Chorus is Anima stood around the feet. **Animus** is `Fire · Sulphur · Air` — logos. Add it and a sentence is asserted into a higher nature, the way Flame is fire of the mind made fire and Glacier is ice given Stone. Drive is Animus sent. Male and Female are the old names; they parse as Animus and Anima. Touching a *soul* is still Free or divine — these two are stances of mind, not soul-work.
+
+Order keeps them apart from older sentences. `Fire · Air` is Spark. `Fire · Sulphur · Air` is Animus. `Water · Earth` is Ice. `Water · Sulphur · Earth` is Anima. `Fire · Sulphur · Fire` is Flame. `Water · Earth · Sulphur` is Freeze.
 
 Fire is raw hunger (orange). **Flame** is Fire · Sulphur · Fire — witchfire, fire of the mind made fire. It shows violet. A flame-pillar is still ordinary stood hunger (Fire · Salt · Earth). Heat lives on the recipe: any fire-bearing sentence melts ice in the room. Witchfire also takes glacier and glass. **Melt** is the stood fire-body sent into a thing — it bores environmental stone and steel, and a wall at the edge of the map simply opens. **Plasma** eats ordinary matter. **Obsidian**, **wardstone**, and **aegis** refuse almost all of that work. Use them when a wall must stay.
 

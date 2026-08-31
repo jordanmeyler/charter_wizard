@@ -168,7 +168,10 @@ namespace RuneMagic
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
             E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
             E(86, SpellBook.Cross, SpellId.MetalWall, "A body of iron asked to stand as more iron. A wall. Over a gap it needs no far rest.", "Metal-wall", "Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth", "Metal · Salt · Metal", "Pillar", SpellOutcome.Neither),
-            E(87, SpellBook.Cross, SpellId.ObsidianWall, "A body of black glass asked to stand as more black glass. A wall. Melt, Shatter, and hunger's thaw will not take it. Over a gap it needs no far rest.", "Obsidian-wall", "Fire · Earth · Salt · Water · Salt · Fire · Earth · Salt · Water", "Obsidian · Salt · Obsidian", "Pillar", SpellOutcome.Neither)
+            E(87, SpellBook.Cross, SpellId.ObsidianWall, "A body of black glass asked to stand as more black glass. A wall. Melt, Shatter, and hunger's thaw will not take it. Over a gap it needs no far rest.", "Obsidian-wall", "Fire · Earth · Salt · Water · Salt · Fire · Earth · Salt · Water", "Obsidian · Salt · Obsidian", "Pillar", SpellOutcome.Neither),
+            E(88, SpellBook.GrowHeal, SpellId.Balm, "Care sent. Yield given mind and rest, then sent. It heals.", "Balm", "Water · Sulphur · Earth · Mercury", "Anima · Mercury", "Spread", SpellOutcome.Neither),
+            E(89, SpellBook.GrowHeal, SpellId.Chorus, "Care given a body around the feet. The work opens to many.", "Chorus", "Water · Sulphur · Earth · Salt", "Anima · Salt", "Spread", SpellOutcome.Neither),
+            E(90, SpellBook.End, SpellId.Drive, "Hunger given mind and breath, then sent. Logos sent. It goes out and does not return.", "Drive", "Fire · Sulphur · Air · Mercury", "Animus · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -673,9 +676,54 @@ namespace RuneMagic
                 broken.Add("Metal-pillar, Metal-wall, and Obsidian-wall must be written in the developer book");
             }
 
-            if (Entries.Length < 87)
+            if (!ChainBook.TryBirth(RuneId.Anima, out var animaBirth)
+                || animaBirth.Count != 3
+                || animaBirth[0] != RuneId.Water
+                || animaBirth[1] != RuneId.Sulphur
+                || animaBirth[2] != RuneId.Earth)
             {
-                broken.Add("The written book must keep every catalog spell, including 87 Obsidian-wall");
+                broken.Add("Anima must be Water · Sulphur · Earth");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Animus, out var animusBirth)
+                || animusBirth.Count != 3
+                || animusBirth[0] != RuneId.Fire
+                || animusBirth[1] != RuneId.Sulphur
+                || animusBirth[2] != RuneId.Air)
+            {
+                broken.Add("Animus must be Fire · Sulphur · Air");
+            }
+
+            if (!RuneCatalog.TryParseName("Male", out var maleId) || maleId != RuneId.Animus
+                || !RuneCatalog.TryParseName("Female", out var femaleId) || femaleId != RuneId.Anima)
+            {
+                broken.Add("Male and Female must be Animus and Anima");
+            }
+
+            var balm = Composition.FromSequence(new[] { RuneId.Anima, RuneId.Mercury });
+            var balmExact = ChainBook.CollectExact(balm, SpellShape.None);
+            if (balmExact.Count == 0 || balmExact[0].Spell != SpellId.Balm)
+            {
+                broken.Add("Anima · Mercury should be Balm");
+            }
+
+            var chorus = Composition.FromSequence(new[] { RuneId.Anima, RuneId.Salt });
+            var chorusExact = ChainBook.CollectExact(chorus, SpellShape.None);
+            if (chorusExact.Count == 0 || chorusExact[0].Spell != SpellId.Chorus)
+            {
+                broken.Add("Anima · Salt should be Chorus");
+            }
+
+            var drive = Composition.FromSequence(new[] { RuneId.Animus, RuneId.Mercury });
+            var driveExact = ChainBook.CollectExact(drive, SpellShape.None);
+            if (driveExact.Count == 0 || driveExact[0].Spell != SpellId.Drive)
+            {
+                broken.Add("Animus · Mercury should be Drive");
+            }
+
+            if (Entries.Length < 90)
+            {
+                broken.Add("The written book must keep every catalog spell, including 88–90 Anima and Animus");
             }
         }
 
