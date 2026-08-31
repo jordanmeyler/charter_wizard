@@ -182,8 +182,9 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Plasma:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.Burning, 3f, TileVerb.Ignite);
-                case SpellId.Forest:
-                    return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.None, 0f, TileVerb.Grow);
+                case SpellId.Tree:
+                case SpellId.WoodWall:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.Darkness:
                     return new SpellVerb(SpellTarget.Area, 3f, StatusId.None, 0f, TileVerb.Cloak);
                 case SpellId.WaterPillar:

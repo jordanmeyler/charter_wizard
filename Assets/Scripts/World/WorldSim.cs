@@ -123,6 +123,7 @@ namespace RuneMagic
 
         void StepWet()
         {
+            var spreading = new List<WorldTile>();
             foreach (var tile in _grid.All)
             {
                 if (tile == null)
@@ -130,13 +131,24 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (tile.Wet > 0.2f && tile.IsPlantish)
+                var plant = tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail;
+                var watered = tile.Wet > 0.2f || _grid.TouchesOpenWater(tile);
+                if (plant && watered)
                 {
-                    tile.Grow(1);
-                    _grid.SpreadPlant(tile);
+                    if (tile.IsPlantish)
+                    {
+                        tile.Grow(1);
+                    }
+
+                    spreading.Add(tile);
                 }
 
                 tile.Dry(0.08f);
+            }
+
+            for (var i = 0; i < spreading.Count; i++)
+            {
+                _grid.SpreadPlant(spreading[i]);
             }
         }
 

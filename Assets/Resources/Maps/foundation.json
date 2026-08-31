@@ -907,6 +907,8 @@
             "FlamePillar",
             "IcePillar",
             "VineRise",
+            "Tree",
+            "WoodWall",
             "Menhir",
             "Bridge"
           ],
@@ -1414,6 +1416,8 @@
             "FlamePillar",
             "IcePillar",
             "VineRise",
+            "Tree",
+            "WoodWall",
             "Hop",
             "Flight",
             "HurledStone"

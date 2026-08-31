@@ -81,7 +81,11 @@ namespace RuneMagic
             spell == SpellId.TimeStop;
 
         public static bool NeedsSpan(SpellId spell) =>
-            spell == SpellId.Wall || spell == SpellId.IceWall || spell == SpellId.MetalWall || spell == SpellId.ObsidianWall;
+            spell == SpellId.Wall
+            || spell == SpellId.IceWall
+            || spell == SpellId.MetalWall
+            || spell == SpellId.ObsidianWall
+            || spell == SpellId.WoodWall;
 
         public static bool IsPillar(SpellId spell)
         {
@@ -93,10 +97,12 @@ namespace RuneMagic
                 case SpellId.Wall:
                 case SpellId.MetalWall:
                 case SpellId.ObsidianWall:
+                case SpellId.WoodWall:
                 case SpellId.VineRise:
                 case SpellId.StonePillar:
                 case SpellId.EarthPillar:
                 case SpellId.MetalPillar:
+                case SpellId.Tree:
                 case SpellId.Menhir:
                 case SpellId.LavaPillar:
                 case SpellId.WaterPillar:
@@ -483,6 +489,11 @@ namespace RuneMagic
                 return MaterialId.Grove;
             }
 
+            if (spell == SpellId.Tree || spell == SpellId.WoodWall)
+            {
+                return MaterialId.Timber;
+            }
+
             if (spell == SpellId.WaterPillar)
             {
                 return MaterialId.Water;
@@ -675,15 +686,6 @@ namespace RuneMagic
                 if (climbed > 0)
                 {
                     notes.Add("The vegetable body climbs. Hunger can run this line as a wick.");
-                }
-            }
-
-            if (spell == SpellId.Forest)
-            {
-                var grown = GrowForest(grid, cells);
-                if (grown > 0)
-                {
-                    notes.Add("The vegetable body wakes as a mass.");
                 }
             }
 
@@ -969,7 +971,6 @@ namespace RuneMagic
                 case SpellId.Quagmire:
                 case SpellId.Sprout:
                 case SpellId.Grove:
-                case SpellId.Forest:
                 case SpellId.Darkness:
                 case SpellId.Miasma:
                 case SpellId.Monsoon:
@@ -1196,6 +1197,18 @@ namespace RuneMagic
                         continue;
                     }
 
+                    if (SpanLaw.GrowsOverWater(grade) && FillsGaps(spell))
+                    {
+                        if (tile.GrowOverWater(spell == SpellId.Tree || spell == SpellId.WoodWall
+                            ? MaterialId.Grove
+                            : MaterialId.Plant))
+                        {
+                            filled++;
+                        }
+
+                        continue;
+                    }
+
                     if (SpanLaw.WorksOnWater(grade) && FillsGaps(spell))
                     {
                         tile.BecomeWalkable(material, conjured: true);
@@ -1287,6 +1300,20 @@ namespace RuneMagic
                         : "Hard water stands. The pool will hold you.";
                 }
 
+                if (hasWater && SpanLaw.GrowsOverWater(grade))
+                {
+                    return filled == 1
+                        ? "Green covers the water. You can walk it."
+                        : "A vegetable cover takes the pool. You can walk it.";
+                }
+
+                if (spell == SpellId.Tree || spell == SpellId.WoodWall)
+                {
+                    return filled == 1
+                        ? "A tree takes the hollow and holds."
+                        : "A line of trees settles into the drop.";
+                }
+
                 return filled == 1
                     ? "The hollow takes a body and holds."
                     : "The span settles into the drop.";
@@ -1297,6 +1324,18 @@ namespace RuneMagic
                 if (spell == SpellId.OilPillar)
                 {
                     return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
+                if (spell == SpellId.Tree)
+                {
+                    return "A tree stands.";
+                }
+
+                if (spell == SpellId.WoodWall)
+                {
+                    return barred == 1
+                        ? "A tree stands."
+                        : "A line of trees stands from end to end.";
                 }
 
                 if (form == RaisedForm.Pillar)
