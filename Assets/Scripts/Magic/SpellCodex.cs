@@ -172,7 +172,10 @@ namespace RuneMagic
             E(89, SpellBook.GrowHeal, SpellId.Chorus, "Care given a body around the feet. The work opens to many.", "Chorus", "Water · Sulphur · Earth · Salt", "Anima · Salt", "Spread", SpellOutcome.Neither),
             E(90, SpellBook.End, SpellId.Drive, "Hunger given mind and breath, then sent. Logos sent. It goes out and does not return.", "Drive", "Fire · Sulphur · Air · Mercury", "Animus · Mercury", "Shot", SpellOutcome.Kill),
             E(91, SpellBook.GrowHeal, SpellId.Tree, "A living vegetable body given a standing body. A tree. Over a pit it must join two floors, or it falls. On water it grows a walkable cover without banks. Hunger eats it.", "Tree", "Water · Salt · Earth · Life · Salt", "Plant · Life · Salt", "Pillar", SpellOutcome.Neither),
-            E(92, SpellBook.GrowHeal, SpellId.WoodWall, "A living plant asked to stand as more living plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats it.", "Wood-wall", "Water · Salt · Earth · Life · Salt · Water · Salt · Earth · Life", "Plant · Life · Salt · Plant · Life", "Pillar", SpellOutcome.Neither)
+            E(92, SpellBook.GrowHeal, SpellId.WoodWall, "A living plant asked to stand as more living plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats it.", "Wood-wall", "Water · Salt · Earth · Life · Salt · Water · Salt · Earth · Life", "Plant · Life · Salt · Plant · Life", "Pillar", SpellOutcome.Neither),
+            E(93, SpellBook.End, SpellId.OilPuddle, "Fuel given a standing body. A puddle. Surfaces hold flame.", "Oil puddle", "Water · Salt · Earth · Fire · Earth · Salt", "Oil · Salt", "Remote", SpellOutcome.Neither),
+            E(94, SpellBook.End, SpellId.OilGeyser, "A stood fountain of fuel, sent to a point. Hunger that finds it will not leave — it burns as hall-fire does, until yield is thrown.", "Oil geyser", "Water · Salt · Earth · Fire · Earth · Salt · Mercury", "Oil · Salt · Mercury", "Remote", SpellOutcome.Neither),
+            E(95, SpellBook.End, SpellId.OilSlick, "Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor.", "Oil slick", "Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth", "Oil · Salt · Oil", "Remote", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -796,9 +799,42 @@ namespace RuneMagic
                 broken.Add("Forest is not a written spell — Tree stands in its place");
             }
 
-            if (Entries.Length < 91)
+            var oilPuddle = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Salt });
+            var oilPuddleExact = ChainBook.CollectExact(oilPuddle, SpellShape.None);
+            if (oilPuddleExact.Count == 0 || oilPuddleExact[0].Spell != SpellId.OilPuddle)
             {
-                broken.Add("The written book must keep every catalog spell, including 88–90 Anima and Animus and 91–92 Tree and Wood-wall");
+                broken.Add("Oil · Salt should be Oil puddle");
+            }
+
+            var oilGeyser = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Salt, RuneId.Mercury });
+            var oilGeyserExact = ChainBook.CollectExact(oilGeyser, SpellShape.None);
+            if (oilGeyserExact.Count == 0 || oilGeyserExact[0].Spell != SpellId.OilGeyser)
+            {
+                broken.Add("Oil · Salt · Mercury should be Oil geyser");
+            }
+
+            var oilSlick = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Salt, RuneId.Oil });
+            var oilSlickExact = ChainBook.CollectExact(oilSlick, SpellShape.None);
+            if (oilSlickExact.Count == 0 || oilSlickExact[0].Spell != SpellId.OilSlick)
+            {
+                broken.Add("Oil · Salt · Oil should be Oil slick");
+            }
+
+            var oilPillar = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Salt, RuneId.Earth });
+            var oilPillarExact = ChainBook.CollectExact(oilPillar, SpellShape.None);
+            if (oilPillarExact.Count == 0 || oilPillarExact[0].Spell != SpellId.OilPillar)
+            {
+                broken.Add("Oil · Salt · Earth should stay Oil-pillar");
+            }
+
+            if (!TryGet(SpellId.OilPuddle, out _) || !TryGet(SpellId.OilGeyser, out _) || !TryGet(SpellId.OilSlick, out _))
+            {
+                broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
+            }
+
+            if (Entries.Length < 94)
+            {
+                broken.Add("The written book must keep every catalog spell, including 91–92 Tree and Wood-wall and 93–95 oil coverings");
             }
         }
 

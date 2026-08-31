@@ -208,6 +208,11 @@ namespace RuneMagic
         public float Oil { get; private set; }
         public bool Kindled { get; private set; }
         /// <summary>
+        /// A stood oil fountain. Hunger that finds it kindles
+        /// and will not leave until yield is thrown.
+        /// </summary>
+        public bool IsGeyser { get; private set; }
+        /// <summary>
         /// Fire a spell or NPC working started. Authored torches, kindled
         /// halls, and painted cover stay still until work finds them.
         /// </summary>
@@ -216,7 +221,7 @@ namespace RuneMagic
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
         public bool HasMiasma => Miasma > 0.2f;
-        public bool HasOil => Oil > 0.2f || Material == MaterialId.Oil;
+        public bool HasOil => Oil > 0.2f || Material == MaterialId.Oil || IsGeyser;
         public bool HasVine =>
             Cover == TileCover.Vine
             || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
@@ -469,6 +474,7 @@ namespace RuneMagic
             RaisedAs = RaisedForm.None;
             Foundation = default;
             _hasFoundation = false;
+            IsGeyser = false;
             ClearLinger();
             Reshape(restored);
             return true;
@@ -534,7 +540,23 @@ namespace RuneMagic
                 Fire = Mathf.Clamp01(Fire + 0.35f);
             }
 
+            if (IsGeyser && amount > 0f && Fire > 0.05f)
+            {
+                Kindled = true;
+            }
+
             RefreshFx();
+        }
+
+        public bool MarkGeyser()
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            IsGeyser = true;
+            return SlickOil(1f);
         }
 
         public bool SlickOil(float amount = 1f)
@@ -822,6 +844,7 @@ namespace RuneMagic
             }
 
             Oil = 0f;
+            IsGeyser = false;
             Fire = 0f;
             if (IsConjured)
             {
@@ -1325,7 +1348,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && _growth < 1)
+            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && !IsGeyser && _growth < 1)
             {
                 if (_fx != null)
                 {
@@ -1363,10 +1386,12 @@ namespace RuneMagic
                 fx.sprite = SpriteFactory.Named("tile-wet");
                 fx.color = new Color(0.35f, 0.65f, 1f, 0.22f + Wet * 0.35f);
             }
-            else if (Oil > 0.18f)
+            else if (Oil > 0.18f || IsGeyser)
             {
                 fx.sprite = SpriteFactory.Named("tile-wet");
-                fx.color = new Color(0.18f, 0.12f, 0.05f, 0.28f + Oil * 0.4f);
+                fx.color = IsGeyser
+                    ? new Color(0.32f, 0.2f, 0.06f, 0.4f + Oil * 0.35f)
+                    : new Color(0.18f, 0.12f, 0.05f, 0.28f + Oil * 0.4f);
             }
             else
             {
@@ -1473,7 +1498,7 @@ namespace RuneMagic
                 return;
             }
 
-            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Miasma > 0.18f || Fog > 0.18f || Wet > 0.18f || Charge > 0.18f || _growth >= 1 || _telegraph != MaterialId.None;
+            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Miasma > 0.18f || Fog > 0.18f || Wet > 0.18f || Charge > 0.18f || Oil > 0.18f || IsGeyser || _growth >= 1 || _telegraph != MaterialId.None;
             if (!live)
             {
                 return;

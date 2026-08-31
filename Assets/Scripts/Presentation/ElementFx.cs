@@ -110,6 +110,11 @@ namespace RuneMagic
                 return ElementFamily.Flame;
             }
 
+            if (WorldWork.IsOilWork(spell))
+            {
+                return ElementFamily.Lava;
+            }
+
             if (spell == SpellId.Grove
                 || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.VineRise)
             {

@@ -214,8 +214,25 @@ namespace RuneMagic
         public static bool IsFireWork(SpellId spell) =>
             MatterLaw.HeatOf(spell) >= Heat.Fire;
 
-        public static bool IsOilWork(SpellId spell) =>
-            spell == SpellId.OilShot;
+        public const int OilPuddleRadius = 1;
+        public const int OilSlickRadius = 4;
+
+        public static bool IsOilWork(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.OilShot:
+                case SpellId.OilPuddle:
+                case SpellId.OilGeyser:
+                case SpellId.OilSlick:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsOilCover(SpellId spell) =>
+            spell == SpellId.OilPuddle || spell == SpellId.OilGeyser || spell == SpellId.OilSlick;
 
         public static bool IsVineWork(SpellId spell) =>
             spell == SpellId.Vine;
@@ -670,12 +687,32 @@ namespace RuneMagic
                 }
             }
 
-            if (IsOilWork(spell))
+            if (spell == SpellId.OilSlick)
+            {
+                var origin = CoordOf(to);
+                SlickOil(grid, new List<Vector2Int> { origin });
+                WorldSim.Ensure(grid)?.BeginSlick(origin, OilSlickRadius);
+                notes.Add("Fuel runs outward from the point. A wide floor will hold flame.");
+            }
+            else if (IsOilWork(spell))
             {
                 var oiled = SlickOil(grid, cells);
+                if (spell == SpellId.OilGeyser)
+                {
+                    var mouth = grid.Get(CoordOf(to));
+                    if (mouth != null && mouth.MarkGeyser())
+                    {
+                        oiled = Mathf.Max(oiled, 1);
+                    }
+                }
+
                 if (oiled > 0)
                 {
-                    notes.Add("Fuel finds the floor. Hunger will hold here.");
+                    notes.Add(spell == SpellId.OilGeyser
+                        ? "A fountain of fuel stands. Hunger that finds it will not leave."
+                        : spell == SpellId.OilPuddle
+                            ? "Fuel given a standing body. A puddle holds flame."
+                            : "Fuel finds the floor. Hunger will hold here.");
                 }
             }
 
@@ -1019,6 +1056,16 @@ namespace RuneMagic
                 || spell == SpellId.GraveIce)
             {
                 return Disk(CoordOf(to), VeilRadius);
+            }
+
+            if (spell == SpellId.OilSlick)
+            {
+                return Disk(CoordOf(to), OilSlickRadius);
+            }
+
+            if (spell == SpellId.OilPuddle)
+            {
+                return Disk(CoordOf(to), OilPuddleRadius);
             }
 
             return new List<Vector2Int> { CoordOf(to) };

@@ -370,7 +370,7 @@ namespace RuneMagic
                     RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Oil, "oil",
-                    "A vegetable body pressed with hunger and rest. It holds flame.",
+                    "A vegetable body pressed with hunger and rest. It holds flame. Connected oil flashes; a geyser, once lit, keeps burning.",
                     RuneId.Oil, MaterialPaint.Oil,
                     new Color(0.18f, 0.14f, 0.08f), new Color(0.14f, 0.1f, 0.06f), false,
                     RuneId.Plant, RuneId.Fire, RuneId.Earth, RuneId.Oil),

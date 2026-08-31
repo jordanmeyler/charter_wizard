@@ -12,6 +12,16 @@ namespace RuneMagic
         WorldGrid _grid;
         float _tick;
         const float Step = 0.32f;
+        public const float DryFireRun = 0.4f;
+        public const float OilFireRun = 2.4f;
+        readonly List<OilWave> _slicks = new();
+
+        struct OilWave
+        {
+            public Vector2Int Origin;
+            public int NextRing;
+            public int MaxRadius;
+        }
 
         public void Bind(WorldGrid grid)
         {
@@ -49,9 +59,39 @@ namespace RuneMagic
             }
 
             _tick = 0f;
+            StepOilWaves();
             StepFire();
             StepWet();
             StepCharge();
+        }
+
+        public void BeginSlick(Vector2Int origin, int maxRadius)
+        {
+            _slicks.Add(new OilWave
+            {
+                Origin = origin,
+                NextRing = 1,
+                MaxRadius = Mathf.Max(1, maxRadius)
+            });
+        }
+
+        void StepOilWaves()
+        {
+            for (var i = _slicks.Count - 1; i >= 0; i--)
+            {
+                var wave = _slicks[i];
+                var cells = WorldWork.Disk(wave.Origin, wave.NextRing);
+                WorldWork.SlickOil(_grid, cells);
+                wave.NextRing++;
+                if (wave.NextRing > wave.MaxRadius)
+                {
+                    _slicks.RemoveAt(i);
+                }
+                else
+                {
+                    _slicks[i] = wave;
+                }
+            }
         }
 
         void StepFire()
@@ -65,16 +105,26 @@ namespace RuneMagic
                 }
             }
 
+            var flashed = new HashSet<Vector2Int>();
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.Kindled && !tile.LiveFire && tile.Wet < 0.15f)
+                if (tile.HasOil && tile.Fire > 0.12f && tile.Wet < 0.15f)
+                {
+                    FlashOilFire(tile, flashed);
+                }
+            }
+
+            for (var i = 0; i < burning.Count; i++)
+            {
+                var tile = burning[i];
+                if (tile.Kindled && !tile.LiveFire && tile.Wet < 0.15f && !tile.IsGeyser)
                 {
                     tile.KeepKindled();
                     continue;
                 }
 
-                if (!tile.LiveFire)
+                if (!tile.LiveFire && !tile.IsGeyser)
                 {
                     tile.Ignite(-0.12f, live: false);
                     continue;
@@ -92,11 +142,12 @@ namespace RuneMagic
                     }
                     else if (other.Wet < 0.2f && !other.HasWaterCover && other.Fire < 0.15f)
                     {
-                        var wick = tile.HasOil || tile.HasVine || other.HasVine || other.HasOil;
+                        var oilWick = tile.HasOil || other.HasOil;
+                        var vineWick = tile.HasVine || other.HasVine;
                         var catchable = flam > 0f || other.HasVine || other.HasOil;
                         if (catchable)
                         {
-                            var run = wick ? 0.9f : 0.4f;
+                            var run = oilWick ? OilFireRun : vineWick ? 0.9f : DryFireRun;
                             var fuel = flam > 0f ? flam : 1.2f;
                             other.Ignite(fuel * run);
                         }
@@ -108,7 +159,15 @@ namespace RuneMagic
                     quench += 0.8f;
                 }
 
-                tile.Ignite(-0.12f - quench);
+                if (tile.Kindled && tile.Wet < 0.15f)
+                {
+                    tile.KeepKindled();
+                }
+                else
+                {
+                    tile.Ignite(-0.12f - quench);
+                }
+
                 if (tile.Fire > 0.55f && (tile.IsPlantish || tile.HasPlantishDetail))
                 {
                     tile.BurnDown();
@@ -117,6 +176,42 @@ namespace RuneMagic
                 if (tile.Fire > 0.55f && tile.HasVine)
                 {
                     tile.BurnVine();
+                }
+            }
+        }
+
+        void FlashOilFire(WorldTile start, HashSet<Vector2Int> flashed)
+        {
+            if (start == null || !flashed.Add(start.Coord))
+            {
+                return;
+            }
+
+            var queue = new Queue<WorldTile>();
+            queue.Enqueue(start);
+            while (queue.Count > 0)
+            {
+                var tile = queue.Dequeue();
+                var neighbors = _grid.Neighbors(tile.Coord);
+                for (var n = 0; n < neighbors.Count; n++)
+                {
+                    var other = neighbors[n];
+                    if (!other.HasOil || other.Wet >= 0.2f || other.HasWaterCover)
+                    {
+                        continue;
+                    }
+
+                    if (!flashed.Add(other.Coord))
+                    {
+                        continue;
+                    }
+
+                    if (other.Fire < 0.35f)
+                    {
+                        other.Ignite(1.15f);
+                    }
+
+                    queue.Enqueue(other);
                 }
             }
         }
