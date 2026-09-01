@@ -748,10 +748,10 @@ namespace RuneMagic
                 broken.Add("Oil puddle and geyser slick the floor; a slick must cover a wide radius");
             }
 
-            if (WorldSim.OilFireRun <= WorldSim.DryFireRun
-                || WorldSim.DryFireRun <= WorldSim.VineFireRun)
+            if (WorldSim.OilFireRun <= WorldSim.VineFireRun
+                || WorldSim.VineFireRun <= WorldSim.DryFireRun)
             {
-                broken.Add("Oil must run faster than wood, wood faster than plant");
+                broken.Add("Oil must run faster than plant, plant faster than wood");
             }
 
             var oil = MaterialCatalog.Of(MaterialId.Oil);
@@ -760,12 +760,15 @@ namespace RuneMagic
             var grove = MaterialCatalog.Of(MaterialId.Grove);
             var ember = MaterialCatalog.Of(MaterialId.Ember);
             var water = MaterialCatalog.Of(MaterialId.Water);
-            if (oil.BurnSeconds >= timber.BurnSeconds
-                || timber.BurnSeconds >= plant.BurnSeconds
-                || oil.BurnRate <= timber.BurnRate
-                || timber.BurnRate <= plant.BurnRate)
+            if (oil.BurnSeconds >= plant.BurnSeconds
+                || plant.BurnSeconds >= timber.BurnSeconds
+                || oil.BurnRate <= plant.BurnRate
+                || plant.BurnRate <= timber.BurnRate
+                || oil.Flammability <= plant.Flammability
+                || plant.Flammability <= timber.Flammability
+                || timber.Flammability <= grove.Flammability)
             {
-                broken.Add("Oil must finish before wood, wood before plant");
+                broken.Add("More flammable fuel must finish sooner: oil, plant, wood, then grove");
             }
 
             if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)

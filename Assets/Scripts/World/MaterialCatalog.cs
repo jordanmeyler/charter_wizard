@@ -423,7 +423,7 @@ namespace RuneMagic
             Flag(MaterialId.Damp, -0.7f, 0.35f);
             Flag(MaterialId.Vein, 0f, 0.85f);
             Flag(MaterialId.Scoured, 0f, 0f);
-            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.PlantBurnSeconds);
+            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.TimberBurnSeconds);
             Flag(MaterialId.Metal, 0f, 1.6f);
             Flag(MaterialId.SaltCrust, -0.15f, 0.2f);
             Flag(MaterialId.Void, 0f, 0f);
@@ -436,14 +436,14 @@ namespace RuneMagic
             Flag(MaterialId.Glass, 0f, 0f);
             Flag(MaterialId.Crystal, 0f, 0.35f);
             Flag(MaterialId.Obsidian, 0f, 0f);
-            Flag(MaterialId.Grove, 1.35f, -1.2f, VitalLaw.GroveBurnSeconds);
+            Flag(MaterialId.Grove, 0.85f, -1.2f, VitalLaw.GroveBurnSeconds);
             Flag(MaterialId.Cloud, 0f, 0f);
             Flag(MaterialId.Rain, -1.1f, 0.7f);
             Flag(MaterialId.Snow, -0.65f, 0f);
             Flag(MaterialId.Glacier, -0.9f, 0f);
             Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.EmberBurnSeconds);
             Flag(MaterialId.Water, -1.6f, 1.25f);
-            Flag(MaterialId.Plant, 1.5f, -1.1f, VitalLaw.PlantBurnSeconds);
+            Flag(MaterialId.Plant, 1.6f, -1.1f, VitalLaw.PlantBurnSeconds);
             Flag(MaterialId.Dirt, 0f, 0f);
             Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds);
             Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.EmberBurnSeconds);

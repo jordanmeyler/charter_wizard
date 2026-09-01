@@ -13,8 +13,8 @@ namespace RuneMagic
         WorldGrid _grid;
         float _tick;
         public const float Step = 0.32f;
-        public const float DryFireRun = 2f;
-        public const float VineFireRun = 1f;
+        public const float DryFireRun = 1f;
+        public const float VineFireRun = 2f;
         public const float OilFireRun = 3f;
         readonly List<OilWave> _slicks = new();
 
