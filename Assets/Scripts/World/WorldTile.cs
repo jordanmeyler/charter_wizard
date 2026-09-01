@@ -666,6 +666,33 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Plant cover on this cell only — ice's law, not a walk
+        /// across the pool. Water takes a walkable vine; a hollow
+        /// takes the same cover; dry walk takes a climbing body.
+        /// </summary>
+        public bool PlacePlantCover(MaterialId material = MaterialId.Plant)
+        {
+            if (IsDeepWater || HasWaterCover)
+            {
+                return GrowOverWater(material);
+            }
+
+            if (Kind == TileKind.Pit || Material == MaterialId.Void)
+            {
+                if (HasAshCover)
+                {
+                    return false;
+                }
+
+                PaintCover(TileCover.Vine);
+                RefreshFx();
+                return true;
+            }
+
+            return LayVine();
+        }
+
+        /// <summary>
         /// Standard earth over water does not span. Yield meeting
         /// rest leaves a mud covering. It will not hold you.
         /// </summary>

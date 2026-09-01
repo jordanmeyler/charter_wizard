@@ -7,7 +7,9 @@ namespace RuneMagic
     /// Tiles speak to their neighbors after a spell starts the work.
     /// Fire spreads by burn rate, retardant matter puts hunger out,
     /// and charge runs through what conducts. Wood and plants break
-    /// that path. Plants do not grow or spread on their own.
+    /// that path. Plants do not grow on their own. Cover on water
+    /// stays put, like ice, unless a spell-watered land plant or
+    /// Forest asked for more.
     /// </summary>
     public sealed class WorldSim : MonoBehaviour
     {

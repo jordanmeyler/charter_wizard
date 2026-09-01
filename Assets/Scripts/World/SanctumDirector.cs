@@ -482,8 +482,8 @@ namespace RuneMagic
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
-                "The screen unrolls. You can walk. Draw only what is in view; what you have already strung stays until you cast or close.",
-                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
+                "The screen unrolls. You can walk. Every root mark is ready. What you have already strung stays until you cast or close.",
+                "The screen unrolls. You can walk. Draw marks from the wall or the weave. What you have already strung stays until you cast or close."));
         }
 
         public void CloseCharter(bool releaseString = true)
@@ -568,8 +568,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. Every written chain and join. Click a name to string it if those runes are in view. Kept workings are marked.",
-                "Your book. Workings you have kept. Click a page to send it if those marks are in view."));
+                "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
+                "Your book. Workings you have kept. Click a page to send it. The eleven roots are always ready."));
         }
 
         public void CloseGrimoire()
@@ -661,6 +661,11 @@ namespace RuneMagic
 
         public bool InVicinity(RuneId rune)
         {
+            if (RuneCatalog.IsBasic(rune))
+            {
+                return true;
+            }
+
             return Tapestry != null && Tapestry.InVicinity(rune);
         }
 
@@ -1310,9 +1315,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Develop: the eleven, then every wrought elemental the room
-        /// is speaking (Spark, Ice, Plant…). Play: kept marks, then
-        /// those same spoken joins so a fire or vein can be drawn.
+        /// The eleven roots always sit on the wall so a sentence can
+        /// be written. Develop also lists every wrought elemental.
+        /// Play adds kept marks and joins the room is already speaking.
         /// </summary>
         List<RuneId> BuildWallRunes()
         {
@@ -1326,13 +1331,13 @@ namespace RuneMagic
                 }
             }
 
+            for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
+            {
+                Offer(RuneCatalog.BasicRunes[i]);
+            }
+
             if (GlyphView.IsDevelop)
             {
-                for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
-                {
-                    Offer(RuneCatalog.BasicRunes[i]);
-                }
-
                 for (var i = 0; i < RuneCatalog.ElementalJoins.Length; i++)
                 {
                     Offer(RuneCatalog.ElementalJoins[i]);
@@ -1340,7 +1345,7 @@ namespace RuneMagic
             }
             else
             {
-                var kept = Memory.Wall(RuneCatalog.BasicRunes);
+                var kept = Memory.Kept;
                 for (var i = 0; i < kept.Count; i++)
                 {
                     Offer(kept[i]);

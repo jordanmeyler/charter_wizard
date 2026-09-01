@@ -884,8 +884,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. The eleven and the elemental joins sit on the wall; grey means not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close.",
-                    "Walk while the wall is open. Draw from the weave, or click a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the wall is open. Every root mark is on the wall and in the weave. Elemental joins sit beside them; grey means that join is not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(
@@ -1322,8 +1322,8 @@ namespace RuneMagic
             GUI.Label(new Rect(40, 20, 800, 34), "Grimoire", title);
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
-                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Spark · Earth) or a spell to string it if those runes are in view. Esc closes.",
-                    "Your book. Workings you have kept, and marks you remember. Click a page to send it if those marks are in view. Esc closes."),
+                    $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Spark · Earth) or a spell to string it. The eleven roots are always ready. Esc closes.",
+                    "Your book. Workings you have kept, and marks you remember. Click a page to send it. The eleven roots are always ready. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -1428,7 +1428,7 @@ namespace RuneMagic
             if (loadable)
             {
                 GUI.Label(new Rect(0, y, 1100, 18),
-                    "Click a wrought name to string the recipe if those runes are in view.",
+                    "Click a wrought name to string the recipe. The eleven roots are always ready.",
                     muted);
                 y += 20f;
             }

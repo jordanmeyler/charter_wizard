@@ -810,6 +810,13 @@ namespace RuneMagic
                 broken.Add("A bolt, strike, and live-floor must be charge work; hunger and yield must not");
             }
 
+            if (SpellVerb.Of(SpellId.Sprout).Radius != PlantLaw.GrowRadius
+                || !WorldWork.IsPlantGrowWork(SpellId.Sprout)
+                || WorldWork.IsPlantGrowWork(SpellId.Forest))
+            {
+                broken.Add("Sprout must grow a three-tile plant cover from the feet");
+            }
+
             MatterLaw.Audit(broken);
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);

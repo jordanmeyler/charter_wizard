@@ -158,18 +158,24 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A spell-watered plant may take neighboring tiles that
+        /// A spell-watered land plant may take neighboring tiles that
         /// already hold water — a water floor or a water covering.
-        /// Budget is the spell's reach. Forest also stays on screen.
+        /// Cover on water stays put, the way ice does, unless Forest
+        /// asked to drink the visible pool.
         /// </summary>
-        public bool SpreadPlant(WorldTile from)
+        public bool GrowPlant(WorldTile from)
         {
-            return SpreadPlant(from, 1) > 0;
+            return GrowPlant(from, 1) > 0;
         }
 
-        public int SpreadPlant(WorldTile from, int budget, bool visibleOnly = false)
+        public int GrowPlant(WorldTile from, int budget, bool acrossWater = false)
         {
             if (from == null || budget <= 0)
+            {
+                return 0;
+            }
+
+            if (!acrossWater && (from.IsOverWater || from.IsDeepWater || from.HasWaterCover))
             {
                 return 0;
             }
@@ -190,11 +196,11 @@ namespace RuneMagic
             var used = 0;
             var seen = new HashSet<Vector2Int>();
             var queue = new Queue<WorldTile>();
-            EnqueueWater(from, seen, queue, visibleOnly);
+            EnqueueWater(from, seen, queue, acrossWater);
             var startNeighbors = Neighbors(from.Coord);
             for (var i = 0; i < startNeighbors.Count; i++)
             {
-                EnqueueWater(startNeighbors[i], seen, queue, visibleOnly);
+                EnqueueWater(startNeighbors[i], seen, queue, acrossWater);
             }
 
             while (queue.Count > 0 && used < budget)
@@ -207,10 +213,13 @@ namespace RuneMagic
 
                 if (tile.IsPlantish || tile.HasPlantCover)
                 {
-                    var next = Neighbors(tile.Coord);
-                    for (var n = 0; n < next.Count; n++)
+                    if (acrossWater || !(tile.IsOverWater || tile.IsDeepWater || tile.HasWaterCover))
                     {
-                        EnqueueWater(next[n], seen, queue, visibleOnly);
+                        var next = Neighbors(tile.Coord);
+                        for (var n = 0; n < next.Count; n++)
+                        {
+                            EnqueueWater(next[n], seen, queue, acrossWater);
+                        }
                     }
 
                     continue;
@@ -233,10 +242,15 @@ namespace RuneMagic
                 }
 
                 used++;
+                if (!acrossWater)
+                {
+                    continue;
+                }
+
                 var around = Neighbors(tile.Coord);
                 for (var n = 0; n < around.Count; n++)
                 {
-                    EnqueueWater(around[n], seen, queue, visibleOnly);
+                    EnqueueWater(around[n], seen, queue, acrossWater);
                 }
             }
 
@@ -247,14 +261,14 @@ namespace RuneMagic
             WorldTile tile,
             HashSet<Vector2Int> seen,
             Queue<WorldTile> queue,
-            bool visibleOnly)
+            bool acrossWater)
         {
             if (tile == null || !seen.Add(tile.Coord))
             {
                 return;
             }
 
-            if (visibleOnly && !PlantLaw.OnScreen(tile.WorldOrigin))
+            if (acrossWater && !PlantLaw.OnScreen(tile.WorldOrigin))
             {
                 return;
             }

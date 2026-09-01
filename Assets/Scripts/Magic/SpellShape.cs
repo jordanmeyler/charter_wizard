@@ -48,7 +48,7 @@ namespace RuneMagic
             "Click the ground. A column rises there.", 6.2f, 1.45f);
 
         public static readonly FormationDef Spread = new(
-            SpellShape.Spread, "Spread", "release at your feet",
+            SpellShape.Spread, "Grow", "release at your feet",
             "Click to confirm. It wells from where you stand.", 2.4f, 2.4f);
 
         public static readonly FormationDef Remote = new(

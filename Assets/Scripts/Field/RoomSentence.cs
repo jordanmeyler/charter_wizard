@@ -77,6 +77,7 @@ namespace RuneMagic
             var sequence = new List<WeaveGlyph>(64);
             if (grid == null || view.width <= 0f || view.height <= 0f)
             {
+                EnsureBasicRunes(sequence);
                 return sequence;
             }
 
@@ -118,6 +119,7 @@ namespace RuneMagic
 
             EnsureLiveRunes(scatter, live);
             ScatterComposing(sequence, scatter, FieldView.Key(view));
+            EnsureBasicRunes(sequence);
 
             if (breathable)
             {
@@ -134,6 +136,34 @@ namespace RuneMagic
                 atHead: true);
 
             return sequence;
+        }
+
+        /// <summary>
+        /// The eleven roots stay in the weave so a sentence can
+        /// always be written, even when the room does not speak them.
+        /// </summary>
+        static void EnsureBasicRunes(List<WeaveGlyph> sequence)
+        {
+            if (sequence == null)
+            {
+                return;
+            }
+
+            var seen = new HashSet<RuneId>();
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                seen.Add(sequence[i].Shown);
+                seen.Add(sequence[i].Rune);
+            }
+
+            for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
+            {
+                var rune = RuneCatalog.BasicRunes[i];
+                if (seen.Add(rune))
+                {
+                    sequence.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
+                }
+            }
         }
 
         static void AddAmbient(List<WeaveGlyph> sequence, RuneId rune)

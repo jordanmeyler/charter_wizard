@@ -68,6 +68,7 @@ namespace RuneMagic
             Shapes["shot"] = SpellShape.Shot;
             Shapes["pillar"] = SpellShape.Pillar;
             Shapes["spread"] = SpellShape.Spread;
+            Shapes["grow"] = SpellShape.Spread;
             Shapes["remote"] = SpellShape.Remote;
             Shapes["self"] = SpellShape.Self;
         }

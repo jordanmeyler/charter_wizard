@@ -6,7 +6,8 @@ namespace RuneMagic
     /// <summary>
     /// The on-screen weave, read only in the Charter. Exploring shows tiles,
     /// not glyphs. The sentence is everything in the camera view, laid
-    /// boustrophedon and scrolled sideways. Off-screen runes cannot be used.
+    /// boustrophedon and scrolled sideways. The eleven roots always sit
+    /// in the grid so a sentence can be written.
     /// </summary>
     public sealed class RuneTapestry : MonoBehaviour
     {
