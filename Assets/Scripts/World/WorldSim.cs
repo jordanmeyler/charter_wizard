@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Tiles speak to their neighbors. Fire spreads, water grows plants,
+    /// Tiles speak to their neighbors. Fire spreads by burn rate, water grows plants,
     /// retardant matter puts hunger out, and charge runs through what
     /// conducts. Wood and plants break that path.
     /// </summary>
@@ -14,6 +14,7 @@ namespace RuneMagic
         float _tick;
         const float Step = 0.32f;
         public const float DryFireRun = 0.4f;
+        public const float VineFireRun = 0.9f;
         public const float OilFireRun = 2.4f;
         readonly List<OilWave> _slicks = new();
 
@@ -110,7 +111,7 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.HasOil && tile.Fire > 0.12f && tile.Wet < 0.15f)
+                if (tile.HasOil && tile.Fire > 0.12f)
                 {
                     FlashOilFire(tile, flashed);
                 }
@@ -133,29 +134,27 @@ namespace RuneMagic
 
                 var neighbors = _grid.Neighbors(tile.Coord);
                 var quench = 0f;
+                var run = tile.BurnRate;
                 for (var n = 0; n < neighbors.Count; n++)
                 {
                     var other = neighbors[n];
                     var flam = other.Flammability;
-                    if (flam < 0f)
+                    if (flam < 0f && !tile.FireIgnoresWater)
                     {
                         quench += -flam * 0.45f;
                     }
-                    else if (other.Wet < 0.2f && !other.HasWaterCover && other.Fire < 0.15f)
+                    else if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
                     {
-                        var oilWick = tile.HasOil || other.HasOil;
-                        var vineWick = tile.HasVine || other.HasVine;
                         var catchable = flam > 0f || other.HasVine || other.HasOil;
                         if (catchable)
                         {
-                            var run = oilWick ? OilFireRun : vineWick ? 0.9f : DryFireRun;
                             var fuel = flam > 0f ? flam : 1.2f;
                             other.Ignite(fuel * run);
                         }
                     }
                 }
 
-                if (tile.Wet > 0.15f)
+                if (tile.Wet > 0.15f && !tile.FireIgnoresWater)
                 {
                     quench += 0.8f;
                 }
@@ -166,7 +165,13 @@ namespace RuneMagic
                 }
                 else
                 {
-                    tile.Ignite(-0.12f - quench);
+                    var consume = 0.12f;
+                    if (tile.BurnRate > 0.05f)
+                    {
+                        consume *= tile.BurnRate / DryFireRun;
+                    }
+
+                    tile.Ignite(-consume - quench);
                 }
 
                 if (tile.Fire > 0.55f && (tile.IsPlantish || tile.HasPlantishDetail))
@@ -197,7 +202,7 @@ namespace RuneMagic
                 for (var n = 0; n < neighbors.Count; n++)
                 {
                     var other = neighbors[n];
-                    if (!other.HasOil || other.Wet >= 0.2f || other.HasWaterCover)
+                    if (!other.HasOil)
                     {
                         continue;
                     }
@@ -215,6 +220,16 @@ namespace RuneMagic
                     queue.Enqueue(other);
                 }
             }
+        }
+
+        static bool CanCatch(WorldTile other)
+        {
+            if (other.FireIgnoresWater)
+            {
+                return true;
+            }
+
+            return other.Wet < 0.2f && !other.HasWaterCover && !other.IsDeepWater;
         }
 
         void StepWet()
