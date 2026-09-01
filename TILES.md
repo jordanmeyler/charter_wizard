@@ -24,6 +24,9 @@ each `WorldPaintTile` into a live `WorldTile`.
    Select the layer you just painted (Tiles, Walls, or Environment
    Details), turn on **Paint in Scene view**, pick Kind / Material /
    Cover / Blocks, and click those cells. The sprite stays.
+   Uncheck a layer (or **Solo** the one you want) when Cover or
+   Environment Details is in the way — hidden layers still bake at
+   Play. The **Rune Layers** panel in the Scene view does the same.
    Right-click a cell to copy its properties. Check **Write onto Cover
    layer** to stamp ice / fire / miasma without changing the walk cell.
    Stamps glow in the **Scene** view (not Game). Nothing to turn on.
@@ -91,6 +94,15 @@ levels of the same grid: stamp Floor on the cells you can walk.
 | **Walls** | Solid walls | Unstamped cells on this layer stay walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, miasma, fog | Overlay: look, work, and weave. Hidden, then baked. |
 | **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here still makes that cell walkable. Hidden, then baked. |
+
+Hide a layer while you work on the ones under it. Uncheck it in
+**Window → Rune Magic → Tile Properties**, the **Rune Layers** panel
+in the Scene view, or the Inspector on **Map**. Same as the Hierarchy
+eye. **Solo** hides every other layer. **Show all** brings them back.
+`Window → Rune Magic → Hide Selected Tile Layer` / **Show All Tile
+Layers** do the same from the menu. Hidden layers stay in the scene
+and still bake at Play — only the Scene view (and picking) ignore
+them, so a click reaches the tiles underneath.
 
 ## First area puzzles
 
