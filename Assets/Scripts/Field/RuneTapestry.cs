@@ -22,6 +22,7 @@ namespace RuneMagic
         readonly HashSet<RuneId> _vicinity = new();
         readonly List<RuneId> _vicinityList = new();
         int _viewKey = int.MinValue;
+        int _spoken;
         string _readingText = string.Empty;
 
         public string Reading => _readingText;
@@ -98,7 +99,8 @@ namespace RuneMagic
 
             var view = FieldView.OnScreen();
             var key = FieldView.Key(view);
-            if (key != _viewKey || _sequence.Count == 0)
+            var spoken = _grid != null ? _grid.SpokenRevision : 0;
+            if (key != _viewKey || spoken != _spoken || _sequence.Count == 0)
             {
                 Rebuild(view, key);
             }
@@ -124,6 +126,7 @@ namespace RuneMagic
         void Rebuild(Rect view, int key)
         {
             _viewKey = key;
+            _spoken = _grid != null ? _grid.SpokenRevision : 0;
             _sequence.Clear();
             _vicinity.Clear();
             _vicinityList.Clear();
