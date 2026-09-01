@@ -279,7 +279,7 @@ namespace RuneMagic
 
         /// <summary>
         /// How long a full fire lasts here. Oil is one second.
-        /// Plant is two. Wood is three.
+        /// Wood is two. Plant is three.
         /// </summary>
         public float BurnSeconds
         {
