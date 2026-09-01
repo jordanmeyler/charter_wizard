@@ -309,6 +309,18 @@ namespace RuneMagic
             {
                 broken.Add("CoverFromMaterial is Cover-layer inference — Fire and Plant walk stamps are not covers");
             }
+
+            if (IsQualityStampOf(TileKind.Floor, MaterialId.Dirt)
+                && TileAtlas.FloorId(MaterialId.Dirt, 2, 5) != "floor-dirt")
+            {
+                broken.Add("A dirt stamp must not invent pebble or brown-line floor variants");
+            }
+
+            if (IsQualityStampOf(TileKind.Wall, MaterialId.Stone)
+                && TileAtlas.WallId(MaterialId.Stone, 3, 4) != "wall")
+            {
+                broken.Add("A stone wall stamp must not invent random wall-crack / wall-c tiles");
+            }
         }
 
         /// <summary>
