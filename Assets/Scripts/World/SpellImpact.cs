@@ -137,6 +137,8 @@ namespace RuneMagic
             var cells = grid.TilesInRadius(center, Mathf.Max(0.6f, radius));
             var changed = 0;
             var frozen = 0;
+            var spreadLeft = PlantLaw.MaxSpread(spell);
+            var growBy = PlantLaw.GrowSteps(spell);
             for (var i = 0; i < cells.Count; i++)
             {
                 var tile = cells[i];
@@ -156,34 +158,50 @@ namespace RuneMagic
                         tile.Drench(1f);
                         if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
                         {
-                            if (tile.IsPlantish)
+                            if (tile.IsPlantish && growBy > 0)
                             {
-                                tile.Grow(1);
+                                tile.Grow(growBy);
                             }
 
-                            if (grid.SpreadPlant(tile))
+                            if (spreadLeft > 0)
                             {
-                                changed++;
+                                var took = grid.SpreadPlant(tile, spreadLeft);
+                                spreadLeft -= took;
+                                if (took > 0)
+                                {
+                                    changed++;
+                                }
                             }
                         }
 
                         changed++;
                         break;
                     case TileVerb.Grow:
-                        if (tile.CanTakePlant)
+                        if (PlantLaw.PlantsNewBodies(spell) && tile.CanTakePlant)
                         {
                             tile.PlantHere();
                             changed++;
                         }
                         else if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
                         {
-                            if (tile.IsPlantish)
+                            if (tile.IsPlantish && growBy > 0)
                             {
-                                tile.Grow(1);
+                                tile.Grow(growBy);
                             }
 
-                            grid.SpreadPlant(tile);
                             changed++;
+                        }
+
+                        if (spreadLeft > 0
+                            && !PlantLaw.FillsVisibleWater(spell)
+                            && (tile.HasWaterSource || tile.IsPlantish || tile.HasPlantCover))
+                        {
+                            var took = grid.SpreadPlant(tile, spreadLeft);
+                            spreadLeft -= took;
+                            if (took > 0)
+                            {
+                                changed++;
+                            }
                         }
 
                         break;
@@ -246,6 +264,19 @@ namespace RuneMagic
                 }
             }
 
+            if (PlantLaw.FillsVisibleWater(spell) && spreadLeft > 0)
+            {
+                var seed = grid.TileAtWorld(center) ?? (cells.Count > 0 ? cells[0] : null);
+                if (seed != null)
+                {
+                    var took = grid.SpreadPlant(seed, spreadLeft, visibleOnly: true);
+                    if (took > 0)
+                    {
+                        changed++;
+                    }
+                }
+            }
+
             if (verb.Tiles == TileVerb.Douse || verb.Tiles == TileVerb.Wet)
             {
                 var seeds = new List<Vector2Int>(cells.Count);
@@ -271,7 +302,9 @@ namespace RuneMagic
             if (changed > 0 && frozen == 0)
             {
                 notes.Add(verb.Tiles == TileVerb.Grow
-                    ? "The vegetable body drinks."
+                    ? spell == SpellId.Forest
+                        ? "A living plant opens to every water you can see."
+                        : "The vegetable body drinks."
                     : verb.Tiles == TileVerb.Ignite
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge

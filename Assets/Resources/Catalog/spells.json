@@ -1523,6 +1523,21 @@
       "work": "OilSlick",
       "target": "Area",
       "radius": 4.2
+    },
+    {
+      "number": 96,
+      "id": "Forest",
+      "book": "GrowHeal",
+      "name": "Forest",
+      "want": "A living plant opened to many, then more living plant. It drinks every water still on the screen and covers the pool to the edge of what you can see.",
+      "recipe": "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life",
+      "via": "Plant · Life · Anima · Plant · Life",
+      "form": "Remote",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Forest",
+      "target": "Area",
+      "radius": 1.2
     }
   ]
 }

@@ -8,8 +8,8 @@ namespace RuneMagic
     /// family — Floor only if you stamped Floor or used a Floor brush.
     /// A look with Kind = None is never a floor, on any layer.
     /// Extra Floor / Tiles children merge; each Floor stamp still counts.
-    /// Cover is the overlay: look, gameplay, and what the cell answers.
-    /// Older Aura stamps still map onto Cover.
+    /// Cover is the overlay: look and what the cell answers.
+    /// Stamps do not start a reaction. Older Aura stamps still map onto Cover.
     /// </summary>
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile
@@ -24,7 +24,7 @@ namespace RuneMagic
         public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and the same catalog mark as an inscription. Fire cover only marks hunger so the weave speaks Fire — it does not kindle a hall.")]
+        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Look, work, and the same catalog mark as an inscription. Fire cover only marks hunger so the weave speaks Fire — it does not kindle a hall. Stamps do not start a reaction.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -140,6 +140,8 @@ namespace RuneMagic
                     return TileCover.Vine;
                 case MaterialId.Vein:
                     return TileCover.Lightning;
+                case MaterialId.Ash:
+                    return TileCover.Ash;
                 default:
                     return TileCover.None;
             }
@@ -148,7 +150,7 @@ namespace RuneMagic
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
             base.GetTileData(position, tilemap, ref tileData);
-            if (tileData.sprite == null)
+            if (tileData.sprite == null && !KeepsPaintedLook)
             {
                 tileData.sprite = PreviewSprite(position.x, position.y);
             }
@@ -160,11 +162,23 @@ namespace RuneMagic
             tileData.flags = TileFlags.LockColor | TileFlags.LockTransform;
         }
 
+        /// <summary>
+        /// Stamps add qualities over the tile you painted. They must
+        /// not invent a new floor graphic when the painted sprite is
+        /// missing.
+        /// </summary>
+        public bool KeepsPaintedLook => true;
+
         public Sprite PreviewSprite(int x = 0, int y = 0)
         {
             if (sprite != null)
             {
                 return sprite;
+            }
+
+            if (KeepsPaintedLook)
+            {
+                return null;
             }
 
             TileAtlas.Ensure();

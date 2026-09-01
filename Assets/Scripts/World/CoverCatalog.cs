@@ -23,7 +23,8 @@ namespace RuneMagic
             TileCover.Vine,
             TileCover.Miasma,
             TileCover.Fog,
-            TileCover.Mud
+            TileCover.Mud,
+            TileCover.Ash
         };
 
         public static RuneId RuneOf(TileCover cover)
@@ -38,6 +39,7 @@ namespace RuneMagic
                 case TileCover.Miasma: return RuneId.Miasma;
                 case TileCover.Fog: return RuneId.Cloud;
                 case TileCover.Mud: return RuneId.Mud;
+                case TileCover.Ash: return RuneId.Ash;
                 default: return RuneId.None;
             }
         }
@@ -66,6 +68,8 @@ namespace RuneMagic
                     return TileCover.Fog;
                 case RuneId.Mud:
                     return TileCover.Mud;
+                case RuneId.Ash:
+                    return TileCover.Ash;
                 default:
                     return TileCover.None;
             }
@@ -83,6 +87,7 @@ namespace RuneMagic
                 case TileCover.Miasma: return MaterialId.Miasma;
                 case TileCover.Fog: return MaterialId.Cloud;
                 case TileCover.Mud: return MaterialId.Mud;
+                case TileCover.Ash: return MaterialId.Ash;
                 default: return MaterialId.None;
             }
         }

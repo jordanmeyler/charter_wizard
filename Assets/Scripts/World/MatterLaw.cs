@@ -339,14 +339,6 @@ namespace RuneMagic
                 case "obsidian":
                     material = MaterialId.Obsidian;
                     return true;
-                case "wood":
-                case "timber":
-                    material = MaterialId.Timber;
-                    return true;
-                case "plant":
-                case "vine":
-                    material = MaterialId.Plant;
-                    return true;
                 default:
                     return System.Enum.TryParse(matter.Trim(), true, out material)
                         && material != MaterialId.None;

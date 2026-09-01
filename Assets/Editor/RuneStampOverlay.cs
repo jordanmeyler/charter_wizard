@@ -33,6 +33,7 @@ namespace RuneMagic
         static readonly Color CoverLightning = new(1f, 0.92f, 0.2f, 1f);
         static readonly Color CoverWater = new(0.2f, 0.52f, 1f, 1f);
         static readonly Color CoverVine = new(0.38f, 0.78f, 0.22f, 1f);
+        static readonly Color CoverAsh = new(0.62f, 0.56f, 0.5f, 1f);
         static readonly Color CoverOther = new(0.75f, 0.42f, 0.9f, 1f);
         static readonly Color LookOnly = new(1f, 0.86f, 0.15f, 1f);
         static readonly Color[] MaterialTones;
@@ -472,6 +473,9 @@ namespace RuneMagic
                     return true;
                 case TileCover.Vine:
                     color = CoverVine;
+                    return true;
+                case TileCover.Ash:
+                    color = CoverAsh;
                     return true;
                 case TileCover.Miasma:
                     color = AuraMiasma;

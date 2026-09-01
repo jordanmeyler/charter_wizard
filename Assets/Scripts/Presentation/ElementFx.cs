@@ -116,7 +116,8 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.Grove
-                || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.VineRise)
+                || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.VineRise
+                || spell == SpellId.Forest || spell == SpellId.CallGrowth)
             {
                 return ElementFamily.Plant;
             }

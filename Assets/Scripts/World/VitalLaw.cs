@@ -26,9 +26,17 @@ namespace RuneMagic
         public const float FleshPoisonSeconds = 6f;
         public const float IceBurnSeconds = 4f;
         public const float EarthBurnSeconds = 12f;
-        public const float TimberBurnSeconds = 4f;
-        public const float PlantBurnSeconds = 3.2f;
-        public const float OilBurnSeconds = 2.4f;
+        /// <summary>
+        /// Fuel clocks are one to five seconds. Wood burns better
+        /// than plant. Spread is 5 − seconds, floored at 0.
+        /// Ember (5s) stays put; nothing goes negative.
+        /// </summary>
+        public const float OilBurnSeconds = 1f;
+        public const float TimberBurnSeconds = 2f;
+        public const float PlantBurnSeconds = 3f;
+        public const float GroveBurnSeconds = 4f;
+        public const float EmberBurnSeconds = 5f;
+        public const float SlowBurnSeconds = 5f;
 
         public static StatusClock ClockOf(StatusId id)
         {
@@ -111,16 +119,32 @@ namespace RuneMagic
             {
                 case MaterialId.Oil:
                     return OilBurnSeconds;
+                case MaterialId.Timber:
+                    return TimberBurnSeconds;
                 case MaterialId.Plant:
                 case MaterialId.Moss:
                     return PlantBurnSeconds;
                 case MaterialId.Grove:
-                    return 5f;
-                case MaterialId.Timber:
-                    return TimberBurnSeconds;
+                    return GroveBurnSeconds;
                 default:
                     return 0f;
             }
+        }
+
+        /// <summary>
+        /// How hard a standing fire runs from a body.
+        /// 5 − seconds: oil 4, wood 3, plant 2, grove 1, ember 0.
+        /// Flammability is a separate catch number.
+        /// </summary>
+        public static float FireRun(float burnSeconds)
+        {
+            if (burnSeconds <= 0f)
+            {
+                return 0f;
+            }
+
+            var run = EmberBurnSeconds - burnSeconds;
+            return run > 0f ? run : 0f;
         }
 
         public static string FatalNote(StatusId id, string who, bool adept)
@@ -180,6 +204,24 @@ namespace RuneMagic
                 || CanBurn(MaterialId.Stone))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
+            }
+
+            if (OilBurnSeconds != 1f
+                || TimberBurnSeconds != 2f
+                || PlantBurnSeconds != 3f
+                || GroveBurnSeconds < SlowBurnSeconds
+                || EmberBurnSeconds > 5f
+                || ItemBurnSeconds(MaterialId.Oil) != OilBurnSeconds
+                || ItemBurnSeconds(MaterialId.Timber) != TimberBurnSeconds
+                || ItemBurnSeconds(MaterialId.Plant) != PlantBurnSeconds
+                || ItemBurnSeconds(MaterialId.Moss) != PlantBurnSeconds
+                || FireRun(OilBurnSeconds) != EmberBurnSeconds - OilBurnSeconds
+                || FireRun(TimberBurnSeconds) != EmberBurnSeconds - TimberBurnSeconds
+                || FireRun(PlantBurnSeconds) != EmberBurnSeconds - PlantBurnSeconds
+                || FireRun(GroveBurnSeconds) != EmberBurnSeconds - GroveBurnSeconds
+                || FireRun(EmberBurnSeconds) != 0f)
+            {
+                broken.Add("Fuel clocks are 5 − seconds: oil 4, wood 3, plant 2, grove 1, ember 0");
             }
 
             if (SpellCodex.TryGet(SpellId.Vine, out var vine) && vine.Shape != SpellShape.Shot)

@@ -470,7 +470,7 @@ namespace RuneMagic
                 {
                     var wick = tile.HasOil || tile.Material == MaterialId.Oil || tile.HasVine;
                     tile.Ignite(wick ? 1.4f : 0.85f);
-                    if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
+                    if (wick && tile.IsConjured && tile.Material == MaterialId.Oil)
                     {
                         DetonateOil(grid, tile.Coord);
                         detonated++;
@@ -748,9 +748,43 @@ namespace RuneMagic
                 broken.Add("Oil puddle and geyser slick the floor; a slick must cover a wide radius");
             }
 
-            if (WorldSim.OilFireRun < WorldSim.DryFireRun * 4f)
+            if (!FireRunsFaster(WorldSim.OilFireRun, WorldSim.DryFireRun, WorldSim.VineFireRun))
             {
-                broken.Add("Oil must spread flame much faster than dry matter");
+                broken.Add("Oil must run faster than wood, wood faster than plant");
+            }
+
+            var oil = MaterialCatalog.Of(MaterialId.Oil);
+            var timber = MaterialCatalog.Of(MaterialId.Timber);
+            var plant = MaterialCatalog.Of(MaterialId.Plant);
+            var grove = MaterialCatalog.Of(MaterialId.Grove);
+            var ember = MaterialCatalog.Of(MaterialId.Ember);
+            var water = MaterialCatalog.Of(MaterialId.Water);
+            if (oil.BurnSeconds >= timber.BurnSeconds
+                || timber.BurnSeconds >= plant.BurnSeconds
+                || oil.BurnRate <= timber.BurnRate
+                || timber.BurnRate <= plant.BurnRate
+                || oil.Flammability <= timber.Flammability
+                || timber.Flammability <= plant.Flammability
+                || plant.Flammability <= grove.Flammability)
+            {
+                broken.Add("Wood must burn better than plant: oil, wood, plant, then grove");
+            }
+
+            if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)
+            {
+                broken.Add("Land plants and timber must carry a burn rate");
+            }
+
+            if (ember.BurnRate != 0f
+                || grove.BurnRate <= 0f
+                || grove.BurnRate >= plant.BurnRate)
+            {
+                broken.Add("Ember stays put; grove still runs, weaker than plant");
+            }
+
+            if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
+            {
+                broken.Add("Water itself must quench hunger, not carry it");
             }
 
             if (!WorldWork.IsVineWork(SpellId.Vine)
@@ -779,6 +813,7 @@ namespace RuneMagic
             MatterLaw.Audit(broken);
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);
+            PlantLaw.Audit(broken);
         }
 
         static List<Vector2Int> CellsAlong(WorldGrid grid, Vector3 from, Vector3 to, float width)
@@ -814,6 +849,11 @@ namespace RuneMagic
             }
 
             return cells;
+        }
+
+        static bool FireRunsFaster(float oil, float wood, float plant)
+        {
+            return oil > wood && wood > plant;
         }
 
         static bool CanTake(ISpellLock encounter, SpellVerb verb)

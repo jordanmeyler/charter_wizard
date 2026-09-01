@@ -72,7 +72,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
 | **Snow** | Air · Water · Cloud · Ice | Ice | Weather left on the stone, not a rune |
-| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
+| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. It floats: a film on water still burns. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
 | **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
 | **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
 | **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
@@ -91,29 +91,35 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus two tweakable numbers set in `MaterialCatalog.Flag`.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, conductivity, and a burn clock set in `MaterialCatalog.Flag`. `BurnRate` is derived from that clock.
 
 | Flag | Meaning |
 | --- | --- |
-| **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
+| **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not catch. Positive = how readily hunger takes it. |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 1, wood 2, plant 3, grove 4, ember 5). Wood burns better than plant. Zero is not fuel. |
+| **BurnRate** | How fast a standing fire travels from this tile. `5 − seconds`: oil 4, wood 3, plant 2, grove 1, ember 0. Ember stays put. Flammability is the separate catch number. |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
+Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a plant grows it toward Grove. Reach is the sentence — a short douse stays put, Sprout takes one wet neighbor, Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still spreads onto flammable neighbors. When the burn clock is spent, the vegetable body **gains an ash covering**; the walk tile stays. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
-| Material | Flam | Cond | Note |
-| --- | --- | --- | --- |
-| Oil | 2.2 | −0.25 | Fuel. Flame flashes across connected oil, much faster than timber. Insulates. |
-| Plant | 1.5 | −1.1 | Catches fast. Burns to Ash. Breaks a spark. |
-| Grove | 1.35 | −1.2 | Living mass. Insulates. |
-| Timber | 1.2 | −0.9 | Wood. Blocks the bolt. |
-| Moss | 1.05 | −0.7 | Soft green. Disrupts the path. |
-| Ember | 0.35 | 0 | Already hot. Neutral to charge. |
-| Dust | 0.55 | 0 | Rest that lost its weight. |
-| Water | −1.6 | 1.25 | Puts fire out. Carries charge. |
-| Rain | −1.1 | 0.7 | The veil drawn down. |
-| Ice | −0.85 | 0 | Hard water. Holds a spark, does not run it. |
-| Damp | −0.7 | 0.35 | Wet rest. |
-| Metal | 0 | 1.6 | The spark’s favourite road. |
-| Vein | 0 | 0.85 | Spark in the stone. |
+**Oil floats.** A film on water still catches, flashes, and runs at oil’s rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but it does not run.** Land plants keep their three-second clock. A spell may still walk them onto neighboring water, weaker than wood.
+
+Stood timber, plant, and oil props use the same 1–5 second clocks.
+
+| Material | Flam | Cond | Sec | Run | Note |
+| --- | --- | --- | --- | --- | --- |
+| Oil | 2.2 | −0.25 | 1 | 4 | Fuel. Floats. Fastest clock. Flashes. Insulates. |
+| Timber | 1.6 | −0.9 | 2 | 3 | Wood. Burns better than plant. Blocks the bolt. |
+| Plant | 1.1 | −1.1 | 3 | 2 | Green body. Slower than wood. On water it lights and does not run. |
+| Moss | 1.05 | −0.7 | 3 | 2 | Soft green. Same clock as plant. |
+| Grove | 0.85 | −1.2 | 4 | 1 | Living mass. Slow, still a weak run. |
+| Dust | 0.55 | 0 | 4 | 1 | Loose grit. Slow, weak run. |
+| Ember | 0.35 | 0 | 5 | 0 | Slow coals. Stay put. |
+| Water | −1.6 | 1.25 | 0 | 0 | Puts fire out. Carries charge. Oil on it still burns. |
+| Rain | −1.1 | 0.7 | 0 | 0 | The veil drawn down. |
+| Ice | −0.85 | 0 | 0 | 0 | Hard water. Holds a spark, does not run it. |
+| Damp | −0.7 | 0.35 | 0 | 0 | Wet rest. |
+| Metal | 0 | 1.6 | 0 | 0 | The spark’s favourite road. |
+| Vein | 0 | 0.85 | 0 | 0 | Spark in the stone. |
 
 The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).

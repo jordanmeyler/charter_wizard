@@ -247,6 +247,8 @@ namespace RuneMagic
                     return "cover-metal";
                 case MaterialId.Mud:
                     return "floor-mud";
+                case MaterialId.Ash:
+                    return "floor-ash";
                 case MaterialId.Crystal:
                     return "cover-seal";
                 case MaterialId.Ember:

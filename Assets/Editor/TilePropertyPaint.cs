@@ -122,7 +122,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. A later fireball, spreading burn, or oil a spell left will still find that cover. Ice cover melts when hunger crosses it. Oil or metal stamped on the Cover layer is fuel or a path for the spark — the stamp does not start the reaction. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Stamps sit over the tile you painted and do not start a reaction — only player and NPC spells do. A watered plant may spread onto one neighboring water floor or water covering. Hunger spent on timber or plant adds an ash covering; the walk tile stays. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. A later fireball, spreading burn, or oil a spell left will still find that cover. Ice cover melts when hunger crosses it. Oil or metal stamped on the Cover layer is fuel or a path for the spark — the stamp does not start the reaction. Vine is Plant · Mercury. Ash is Fire · Plant. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
         }
 
@@ -269,6 +269,11 @@ namespace RuneMagic
 
             var current = raw as WorldPaintTile;
             var sprite = SpriteOf(map, cell, raw);
+            if (sprite == null && current != null)
+            {
+                sprite = current.sprite;
+            }
+
             var kind = _applyKind ? _kind : (current != null ? current.kind : GuessKind(raw));
             var material = _applyMaterial ? _material : (current != null ? current.material : GuessMaterial(raw));
             var cover = _applyCover ? _cover : (current != null ? current.ResolvedCover() : TileCover.None);
@@ -297,6 +302,17 @@ namespace RuneMagic
 
             var authored = EnsureTile(sprite, kind, material, cover, blocks, opacity);
             if (authored == null || authored == raw)
+            {
+                return;
+            }
+
+            if (authored.sprite == null && raw is Tile previous && previous.sprite != null)
+            {
+                authored.sprite = previous.sprite;
+                EditorUtility.SetDirty(authored);
+            }
+
+            if (authored.KeepsPaintedLook && authored.sprite == null)
             {
                 return;
             }
@@ -376,6 +392,11 @@ namespace RuneMagic
 
         static Sprite SpriteOf(Tilemap map, Vector3Int cell, TileBase tile)
         {
+            if (tile is Tile painted && painted.sprite != null)
+            {
+                return painted.sprite;
+            }
+
             if (map != null)
             {
                 var shown = map.GetSprite(cell);
@@ -385,7 +406,7 @@ namespace RuneMagic
                 }
             }
 
-            return tile is Tile painted ? painted.sprite : null;
+            return null;
         }
 
         static TileKind GuessKind(TileBase tile)

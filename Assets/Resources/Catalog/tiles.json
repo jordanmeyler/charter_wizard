@@ -1267,6 +1267,10 @@
       "tile": "cover-fire"
     },
     {
+      "id": "cover-ash",
+      "tile": "floor-ash"
+    },
+    {
       "id": "water-ripple",
       "tile": "fx-ripple"
     },

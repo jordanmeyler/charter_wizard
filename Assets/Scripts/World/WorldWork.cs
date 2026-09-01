@@ -713,9 +713,9 @@ namespace RuneMagic
 
             if (spell == SpellId.OilSlick)
             {
-                var origin = CoordOf(to);
-                SlickOil(grid, new List<Vector2Int> { origin });
-                WorldSim.Ensure(grid)?.BeginSlick(origin, OilSlickRadius);
+                var mouth = CoordOf(to);
+                SlickOil(grid, new List<Vector2Int> { mouth });
+                WorldSim.Ensure(grid)?.BeginSlick(mouth, OilSlickRadius);
                 notes.Add("Fuel runs outward from the point. A wide floor will hold flame.");
             }
             else if (IsOilWork(spell))
@@ -911,7 +911,8 @@ namespace RuneMagic
             }
 
             var changed = 0;
-            for (var i = 0; i < cells.Count; i++)
+            var left = PlantLaw.MaxSpread(SpellId.Forest);
+            for (var i = 0; i < cells.Count && left > 0; i++)
             {
                 var tile = grid.Get(cells[i]);
                 if (tile == null)
@@ -926,8 +927,14 @@ namespace RuneMagic
                 }
                 else if (tile.IsPlantish)
                 {
-                    tile.Grow(2);
-                    grid.SpreadPlant(tile);
+                    tile.Grow(PlantLaw.GrowSteps(SpellId.Forest));
+                    changed++;
+                }
+
+                var took = grid.SpreadPlant(tile, left, visibleOnly: true);
+                left -= took;
+                if (took > 0)
+                {
                     changed++;
                 }
             }

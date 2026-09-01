@@ -147,84 +147,111 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A watered plant can climb one adjacent hollow or pool.
-        /// Water floor and water covering take a walkable plant cover.
-        /// A dry pit takes plant, then grove. One neighbor per call
-        /// so a pool fills slowly.
+        /// A spell-watered plant may take neighboring tiles that
+        /// already hold water — a water floor or a water covering.
+        /// Budget is the spell's reach. Forest also stays on screen.
         /// </summary>
         public bool SpreadPlant(WorldTile from)
         {
-            if (from == null || (!from.IsPlantish && !from.HasPlantCover && !from.HasPlantishDetail))
+            return SpreadPlant(from, 1) > 0;
+        }
+
+        public int SpreadPlant(WorldTile from, int budget, bool visibleOnly = false)
+        {
+            if (from == null || budget <= 0)
             {
-                return false;
+                return 0;
             }
 
-            if (from.IsPlantish && from.Growth < 1 && !from.HasPlantCover)
+            if (!from.HasWaterSource
+                && !from.IsPlantish
+                && !from.HasPlantCover
+                && !from.HasPlantishDetail
+                && !from.IsDeepWater
+                && !from.HasWaterCover)
             {
-                return false;
+                return 0;
             }
 
-            var neighbors = Neighbors(from.Coord);
             var grown = from.Growth >= 2 || from.Material == MaterialId.Grove
                 ? MaterialId.Grove
                 : MaterialId.Plant;
-            for (var i = 0; i < neighbors.Count; i++)
+            var used = 0;
+            var seen = new HashSet<Vector2Int>();
+            var queue = new Queue<WorldTile>();
+            EnqueueWater(from, seen, queue, visibleOnly);
+            var startNeighbors = Neighbors(from.Coord);
+            for (var i = 0; i < startNeighbors.Count; i++)
             {
-                var other = neighbors[i];
-                if (other.IsPlantish || other.HasPlantCover)
-                {
-                    continue;
-                }
-
-                if (other.IsDeepWater)
-                {
-                    return other.GrowOverWater(grown);
-                }
-
-                if (other.HasWaterCover)
-                {
-                    other.PaintCover(TileCover.Vine);
-                    other.Drench(0.55f);
-                    return true;
-                }
-
-                if (other.Kind != TileKind.Pit)
-                {
-                    continue;
-                }
-
-                other.BecomeWalkable(grown);
-                other.Drench(0.55f);
-                other.Grow(1);
-                return true;
+                EnqueueWater(startNeighbors[i], seen, queue, visibleOnly);
             }
 
-            return false;
+            while (queue.Count > 0 && used < budget)
+            {
+                var tile = queue.Dequeue();
+                if (tile.HasAshCover)
+                {
+                    continue;
+                }
+
+                if (tile.IsPlantish || tile.HasPlantCover)
+                {
+                    var next = Neighbors(tile.Coord);
+                    for (var n = 0; n < next.Count; n++)
+                    {
+                        EnqueueWater(next[n], seen, queue, visibleOnly);
+                    }
+
+                    continue;
+                }
+
+                var took = false;
+                if (tile.IsDeepWater)
+                {
+                    took = tile.GrowOverWater(grown);
+                }
+                else if (tile.HasWaterCover)
+                {
+                    tile.PaintCover(TileCover.Vine);
+                    took = true;
+                }
+
+                if (!took)
+                {
+                    continue;
+                }
+
+                used++;
+                var around = Neighbors(tile.Coord);
+                for (var n = 0; n < around.Count; n++)
+                {
+                    EnqueueWater(around[n], seen, queue, visibleOnly);
+                }
+            }
+
+            return used;
         }
 
-        public bool TouchesOpenWater(WorldTile tile)
+        void EnqueueWater(
+            WorldTile tile,
+            HashSet<Vector2Int> seen,
+            Queue<WorldTile> queue,
+            bool visibleOnly)
         {
-            if (tile == null)
+            if (tile == null || !seen.Add(tile.Coord))
             {
-                return false;
+                return;
             }
 
-            var neighbors = Neighbors(tile.Coord);
-            for (var i = 0; i < neighbors.Count; i++)
+            if (visibleOnly && !PlantLaw.OnScreen(tile.WorldOrigin))
             {
-                var other = neighbors[i];
-                if (other.IsPlantish || other.HasPlantCover)
-                {
-                    continue;
-                }
-
-                if (other.IsDeepWater || other.HasWaterCover)
-                {
-                    return true;
-                }
+                return;
             }
 
-            return false;
+            if (tile.IsDeepWater || tile.HasWaterCover || tile.HasPlantCover || tile.IsPlantish)
+            {
+                queue.Enqueue(tile);
+            }
         }
 
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);
