@@ -91,32 +91,35 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus three tweakable numbers set in `MaterialCatalog.Flag`.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, conductivity, and a burn clock set in `MaterialCatalog.Flag`. `BurnRate` is derived from that clock.
 
 | Flag | Meaning |
 | --- | --- |
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not catch. Positive = how readily hunger takes it. |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
-| **BurnRate** | How fast a standing fire travels from this tile, and how fast the tile burns out. High is a short, running blaze (oil 2.4). Zero does not carry the flame. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 1, wood 2, plant 3, grove 4, ember 5). Zero is not fuel. |
+| **BurnRate** | How fast a standing fire travels from this tile. Derived from the clock: faster fuel runs harder. **Four seconds and slower stay put.** |
 
 Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
-**Oil floats.** A film on water still catches, flashes, and runs at oil’s burn rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but its burn rate is zero** — the flame stays on that cell. Land plants keep their ordinary catch and run.
+**Oil floats.** A film on water still catches, flashes, and runs at oil’s rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but it does not run.** Land plants keep their three-second clock and still spread.
 
-| Material | Flam | Cond | Burn | Note |
-| --- | --- | --- | --- | --- |
-| Oil | 2.2 | −0.25 | 2.4 | Fuel. Floats. Flame flashes across connected oil, much faster than timber. Insulates. |
-| Plant | 1.5 | −1.1 | 0.85 | Catches fast. Burns to Ash. On water it lights and does not run. Breaks a spark. |
-| Grove | 1.35 | −1.2 | 0.7 | Living mass. Insulates. |
-| Timber | 1.2 | −0.9 | 0.45 | Wood. Blocks the bolt. |
-| Moss | 1.05 | −0.7 | 0.75 | Soft green. Disrupts the path. |
-| Dust | 0.55 | 0 | 1.1 | Rest that lost its weight. Brief flare. |
-| Ember | 0.35 | 0 | 0.25 | Already hot. Slow coals. Neutral to charge. |
-| Water | −1.6 | 1.25 | 0 | Puts fire out. Carries charge. Oil on it still burns. |
-| Rain | −1.1 | 0.7 | 0 | The veil drawn down. |
-| Ice | −0.85 | 0 | 0 | Hard water. Holds a spark, does not run it. |
-| Damp | −0.7 | 0.35 | 0 | Wet rest. |
-| Metal | 0 | 1.6 | 0 | The spark’s favourite road. |
-| Vein | 0 | 0.85 | 0 | Spark in the stone. |
+Stood timber, plant, and oil props use the same 1–5 second clocks.
+
+| Material | Flam | Cond | Sec | Run | Note |
+| --- | --- | --- | --- | --- | --- |
+| Oil | 2.2 | −0.25 | 1 | 3 | Fuel. Floats. Fastest clock. Flashes. Insulates. |
+| Timber | 1.2 | −0.9 | 2 | 2 | Wood. Spreads. Blocks the bolt. |
+| Plant | 1.5 | −1.1 | 3 | 1 | Catches readily. Lasts longer than wood. On water it lights and does not run. |
+| Moss | 1.05 | −0.7 | 3 | 1 | Soft green. Same clock as plant. |
+| Grove | 1.35 | −1.2 | 4 | 0 | Living mass. Slow — burns in place. |
+| Dust | 0.55 | 0 | 4 | 0 | Loose grit. Slow, no run. |
+| Ember | 0.35 | 0 | 5 | 0 | Slow coals. Do not spread. |
+| Water | −1.6 | 1.25 | 0 | 0 | Puts fire out. Carries charge. Oil on it still burns. |
+| Rain | −1.1 | 0.7 | 0 | 0 | The veil drawn down. |
+| Ice | −0.85 | 0 | 0 | 0 | Hard water. Holds a spark, does not run it. |
+| Damp | −0.7 | 0.35 | 0 | 0 | Wet rest. |
+| Metal | 0 | 1.6 | 0 | 0 | The spark’s favourite road. |
+| Vein | 0 | 0.85 | 0 | 0 | Spark in the stone. |
 
 The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).

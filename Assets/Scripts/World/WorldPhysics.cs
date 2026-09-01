@@ -748,19 +748,24 @@ namespace RuneMagic
                 broken.Add("Oil puddle and geyser slick the floor; a slick must cover a wide radius");
             }
 
-            if (WorldSim.OilFireRun < WorldSim.DryFireRun * 4f)
+            if (WorldSim.OilFireRun <= WorldSim.DryFireRun
+                || WorldSim.DryFireRun <= WorldSim.VineFireRun)
             {
-                broken.Add("Oil must spread flame much faster than dry matter");
+                broken.Add("Oil must run faster than wood, wood faster than plant");
             }
 
             var oil = MaterialCatalog.Of(MaterialId.Oil);
             var timber = MaterialCatalog.Of(MaterialId.Timber);
             var plant = MaterialCatalog.Of(MaterialId.Plant);
+            var grove = MaterialCatalog.Of(MaterialId.Grove);
+            var ember = MaterialCatalog.Of(MaterialId.Ember);
             var water = MaterialCatalog.Of(MaterialId.Water);
-            if (oil.BurnRate < timber.BurnRate * 4f
-                || oil.BurnRate + 0.01f < WorldSim.OilFireRun)
+            if (oil.BurnSeconds >= timber.BurnSeconds
+                || timber.BurnSeconds >= plant.BurnSeconds
+                || oil.BurnRate <= timber.BurnRate
+                || timber.BurnRate <= plant.BurnRate)
             {
-                broken.Add("Oil must burn and run much faster than timber");
+                broken.Add("Oil must finish before wood, wood before plant");
             }
 
             if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)
@@ -768,7 +773,13 @@ namespace RuneMagic
                 broken.Add("Land plants and timber must carry a burn rate");
             }
 
-            if (water.BurnRate > 0f || water.Flammability >= 0f)
+            if (grove.BurnRate > 0f || ember.BurnRate > 0f
+                || grove.BurnSeconds < VitalLaw.SlowBurnSeconds)
+            {
+                broken.Add("Slow fuels must burn in place and not spread");
+            }
+
+            if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
             {
                 broken.Add("Water itself must quench hunger, not carry it");
             }
