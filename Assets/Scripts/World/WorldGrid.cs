@@ -128,6 +128,38 @@ namespace RuneMagic
             return list;
         }
 
+        /// <summary>
+        /// Cells in a Chebyshev box, excluding the origin. Dist is
+        /// king-move tiles (1 = adjacent, 2 = the ring beyond).
+        /// </summary>
+        public void ForEachInChebyshev(Vector2Int origin, int reach, System.Action<WorldTile, int> visit)
+        {
+            if (visit == null || reach < 1)
+            {
+                return;
+            }
+
+            for (var y = origin.y - reach; y <= origin.y + reach; y++)
+            {
+                for (var x = origin.x - reach; x <= origin.x + reach; x++)
+                {
+                    if (x == origin.x && y == origin.y)
+                    {
+                        continue;
+                    }
+
+                    var tile = Get(x, y);
+                    if (tile == null)
+                    {
+                        continue;
+                    }
+
+                    var dist = Mathf.Max(Mathf.Abs(x - origin.x), Mathf.Abs(y - origin.y));
+                    visit(tile, dist);
+                }
+            }
+        }
+
         public List<WorldTile> TilesInRadius(Vector3 world, float radius)
         {
             var list = new List<WorldTile>();

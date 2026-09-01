@@ -42,6 +42,25 @@ namespace RuneMagic
         public const float EmberBurnSeconds = 5f;
         public const float SlowBurnSeconds = 5f;
 
+        /// <summary>
+        /// One 0–5 hunger grade. Catch, spread, and burn time are
+        /// separate applications of the same range.
+        /// 0 neutral — spell volume only.
+        /// 1 tinder — catches within 2 of a stronger source, does not run.
+        /// 2 soft — grove / moss. Same catch rule, longer clock.
+        /// 3 plant — catches within 2 of timber / oil / a hall, does not run the field.
+        /// 4 timber — runs to adjacent equal-or-weaker fuel.
+        /// 5 oil / a live hall — strongest source; oil also flashes a slick.
+        /// </summary>
+        public const int HungerNeutral = 0;
+        public const int HungerTinder = 1;
+        public const int HungerSoft = 2;
+        public const int HungerPlant = 3;
+        public const int HungerTimber = 4;
+        public const int HungerOil = 5;
+        public const int HungerCatchReach = 2;
+        public const int HungerSpreadMin = 4;
+
         public static StatusClock ClockOf(StatusId id)
         {
             if (id == StatusId.Burning || id == StatusId.Poisoned)
@@ -176,10 +195,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Neighbor hunger only runs onto fuel or a wick. Stone, dirt,
-        /// and a painted fire mark are neutral — a spell that hits
-        /// them can still light the cell. Rest fire in the walk is a
-        /// source a spell starts, not something a neighbor kindles.
+        /// A cell that can catch from a potent source. Neutral walk
+        /// and rest fire in the floor do not. A spell can still hit
+        /// those cells.
         /// </summary>
         public static bool IsSpreadFuel(
             MaterialId walk,
@@ -192,7 +210,66 @@ namespace RuneMagic
                 return false;
             }
 
-            return CanBurn(walk) || CanBurn(detail) || vine || oil;
+            return HungerOf(walk) > HungerNeutral
+                || HungerOf(detail) > HungerNeutral
+                || vine
+                || oil;
+        }
+
+        public static int HungerOf(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Oil:
+                    return HungerOil;
+                case MaterialId.Timber:
+                    return HungerTimber;
+                case MaterialId.Plant:
+                    return HungerPlant;
+                case MaterialId.Grove:
+                case MaterialId.Moss:
+                    return HungerSoft;
+                case MaterialId.Ember:
+                case MaterialId.Dust:
+                    return HungerTinder;
+                default:
+                    return HungerNeutral;
+            }
+        }
+
+        public static bool SpreadsFire(int hunger) =>
+            hunger >= HungerSpreadMin;
+
+        /// <summary>
+        /// Whether a live source of this hunger may light a target
+        /// this many tiles away (Chebyshev). Catch-only fuel needs a
+        /// strictly stronger source within two tiles. Timber and oil
+        /// may run into adjacent equal-or-weaker fuel. A vine wick
+        /// takes any adjacent live flame. Neutral never catches here.
+        /// </summary>
+        public static bool CanIgnite(int sourceHunger, int targetHunger, int chebyshev, bool vineWick)
+        {
+            if (targetHunger <= HungerNeutral || chebyshev <= 0)
+            {
+                return false;
+            }
+
+            if (vineWick && chebyshev == 1)
+            {
+                return true;
+            }
+
+            if (chebyshev > HungerCatchReach)
+            {
+                return false;
+            }
+
+            if (SpreadsFire(sourceHunger) && chebyshev == 1 && targetHunger <= sourceHunger)
+            {
+                return true;
+            }
+
+            return sourceHunger > targetHunger;
         }
 
         /// <summary>
@@ -358,7 +435,6 @@ namespace RuneMagic
             if (IsSpreadFuel(MaterialId.Stone)
                 || IsSpreadFuel(MaterialId.Dirt)
                 || IsSpreadFuel(MaterialId.Fire)
-                || IsSpreadFuel(MaterialId.Ember)
                 || !IsSpreadFuel(MaterialId.Timber)
                 || !IsSpreadFuel(MaterialId.Oil)
                 || !IsSpreadFuel(MaterialId.Plant)
@@ -367,6 +443,24 @@ namespace RuneMagic
                 || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
             {
                 broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — not a painted mark or rest fire");
+            }
+
+            if (HungerOf(MaterialId.Stone) != HungerNeutral
+                || HungerOf(MaterialId.Ember) != HungerTinder
+                || HungerOf(MaterialId.Grove) != HungerSoft
+                || HungerOf(MaterialId.Plant) != HungerPlant
+                || HungerOf(MaterialId.Timber) != HungerTimber
+                || HungerOf(MaterialId.Oil) != HungerOil
+                || SpreadsFire(HungerPlant)
+                || !SpreadsFire(HungerTimber)
+                || CanIgnite(HungerPlant, HungerPlant, 1, false)
+                || !CanIgnite(HungerTimber, HungerPlant, 2, false)
+                || !CanIgnite(HungerTimber, HungerTimber, 1, false)
+                || CanIgnite(HungerTimber, HungerPlant, 3, false)
+                || !CanIgnite(HungerPlant, HungerSoft, 2, false)
+                || !CanIgnite(HungerTinder, HungerPlant, 1, true))
+            {
+                broken.Add("Hunger 0–5: plant catches within 2 of a stronger source and does not run; timber and oil may");
             }
 
             if (OilBurnSeconds != 1f

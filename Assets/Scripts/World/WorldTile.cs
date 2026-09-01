@@ -538,16 +538,70 @@ namespace RuneMagic
                     && VitalLaw.CanBurn(Material)));
 
         /// <summary>
-        /// Neighbor fire may take this cell. Neutral walk (stone, dirt,
-        /// a fire mark) only lights when a spell's volume hits it.
+        /// Neighbor fire may take this cell. Neutral walk (stone, dirt)
+        /// only lights when a spell's volume hits it. Catch-only fuel
+        /// still needs a stronger source within two tiles.
         /// </summary>
-        public bool IsSpreadFuel =>
-            !HasAshCover
-            && VitalLaw.IsSpreadFuel(
-                Material,
-                _detailMaterial,
-                HasVine,
-                HasOil && !IsGeyser);
+        public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
+
+        /// <summary>
+        /// 0–5 hunger on this cell. Walk, a timber / plant detail, vine,
+        /// oil, and ember cover raise the grade. Rest fire in the floor
+        /// stays 0 — a spell starts that source.
+        /// </summary>
+        public int Hunger
+        {
+            get
+            {
+                if (HasAshCover)
+                {
+                    return VitalLaw.HungerNeutral;
+                }
+
+                var hunger = IsFireFloor
+                    ? VitalLaw.HungerNeutral
+                    : VitalLaw.HungerOf(Material);
+                if (_detailMaterial != MaterialId.None)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerOf(_detailMaterial));
+                }
+
+                if (HasVine)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerPlant);
+                }
+
+                if (HasOil && !IsGeyser)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerOil);
+                }
+
+                if (HasFireCover && !Kindled)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerTinder);
+                }
+
+                return hunger;
+            }
+        }
+
+        /// <summary>
+        /// How hard this live flame may light other cells. A kindled
+        /// hall, a geyser, or a lit rest-fire walk is an oil-grade
+        /// source. Catch-only fuel only lights weaker cells.
+        /// </summary>
+        public int FirePotency
+        {
+            get
+            {
+                if (Kindled || IsGeyser || (IsFireFloor && LiveFire))
+                {
+                    return VitalLaw.HungerOil;
+                }
+
+                return Hunger;
+            }
+        }
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>

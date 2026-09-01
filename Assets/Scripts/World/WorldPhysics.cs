@@ -842,19 +842,27 @@ namespace RuneMagic
             }
 
             if (ember.BurnRate != 0f
-                || grove.BurnRate <= 0f
-                || grove.BurnRate >= plant.BurnRate)
+                || ember.Hunger != VitalLaw.HungerTinder
+                || grove.Hunger != VitalLaw.HungerSoft
+                || plant.Hunger != VitalLaw.HungerPlant
+                || timber.Hunger != VitalLaw.HungerTimber
+                || oil.Hunger != VitalLaw.HungerOil
+                || VitalLaw.SpreadsFire(plant.Hunger)
+                || !VitalLaw.SpreadsFire(timber.Hunger)
+                || VitalLaw.CanIgnite(plant.Hunger, plant.Hunger, 1, false)
+                || !VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 2, false))
             {
-                broken.Add("Ember stays put; grove still runs, weaker than plant");
+                broken.Add("Hunger 0–5: ember / grove / plant catch and do not run the field; timber and oil may");
             }
 
             if (WorldSim.AcceptsFireSpread(null)
                 || VitalLaw.IsSpreadFuel(MaterialId.Stone)
                 || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
-                || !VitalLaw.IsSpreadFuel(MaterialId.Oil))
+                || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
-                broken.Add("Hunger must not run onto empty or neutral ground; timber and oil still catch");
+                broken.Add("Hunger must not run onto empty or neutral ground; timber, oil, and plant still catch");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

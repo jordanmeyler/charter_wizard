@@ -5,10 +5,11 @@ namespace RuneMagic
 {
     /// <summary>
     /// Tiles speak to their neighbors after a spell starts the work.
-    /// Fire spreads by burn rate onto fuel that has not already
-    /// caught. A tile already alight does not recatch — that loop
-    /// is what made a grove burn forever. Ember cover stays put and
-    /// then ashes. Retardant matter puts hunger out, and charge
+    /// Fire follows a 0–5 Hunger grade. Catch-only fuel (1–3)
+    /// lights within two tiles of a stronger source and does not
+    /// run. Timber and oil (4–5) may pass fire to a neighbor.
+    /// A tile already alight does not recatch. Ember cover stays
+    /// put and then ashes. Retardant matter puts hunger out, and charge
     /// runs through what conducts. Wood and plants break that path.
     /// Plants do not grow on their own. Cover on water stays put,
     /// like ice, unless a spell-watered land plant or Forest asked
@@ -144,23 +145,8 @@ namespace RuneMagic
                     continue;
                 }
 
-                var neighbors = _grid.Neighbors(tile.Coord);
-                var quench = 0f;
-                var run = tile.BurnRate;
-                for (var n = 0; n < neighbors.Count; n++)
-                {
-                    var other = neighbors[n];
-                    var flam = other.Flammability;
-                    if (flam < 0f && !tile.FireIgnoresWater)
-                    {
-                        quench += -flam * 0.45f;
-                    }
-                    else if (AcceptsFireSpread(other) && run > 0.05f)
-                    {
-                        var fuel = flam > 0f ? flam : 1.2f;
-                        other.Ignite(fuel * run);
-                    }
-                }
+                var quench = QuenchAround(tile);
+                SpreadFrom(tile);
 
                 if (tile.Wet > 0.15f && !tile.FireIgnoresWater)
                 {
@@ -192,23 +178,7 @@ namespace RuneMagic
         {
             if (tile.LiveFire)
             {
-                var neighbors = _grid.Neighbors(tile.Coord);
-                var run = tile.BurnRate > 0.05f ? tile.BurnRate : 1f;
-                for (var n = 0; n < neighbors.Count; n++)
-                {
-                    var other = neighbors[n];
-                    var flam = other.Flammability;
-                    if (flam < 0f && !tile.FireIgnoresWater)
-                    {
-                        continue;
-                    }
-
-                    if (AcceptsFireSpread(other) && run > 0.05f)
-                    {
-                        var fuel = flam > 0f ? flam : 1.2f;
-                        other.Ignite(fuel * run);
-                    }
-                }
+                SpreadFrom(tile);
             }
 
             if (tile.HasOverlayFuel && (tile.LiveFire || tile.Kindled))
@@ -265,12 +235,52 @@ namespace RuneMagic
             }
         }
 
+        float QuenchAround(WorldTile tile)
+        {
+            var quench = 0f;
+            var neighbors = _grid.Neighbors(tile.Coord);
+            for (var n = 0; n < neighbors.Count; n++)
+            {
+                var flam = neighbors[n].Flammability;
+                if (flam < 0f && !tile.FireIgnoresWater)
+                {
+                    quench += -flam * 0.45f;
+                }
+            }
+
+            return quench;
+        }
+
+        void SpreadFrom(WorldTile tile)
+        {
+            var potency = tile.FirePotency;
+            if (potency <= VitalLaw.HungerNeutral)
+            {
+                return;
+            }
+
+            _grid.ForEachInChebyshev(tile.Coord, VitalLaw.HungerCatchReach, (other, dist) =>
+            {
+                if (!AcceptsFireSpread(other))
+                {
+                    return;
+                }
+
+                if (!VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
+                {
+                    return;
+                }
+
+                var fuel = other.Flammability > 0f ? other.Flammability : 1.2f;
+                other.Ignite(fuel);
+            });
+        }
+
         /// <summary>
         /// Hunger runs once through fuel. A tile already alight, or
-        /// already ash, does not catch again. Neutral stone, dirt, and
-        /// a painted fire mark do not catch from a neighbor — only
-        /// from a spell that hits them. Timber, oil, plant, and vine
-        /// still take the run.
+        /// already ash, does not catch again. Neutral stone and dirt
+        /// only light when a spell hits them. Catch-only fuel still
+        /// needs a stronger source within two tiles.
         /// </summary>
         public static bool AcceptsFireSpread(WorldTile other)
         {

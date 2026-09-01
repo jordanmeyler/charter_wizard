@@ -147,9 +147,17 @@ namespace RuneMagic
         /// <summary>
         /// How fast a standing fire travels from this body. Derived
         /// from <see cref="BurnSeconds"/>: faster fuel runs, four
-        /// seconds and slower stay put.
+        /// seconds and slower stay put. Spread itself uses
+        /// <see cref="Hunger"/>, not this clock leftover.
         /// </summary>
         public float BurnRate { get; internal set; }
+
+        /// <summary>
+        /// 0–5 hunger grade. Catch, spread, and burn time apply the
+        /// same range. 0 is neutral; 1–3 catch from a stronger source
+        /// and do not run; 4–5 may pass fire to a neighbor.
+        /// </summary>
+        public int Hunger { get; internal set; }
 
         public RuneId Primary
         {
@@ -468,6 +476,7 @@ namespace RuneMagic
                 material.Conductivity = conductivity;
                 material.BurnSeconds = burnSeconds;
                 material.BurnRate = VitalLaw.FireRun(burnSeconds);
+                material.Hunger = VitalLaw.HungerOf(id);
             }
         }
 
