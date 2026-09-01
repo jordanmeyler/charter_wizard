@@ -293,9 +293,7 @@ namespace RuneMagic
                     maxX = Mathf.Max(maxX, x);
                     maxY = Mathf.Max(maxY, y);
 
-                    var look = paint != null
-                        ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
-                        : SpriteOf(raw);
+                    var look = LookOf(map, pos, paint, raw);
                     var kind = ResolveWalkKind(paint, raw, defaultKind);
                     var material = paint != null ? paint.material : GuessMaterial(raw);
                     var tile = grid.Get(x, y);
@@ -448,9 +446,7 @@ namespace RuneMagic
                     maxX = Mathf.Max(maxX, x);
                     maxY = Mathf.Max(maxY, y);
 
-                    var look = paint != null
-                        ? (paint.sprite != null ? paint.sprite : paint.PreviewSprite(x, y))
-                        : SpriteOf(raw);
+                    var look = LookOf(map, pos, paint, raw);
                     var kind = ResolveWalkKind(paint, raw, null);
                     var material = paint != null
                         ? paint.material
@@ -636,6 +632,11 @@ namespace RuneMagic
                         return fromPaint;
                     }
                 }
+
+                // A stamped cell already said Cover = None. Do not guess
+                // Water from "Floor_Water_…" — that overlay swaps the
+                // painted pool for the atlas cover-water tile.
+                return TileCover.None;
             }
 
             return GuessCover(raw);
@@ -739,6 +740,25 @@ namespace RuneMagic
             }
 
             return false;
+        }
+
+        static Sprite LookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)
+        {
+            if (map != null)
+            {
+                var shown = map.GetSprite(pos);
+                if (shown != null)
+                {
+                    return shown;
+                }
+            }
+
+            if (paint != null)
+            {
+                return paint.sprite != null ? paint.sprite : paint.PreviewSprite(pos.x, pos.y);
+            }
+
+            return SpriteOf(raw);
         }
 
         static Sprite SpriteOf(TileBase tile)
