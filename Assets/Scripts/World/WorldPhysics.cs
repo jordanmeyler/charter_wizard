@@ -849,12 +849,15 @@ namespace RuneMagic
                 || oil.Hunger != VitalLaw.HungerOil
                 || VitalLaw.IsStrongSource(plant.Hunger)
                 || !VitalLaw.IsStrongSource(timber.Hunger)
+                || VitalLaw.CatchReach(timber.Hunger) != 2
+                || VitalLaw.CatchReach(oil.Hunger) != 4
                 || VitalLaw.CanIgnite(plant.Hunger, plant.Hunger, 1, false)
-                || VitalLaw.CanIgnite(timber.Hunger, timber.Hunger, 1, false)
+                || !VitalLaw.CanIgnite(timber.Hunger, timber.Hunger, 1, false)
                 || !VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 2, false)
-                || !VitalLaw.CanIgnite(oil.Hunger, timber.Hunger, 1, false))
+                || !VitalLaw.CanIgnite(oil.Hunger, timber.Hunger, 1, false)
+                || VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 3, false))
             {
-                broken.Add("Hunger 0–10: only a strong source (7+) spreads, and only to flammable grades below it; fire must touch fuel toward the source");
+                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach");
             }
 
             var mud = MaterialCatalog.Of(MaterialId.Mud);
