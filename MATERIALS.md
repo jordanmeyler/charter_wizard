@@ -98,7 +98,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not catch. Positive = how readily hunger takes it. |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
 | **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 1, wood 2, plant 3, grove 4, ember 5). Wood burns better than plant. Zero is not fuel. |
-| **BurnRate** | How fast a standing fire travels from this tile. `max(0, 4 − seconds)` so oil is 3, wood 2, plant 1. Grove and ember floor at 0 — they do not go negative. Flammability is the separate catch number. |
+| **BurnRate** | How fast a standing fire travels from this tile. `5 − seconds`: oil 4, wood 3, plant 2, grove 1, ember 0. Ember stays put. Flammability is the separate catch number. |
 
 Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
@@ -108,13 +108,13 @@ Stood timber, plant, and oil props use the same 1–5 second clocks.
 
 | Material | Flam | Cond | Sec | Run | Note |
 | --- | --- | --- | --- | --- | --- |
-| Oil | 2.2 | −0.25 | 1 | 3 | Fuel. Floats. Fastest clock. Flashes. Insulates. |
-| Timber | 1.6 | −0.9 | 2 | 2 | Wood. Burns better than plant. Blocks the bolt. |
-| Plant | 1.1 | −1.1 | 3 | 1 | Green body. Slower than wood. On water it lights and does not run. |
-| Moss | 1.05 | −0.7 | 3 | 1 | Soft green. Same clock as plant. |
-| Grove | 0.85 | −1.2 | 4 | 0 | Living mass. Catches less. Slow — burns in place. |
-| Dust | 0.55 | 0 | 4 | 0 | Loose grit. Slow, no run. |
-| Ember | 0.35 | 0 | 5 | 0 | Slow coals. Do not spread. |
+| Oil | 2.2 | −0.25 | 1 | 4 | Fuel. Floats. Fastest clock. Flashes. Insulates. |
+| Timber | 1.6 | −0.9 | 2 | 3 | Wood. Burns better than plant. Blocks the bolt. |
+| Plant | 1.1 | −1.1 | 3 | 2 | Green body. Slower than wood. On water it lights and does not run. |
+| Moss | 1.05 | −0.7 | 3 | 2 | Soft green. Same clock as plant. |
+| Grove | 0.85 | −1.2 | 4 | 1 | Living mass. Slow, still a weak run. |
+| Dust | 0.55 | 0 | 4 | 1 | Loose grit. Slow, weak run. |
+| Ember | 0.35 | 0 | 5 | 0 | Slow coals. Stay put. |
 | Water | −1.6 | 1.25 | 0 | 0 | Puts fire out. Carries charge. Oil on it still burns. |
 | Rain | −1.1 | 0.7 | 0 | 0 | The veil drawn down. |
 | Ice | −0.85 | 0 | 0 | 0 | Hard water. Holds a spark, does not run it. |

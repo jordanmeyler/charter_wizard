@@ -28,15 +28,15 @@ namespace RuneMagic
         public const float EarthBurnSeconds = 12f;
         /// <summary>
         /// Fuel clocks are one to five seconds. Wood burns better
-        /// than plant. Oil, wood, plant; grove and ember are the
-        /// slow end and do not spread.
+        /// than plant. Spread is 5 − seconds, floored at 0.
+        /// Ember (5s) stays put; nothing goes negative.
         /// </summary>
         public const float OilBurnSeconds = 1f;
         public const float TimberBurnSeconds = 2f;
         public const float PlantBurnSeconds = 3f;
         public const float GroveBurnSeconds = 4f;
         public const float EmberBurnSeconds = 5f;
-        public const float SlowBurnSeconds = 4f;
+        public const float SlowBurnSeconds = 5f;
 
         public static StatusClock ClockOf(StatusId id)
         {
@@ -133,8 +133,7 @@ namespace RuneMagic
 
         /// <summary>
         /// How hard a standing fire runs from a body.
-        /// max(0, 4 − seconds): oil 3, wood 2, plant 1.
-        /// Grove (4s) and ember (5s) are 0 — not a negative clock.
+        /// 5 − seconds: oil 4, wood 3, plant 2, grove 1, ember 0.
         /// Flammability is a separate catch number.
         /// </summary>
         public static float FireRun(float burnSeconds)
@@ -144,7 +143,7 @@ namespace RuneMagic
                 return 0f;
             }
 
-            var run = SlowBurnSeconds - burnSeconds;
+            var run = EmberBurnSeconds - burnSeconds;
             return run > 0f ? run : 0f;
         }
 
@@ -216,12 +215,13 @@ namespace RuneMagic
                 || ItemBurnSeconds(MaterialId.Timber) != TimberBurnSeconds
                 || ItemBurnSeconds(MaterialId.Plant) != PlantBurnSeconds
                 || ItemBurnSeconds(MaterialId.Moss) != PlantBurnSeconds
-                || FireRun(OilBurnSeconds) <= FireRun(TimberBurnSeconds)
-                || FireRun(TimberBurnSeconds) <= FireRun(PlantBurnSeconds)
-                || FireRun(GroveBurnSeconds) != 0f
+                || FireRun(OilBurnSeconds) != EmberBurnSeconds - OilBurnSeconds
+                || FireRun(TimberBurnSeconds) != EmberBurnSeconds - TimberBurnSeconds
+                || FireRun(PlantBurnSeconds) != EmberBurnSeconds - PlantBurnSeconds
+                || FireRun(GroveBurnSeconds) != EmberBurnSeconds - GroveBurnSeconds
                 || FireRun(EmberBurnSeconds) != 0f)
             {
-                broken.Add("Fuel clocks are 1–5s: oil, wood, plant; slow bodies do not spread");
+                broken.Add("Fuel clocks are 5 − seconds: oil 4, wood 3, plant 2, grove 1, ember 0");
             }
 
             if (SpellCodex.TryGet(SpellId.Vine, out var vine) && vine.Shape != SpellShape.Shot)

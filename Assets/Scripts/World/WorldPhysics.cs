@@ -776,10 +776,11 @@ namespace RuneMagic
                 broken.Add("Land plants and timber must carry a burn rate");
             }
 
-            if (grove.BurnRate > 0f || ember.BurnRate > 0f
-                || grove.BurnSeconds < VitalLaw.SlowBurnSeconds)
+            if (ember.BurnRate != 0f
+                || grove.BurnRate <= 0f
+                || grove.BurnRate >= plant.BurnRate)
             {
-                broken.Add("Slow fuels must burn in place and not spread");
+                broken.Add("Ember stays put; grove still runs, weaker than plant");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

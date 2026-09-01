@@ -193,13 +193,13 @@ Each material now carries flammability, conductivity, and a burn clock in `Mater
 | **Flammability** | Fire-retardant — puts nearby fire out (water −1.6, ice −0.85, rain −1.1) | Will not catch | How readily hunger takes it (oil 2.2, timber 1.6, plant 1.1, grove 0.85) |
 | **Conductivity** | Insulator — wood and plants disrupt the path (timber −0.9, plant −1.1, grove −1.2) | Neutral — may hold a spark but will not pass it (stone, dirt, sand) | How freely a spark travels (metal 1.6, water 1.25, vein 0.85) |
 | **BurnSeconds** | — | Not fuel | How long a full fire lasts (oil 1s, wood 2s, plant 3s, grove 4s, ember 5s) |
-| **BurnRate** | — | Slow fuel — `max(0, 4 − seconds)` so 4s+ is 0, never negative | How hard hunger runs (oil 3, wood 2, plant 1) |
+| **BurnRate** | — | Ember (5s) stays put | How hard hunger runs (`5 − seconds`: oil 4, wood 3, plant 2, grove 1) |
 
 Tiles keep live state: **Fire**, **Wet**, **Charge**, **Growth**. Plant a vegetable body (`Sprout`) and water it — the patch grows toward Grove. Fire spreads onto flammable neighbors and burns plants to Ash. Retardant neighbors quench. Charge walks **conductive** tiles (metal, water, wet stone, vein). Neutral stone can take a bolt but will not pass it unless a neighbor conducts. Wood and plants **insulate** — they break the path, even on metal. Overlays (`tile-fire`, `tile-wet`, `tile-charge`, `tile-grow`) make the reaction visible.
 
 Marquee reactions (each a puzzle key):
 - **Lightning + Water(floor) → conduction** — charge runs the pool.
-- **Fire + Plant/Wood → spreading burn** — wood burns better than plant. Wood is two seconds and runs harder; plant lasts three. Grove and ember are slow (4–5s) and burn in place. Cover clears to Ash when the clock is spent.
+- **Fire + Plant/Wood → spreading burn** — wood burns better than plant. Wood is two seconds and runs harder; plant lasts three. Grove is a weak run. Ember (5s) stays put. Cover clears to Ash when the clock is spent.
 - **Fire + Oil → flash** — oil spreads flame across connected fuel in one breath, much faster than timber. It floats: a film on water still burns and flashes. A lit geyser stays kindled until yield is thrown. A plant standing on water can light, but it does not carry the flame.
 - **Water + Plant → growth** — wet vegetable bodies climb toward Grove. A watered plant covering **spreads slowly onto neighboring water floors and water coverings**, and across adjacent pits.
 - **Water drowns** — yield holding a vessel has no floor. Walking a water tile (or a water-filled pit) sends you back. Flight and hop still clear it.
