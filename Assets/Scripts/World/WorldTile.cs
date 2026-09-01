@@ -61,6 +61,7 @@ namespace RuneMagic
         int _animFrame = -1;
         MaterialId _telegraph = MaterialId.None;
         int _telegraphCount;
+        float _overlayBurn;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -206,12 +207,17 @@ namespace RuneMagic
 
         /// <summary>
         /// Hunger seated in the walk itself — Floor-Fire, ember, a hearth, lava.
+        /// Rest matter. It does not burn out. Coverings and spells
+        /// are what react.
         /// </summary>
-        public bool IsFireFloor =>
-            Material == MaterialId.Fire
-            || Material == MaterialId.Ember
-            || Material == MaterialId.Hearth
-            || Material == MaterialId.Lava;
+        public bool IsFireFloor => VitalLaw.IsRestFire(Material);
+
+        /// <summary>
+        /// Fuel sitting on the walk — vine, oil, a plant or timber
+        /// detail. The floor underneath is not this.
+        /// </summary>
+        public bool HasOverlayFuel =>
+            HasVine || (HasOil && !IsGeyser) || HasPlantishDetail;
 
         public bool HasPoisonCover =>
             !HasAshCover
@@ -1351,14 +1357,91 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Overlay fuel on a rest fire floor. Vine, oil, and plant
+        /// details burn on their clock. The fire walk does not.
+        /// </summary>
+        public void TickOverlayFuel(float seconds)
+        {
+            if (!HasOverlayFuel)
+            {
+                _overlayBurn = 0f;
+                return;
+            }
+
+            _overlayBurn += Mathf.Max(0f, seconds);
+            var clock = BurnSeconds > 0.05f ? BurnSeconds : VitalLaw.PlantBurnSeconds;
+            if (_overlayBurn < clock)
+            {
+                return;
+            }
+
+            _overlayBurn = 0f;
+            BurnOut();
+        }
+
+        public void EndSpellFire()
+        {
+            LiveFire = false;
+            if (Kindled)
+            {
+                KeepKindled();
+                return;
+            }
+
+            if (IsFireFloor)
+            {
+                Fire = 0f;
+                RefreshFx();
+            }
+        }
+
+        void SpendOverlayFuel()
+        {
+            _overlayBurn = 0f;
+            if (HasPlantishDetail)
+            {
+                ClearDetail();
+            }
+
+            if (!IsGeyser)
+            {
+                Oil = 0f;
+            }
+
+            if (HasVine)
+            {
+                PaintCover(TileCover.None);
+            }
+        }
+
+        /// <summary>
         /// Hunger finishes the fuel. Fire cover wears off. A plant or
         /// timber floor becomes dirt, or stone when a tileset sat
         /// under that fuel. A timber or plant wall burns for its
         /// clock, then the wall falls and ash takes its place so a
-        /// key behind it can be reached. Kindled halls do not ash.
+        /// key behind it can be reached. Floor-Fire stays. It only
+        /// spends what sat on it.
         /// </summary>
         public void BurnOut()
         {
+            if (IsFireFloor)
+            {
+                SpendOverlayFuel();
+                if (Kindled)
+                {
+                    KeepKindled();
+                }
+                else
+                {
+                    LiveFire = false;
+                    Fire = 0f;
+                }
+
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
             if (Kindled && !LiveFire)
             {
                 return;
@@ -1367,7 +1450,8 @@ namespace RuneMagic
             var waterWalk = Material == MaterialId.Water
                 || (_hasFoundation && Foundation.Material == MaterialId.Water);
             var fuelWall = Kind == TileKind.Wall && VitalLaw.CanBurn(Material);
-            var fuelFloor = (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+            var fuelFloor = !IsFireFloor
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
                 && (VitalLaw.CanBurn(Material) || IsPlantish || HasPlantishDetail || HasVine || HasOil);
 
             Fire = 0f;

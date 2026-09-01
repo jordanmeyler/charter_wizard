@@ -830,6 +830,15 @@ namespace RuneMagic
                 broken.Add("A spent burnable floor must leave dirt, or stone when a tileset sat under the fuel");
             }
 
+            if (CoverCatalog.LeftoverFloor(MaterialId.Fire, true) != MaterialId.Fire
+                || CoverCatalog.LeftoverFloor(MaterialId.Hearth, false) != MaterialId.Hearth
+                || VitalLaw.CanBurn(MaterialId.Fire)
+                || VitalLaw.CanBurn(MaterialId.Lava)
+                || !VitalLaw.IsRestFire(MaterialId.Ember))
+            {
+                broken.Add("Rest fire in the walk stays; it is not fuel and does not leftover to dirt");
+            }
+
             if (ember.BurnRate != 0f
                 || grove.BurnRate <= 0f
                 || grove.BurnRate >= plant.BurnRate)

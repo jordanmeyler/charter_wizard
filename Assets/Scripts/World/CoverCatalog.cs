@@ -341,6 +341,12 @@ namespace RuneMagic
                 broken.Add("A spent burnable floor leaves dirt, or stone when a tileset sat under the fuel");
             }
 
+            if (LeftoverFloor(MaterialId.Fire, true) != MaterialId.Fire
+                || LeftoverFloor(MaterialId.Hearth, false) != MaterialId.Hearth)
+            {
+                broken.Add("Rest fire in the walk stays; it is not leftover dirt");
+            }
+
             if (MaterialOf(TileCover.Fire) != MaterialId.Ember
                 || MaterialOf(TileCover.Ice) != MaterialId.Ice
                 || MaterialOf(TileCover.Water) != MaterialId.Water

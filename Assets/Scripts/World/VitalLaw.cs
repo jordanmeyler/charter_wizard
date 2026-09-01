@@ -175,6 +175,24 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Floor-Fire, hearth, ember, lava. Rest hunger in the walk.
+        /// It does not burn out. Coverings and spells are what react.
+        /// </summary>
+        public static bool IsRestFire(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Fire:
+                case MaterialId.Ember:
+                case MaterialId.Hearth:
+                case MaterialId.Lava:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static float ItemBurnSeconds(MaterialId material)
         {
             switch (material)
@@ -299,7 +317,15 @@ namespace RuneMagic
                 || BurnSeconds(CreatureNature.Fire, false) > 0f
                 || PoisonSeconds(CreatureNature.Earth, false) > 0f
                 || !CanBurn(MaterialId.Timber)
-                || CanBurn(MaterialId.Stone))
+                || CanBurn(MaterialId.Stone)
+                || CanBurn(MaterialId.Fire)
+                || CanBurn(MaterialId.Lava)
+                || CanBurn(MaterialId.Ember)
+                || !IsRestFire(MaterialId.Fire)
+                || !IsRestFire(MaterialId.Lava)
+                || !IsRestFire(MaterialId.Hearth)
+                || !IsRestFire(MaterialId.Ember)
+                || IsRestFire(MaterialId.Timber))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
             }
