@@ -339,7 +339,7 @@ namespace RuneMagic
 
         public static void DrawGizmosFor(Tilemap map)
         {
-            if (!Enabled || map == null || Application.isPlaying)
+            if (!Enabled || map == null || Application.isPlaying || TileLayerVisibility.IsHidden(map))
             {
                 return;
             }
@@ -384,7 +384,8 @@ namespace RuneMagic
             var maps = new List<Tilemap>(found.Length);
             for (var i = 0; i < found.Length; i++)
             {
-                if (found[i] != null && found[i].gameObject.scene.IsValid())
+                if (found[i] != null && found[i].gameObject.scene.IsValid() &&
+                    !TileLayerVisibility.IsHidden(found[i]))
                 {
                     maps.Add(found[i]);
                 }

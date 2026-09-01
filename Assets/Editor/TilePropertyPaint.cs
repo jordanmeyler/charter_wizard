@@ -59,6 +59,18 @@ namespace RuneMagic
 
             _paint = EditorGUILayout.Toggle("Paint in Scene view", _paint);
             _coverLayer = EditorGUILayout.Toggle("Write onto Cover layer", _coverLayer);
+
+            EditorGUILayout.Space();
+            TileLayerVisibility.DrawGui();
+            var target = ResolveMap();
+            if (target != null && TileLayerVisibility.IsHidden(target))
+            {
+                EditorGUILayout.HelpBox(
+                    "This layer is hidden. Clicks still stamp it, but you will not see the tiles. Show it, or pick another layer.",
+                    MessageType.Warning);
+            }
+
+            EditorGUILayout.Space();
             var show = EditorGUILayout.Toggle("Show stamps in Scene view", RuneStampOverlay.Enabled);
             if (show != RuneStampOverlay.Enabled)
             {

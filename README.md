@@ -86,7 +86,7 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 
 1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
 2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
-3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell. **Cover-Fire** only marks hunger so the weave speaks Fire; **Aura-Fire** is a kindled hall.
+3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell. Hide Cover (or Environment Details) in **Tile Properties**, the **Rune Layers** Scene overlay, or the Hierarchy eye when you need to paint the tiles under it. **Cover-Fire** only marks hunger so the weave speaks Fire; **Aura-Fire** is a kindled hall.
 4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate / Electric Gate…` places objects. Pack enemies are under **Enemies**. Set catalog id and material (or formula, keys, sprite) on the Inspector. An Electric Gate opens when lightning or charge finds it. The grid is 16×16 (16 PPU).
 
 Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
@@ -96,6 +96,7 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Tool | Use it for |
 | --- | --- |
 | Unity `Window → Rune Magic → Authoring` | Create the palette, add a painted map, place prefabs, snap to the grid |
+| Unity `Window → Rune Magic → Tile Properties` | Stamp kind / material / cover, and hide a tile layer to paint the ones under it |
 | Unity `Window → Rune Magic → Inscriptions` | Place any catalog rune as a floating mark; click tiles in the Scene view |
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
