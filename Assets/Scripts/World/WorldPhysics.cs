@@ -840,9 +840,9 @@ namespace RuneMagic
                 || VitalLaw.CanBurn(MaterialId.Fire)
                 || VitalLaw.CanBurn(MaterialId.Lava)
                 || VitalLaw.CanBurn(MaterialId.Ember)
-                || !VitalLaw.IsRestFire(MaterialId.Ember))
+                || VitalLaw.IsRestFire(MaterialId.Ember))
             {
-                broken.Add("Rest fire in the walk stays; it is not fuel and does not leftover to dirt");
+                broken.Add("Rest fire stays; ember is a Fire mark, not fuel, and does not leftover to dirt");
             }
 
             if (ember.BurnRate != 0f

@@ -247,10 +247,10 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Salt, RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Ember, "ember bed",
-                    "Withdrawn stamp. Leftover tiles are a weak rest-fire source, not fuel.",
-                    RuneId.Ember, MaterialPaint.Ember,
+                    "A weak fire mark. Speaks Fire. Hunger treats it as stone — it does not catch, run, or burn what stands on it.",
+                    RuneId.Fire, MaterialPaint.Ember,
                     new Color(0.2f, 0.1f, 0.08f), new Color(0.24f, 0.12f, 0.1f), false,
-                    RuneId.Fire, RuneId.Ash, RuneId.Ember),
+                    RuneId.Fire),
 
                 new WorldMaterial(MaterialId.Damp, "damp stone",
                     "Wet rest. Not ice, not mud.",
@@ -502,12 +502,8 @@ namespace RuneMagic
 
         public static IReadOnlyList<WorldMaterial> All => AllMaterials;
 
-        /// <summary>
-        /// Ember is a leftover rest-fire alias, not a palette stamp.
-        /// Use Floor-Fire or hearth if you want a weak fire source.
-        /// </summary>
         public static bool IsStampable(MaterialId id) =>
-            id != MaterialId.None && id != MaterialId.Ember;
+            id != MaterialId.None;
 
         public static WorldMaterial Of(MaterialId id)
         {
@@ -592,7 +588,7 @@ namespace RuneMagic
                 case RuneId.Miasma: return MaterialId.Miasma;
                 case RuneId.Poison: return MaterialId.Acid;
                 case RuneId.Flame: return MaterialId.Hearth;
-                case RuneId.Ember: return MaterialId.Fire;
+                case RuneId.Ember: return MaterialId.Ember;
                 case RuneId.Stone: return MaterialId.Stone;
                 case RuneId.None: return MaterialId.Void;
                 default: return MaterialId.Stone;

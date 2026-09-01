@@ -34,7 +34,7 @@ namespace RuneMagic
         /// Fuel clocks are one to five seconds, inverted: oil and
         /// wood last, plant and grove burn out sooner. Leftover is
         /// 5 − seconds, floored at 0. Spread uses Hunger, not this
-        /// leftover. Ember is not fuel.
+        /// leftover. Ember is a Fire mark, not fuel.
         /// </summary>
         public const float OilBurnSeconds = 5f;
         public const float TimberBurnSeconds = 4f;
@@ -357,16 +357,15 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Floor-Fire, hearth, leftover ember tiles, lava. Rest
-        /// hunger in the walk — a weak source, not fuel. It does
-        /// not burn out. Coverings and spells are what react.
+        /// Floor-Fire, hearth, lava. Rest hunger in the walk.
+        /// It does not burn out. Coverings and spells are what react.
+        /// Ember is a Fire-speaking mark, not rest fire.
         /// </summary>
         public static bool IsRestFire(MaterialId material)
         {
             switch (material)
             {
                 case MaterialId.Fire:
-                case MaterialId.Ember:
                 case MaterialId.Hearth:
                 case MaterialId.Lava:
                     return true;
@@ -511,7 +510,7 @@ namespace RuneMagic
                 || !IsRestFire(MaterialId.Fire)
                 || !IsRestFire(MaterialId.Lava)
                 || !IsRestFire(MaterialId.Hearth)
-                || !IsRestFire(MaterialId.Ember)
+                || IsRestFire(MaterialId.Ember)
                 || IsRestFire(MaterialId.Timber))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
@@ -533,6 +532,9 @@ namespace RuneMagic
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral
                 || HungerOf(MaterialId.Ember) != HungerNeutral
+                || MaterialCatalog.Of(MaterialId.Ember).BurnSeconds != 0f
+                || MaterialCatalog.Of(MaterialId.Ember).Manifestation != RuneId.Fire
+                || !MaterialCatalog.IsStampable(MaterialId.Ember)
                 || HungerOf(MaterialId.Dust) != HungerTinder
                 || HungerOf(MaterialId.Moss) != HungerMoss
                 || HungerOf(MaterialId.Grove) != HungerSoft

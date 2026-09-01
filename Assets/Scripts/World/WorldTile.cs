@@ -201,7 +201,6 @@ namespace RuneMagic
 
         public bool HasFireCover =>
             Cover == TileCover.Fire
-            || CoverMaterial == MaterialId.Ember
             || CoverMaterial == MaterialId.Hearth
             || CoverMaterial == MaterialId.Lava
             || CoverMaterial == MaterialId.Fire;
@@ -209,7 +208,7 @@ namespace RuneMagic
         /// <summary>
         /// Hunger seated in the walk itself — Floor-Fire, a hearth, lava.
         /// Rest matter. It does not burn out. Coverings and spells
-        /// are what react. Leftover ember tiles count as this too.
+        /// are what react. Ember is a Fire mark, not this.
         /// </summary>
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
@@ -721,7 +720,7 @@ namespace RuneMagic
 
             _telegraphCount++;
             _telegraph = material;
-            if (material == MaterialId.Hearth || material == MaterialId.Lava || material == MaterialId.Ember)
+            if (material == MaterialId.Hearth || material == MaterialId.Lava)
             {
                 Ignite(0.65f);
             }

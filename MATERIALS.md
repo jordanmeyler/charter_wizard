@@ -39,6 +39,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | --- | --- | --- | --- |
 | **Stone** | Earth · Salt · Stone | Stone | Walls, The Drop floor, halls |
 | **Ash** | Fire · Plant · Ash | Ash | Ash Court floor |
+| **Ember** | Fire | Fire | Ash Court bed. Weak fire mark. Speaks Fire. Hunger treats it as stone. |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall. Tree and Wood-wall stand this wood. |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
@@ -99,7 +100,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Quench** | One 0–10 grade. The wet counterpart. Dry stone is 0. Mud suppresses. Water puts fire out. |
 | **Flammability** | Positive = how readily hunger takes it once it is allowed to catch. Zero = will not catch. Negative tracks Quench (about `−grade × 0.16`; water 10 → −1.6). |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
-| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember is not a stamp or fuel. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember is a Fire mark, not fuel. |
 | **BurnRate** | Clock leftover `5 − seconds`. Not what walks fire to a neighbor. |
 
 **Hunger 0–10**
@@ -154,6 +155,7 @@ Stood timber, plant, and oil props use the same 1–5 second clocks.
 | Grove | 4 | 0 | 0.85 | −1.2 | 2 | Living mass. Catch-only. Burns out sooner. |
 | Moss | 3 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. |
 | Dust | 2 | 0 | 0.55 | 0 | 2 | Loose grit. Tinder. |
+| Ember | 0 | 0 | 0 | 0 | 0 | Weak fire mark. Speaks Fire. Neutral to hunger — does not catch or burn what stands on it. |
 | Stone / Dirt | 0 | 0 | 0 | 0 | 0 | Neutral and dry. Spell volume only. Leaves neighbor fire alone. |
 | Salt crust | 0 | 1 | −0.15 | 0.2 | 0 | Trace moisture. Below suppress. |
 | Mud | 0 | 3 | −0.35 | 0.25 | 0 | Suppresses neighbor fire. Does not put it out. |

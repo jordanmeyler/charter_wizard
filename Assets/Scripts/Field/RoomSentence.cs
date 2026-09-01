@@ -631,9 +631,11 @@ namespace RuneMagic
                     live.Add(RuneId.Water);
                     break;
                 case MaterialId.Hearth:
-                case MaterialId.Ember:
                     live.Add(RuneId.Fire);
                     live.Add(RuneId.Flame);
+                    break;
+                case MaterialId.Ember:
+                    live.Add(RuneId.Fire);
                     break;
                 case MaterialId.Lava:
                     live.Add(RuneId.Lava);

@@ -335,7 +335,15 @@ namespace RuneMagic
                 || LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
                 || LeftoverFloor(MaterialId.Ember) != MaterialId.Ember)
             {
-                broken.Add("Rest fire in the walk stays; it is not leftover dirt");
+                broken.Add("Fire, hearth, and ember marks stay; they are not leftover dirt");
+            }
+
+            var emberSpeak = new HashSet<RuneId>();
+            SpeakMaterial(MaterialId.Ember, emberSpeak);
+            if (!emberSpeak.Contains(RuneId.Fire)
+                || MaterialCatalog.Of(MaterialId.Ember).Manifestation != RuneId.Fire)
+            {
+                broken.Add("Ember must speak Fire and stay neutral to hunger");
             }
 
             if (MaterialOf(TileCover.Fire) != MaterialId.Fire

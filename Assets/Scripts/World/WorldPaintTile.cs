@@ -165,7 +165,6 @@ namespace RuneMagic
                     return TileCover.Water;
                 case MaterialId.Mud:
                     return TileCover.Mud;
-                case MaterialId.Ember:
                 case MaterialId.Hearth:
                 case MaterialId.Lava:
                     return TileCover.Fire;
@@ -305,9 +304,10 @@ namespace RuneMagic
             if (CoverFromMaterial(MaterialId.Ice) != TileCover.Ice
                 || CoverFromMaterial(MaterialId.Stone) != TileCover.None
                 || CoverFromMaterial(MaterialId.Fire) != TileCover.None
+                || CoverFromMaterial(MaterialId.Ember) != TileCover.None
                 || CoverFromMaterial(MaterialId.Plant) != TileCover.None)
             {
-                broken.Add("CoverFromMaterial is Cover-layer inference — Fire and Plant walk stamps are not covers");
+                broken.Add("CoverFromMaterial is Cover-layer inference — Fire, ember, and Plant walk stamps are not covers");
             }
         }
 
