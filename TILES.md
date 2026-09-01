@@ -105,10 +105,13 @@ middle for the stone.
    that water.
 
 The player needs a **Fire** mark in reach so they can write
-Fireball. Stamp **Cover = Fire** (Tile Properties, Write onto
-Cover layer) on any walk cell — that is the fire stamp. It only
-marks hunger. The weave speaks Fire, and clicking the cover draws
-the rune. It does not kindle a hall and will not kill you. A
+Fireball. That stamp is **Cover-Fire** in the Rune Palette
+(paint it on the **Cover** layer) or **Cover = Fire** in Tile
+Properties with **Write onto Cover layer**. It only marks
+hunger — Play draws the Fire rune on the tile you already
+painted, not a lava floor. The weave speaks Fire, and clicking
+the cover draws the rune. It does not kindle a hall and will
+not kill you. A
 fireball, a spreading burn, or oil that a spell left will still
 find that cover — the stamp is inert until work or a live
 reaction touches it. Ice cover melts when hunger crosses it.
@@ -394,7 +397,7 @@ Each spoken cover uses the same generated mark as that rune.
 | Cover | Speaks | Sheen | Mark |
 |---|---|---|---|
 | `ice` | Ice · Water · Earth | Sanctuary — ice over stone | Ice |
-| `fire` | Fire | Hell — lava / fire | Fire (mark only; Aura-Fire kindles) |
+| `fire` | Fire | Fire mark on the painted tile (no lava) | Fire (mark only; Aura-Fire kindles) |
 | `lightning` | Lightning · Spark · Air | Atlantis — charged seal | Lightning |
 | `water` | Water | Cavern water tile | Water |
 | `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |

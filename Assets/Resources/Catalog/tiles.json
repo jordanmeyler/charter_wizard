@@ -757,7 +757,7 @@
     {
       "id": "cover-fire",
       "kind": "cover",
-      "note": "Lava / fire.",
+      "note": "Fire mark. Speaks Fire. Does not kindle.",
       "pivot": "0.5,0.5",
       "col": 0,
       "row": 0,

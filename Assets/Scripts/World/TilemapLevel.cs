@@ -304,13 +304,14 @@ namespace RuneMagic
                             continue;
                         }
 
+                        var cover = ResolveCover(paint, raw, overlay: true);
                         var alpha = paint != null ? paint.ResolvedOpacity() : VeilOpacity(raw);
-                        if (look != null)
+                        if (look != null && !IsFireMarkOnly(cover, paint))
                         {
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
+                        ApplyCoverWork(tile, cover, paint, raw, overlay: true);
                         continue;
                     }
 
@@ -846,6 +847,16 @@ namespace RuneMagic
             {
                 tile.Kindle();
             }
+        }
+
+        /// <summary>
+        /// Cover-Fire is the hunger mark. Do not paste the lava brush
+        /// over the walk tile. Aura-Fire still keeps its hall look.
+        /// </summary>
+        static bool IsFireMarkOnly(TileCover cover, WorldPaintTile paint)
+        {
+            return cover == TileCover.Fire
+                && (paint == null || paint.aura != TileAura.Fire);
         }
     }
 }

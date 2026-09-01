@@ -34,7 +34,7 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 2
   m_ColliderType: 0
-  material: 30
+  material: 1
   kind: 0
   aura: 0
   cover: 2

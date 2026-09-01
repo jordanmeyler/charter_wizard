@@ -1494,11 +1494,14 @@ namespace RuneMagic
 
             if (!string.IsNullOrEmpty(_coverId))
             {
-                // Water cover without a painted sheen generates the Water
-                // mark. cover-water is the same opaque pool as floor-water
-                // and would hide the tile the author already stamped.
+                // Water and fire covers without a painted sheen generate
+                // the rune mark. cover-water is the same opaque pool as
+                // floor-water; cover-fire is lava. Either would hide the
+                // tile the author already stamped.
                 if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase))
+                    string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "fire", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-fire", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return null;
                 }
