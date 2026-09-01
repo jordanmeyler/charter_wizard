@@ -249,6 +249,14 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Ember lets fire walk across without catching. Crossing it
+        /// is not a leap — the path is still touching toward the
+        /// source. Hunger stays 0; nothing on the mark burns.
+        /// </summary>
+        public static bool ConductsFire(MaterialId material) =>
+            material == MaterialId.Ember;
+
+        /// <summary>
         /// A cell that can catch from a potent source. Neutral walk
         /// and rest fire in the floor do not. A spell can still hit
         /// those cells.
@@ -520,6 +528,9 @@ namespace RuneMagic
                 || IsSpreadFuel(MaterialId.Dirt)
                 || IsSpreadFuel(MaterialId.Fire)
                 || IsSpreadFuel(MaterialId.Ember)
+                || ConductsFire(MaterialId.Stone)
+                || ConductsFire(MaterialId.Dirt)
+                || !ConductsFire(MaterialId.Ember)
                 || !IsSpreadFuel(MaterialId.Timber)
                 || !IsSpreadFuel(MaterialId.Oil)
                 || !IsSpreadFuel(MaterialId.Plant)
@@ -527,7 +538,7 @@ namespace RuneMagic
                 || !IsSpreadFuel(MaterialId.Dirt, MaterialId.None, true, false)
                 || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
             {
-                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — not a painted mark or rest fire");
+                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember is a path, not fuel");
             }
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral

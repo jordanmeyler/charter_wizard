@@ -247,7 +247,7 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Salt, RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Ember, "ember bed",
-                    "A weak fire mark. Speaks Fire. Hunger treats it as stone — it does not catch, run, or burn what stands on it.",
+                    "A weak fire mark. Speaks Fire. Does not catch or burn what stands on it. Fire may walk across it.",
                     RuneId.Fire, MaterialPaint.Ember,
                     new Color(0.2f, 0.1f, 0.08f), new Color(0.24f, 0.12f, 0.1f), false,
                     RuneId.Fire),

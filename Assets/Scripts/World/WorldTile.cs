@@ -547,6 +547,16 @@ namespace RuneMagic
         public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
 
         /// <summary>
+        /// Ember is a Fire path, not fuel. Hunger can walk across it
+        /// toward the source; the mark itself does not catch.
+        /// </summary>
+        public bool ConductsFire =>
+            !HasAshCover
+            && (VitalLaw.ConductsFire(Material)
+                || VitalLaw.ConductsFire(_detailMaterial)
+                || VitalLaw.ConductsFire(CoverMaterial));
+
+        /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
         /// stays 0 — a spell starts that source.

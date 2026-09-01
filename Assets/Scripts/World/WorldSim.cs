@@ -8,7 +8,8 @@ namespace RuneMagic
     /// Fire follows a 0–10 Hunger grade. A strong source (7+)
     /// may spread to equal-or-weaker fuel out to its own reach
     /// (hunger − 6) if that cell touches fuel toward the source.
-    /// Fire does not leap a stone gap. Weaker fuel does not walk.
+    /// Fire does not leap a stone gap. Ember is a path, not a gap.
+    /// Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover is tinder and
@@ -228,7 +229,7 @@ namespace RuneMagic
                 for (var n = 0; n < neighbors.Count; n++)
                 {
                     var other = neighbors[n];
-                    if (!other.HasOil)
+                    if (!other.HasOil && !other.ConductsFire)
                     {
                         continue;
                     }
@@ -238,7 +239,7 @@ namespace RuneMagic
                         continue;
                     }
 
-                    if (!other.LiveFire)
+                    if (other.HasOil && !other.LiveFire)
                     {
                         other.Ignite(1.15f);
                     }
@@ -341,8 +342,9 @@ namespace RuneMagic
 
         /// <summary>
         /// The target must sit next to fuel that leads back to the
-        /// source — the burning cell, or a flammable tile closer to
-        /// it. Isolated fuel two tiles away across stone stays dark.
+        /// source — the burning cell, a flammable tile closer to it,
+        /// or ember (a Fire path). Isolated fuel two tiles away
+        /// across stone stays dark. Crossing ember is not a leap.
         /// </summary>
         bool TouchesFuelToward(WorldTile source, WorldTile target)
         {
@@ -370,7 +372,7 @@ namespace RuneMagic
         }
 
         static bool IsFuelTouch(WorldTile tile) =>
-            tile != null && (tile.LiveFire || tile.Kindled || tile.IsSpreadFuel);
+            tile != null && (tile.LiveFire || tile.Kindled || tile.IsSpreadFuel || tile.ConductsFire);
 
         static int Chebyshev(Vector2Int a, Vector2Int b) =>
             Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));

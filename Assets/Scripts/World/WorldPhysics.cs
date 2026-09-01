@@ -882,11 +882,14 @@ namespace RuneMagic
             if (WorldSim.AcceptsFireSpread(null)
                 || VitalLaw.IsSpreadFuel(MaterialId.Stone)
                 || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
+                || VitalLaw.IsSpreadFuel(MaterialId.Ember)
+                || VitalLaw.ConductsFire(MaterialId.Stone)
+                || !VitalLaw.ConductsFire(MaterialId.Ember)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
-                broken.Add("Hunger must not run onto empty or neutral ground; timber, oil, and plant still catch");
+                broken.Add("Hunger must not run onto empty or neutral ground; ember is a path, not fuel");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
