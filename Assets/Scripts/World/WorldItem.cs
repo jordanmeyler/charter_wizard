@@ -37,6 +37,8 @@ namespace RuneMagic
         public bool CanLook => !Collected && _item != null;
         public string LookText => Sight.OfItem(_item);
         public Essence Matter => WorldMatter.Parse(AuthoredMatter());
+        public MaterialId BoundMaterial =>
+            MatterLaw.TryParse(AuthoredMatter(), out var id) ? id : MaterialId.None;
         public bool Fragile =>
             fragile
             || (_item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase)));

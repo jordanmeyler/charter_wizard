@@ -96,22 +96,22 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | Flag | Meaning |
 | --- | --- |
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
-| **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
+| **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
+Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
 | Material | Flam | Cond | Note |
 | --- | --- | --- | --- |
-| Oil | 2.2 | 0.05 | Fuel. Flame flashes across connected oil, much faster than timber. |
-| Plant | 1.5 | 0.05 | Catches fast. Burns to Ash. |
-| Grove | 1.35 | 0.1 | Living mass. |
-| Timber | 1.2 | 0 | Wood. |
-| Moss | 1.05 | 0.1 | Soft green. |
-| Ember | 0.35 | 0.15 | Already hot. |
+| Oil | 2.2 | −0.25 | Fuel. Flame flashes across connected oil, much faster than timber. Insulates. |
+| Plant | 1.5 | −1.1 | Catches fast. Burns to Ash. Breaks a spark. |
+| Grove | 1.35 | −1.2 | Living mass. Insulates. |
+| Timber | 1.2 | −0.9 | Wood. Blocks the bolt. |
+| Moss | 1.05 | −0.7 | Soft green. Disrupts the path. |
+| Ember | 0.35 | 0 | Already hot. Neutral to charge. |
 | Dust | 0.55 | 0 | Rest that lost its weight. |
 | Water | −1.6 | 1.25 | Puts fire out. Carries charge. |
 | Rain | −1.1 | 0.7 | The veil drawn down. |
-| Ice | −0.85 | 0.15 | Hard water. |
+| Ice | −0.85 | 0 | Hard water. Holds a spark, does not run it. |
 | Damp | −0.7 | 0.35 | Wet rest. |
 | Metal | 0 | 1.6 | The spark’s favourite road. |
 | Vein | 0 | 0.85 | Spark in the stone. |

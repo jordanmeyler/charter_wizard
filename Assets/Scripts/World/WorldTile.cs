@@ -234,7 +234,49 @@ namespace RuneMagic
                 : Def.WorldMaterial.Flammability + DetailFlammability
                     + (HasOil ? 1.6f : 0f)
                     + (HasVine ? 1.4f : 0f);
-        public float Conductivity => Def.WorldMaterial.Conductivity;
+        public float Conductivity
+        {
+            get
+            {
+                var value = Def.WorldMaterial.Conductivity;
+                if (HasWaterCover)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Water));
+                }
+
+                if (HasPlantCover || HasVine)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Plant));
+                }
+
+                if (HasIceCover)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Ice));
+                }
+
+                value = ChargeLaw.Combine(value, ChargeLaw.OfCover(Cover));
+                value = ChargeLaw.Combine(value, ChargeLaw.OfWetness(Wet));
+                if (HasOil)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Oil));
+                }
+
+                if (_detailMaterial != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(_detailMaterial));
+                }
+
+                if (WorldMatter.TryOverlayConductivity(WorldOrigin, out var item))
+                {
+                    value = ChargeLaw.Combine(value, item);
+                }
+
+                return value;
+            }
+        }
+
+        public bool Conducts => ChargeLaw.Conducts(Conductivity);
+        public bool Insulates => ChargeLaw.Insulates(Conductivity);
         public bool IsPlantish => IsPlantMaterial(Material);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
         public bool HasDetail =>
@@ -672,6 +714,11 @@ namespace RuneMagic
 
         public void ChargeAt(float amount)
         {
+            if (amount > 0f && ChargeLaw.Insulates(Conductivity))
+            {
+                return;
+            }
+
             Charge = Mathf.Clamp01(Charge + amount);
             RefreshFx();
         }

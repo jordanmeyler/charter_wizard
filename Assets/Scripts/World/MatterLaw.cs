@@ -322,6 +322,20 @@ namespace RuneMagic
                 case "iron":
                     material = MaterialId.Metal;
                     return true;
+                case "water":
+                    material = MaterialId.Water;
+                    return true;
+                case "wood":
+                case "timber":
+                    material = MaterialId.Timber;
+                    return true;
+                case "plant":
+                case "vine":
+                    material = MaterialId.Plant;
+                    return true;
+                case "oil":
+                    material = MaterialId.Oil;
+                    return true;
                 case "obsidian":
                     material = MaterialId.Obsidian;
                     return true;
@@ -553,6 +567,14 @@ namespace RuneMagic
                 && melt.ViaRunes.Count > 0)
             {
                 broken.Add("Melt must not take the Flame via — Flame · Mercury is witchfire");
+            }
+
+            if (!TryParse("wood", out var wood) || wood != MaterialId.Timber
+                || !TryParse("water", out var water) || water != MaterialId.Water
+                || !TryParse("plant", out var plant) || plant != MaterialId.Plant
+                || !TryParse("vine", out var vine) || vine != MaterialId.Plant)
+            {
+                broken.Add("Wood, water, plant, and vine matter names must parse");
             }
         }
 

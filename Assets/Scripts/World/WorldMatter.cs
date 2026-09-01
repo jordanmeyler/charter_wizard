@@ -37,6 +37,60 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// A stood item on this cell can conduct or break the spark.
+        /// Wood and plants disrupt a metal floor; iron on stone runs it.
+        /// </summary>
+        public static bool TryOverlayConductivity(Vector3 world, out float conductivity)
+        {
+            conductivity = 0f;
+            var found = false;
+            const float reach = 0.55f * 0.55f;
+            for (var i = Live.Count - 1; i >= 0; i--)
+            {
+                var body = Live[i];
+                if (body == null || body is Object vanished && vanished == null)
+                {
+                    Live.RemoveAt(i);
+                    continue;
+                }
+
+                if (!body.Available)
+                {
+                    continue;
+                }
+
+                if ((body.WorldPosition - world).sqrMagnitude > reach)
+                {
+                    continue;
+                }
+
+                if (body is not WorldItem item)
+                {
+                    continue;
+                }
+
+                var material = item.BoundMaterial;
+                if (material == MaterialId.None)
+                {
+                    continue;
+                }
+
+                var value = ChargeLaw.Of(material);
+                if (!found)
+                {
+                    conductivity = value;
+                    found = true;
+                }
+                else
+                {
+                    conductivity = ChargeLaw.Combine(conductivity, value);
+                }
+            }
+
+            return found;
+        }
+
         public static Essence Parse(string matter)
         {
             if (string.IsNullOrEmpty(matter))

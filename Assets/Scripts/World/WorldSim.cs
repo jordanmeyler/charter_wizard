@@ -5,7 +5,8 @@ namespace RuneMagic
 {
     /// <summary>
     /// Tiles speak to their neighbors. Fire spreads, water grows plants,
-    /// retardant matter puts hunger out, and charge runs through what conducts.
+    /// retardant matter puts hunger out, and charge runs through what
+    /// conducts. Wood and plants break that path.
     /// </summary>
     public sealed class WorldSim : MonoBehaviour
     {
@@ -261,17 +262,31 @@ namespace RuneMagic
             for (var i = 0; i < charged.Count; i++)
             {
                 var tile = charged[i];
+                if (tile.Insulates)
+                {
+                    tile.ChargeAt(-0.55f);
+                    continue;
+                }
+
                 var neighbors = _grid.Neighbors(tile.Coord);
+                var quench = 0f;
                 for (var n = 0; n < neighbors.Count; n++)
                 {
                     var other = neighbors[n];
-                    if (other.Conductivity > 0.15f && other.Charge < tile.Charge * 0.7f)
+                    if (other.Insulates)
+                    {
+                        quench += -other.Conductivity * 0.35f;
+                        continue;
+                    }
+
+                    if (ChargeLaw.AcceptsSpread(other.Conductivity)
+                        && other.Charge < tile.Charge * 0.7f)
                     {
                         other.ChargeAt(tile.Charge * 0.55f * other.Conductivity);
                     }
                 }
 
-                tile.ChargeAt(-0.22f);
+                tile.ChargeAt(-0.22f - quench);
             }
         }
     }

@@ -130,7 +130,9 @@ namespace RuneMagic
         public float Flammability { get; internal set; }
 
         /// <summary>
-        /// How freely a spark may travel this body. Zero is an insulator.
+        /// How freely a spark may travel this body. Positive conducts.
+        /// Zero is neutral — it may hold a charge but will not pass it.
+        /// Negative is an insulator and breaks the path.
         /// </summary>
         public float Conductivity { get; internal set; }
 
@@ -402,37 +404,37 @@ namespace RuneMagic
 
             Flag(MaterialId.Stone, 0f, 0f);
             Flag(MaterialId.Ash, 0.05f, 0f);
-            Flag(MaterialId.Timber, 1.2f, 0f);
-            Flag(MaterialId.Hearth, 0f, 0.1f);
-            Flag(MaterialId.Ember, 0.35f, 0.15f);
+            Flag(MaterialId.Timber, 1.2f, -0.9f);
+            Flag(MaterialId.Hearth, 0f, 0f);
+            Flag(MaterialId.Ember, 0.35f, 0f);
             Flag(MaterialId.Damp, -0.7f, 0.35f);
             Flag(MaterialId.Vein, 0f, 0.85f);
             Flag(MaterialId.Scoured, 0f, 0f);
-            Flag(MaterialId.Moss, 1.05f, 0.1f);
+            Flag(MaterialId.Moss, 1.05f, -0.7f);
             Flag(MaterialId.Metal, 0f, 1.6f);
             Flag(MaterialId.SaltCrust, -0.15f, 0.2f);
             Flag(MaterialId.Void, 0f, 0f);
-            Flag(MaterialId.Ice, -0.85f, 0.15f);
+            Flag(MaterialId.Ice, -0.85f, 0f);
             Flag(MaterialId.Sand, 0f, 0f);
             Flag(MaterialId.Mud, -0.35f, 0.25f);
             Flag(MaterialId.Lava, 0.2f, 0.3f);
-            Flag(MaterialId.Steam, 0f, 0.1f);
+            Flag(MaterialId.Steam, 0f, 0f);
             Flag(MaterialId.Dust, 0.55f, 0f);
-            Flag(MaterialId.Glass, 0f, 0.05f);
+            Flag(MaterialId.Glass, 0f, 0f);
             Flag(MaterialId.Crystal, 0f, 0.35f);
-            Flag(MaterialId.Obsidian, 0f, 0.1f);
-            Flag(MaterialId.Grove, 1.35f, 0.1f);
-            Flag(MaterialId.Cloud, 0f, 0.2f);
+            Flag(MaterialId.Obsidian, 0f, 0f);
+            Flag(MaterialId.Grove, 1.35f, -1.2f);
+            Flag(MaterialId.Cloud, 0f, 0f);
             Flag(MaterialId.Rain, -1.1f, 0.7f);
-            Flag(MaterialId.Snow, -0.65f, 0.1f);
-            Flag(MaterialId.Glacier, -0.9f, 0.12f);
+            Flag(MaterialId.Snow, -0.65f, 0f);
+            Flag(MaterialId.Glacier, -0.9f, 0f);
             Flag(MaterialId.Acid, 0.15f, 0.45f);
             Flag(MaterialId.Water, -1.6f, 1.25f);
-            Flag(MaterialId.Plant, 1.5f, 0.05f);
+            Flag(MaterialId.Plant, 1.5f, -1.1f);
             Flag(MaterialId.Dirt, 0f, 0f);
-            Flag(MaterialId.Oil, 2.2f, 0.05f);
-            Flag(MaterialId.Miasma, 0.1f, 0.2f);
-            Flag(MaterialId.Wardstone, 0f, 0.15f);
+            Flag(MaterialId.Oil, 2.2f, -0.25f);
+            Flag(MaterialId.Miasma, 0.1f, 0f);
+            Flag(MaterialId.Wardstone, 0f, 0f);
             Flag(MaterialId.Aegis, 0f, 1.1f);
         }
 
