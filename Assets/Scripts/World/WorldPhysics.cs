@@ -817,6 +817,28 @@ namespace RuneMagic
                 broken.Add("Land plants and timber must carry a burn rate");
             }
 
+            if (CoverCatalog.RestAfterBurn(MaterialId.Timber) != MaterialId.Dirt
+                || !VitalLaw.CanBurn(MaterialId.Timber)
+                || VitalLaw.ItemBurnSeconds(MaterialId.Timber) != VitalLaw.TimberBurnSeconds)
+            {
+                broken.Add("A timber wall must burn on the wood clock and fall to leftover dirt");
+            }
+
+            if (CoverCatalog.LeftoverFloor(MaterialId.Plant) != MaterialId.Dirt
+                || CoverCatalog.LeftoverFloor(MaterialId.Timber) != MaterialId.Dirt)
+            {
+                broken.Add("A spent plant or timber floor must swap to dirt (look and stamp)");
+            }
+
+            if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
+                || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
+                || VitalLaw.CanBurn(MaterialId.Fire)
+                || VitalLaw.CanBurn(MaterialId.Lava)
+                || !VitalLaw.IsRestFire(MaterialId.Ember))
+            {
+                broken.Add("Rest fire in the walk stays; it is not fuel and does not leftover to dirt");
+            }
+
             if (ember.BurnRate != 0f
                 || grove.BurnRate <= 0f
                 || grove.BurnRate >= plant.BurnRate)

@@ -311,7 +311,7 @@ namespace RuneMagic
             if (changed > 0 && frozen == 0)
             {
                 notes.Add(verb.Tiles == TileVerb.Grow
-                    ? spell == SpellId.Forest
+                    ? (spell == SpellId.Forest
                         ? "A living plant opens to every water you can see."
                         : "Plant cover stands from your feet.")
                     : verb.Tiles == TileVerb.Ignite

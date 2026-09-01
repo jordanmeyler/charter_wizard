@@ -61,6 +61,7 @@ namespace RuneMagic
         int _animFrame = -1;
         MaterialId _telegraph = MaterialId.None;
         int _telegraphCount;
+        float _overlayBurn;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -207,12 +208,20 @@ namespace RuneMagic
 
         /// <summary>
         /// Hunger seated in the walk itself — Floor-Fire, ember, a hearth, lava.
+        /// Rest matter. It does not burn out. Coverings and spells
+        /// are what react.
         /// </summary>
-        public bool IsFireFloor =>
-            Material == MaterialId.Fire
-            || Material == MaterialId.Ember
-            || Material == MaterialId.Hearth
-            || Material == MaterialId.Lava;
+        public bool IsFireFloor => VitalLaw.IsRestFire(Material);
+
+        /// <summary>
+        /// Fuel sitting on the walk — vine, oil, a plant or timber
+        /// detail. The floor underneath is not this.
+        /// </summary>
+        public bool HasOverlayFuel =>
+            HasVine
+            || (HasOil && !IsGeyser)
+            || HasPlantishDetail
+            || (HasFireCover && !Kindled);
 
         public bool HasPoisonCover =>
             !HasAshCover
@@ -232,6 +241,11 @@ namespace RuneMagic
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
             Cover = ParseCover(_coverId);
             _coverMaterial = CoverCatalog.MaterialOf(Cover);
+            if (before != Cover)
+            {
+                _coverLook = null;
+            }
+
             if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
             {
                 _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
@@ -507,16 +521,21 @@ namespace RuneMagic
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
-        /// Fuel hunger can finish. Kindled halls stay until yield.
-        /// Ember cover is fuel: it catches, stays put, then ashes.
+        /// Fuel hunger can finish. Kindled halls and rest fire floors
+        /// stay. Ember cover, timber walls, and plant / timber floors
+        /// catch once, then leftover dirt.
         /// </summary>
         public bool HoldsBurnFuel =>
             !HasAshCover
+            && !IsFireFloor
             && (IsPlantish
                 || HasPlantishDetail
                 || HasVine
                 || (HasOil && !IsGeyser)
-                || (HasFireCover && !Kindled));
+                || (HasFireCover && !Kindled)
+                || (Kind == TileKind.Wall && VitalLaw.CanBurn(Material))
+                || ((Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                    && VitalLaw.CanBurn(Material)));
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>
@@ -686,16 +705,67 @@ namespace RuneMagic
 
         public bool FreezeSolid()
         {
-            if (!IsDeepWater)
+            if (HasIceCover && (Kind == TileKind.Floor || Kind == TileKind.Bridge) && !IsDeepWater)
+            {
+                return true;
+            }
+
+            if (IsDeepWater)
+            {
+                BecomeWalkable(MaterialId.Ice, conjured: true);
+                PaintIceCover();
+                Wet = Mathf.Min(Wet, 0.15f);
+                RefreshFx();
+                return true;
+            }
+
+            if (HasWaterCover)
+            {
+                PaintIceCover();
+                Wet = Mathf.Min(Wet, 0.15f);
+                RefreshFx();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Hard water on this cell. Water becomes the same ice sheet
+        /// ice-wall uses. A dry walk takes that same cover sheen.
+        /// </summary>
+        public bool LayIce()
+        {
+            if (FreezeSolid())
+            {
+                return true;
+            }
+
+            if (Kind != TileKind.Floor && Kind != TileKind.Bridge)
             {
                 return false;
             }
 
-            BecomeWalkable(MaterialId.Ice, conjured: true);
-            PaintCover(TileCover.Ice);
+            if (Material == MaterialId.Lava || Material == MaterialId.Void || HasAshCover)
+            {
+                return false;
+            }
+
+            if (HasIceCover)
+            {
+                return true;
+            }
+
+            PaintIceCover();
             Wet = Mathf.Min(Wet, 0.15f);
             RefreshFx();
             return true;
+        }
+
+        void PaintIceCover()
+        {
+            _coverLook = null;
+            PaintCover(TileCover.Ice);
         }
 
         /// <summary>
@@ -1314,26 +1384,103 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Hunger finishes the fuel. Fire cover wears off. Ash covers
-        /// the walk. A plant or timber floor becomes dirt (look and
-        /// Earth). Masonry and dirt stay. Kindled halls do not ash.
+        /// Overlay fuel on a rest fire floor. Vine, oil, and plant
+        /// details burn on their clock. The fire walk does not.
+        /// </summary>
+        public void TickOverlayFuel(float seconds)
+        {
+            if (!HasOverlayFuel)
+            {
+                _overlayBurn = 0f;
+                return;
+            }
+
+            _overlayBurn += Mathf.Max(0f, seconds);
+            var clock = BurnSeconds > 0.05f ? BurnSeconds : VitalLaw.PlantBurnSeconds;
+            if (_overlayBurn < clock)
+            {
+                return;
+            }
+
+            _overlayBurn = 0f;
+            BurnOut();
+        }
+
+        public void EndSpellFire()
+        {
+            LiveFire = false;
+            if (Kindled)
+            {
+                KeepKindled();
+                return;
+            }
+
+            if (IsFireFloor)
+            {
+                Fire = 0f;
+                RefreshFx();
+            }
+        }
+
+        void SpendOverlayFuel()
+        {
+            _overlayBurn = 0f;
+            if (HasPlantishDetail)
+            {
+                ClearDetail();
+            }
+
+            if (!IsGeyser)
+            {
+                Oil = 0f;
+            }
+
+            if (HasVine)
+            {
+                PaintCover(TileCover.None);
+            }
+        }
+
+        /// <summary>
+        /// Hunger finishes the fuel. Fire cover wears off. A plant or
+        /// timber floor swaps stamp and look to leftover dirt — it
+        /// does not draw ash over the tile you placed. A timber or
+        /// plant wall burns for its clock, then falls to that leftover
+        /// dirt so a key behind it can be reached. Floor-Fire stays.
+        /// It only spends what sat on it. Covers and spells may still
+        /// sit on the leftover.
         /// </summary>
         public void BurnOut()
         {
+            if (IsFireFloor)
+            {
+                SpendOverlayFuel();
+                if (Kindled)
+                {
+                    KeepKindled();
+                }
+                else
+                {
+                    LiveFire = false;
+                    Fire = 0f;
+                }
+
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
             if (Kindled && !LiveFire)
             {
                 return;
             }
 
-            var leftover = CoverCatalog.RestAfterBurn(Material);
             var waterWalk = Material == MaterialId.Water
                 || (_hasFoundation && Foundation.Material == MaterialId.Water);
-            var changeWalk = leftover != MaterialId.None
-                && leftover != Material
+            var fuelWall = Kind == TileKind.Wall && VitalLaw.CanBurn(Material);
+            var fuelFloor = !IsFireFloor
                 && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
-                && !waterWalk
-                && Material != MaterialId.Lava
-                && Material != MaterialId.Void;
+                && (VitalLaw.CanBurn(Material) || IsPlantish || HasPlantishDetail || HasVine || HasOil);
 
             Fire = 0f;
             LiveFire = false;
@@ -1349,21 +1496,70 @@ namespace RuneMagic
             }
 
             _coverLook = null;
+            var underLook = _underlayLook;
+            if (fuelWall)
+            {
+                if (IsConjured)
+                {
+                    RestoreFoundation();
+                }
+                else
+                {
+                    var walk = CoverCatalog.RestAfterBurn(Material);
+                    if (walk == MaterialId.None)
+                    {
+                        walk = MaterialId.Dirt;
+                    }
+
+                    Reshape(new TileDef(TileKind.Floor, walk));
+                    if (underLook != null)
+                    {
+                        AuthorLook(underLook);
+                    }
+                }
+
+                PaintCover(TileCover.None);
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
+            if (fuelFloor && !waterWalk
+                && Material != MaterialId.Lava && Material != MaterialId.Void)
+            {
+                if (IsConjured)
+                {
+                    RestoreFoundation();
+                }
+                else
+                {
+                    var leftover = CoverCatalog.LeftoverFloor(Material);
+                    if (leftover != MaterialId.None && leftover != Material)
+                    {
+                        Reshape(new TileDef(Kind, leftover));
+                    }
+                }
+
+                PaintCover(TileCover.None);
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
+            var leftoverWalk = CoverCatalog.RestAfterBurn(Material);
+            var changeWalk = leftoverWalk != MaterialId.None
+                && leftoverWalk != Material
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                && !waterWalk
+                && Material != MaterialId.Lava
+                && Material != MaterialId.Void;
+
             if (changeWalk)
             {
-                Reshape(new TileDef(Kind, leftover));
+                Reshape(new TileDef(Kind, leftoverWalk));
             }
 
-            if (waterWalk || Material == MaterialId.Lava || Material == MaterialId.Void
-                || (Kind != TileKind.Floor && Kind != TileKind.Bridge))
-            {
-                PaintCover(TileCover.None);
-            }
-            else
-            {
-                PaintCover(TileCover.Ash);
-            }
-
+            PaintCover(TileCover.None);
             RefreshCollider();
             RefreshFx();
         }
@@ -1643,6 +1839,7 @@ namespace RuneMagic
             }
 
             ApplyCoverMark();
+            RefreshLinger();
         }
 
         void ApplyCoverMark()
@@ -1736,7 +1933,16 @@ namespace RuneMagic
                 {
                     return null;
                 }
+            }
 
+            var sheen = CoverCatalog.Sheen(Cover);
+            if (sheen != null)
+            {
+                return sheen;
+            }
+
+            if (!string.IsNullOrEmpty(_coverId))
+            {
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||
                             _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
                     ? _coverId
@@ -1791,12 +1997,10 @@ namespace RuneMagic
             // Plant / timber material stamps resolve to cover-plant /
             // cover-vine. Those pack tiles hide the authored tileset.
             // Spell-grown vine still arrives through _coverId above.
-            if (_authoredLook != null)
-            {
-                return null;
-            }
-
-            return TileAtlas.Cover(ShownMaterial, Coord.x, Coord.y);
+            // A Floor / Wall stamp is the tile the author placed — do
+            // not invent a material sheen on top of it. Spells and
+            // Cover stamps set _coverId / _coverLook when they may draw.
+            return null;
         }
 
         SpriteRenderer EnsureCover()
@@ -1990,12 +2194,7 @@ namespace RuneMagic
         void RefreshLinger()
         {
             ClearLinger();
-            if (!IsConjured)
-            {
-                return;
-            }
-
-            var look = ElementLook.For(Element);
+            var look = LingerLook();
             if (!NeedsLinger(look.Family))
             {
                 return;
@@ -2005,6 +2204,28 @@ namespace RuneMagic
                 ? new Vector3(0f, 0.55f, 0f)
                 : new Vector3(0f, 0.2f, 0f);
             _linger = ElementFx.Linger(transform, look, 0.85f, offset);
+        }
+
+        ElementLook LingerLook()
+        {
+            if (IsConjured)
+            {
+                return ElementLook.For(Element);
+            }
+
+            switch (Cover)
+            {
+                case TileCover.Ice:
+                    return ElementLook.Of(ElementFamily.Ice);
+                case TileCover.Fire:
+                    return ElementLook.Of(ElementFamily.Fire);
+                case TileCover.Lightning:
+                    return ElementLook.Of(ElementFamily.Lightning);
+                case TileCover.Vine:
+                    return ElementLook.Of(ElementFamily.Plant);
+                default:
+                    return default;
+            }
         }
 
         static bool NeedsLinger(ElementFamily family)

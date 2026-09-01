@@ -8,13 +8,22 @@ namespace RuneMagic
 {
     /// <summary>
     /// Floor / wall palette stamps keep the tileset already on the
-    /// cell. Pack art on Floor-Stone / Floor-Plant is only a chip
-    /// preview — it must not replace the look you painted.
+    /// cell. Cover-* / Aura-* sit on that same tileset. Pack art on
+    /// Floor-Stone or Cover-Ice is a chip or sheen — it must not
+    /// replace the look you painted.
     /// </summary>
     [InitializeOnLoad]
     static class StampLookKeep
     {
-        static readonly Dictionary<int, Dictionary<Vector3Int, Sprite>> Seen = new();
+        struct CellLook
+        {
+            public Sprite Sprite;
+            public TileKind Kind;
+            public MaterialId Material;
+            public bool HasPaint;
+        }
+
+        static readonly Dictionary<int, Dictionary<Vector3Int, CellLook>> Seen = new();
         static bool _writing;
         static double _nextCache;
 
@@ -60,7 +69,7 @@ namespace RuneMagic
             var id = map.GetInstanceID();
             if (!Seen.TryGetValue(id, out var cells))
             {
-                cells = new Dictionary<Vector3Int, Sprite>();
+                cells = new Dictionary<Vector3Int, CellLook>();
                 Seen[id] = cells;
             }
 
@@ -69,29 +78,53 @@ namespace RuneMagic
             {
                 for (var x = bounds.xMin; x < bounds.xMax; x++)
                 {
-                    var pos = new Vector3Int(x, y, 0);
-                    var tile = map.GetTile(pos);
-                    var sprite = map.GetSprite(pos);
-                    if (sprite == null && tile is Tile painted)
-                    {
-                        sprite = painted.sprite;
-                    }
-
-                    if (sprite == null)
-                    {
-                        continue;
-                    }
-
-                    // First look on the cell wins. A later Floor stamp
-                    // must not teach the cache its pack preview.
-                    if (tile is WorldPaintTile paint && paint.IsQualityStamp && cells.ContainsKey(pos))
-                    {
-                        continue;
-                    }
-
-                    cells[pos] = sprite;
+                    Remember(map, new Vector3Int(x, y, 0), cells, overwriteStamp: false);
                 }
             }
+        }
+
+        static void Remember(
+            Tilemap map,
+            Vector3Int pos,
+            Dictionary<Vector3Int, CellLook> cells,
+            bool overwriteStamp)
+        {
+            var tile = map.GetTile(pos);
+            if (tile is WorldPaintTile stamp && stamp.IsOverlayBrush)
+            {
+                return;
+            }
+
+            var sprite = map.GetSprite(pos);
+            if (sprite == null && tile is Tile painted)
+            {
+                sprite = painted.sprite;
+            }
+
+            if (sprite == null)
+            {
+                return;
+            }
+
+            // First look on the cell wins. A later Floor or Cover stamp
+            // must not teach the cache its pack preview.
+            if (!overwriteStamp
+                && tile is WorldPaintTile quality
+                && quality.KeepsExistingLook
+                && cells.ContainsKey(pos))
+            {
+                return;
+            }
+
+            var look = new CellLook { Sprite = sprite };
+            if (tile is WorldPaintTile paint && !paint.IsOverlayBrush)
+            {
+                look.HasPaint = true;
+                look.Kind = paint.kind;
+                look.Material = paint.material;
+            }
+
+            cells[pos] = look;
         }
 
         static void OnTilesChanged(Tilemap map, Tilemap.SyncTile[] tiles)
@@ -104,36 +137,70 @@ namespace RuneMagic
             var cover = IsCoverMap(map);
             for (var i = 0; i < tiles.Length; i++)
             {
-                var paint = tiles[i].tile as WorldPaintTile;
-                if (paint == null || !paint.IsQualityStamp)
-                {
-                    continue;
-                }
-
                 var pos = tiles[i].position;
-                if (cover)
+                var paint = tiles[i].tile as WorldPaintTile;
+                if (paint == null || !paint.KeepsExistingLook)
                 {
-                    if (paint.sprite != null)
+                    if (Seen.TryGetValue(map.GetInstanceID(), out var cells))
                     {
-                        Replace(map, pos, paint, null, paint.ResolvedCover());
+                        Remember(map, pos, cells, overwriteStamp: true);
                     }
 
                     continue;
                 }
 
-                var keep = CachedSprite(map, pos);
-                if (keep != null && paint.sprite != keep)
+                if (cover)
                 {
-                    Replace(map, pos, paint, keep, stampCover: null);
+                    if (paint.IsOverlayBrush || paint.sprite != null)
+                    {
+                        Replace(
+                            map,
+                            pos,
+                            paint,
+                            sprite: null,
+                            stampCover: paint.ResolvedCover(),
+                            kind: TileKind.None,
+                            material: paint.material);
+                    }
+
+                    continue;
+                }
+
+                var prior = Cached(map, pos);
+                if (paint.IsOverlayBrush)
+                {
+                    if (prior.Sprite == null)
+                    {
+                        continue;
+                    }
+
+                    Replace(
+                        map,
+                        pos,
+                        paint,
+                        prior.Sprite,
+                        paint.ResolvedCover(),
+                        prior.HasPaint ? prior.Kind : TileKind.Floor,
+                        prior.HasPaint ? prior.Material : (MaterialId?)null);
+                    continue;
+                }
+
+                if (prior.Sprite != null && paint.sprite != prior.Sprite)
+                {
+                    Replace(map, pos, paint, prior.Sprite, stampCover: null, kind: null, material: null);
+                }
+                else if (Seen.TryGetValue(map.GetInstanceID(), out var cells))
+                {
+                    Remember(map, pos, cells, overwriteStamp: false);
                 }
             }
         }
 
-        static Sprite CachedSprite(Tilemap map, Vector3Int pos)
+        static CellLook Cached(Tilemap map, Vector3Int pos)
         {
-            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var sprite)
-                ? sprite
-                : null;
+            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var look)
+                ? look
+                : default;
         }
 
         static void Replace(
@@ -141,9 +208,11 @@ namespace RuneMagic
             Vector3Int pos,
             WorldPaintTile stamp,
             Sprite sprite,
-            TileCover? stampCover)
+            TileCover? stampCover,
+            TileKind? kind,
+            MaterialId? material)
         {
-            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover);
+            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover, kind, material);
             if (authored == null || authored == map.GetTile(pos))
             {
                 return;

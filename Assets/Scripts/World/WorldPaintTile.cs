@@ -19,9 +19,20 @@ namespace RuneMagic
         [Tooltip("Walk family. Floor is walkable ground. None is look only — not a floor, on any layer.")]
         public TileKind kind = TileKind.Floor;
 
-        public bool StampsWalk => kind != TileKind.None;
+        /// <summary>
+        /// Cover-* / Aura-* brushes. They sit on the walk tile.
+        /// Pack art on those brushes is a sheen, not a new floor.
+        /// </summary>
+        public bool IsOverlayBrush => IsOverlayBrushOf(name, cover, aura);
 
-        public bool StampsFloor => kind == TileKind.Floor;
+        /// <summary>
+        /// Floor / wall / pit / door / bridge. Overlay brushes never
+        /// stamp walk, even when an older Cover-Ice asset still says
+        /// Kind = Floor.
+        /// </summary>
+        public bool StampsWalk => StampsWalkOf(name, kind, cover, aura);
+
+        public bool StampsFloor => StampsWalk && kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
         [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can catch when hunger is live; ember stays put and then ashes. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
@@ -187,8 +198,42 @@ namespace RuneMagic
         /// painted. Pack art on Floor-Stone / Floor-Plant is only a
         /// chip preview — it must not replace the tileset already on
         /// that cell. Fire is walk matter at rest, like stone.
+        /// Cover brushes keep that same tileset and draw on top.
         /// </summary>
-        public bool IsQualityStamp => IsQualityStampOf(kind, material);
+        public bool IsQualityStamp =>
+            IsOverlayBrush || IsQualityStampOf(kind, material);
+
+        /// <summary>
+        /// A later stamp must not throw away the tileset already on
+        /// the cell. Floor, wall, and overlay brushes all keep it.
+        /// </summary>
+        public bool KeepsExistingLook => IsQualityStamp || IsOverlayBrush;
+
+        public static bool IsOverlayBrushOf(string name, TileCover cover, TileAura aura)
+        {
+            if (cover == TileCover.None && aura == TileAura.None)
+            {
+                return false;
+            }
+
+            return IsOverlayBrushName(name);
+        }
+
+        public static bool IsOverlayBrushName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            return name.StartsWith("Cover-", System.StringComparison.OrdinalIgnoreCase)
+                || name.StartsWith("Aura-", System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool StampsWalkOf(string name, TileKind kind, TileCover cover, TileAura aura)
+        {
+            return kind != TileKind.None && !IsOverlayBrushOf(name, cover, aura);
+        }
 
         public static bool IsQualityStampOf(TileKind kind, MaterialId material)
         {
@@ -222,7 +267,11 @@ namespace RuneMagic
             if (!IsQualityStampOf(TileKind.Floor, MaterialId.Stone)
                 || !IsQualityStampOf(TileKind.Floor, MaterialId.Dirt)
                 || !IsQualityStampOf(TileKind.Floor, MaterialId.Ice)
-                || !IsQualityStampOf(TileKind.Wall, MaterialId.Stone))
+                || !IsQualityStampOf(TileKind.Floor, MaterialId.Plant)
+                || !IsQualityStampOf(TileKind.Floor, MaterialId.Fire)
+                || !IsQualityStampOf(TileKind.Wall, MaterialId.Stone)
+                || !IsQualityStampOf(TileKind.Wall, MaterialId.Ice)
+                || !IsQualityStampOf(TileKind.Wall, MaterialId.Fire))
             {
                 broken.Add("Floor and wall stamps must keep the tileset sprite they sit on");
             }
@@ -233,6 +282,32 @@ namespace RuneMagic
                 || AutomaticOpacity(TileCover.None) < 0.99f)
             {
                 broken.Add("Fire and veil covers must be a sheen; they must not hide the walk tile");
+            }
+
+            if (!IsOverlayBrushOf("Cover-Ice", TileCover.Ice, TileAura.None)
+                || !IsOverlayBrushOf("Aura-Fire", TileCover.Fire, TileAura.Fire)
+                || !IsOverlayBrushName("Cover-Water")
+                || IsOverlayBrushOf("Floor-Ice", TileCover.Ice, TileAura.None)
+                || IsOverlayBrushOf("Floor_Stone_Ice", TileCover.Ice, TileAura.None))
+            {
+                broken.Add("Cover-* / Aura-* are overlay brushes; Floor-* and authored tiles are not");
+            }
+
+            if (StampsWalkOf("Cover-Ice", TileKind.Floor, TileCover.Ice, TileAura.None)
+                || StampsWalkOf("Aura-Fire", TileKind.Floor, TileCover.Fire, TileAura.Fire)
+                || !StampsWalkOf("Floor-Stone", TileKind.Floor, TileCover.None, TileAura.None)
+                || !StampsWalkOf("Floor_Stone_Ice", TileKind.Floor, TileCover.Ice, TileAura.None)
+                || !StampsWalkOf("Wall-Ice", TileKind.Wall, TileCover.None, TileAura.None))
+            {
+                broken.Add("Cover brushes must not stamp walk; Floor / Wall and authored Floor+Cover still do");
+            }
+
+            if (CoverFromMaterial(MaterialId.Ice) != TileCover.Ice
+                || CoverFromMaterial(MaterialId.Stone) != TileCover.None
+                || CoverFromMaterial(MaterialId.Fire) != TileCover.None
+                || CoverFromMaterial(MaterialId.Plant) != TileCover.None)
+            {
+                broken.Add("CoverFromMaterial is Cover-layer inference — Fire and Plant walk stamps are not covers");
             }
         }
 
