@@ -474,6 +474,8 @@ namespace RuneMagic
                 }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
+                    // The spell volume lights whatever it hits, including
+                    // neutral stone. Neighbor spread still refuses those.
                     var wick = tile.HasOil || tile.Material == MaterialId.Oil || tile.HasVine;
                     tile.Ignite(wick ? 1.4f : 0.85f);
                     if (wick && tile.IsConjured && tile.Material == MaterialId.Oil)
@@ -846,9 +848,13 @@ namespace RuneMagic
                 broken.Add("Ember stays put; grove still runs, weaker than plant");
             }
 
-            if (WorldSim.AcceptsFireSpread(null))
+            if (WorldSim.AcceptsFireSpread(null)
+                || VitalLaw.IsSpreadFuel(MaterialId.Stone)
+                || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Oil))
             {
-                broken.Add("Hunger must not run onto empty ground");
+                broken.Add("Hunger must not run onto empty or neutral ground; timber and oil still catch");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

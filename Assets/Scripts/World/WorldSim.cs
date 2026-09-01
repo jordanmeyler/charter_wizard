@@ -266,10 +266,11 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Hunger runs once through a body. A tile already alight, or
-        /// already ash, does not catch again — that recatch is what
-        /// made a grove burn forever. Ember cover can catch, then it
-        /// stays put and wears off.
+        /// Hunger runs once through fuel. A tile already alight, or
+        /// already ash, does not catch again. Neutral stone, dirt, and
+        /// a painted fire mark do not catch from a neighbor — only
+        /// from a spell that hits them. Timber, oil, plant, and vine
+        /// still take the run.
         /// </summary>
         public static bool AcceptsFireSpread(WorldTile other)
         {
@@ -283,12 +284,12 @@ namespace RuneMagic
                 return false;
             }
 
-            if (!CanCatch(other))
+            if (!CanCatch(other) || !other.IsSpreadFuel)
             {
                 return false;
             }
 
-            return other.Flammability > 0f || other.HasVine || other.HasOil || other.HasFireCover;
+            return true;
         }
 
         static bool CanCatch(WorldTile other)

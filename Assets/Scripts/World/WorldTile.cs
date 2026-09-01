@@ -536,6 +536,18 @@ namespace RuneMagic
                 || (Kind == TileKind.Wall && VitalLaw.CanBurn(Material))
                 || ((Kind == TileKind.Floor || Kind == TileKind.Bridge)
                     && VitalLaw.CanBurn(Material)));
+
+        /// <summary>
+        /// Neighbor fire may take this cell. Neutral walk (stone, dirt,
+        /// a fire mark) only lights when a spell's volume hits it.
+        /// </summary>
+        public bool IsSpreadFuel =>
+            !HasAshCover
+            && VitalLaw.IsSpreadFuel(
+                Material,
+                _detailMaterial,
+                HasVine,
+                HasOil && !IsGeyser);
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>

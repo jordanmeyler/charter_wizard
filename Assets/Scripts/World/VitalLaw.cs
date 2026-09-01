@@ -176,6 +176,26 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Neighbor hunger only runs onto fuel or a wick. Stone, dirt,
+        /// and a painted fire mark are neutral — a spell that hits
+        /// them can still light the cell. Rest fire in the walk is a
+        /// source a spell starts, not something a neighbor kindles.
+        /// </summary>
+        public static bool IsSpreadFuel(
+            MaterialId walk,
+            MaterialId detail = MaterialId.None,
+            bool vine = false,
+            bool oil = false)
+        {
+            if (IsRestFire(walk))
+            {
+                return false;
+            }
+
+            return CanBurn(walk) || CanBurn(detail) || vine || oil;
+        }
+
+        /// <summary>
         /// Floor-Fire, hearth, ember, lava. Rest hunger in the walk.
         /// It does not burn out. Coverings and spells are what react.
         /// </summary>
@@ -333,6 +353,20 @@ namespace RuneMagic
                 || IsRestFire(MaterialId.Timber))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
+            }
+
+            if (IsSpreadFuel(MaterialId.Stone)
+                || IsSpreadFuel(MaterialId.Dirt)
+                || IsSpreadFuel(MaterialId.Fire)
+                || IsSpreadFuel(MaterialId.Ember)
+                || !IsSpreadFuel(MaterialId.Timber)
+                || !IsSpreadFuel(MaterialId.Oil)
+                || !IsSpreadFuel(MaterialId.Plant)
+                || !IsSpreadFuel(MaterialId.Stone, MaterialId.Timber)
+                || !IsSpreadFuel(MaterialId.Dirt, MaterialId.None, true, false)
+                || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
+            {
+                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — not a painted mark or rest fire");
             }
 
             if (OilBurnSeconds != 1f
