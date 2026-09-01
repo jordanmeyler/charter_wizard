@@ -136,6 +136,7 @@ namespace RuneMagic
 
                 Collected = true;
                 _carrier = null;
+                CoverCatalog.AshAt(transform.position);
                 _log?.Invoke(string.IsNullOrEmpty(note)
                     ? "Hunger finishes the timber. Ash is what remains."
                     : note);

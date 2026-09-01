@@ -54,7 +54,22 @@ namespace RuneMagic
             }
 
             Alight = true;
+            KindleUnderfoot();
             return true;
+        }
+
+        void KindleUnderfoot()
+        {
+            if (_grid == null)
+            {
+                _grid = FindFirstObjectByType<WorldGrid>();
+            }
+
+            var tile = _grid != null ? _grid.TileAtWorld(transform.position) : null;
+            if (tile != null && tile.Fire < 0.12f)
+            {
+                tile.Ignite(0.4f);
+            }
         }
 
         public void Douse()
@@ -80,6 +95,7 @@ namespace RuneMagic
             }
 
             Remaining -= Time.deltaTime;
+            KindleUnderfoot();
             if (_sprite != null)
             {
                 _sprite.color = Color.Lerp(_baseColor, new Color(1f, 0.42f, 0.12f), 0.55f);
