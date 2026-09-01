@@ -182,7 +182,11 @@ namespace RuneMagic
                                 tile.Grow(1);
                             }
 
-                            grid.SpreadPlant(tile);
+                            if (tile.HasWaterSource)
+                            {
+                                grid.SpreadPlant(tile);
+                            }
+
                             changed++;
                         }
 

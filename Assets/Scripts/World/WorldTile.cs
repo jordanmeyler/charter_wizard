@@ -94,16 +94,30 @@ namespace RuneMagic
         }
 
         public bool HasWaterCover =>
-            Material == MaterialId.Water
+            !HasAshCover
+            && (Material == MaterialId.Water
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
-            || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase);
+            || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase));
 
         public bool HasPlantCover =>
-            Cover == TileCover.Vine
+            !HasAshCover
+            && (Cover == TileCover.Vine
             || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-plant", System.StringComparison.OrdinalIgnoreCase)
-            || string.Equals(_coverId, "cover-grove", System.StringComparison.OrdinalIgnoreCase);
+            || string.Equals(_coverId, "cover-grove", System.StringComparison.OrdinalIgnoreCase));
+
+        public bool HasAshCover =>
+            Cover == TileCover.Ash
+            || string.Equals(_coverId, "ash", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-ash", System.StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Water on this cell: a water floor, a water covering, or
+        /// yield a spell left behind. Neighbor water is not enough.
+        /// </summary>
+        public bool HasWaterSource =>
+            Wet > 0.2f || HasWaterCover || IsDeepWater || IsOverWater;
 
         public bool HasIceCover =>
             Cover == TileCover.Ice
@@ -256,6 +270,11 @@ namespace RuneMagic
         {
             get
             {
+                if (HasAshCover)
+                {
+                    return MaterialCatalog.Of(MaterialId.Ash).Flammability;
+                }
+
                 if (HasOil)
                 {
                     return Mathf.Max(0.5f, MaterialCatalog.Of(MaterialId.Oil).Flammability);
@@ -298,6 +317,11 @@ namespace RuneMagic
                     {
                         seconds = seconds > 0f ? Mathf.Min(seconds, detail) : detail;
                     }
+                }
+
+                if (HasAshCover)
+                {
+                    return 0f;
                 }
 
                 if (HasVine)
@@ -378,8 +402,8 @@ namespace RuneMagic
 
         public bool Conducts => ChargeLaw.Conducts(Conductivity);
         public bool Insulates => ChargeLaw.Insulates(Conductivity);
-        public bool IsPlantish => IsPlantMaterial(Material);
-        public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
+        public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
+        public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>
@@ -398,13 +422,15 @@ namespace RuneMagic
         public bool IsDeepWater =>
             Material == MaterialId.Water &&
             (Kind == TileKind.Pit || Kind == TileKind.Floor) &&
-            !HasIceCover;
+            !HasIceCover &&
+            !HasPlantCover;
 
         public bool IsSafeStand =>
             ((Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             !IsDeepWater &&
             Material != MaterialId.Lava)
-            || HasIceCover;
+            || HasIceCover
+            || HasPlantCover;
 
         public bool CanRaiseBarrier =>
             Kind == TileKind.Floor || Kind == TileKind.Bridge;
@@ -542,22 +568,22 @@ namespace RuneMagic
 
         /// <summary>
         /// A vegetable body over yield. Green covers the water
-        /// and holds you, the way ice does, and the way a watered
-        /// plant already climbs a hollow. Hunger can light that
-        /// cover; it will not run from it.
+        /// and holds you, the way ice does. The walk tile stays.
+        /// Hunger can light that cover; it will not run from it.
         /// </summary>
         public bool GrowOverWater(MaterialId material = MaterialId.Plant)
         {
-            if (!IsDeepWater)
+            if (!IsDeepWater && !HasWaterCover)
             {
                 return false;
             }
 
-            var body = WorldWork.IsPlantBody(material) ? material : MaterialId.Plant;
-            BecomeWalkable(body, conjured: true);
+            if (!WorldWork.IsPlantBody(material))
+            {
+                material = MaterialId.Plant;
+            }
+
             PaintCover(TileCover.Vine);
-            Drench(0.55f);
-            Grow(1);
             RefreshFx();
             return true;
         }
@@ -760,13 +786,13 @@ namespace RuneMagic
 
         public void BurnVine()
         {
-            if (!HasVine)
+            if (!HasVine && !HasPlantCover)
             {
                 return;
             }
 
             _coverLook = null;
-            PaintCover(TileCover.None);
+            PaintCover(TileCover.Ash);
             RefreshFx();
         }
 
@@ -1040,33 +1066,28 @@ namespace RuneMagic
 
             _growth = 0;
             Reshape(new TileDef(TileKind.Floor, MaterialId.Plant));
-            Wet = Mathf.Max(Wet, 0.4f);
             RefreshFx();
         }
 
         public void BurnDown()
         {
-            var detailBurned = HasPlantishDetail;
-            if (detailBurned)
+            var hadFuel = IsPlantish || HasPlantishDetail || HasVine || HasPlantCover;
+            if (!hadFuel)
             {
-                LeaveAshPile();
-            }
-
-            if (IsPlantish)
-            {
-                Fire = 0.15f;
-                _growth = 0;
-                Reshape(new TileDef(Kind == TileKind.Wall ? TileKind.Floor : Kind, MaterialId.Ash));
-                RefreshFx();
                 return;
             }
 
-            if (detailBurned)
+            Fire = 0.15f;
+            _growth = 0;
+            if (HasPlantishDetail)
             {
-                Fire = 0.15f;
-                RefreshCollider();
-                RefreshFx();
+                ClearDetail();
             }
+
+            _coverLook = null;
+            PaintCover(TileCover.Ash);
+            RefreshCollider();
+            RefreshFx();
         }
 
         /// <summary>
@@ -1084,14 +1105,6 @@ namespace RuneMagic
             RefreshFx();
         }
 
-        void LeaveAshPile()
-        {
-            _detailMaterial = MaterialId.Ash;
-            _detailBlocks = false;
-            _detailLook = SpriteFactory.Floor(MaterialId.Ash, Coord.x, Coord.y);
-            ApplyDetail();
-        }
-
         void Reshape(TileDef def)
         {
             Def = def;
@@ -1102,7 +1115,8 @@ namespace RuneMagic
                 _underlay.enabled = false;
                 _underlay.sprite = null;
             }
-            if (_detailMaterial != MaterialId.Ash)
+
+            if (!HasAshCover)
             {
                 ClearDetail();
             }
@@ -1425,6 +1439,15 @@ namespace RuneMagic
                     if (TileAtlas.TryGet("floor-mud", out var mud) && mud != null)
                     {
                         return mud;
+                    }
+                }
+
+                if (string.Equals(_coverId, "ash", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-ash", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (TileAtlas.TryGet("floor-ash", out var ash) && ash != null)
+                    {
+                        return ash;
                     }
                 }
             }

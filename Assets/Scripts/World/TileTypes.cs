@@ -40,7 +40,8 @@ namespace RuneMagic
         Cracks,
         Seal,
         Fog,
-        Mud
+        Mud,
+        Ash
     }
 
     /// <summary>

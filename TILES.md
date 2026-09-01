@@ -111,9 +111,10 @@ fire on Environment Details and do not expect a painted torch tile
 to burn things. A torch is `GameObject → Rune Magic → Torch` — a
 lock you light with a spell. It sits in the Hierarchy like the
 stone, not on a tile layer. Painted fire (Cover = Fire) is
-scenery at rest. Hunger only runs after a player or NPC
-spell starts it, or after a covering a spell left behind (melt
-water, spell-fire on a bush).
+scenery at rest. Stamps and covers sit over the tile you
+painted — they do not start a reaction. Hunger only runs after
+a player or NPC spell starts it. When a vegetable body burns
+out, Play adds an ash covering and leaves the walk tile.
 
 ### 2. Air — miasma, then the air stone
 
@@ -178,9 +179,9 @@ Every catalog rune can be an inscription — roots, joins, and reserved names. `
 Same pattern. Stones already have their id and sprite on the prefab. For a custom Item, drag a sprite onto **Portrait**, or set `spriteId` / `catalogId`. A Door has two portraits — closed and open.
 
 **Tile covers (ice, fire, miasma, water after a melt).**
-These are tiles, not objects. A cover is the look, the work, and
+These are tiles, not objects. A cover is the look and
 the same catalog mark as an inscription — Ice is Water · Earth,
-Vine cover speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a rune, and hunger can run it as a wick. Miasma is Cloud · Acid, Fog is Cloud.
+Vine cover speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a rune, and hunger can run it as a wick. Ash is Fire · Plant. Miasma is Cloud · Acid, Fog is Cloud. Stamps and covers do not start a reaction.
 
 1. Select **Cover** in the Hierarchy.
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
@@ -273,9 +274,9 @@ A layer named **Enviroment Details** (the typo) still counts as Environment Deta
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
 
-**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave hot coals. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
+**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave an ash covering on the same tile. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
-Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns to ash, you can walk over the pile. Cover still applies to that cell (ice, fire, vine, kindled, miasma).
+Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns, the ash covering stays and you can walk over it. Cover still applies to that cell (ice, fire, vine, ash, miasma).
 
 `GameObject → Rune Magic → Decor` is still look-only art. Burning or blocking furniture has to be an Environment Details **tile**.
 
@@ -367,6 +368,7 @@ Each spoken cover uses the same generated mark as that rune.
 | `lightning` | Lightning · Spark · Air | Atlantis — charged seal | Lightning |
 | `water` | Water | Cavern water tile | Water |
 | `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |
+| `ash` | Ash · Fire · Plant | Scorched rock over the tile | Ash |
 | `miasma` | Miasma · Cloud · Acid | Poison veil | Miasma |
 | `fog` | Cloud · Air · Water | Cloud veil | Cloud |
 | `cracks` | — (look only) | Crypt cracks | — |

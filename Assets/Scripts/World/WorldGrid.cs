@@ -147,14 +147,19 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A watered plant can climb one adjacent hollow or pool.
-        /// Water floor and water covering take a walkable plant cover.
-        /// A dry pit takes plant, then grove. One neighbor per call
-        /// so a pool fills slowly.
+        /// A spell-watered plant may take one neighboring tile that
+        /// already holds water — a water floor or a water covering.
+        /// Stamps, covers, and dry pits do not spread. One neighbor
+        /// per call so a pool does not fill itself.
         /// </summary>
         public bool SpreadPlant(WorldTile from)
         {
-            if (from == null || (!from.IsPlantish && !from.HasPlantCover && !from.HasPlantishDetail))
+            if (from == null || !from.HasWaterSource)
+            {
+                return false;
+            }
+
+            if (!from.IsPlantish && !from.HasPlantCover && !from.HasPlantishDetail)
             {
                 return false;
             }
@@ -171,7 +176,7 @@ namespace RuneMagic
             for (var i = 0; i < neighbors.Count; i++)
             {
                 var other = neighbors[i];
-                if (other.IsPlantish || other.HasPlantCover)
+                if (other.IsPlantish || other.HasPlantCover || other.HasAshCover)
                 {
                     continue;
                 }
@@ -184,42 +189,6 @@ namespace RuneMagic
                 if (other.HasWaterCover)
                 {
                     other.PaintCover(TileCover.Vine);
-                    other.Drench(0.55f);
-                    return true;
-                }
-
-                if (other.Kind != TileKind.Pit)
-                {
-                    continue;
-                }
-
-                other.BecomeWalkable(grown);
-                other.Drench(0.55f);
-                other.Grow(1);
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool TouchesOpenWater(WorldTile tile)
-        {
-            if (tile == null)
-            {
-                return false;
-            }
-
-            var neighbors = Neighbors(tile.Coord);
-            for (var i = 0; i < neighbors.Count; i++)
-            {
-                var other = neighbors[i];
-                if (other.IsPlantish || other.HasPlantCover)
-                {
-                    continue;
-                }
-
-                if (other.IsDeepWater || other.HasWaterCover)
-                {
                     return true;
                 }
             }
