@@ -113,7 +113,7 @@ namespace RuneMagic
                     }
 
                     AppendTile(sequence, tile, scatter, live, ref lastMaterial, ref lastWasTear);
-                    AppendHere(sequence, locks, strings, extras, x, y, spokenLocks, spokenStrings);
+                    AppendHere(sequence, scatter, locks, strings, extras, x, y, spokenLocks, spokenStrings);
                 }
             }
 
@@ -366,7 +366,7 @@ namespace RuneMagic
             {
                 if (signature[i] != RuneId.None)
                 {
-                    AppendRune(sequence, signature[i], material, WeaveKind.Material);
+                    AppendRune(sequence, scatter, signature[i], material, WeaveKind.Material);
                 }
             }
         }
@@ -406,6 +406,7 @@ namespace RuneMagic
 
         static void AppendHere(
             List<WeaveGlyph> sequence,
+            List<WeaveGlyph> scatter,
             ISpellLock[] locks,
             RuneStringSource[] strings,
             IRuneSource[] extras,
@@ -447,7 +448,7 @@ namespace RuneMagic
                     }
                     else
                     {
-                        AppendSource(sequence, source, MaterialId.None, WeaveKind.Lock);
+                        AppendSource(sequence, scatter, source, MaterialId.None, WeaveKind.Lock);
                     }
                 }
             }
@@ -474,7 +475,7 @@ namespace RuneMagic
                     {
                         if (runes[r] != RuneId.None)
                         {
-                            AppendRune(sequence, runes[r], MaterialId.None, WeaveKind.String);
+                            AppendRune(sequence, scatter, runes[r], MaterialId.None, WeaveKind.String);
                         }
                     }
                 }
@@ -500,12 +501,13 @@ namespace RuneMagic
                 }
 
                 spokenStrings.Add(id);
-                AppendSource(sequence, extra, MaterialId.None, WeaveKind.String);
+                AppendSource(sequence, scatter, extra, MaterialId.None, WeaveKind.String);
             }
         }
 
         static void AppendSource(
             List<WeaveGlyph> sequence,
+            List<WeaveGlyph> scatter,
             IRuneSource source,
             MaterialId material,
             WeaveKind kind)
@@ -516,7 +518,7 @@ namespace RuneMagic
             {
                 if (buffer[i] != RuneId.None)
                 {
-                    AppendRune(sequence, buffer[i], material, kind);
+                    AppendRune(sequence, scatter, buffer[i], material, kind);
                 }
             }
         }
@@ -606,18 +608,22 @@ namespace RuneMagic
                 : RuneId.Salt);
         }
 
-        static void AppendRune(List<WeaveGlyph> sequence, RuneId rune, MaterialId material, WeaveKind kind)
+        static void AppendRune(
+            List<WeaveGlyph> sequence,
+            List<WeaveGlyph> scatter,
+            RuneId rune,
+            MaterialId material,
+            WeaveKind kind)
         {
-            var recipe = new List<RuneId>(8);
-            ChainBook.ExpandRecipe(rune, recipe);
-            if (recipe.Count > 1)
+            if (rune == RuneId.None)
             {
-                var id = NextGroup++;
-                for (var i = 0; i < recipe.Count; i++)
-                {
-                    sequence.Add(new WeaveGlyph(recipe[i], rune, material, kind, id, i, recipe.Count));
-                }
+                return;
+            }
 
+            if (ChainBook.IsWrought(rune))
+            {
+                sequence.Add(new WeaveGlyph(rune, rune, material, kind, 0, 0, 1));
+                CollectComposing(scatter, rune, material);
                 return;
             }
 
@@ -627,6 +633,22 @@ namespace RuneMagic
         static bool AtCell(Vector3 world, int x, int y)
         {
             return Mathf.FloorToInt(world.x) == x && Mathf.FloorToInt(world.y) == y;
+        }
+
+        public static void Audit(System.Collections.Generic.List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            if (!ChainBook.IsWrought(RuneId.Spark)
+                || !ChainBook.IsWrought(RuneId.Ice)
+                || !ChainBook.IsWrought(RuneId.Lightning)
+                || !ChainBook.IsWrought(RuneId.Plant))
+            {
+                broken.Add("Spark, Ice, Lightning, and Plant must stand as themselves in the weave");
+            }
         }
     }
 }

@@ -6,9 +6,12 @@ namespace RuneMagic
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
     /// Ice is Water · Earth. Fire cover is the live hunger layer:
-    /// it can catch and interact once a spell starts work. It does
+    /// it can catch and interact once a spell starts work, and it
+    /// always puts Fire in the weave so it can be drawn. It does
     /// not kindle a hall. Floor-Fire / Wall-Fire are rest matter.
-    /// Vine cover speaks Plant — Vine is a spell, not a rune.
+    /// When fuel is spent, fire cover wears off and ash covers the
+    /// leftover walk (dirt if the floor was fuel, masonry if it was
+    /// stone). Vine cover speaks Plant — Vine is a spell, not a rune.
     /// Miasma is Cloud · Acid. Fog is the Cloud veil.
     /// </summary>
     public static class CoverCatalog
@@ -92,6 +95,56 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// What the walk becomes when fuel is spent. Plant, timber,
+        /// oil, and grit become dirt (scorched earth, Earth). Masonry
+        /// and dirt stay. Water, ice, lava, and void are not leftover
+        /// walks — the covering still turns to ash when the fuel dies.
+        /// </summary>
+        public static MaterialId RestAfterBurn(MaterialId walk)
+        {
+            switch (walk)
+            {
+                case MaterialId.Plant:
+                case MaterialId.Timber:
+                case MaterialId.Moss:
+                case MaterialId.Grove:
+                case MaterialId.Oil:
+                case MaterialId.Dust:
+                    return MaterialId.Dirt;
+                case MaterialId.Dirt:
+                case MaterialId.Sand:
+                case MaterialId.Stone:
+                case MaterialId.Hearth:
+                case MaterialId.Damp:
+                case MaterialId.Scoured:
+                case MaterialId.SaltCrust:
+                case MaterialId.Wardstone:
+                case MaterialId.Fire:
+                    return walk;
+                default:
+                    return MaterialId.None;
+            }
+        }
+
+        public static bool Speaks(TileCover cover, RuneId rune)
+        {
+            if (rune == RuneId.None)
+            {
+                return false;
+            }
+
+            var dest = new HashSet<RuneId>();
+            Speak(cover, dest);
+            return dest.Contains(rune);
+        }
+
+        public static void AshAt(Vector3 world)
+        {
+            var grid = Object.FindFirstObjectByType<WorldGrid>();
+            grid?.TileAtWorld(world)?.BurnOut();
+        }
+
+        /// <summary>
         /// A material stamped on the Cover layer that is not just
         /// look — oil, metal, plant, ice — without starting live fire,
         /// charge, or wet on its own.
@@ -139,22 +192,14 @@ namespace RuneMagic
                 return;
             }
 
+            dest.Add(rune);
             var material = MaterialOf(cover);
             if (material != MaterialId.None)
             {
-                var signature = MaterialCatalog.Of(material).Signature;
-                for (var i = 0; i < signature.Count; i++)
-                {
-                    if (signature[i] != RuneId.None)
-                    {
-                        dest.Add(signature[i]);
-                    }
-                }
-
+                SpeakMaterial(material, dest);
                 return;
             }
 
-            dest.Add(rune);
             if (!ChainBook.TryBirth(rune, out var sources) || sources == null)
             {
                 return;
@@ -206,9 +251,24 @@ namespace RuneMagic
                 return;
             }
 
-            if (RuneOf(TileCover.Fire) != RuneId.Fire)
+            if (RuneOf(TileCover.Fire) != RuneId.Fire
+                || !Speaks(TileCover.Fire, RuneId.Fire)
+                || !Speaks(TileCover.Ice, RuneId.Ice)
+                || !Speaks(TileCover.Ash, RuneId.Ash)
+                || !Speaks(TileCover.Vine, RuneId.Plant))
             {
-                broken.Add("Fire cover must speak Fire so a stamp can grant the rune");
+                broken.Add("A spoken cover must put its own rune in the weave so it can be drawn");
+            }
+
+            if (RestAfterBurn(MaterialId.Plant) != MaterialId.Dirt
+                || RestAfterBurn(MaterialId.Timber) != MaterialId.Dirt
+                || RestAfterBurn(MaterialId.Oil) != MaterialId.Dirt
+                || RestAfterBurn(MaterialId.Stone) != MaterialId.Stone
+                || RestAfterBurn(MaterialId.Dirt) != MaterialId.Dirt
+                || RestAfterBurn(MaterialId.Fire) != MaterialId.Fire
+                || RestAfterBurn(MaterialId.Water) != MaterialId.None)
+            {
+                broken.Add("Spent fuel becomes dirt; masonry and fire-rest stay; water is not leftover walk");
             }
 
             if (MaterialOf(TileCover.Fire) != MaterialId.Ember

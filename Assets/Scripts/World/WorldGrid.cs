@@ -11,6 +11,17 @@ namespace RuneMagic
 
         public IEnumerable<WorldTile> All => _tiles.Values;
 
+        /// <summary>
+        /// Bumps when a tile's spoken marks change (cover, live fire,
+        /// leftover walk) so the Charter weave can resample in place.
+        /// </summary>
+        public int SpokenRevision { get; private set; }
+
+        public void NoteSpokenChange()
+        {
+            SpokenRevision++;
+        }
+
         public WorldTile Get(int x, int y) => Get(new Vector2Int(x, y));
 
         public WorldTile Get(Vector2Int coord)

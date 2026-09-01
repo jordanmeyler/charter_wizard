@@ -34,7 +34,8 @@ namespace RuneMagic
             !Def.TearsTapestry
             && (Emission.Count > 0
                 || CoverCatalog.RuneOf(Cover) != RuneId.None
-                || CoverMaterial != MaterialId.None);
+                || CoverMaterial != MaterialId.None
+                || Fire > 0.05f);
         public Vector3 WorldOrigin => transform.position;
         public float VoiceRadius => 2.4f;
         public float VoiceWeight => Kind == TileKind.Wall ? 0.55f : 1f;
@@ -190,6 +191,7 @@ namespace RuneMagic
 
         public void PaintCover(string id)
         {
+            var before = Cover;
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
             Cover = ParseCover(_coverId);
             _coverMaterial = CoverCatalog.MaterialOf(Cover);
@@ -199,6 +201,10 @@ namespace RuneMagic
             }
 
             ApplyCover();
+            if (before != Cover)
+            {
+                NoteSpokenChange();
+            }
         }
 
         /// <summary>
@@ -792,6 +798,7 @@ namespace RuneMagic
                 return;
             }
 
+            var spoke = Fire > 0.05f;
             var boost = HasOil ? 1.55f : 1f;
             Fire = Mathf.Clamp01(Fire + amount * boost);
             if (amount > 0f && live && Fire > 0.05f)
@@ -802,6 +809,11 @@ namespace RuneMagic
             if (Fire <= 0.01f)
             {
                 LiveFire = false;
+            }
+
+            if ((Fire > 0.05f) != spoke)
+            {
+                NoteSpokenChange();
             }
 
             if (Fire > 0.05f)
@@ -890,14 +902,7 @@ namespace RuneMagic
 
         public void BurnVine()
         {
-            if (!HasVine && !HasPlantCover)
-            {
-                return;
-            }
-
-            _coverLook = null;
-            PaintCover(TileCover.Ash);
-            RefreshFx();
+            BurnOut();
         }
 
         /// <summary>
@@ -1192,23 +1197,7 @@ namespace RuneMagic
 
         public void BurnDown()
         {
-            var hadFuel = IsPlantish || HasPlantishDetail || HasVine || HasPlantCover;
-            if (!hadFuel)
-            {
-                return;
-            }
-
-            Fire = 0.15f;
-            _growth = 0;
-            if (HasPlantishDetail)
-            {
-                ClearDetail();
-            }
-
-            _coverLook = null;
-            PaintCover(TileCover.Ash);
-            RefreshCollider();
-            RefreshFx();
+            BurnOut();
         }
 
         /// <summary>
@@ -1222,7 +1211,61 @@ namespace RuneMagic
                 return;
             }
 
-            Oil = 0f;
+            BurnOut();
+        }
+
+        /// <summary>
+        /// Hunger finishes the fuel. Fire cover wears off. Ash covers
+        /// the walk. A plant or timber floor becomes dirt (look and
+        /// Earth). Masonry and dirt stay. Kindled halls do not ash.
+        /// </summary>
+        public void BurnOut()
+        {
+            if (Kindled && !LiveFire)
+            {
+                return;
+            }
+
+            var leftover = CoverCatalog.RestAfterBurn(Material);
+            var waterWalk = Material == MaterialId.Water
+                || (_hasFoundation && Foundation.Material == MaterialId.Water);
+            var changeWalk = leftover != MaterialId.None
+                && leftover != Material
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                && !waterWalk
+                && Material != MaterialId.Lava
+                && Material != MaterialId.Void;
+
+            Fire = 0f;
+            LiveFire = false;
+            _growth = 0;
+            if (!IsGeyser)
+            {
+                Oil = 0f;
+            }
+
+            if (HasPlantishDetail)
+            {
+                ClearDetail();
+            }
+
+            _coverLook = null;
+            if (changeWalk)
+            {
+                Reshape(new TileDef(Kind, leftover));
+            }
+
+            if (waterWalk || Material == MaterialId.Lava || Material == MaterialId.Void
+                || (Kind != TileKind.Floor && Kind != TileKind.Bridge))
+            {
+                PaintCover(TileCover.None);
+            }
+            else
+            {
+                PaintCover(TileCover.Ash);
+            }
+
+            RefreshCollider();
             RefreshFx();
         }
 
@@ -1253,6 +1296,12 @@ namespace RuneMagic
             RefreshLinger();
             var grid = GetComponentInParent<WorldGrid>();
             grid?.DressLooks();
+            grid?.NoteSpokenChange();
+        }
+
+        void NoteSpokenChange()
+        {
+            GetComponentInParent<WorldGrid>()?.NoteSpokenChange();
         }
 
         public void OpenDoor()
@@ -1281,6 +1330,11 @@ namespace RuneMagic
             for (var i = 0; i < emission.Count; i++)
             {
                 buffer.Add(emission[i]);
+            }
+
+            if (Fire > 0.05f)
+            {
+                buffer.Add(RuneId.Fire);
             }
 
             CoverCatalog.Speak(Cover, buffer);

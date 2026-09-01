@@ -174,22 +174,10 @@ namespace RuneMagic
                     var vineFuel = tile.HasVine;
                     var oilFuel = tile.HasOil && !tile.IsGeyser;
                     tile.Ignite(-consume - quench);
-                    if (quench < 0.4f && tile.Fire <= 0.08f)
+                    if (quench < 0.4f && tile.Fire <= 0.08f
+                        && (plantFuel || vineFuel || oilFuel))
                     {
-                        if (plantFuel)
-                        {
-                            tile.BurnDown();
-                        }
-
-                        if (vineFuel)
-                        {
-                            tile.BurnVine();
-                        }
-
-                        if (oilFuel)
-                        {
-                            tile.SpendFuel();
-                        }
+                        tile.BurnOut();
                     }
                 }
             }
