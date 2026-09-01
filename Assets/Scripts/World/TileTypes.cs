@@ -43,7 +43,12 @@ namespace RuneMagic
         Seal,
         Fog,
         Mud,
-        Ash
+        Ash,
+        /// <summary>
+        /// Liquid poison on the walk. Contact only; yield washes it.
+        /// Miasma is the airborne cloud.
+        /// </summary>
+        Poison
     }
 
     /// <summary>

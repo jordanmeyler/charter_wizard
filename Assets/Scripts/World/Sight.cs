@@ -76,7 +76,7 @@ namespace RuneMagic
 
             if (tile.HasMiasma)
             {
-                return "foul breath hanging on this tile. Send air through it.";
+                return "foul breath hanging on this tile. A cloud. Wind must take it.";
             }
 
             if (tile.HasVine)
@@ -98,7 +98,7 @@ namespace RuneMagic
 
             if (tile.IsPoisonWater)
             {
-                return "poison water. Breath or hunger will take it.";
+                return "poison water. Yield will wash it.";
             }
 
             var material = tile.Def.WorldMaterial;

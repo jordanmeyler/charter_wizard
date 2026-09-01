@@ -24,7 +24,7 @@ namespace RuneMagic
         public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can spread when hunger is live. Aura-Fire still kindles a hall.")]
+        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can spread when hunger is live. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -32,7 +32,10 @@ namespace RuneMagic
         [Range(0f, 1f)]
         public float opacity;
 
-        public bool HasOverlay => ResolvedCover() != TileCover.None || material == MaterialId.Miasma;
+        public bool HasOverlay =>
+            ResolvedCover() != TileCover.None
+            || material == MaterialId.Miasma
+            || material == MaterialId.Acid;
 
         public TileCover ResolvedCover()
         {
@@ -119,6 +122,8 @@ namespace RuneMagic
             {
                 case MaterialId.Miasma:
                     return TileCover.Miasma;
+                case MaterialId.Acid:
+                    return TileCover.Poison;
                 case MaterialId.Cloud:
                 case MaterialId.Steam:
                     return TileCover.Fog;

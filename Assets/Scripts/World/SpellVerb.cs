@@ -23,7 +23,12 @@ namespace RuneMagic
         Vent,
         Dirt,
         Slick,
-        Vine
+        Vine,
+        /// <summary>
+        /// Liquid poison on the walk. Contact only; yield washes it.
+        /// Foul is the airborne miasma cloud.
+        /// </summary>
+        Poison
     }
 
     /// <summary>
@@ -180,7 +185,7 @@ namespace RuneMagic
                 case SpellId.Miasma:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
                 case SpellId.Poison:
-                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Poison);
                 case SpellId.OilShot:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Slick);
                 case SpellId.OilPuddle:

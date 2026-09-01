@@ -195,9 +195,14 @@ namespace RuneMagic
                 CoverCatalog.Speak(TileCover.Fog, live);
             }
 
-            if (tile.HasMiasma || tile.IsPoisonWater)
+            if (tile.HasMiasma)
             {
                 CoverCatalog.Speak(TileCover.Miasma, live);
+            }
+
+            if (tile.IsPoisonWater)
+            {
+                CoverCatalog.Speak(TileCover.Poison, live);
             }
 
             CollectCover(tile, live);

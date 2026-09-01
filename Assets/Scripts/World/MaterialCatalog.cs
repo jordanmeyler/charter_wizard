@@ -554,7 +554,7 @@ namespace RuneMagic
                 case RuneId.Acid: return MaterialId.Acid;
                 case RuneId.Oil: return MaterialId.Oil;
                 case RuneId.Miasma: return MaterialId.Miasma;
-                case RuneId.Poison: return MaterialId.Miasma;
+                case RuneId.Poison: return MaterialId.Acid;
                 case RuneId.Flame: return MaterialId.Hearth;
                 case RuneId.Ember: return MaterialId.Ember;
                 case RuneId.Stone: return MaterialId.Stone;

@@ -567,9 +567,18 @@ namespace RuneMagic
                 return;
             }
 
+            var grid = FindFirstObjectByType<WorldGrid>();
+            var adept = AdeptAvatar.IsAdept(this) ? GetComponent<AdeptAvatar>() : null;
+            var airborne = adept != null && adept.IsAirborne;
             for (var i = _effects.Count - 1; i >= 0; i--)
             {
                 if (_effects[i].Held)
+                {
+                    continue;
+                }
+
+                if (_effects[i].Spec.IsMeter
+                    && !VitalLaw.ContactFeeds(_effects[i].Id, grid, transform.position, airborne))
                 {
                     continue;
                 }
@@ -605,7 +614,8 @@ namespace RuneMagic
             }
 
             var grid = FindFirstObjectByType<WorldGrid>();
-            if (WorldPhysics.AuraAt(grid, transform.position, out var kind) && kind == VeilKind.Poison)
+            if (VitalLaw.IsPoisonLiquidContact(grid != null ? grid.TileAtWorld(transform.position) : null)
+                || WorldPhysics.MiasmaCloudAt(grid, transform.position))
             {
                 Apply(StatusId.Poisoned, VitalLaw.AdeptPoisonSeconds);
             }

@@ -183,6 +183,22 @@ namespace RuneMagic
             || CoverMaterial == MaterialId.Lava
             || CoverMaterial == MaterialId.Fire;
 
+        /// <summary>
+        /// Hunger seated in the walk itself — Floor-Fire, ember, a hearth, lava.
+        /// </summary>
+        public bool IsFireFloor =>
+            Material == MaterialId.Fire
+            || Material == MaterialId.Ember
+            || Material == MaterialId.Hearth
+            || Material == MaterialId.Lava;
+
+        public bool HasPoisonCover =>
+            !HasAshCover
+            && (Cover == TileCover.Poison
+            || CoverMaterial == MaterialId.Acid
+            || string.Equals(_coverId, "poison", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-poison", System.StringComparison.OrdinalIgnoreCase));
+
         public void PaintCover(TileCover cover)
         {
             PaintCover(cover == TileCover.None ? null : cover.ToString().ToLowerInvariant());
@@ -283,7 +299,7 @@ namespace RuneMagic
             || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase);
         public bool IsPoisonWater =>
-            Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
+            Material == MaterialId.Acid || HasPoisonCover;
         /// <summary>
         /// Standing yield under this cell — a water floor, a water
         /// covering, or a vegetable body grown over a water foundation.
@@ -908,6 +924,48 @@ namespace RuneMagic
                 }
             }
 
+            WashPoison();
+            RefreshFx();
+        }
+
+        /// <summary>
+        /// Yield takes liquid poison. It does not lift a miasma cloud.
+        /// </summary>
+        public bool WashPoison()
+        {
+            var washed = false;
+            if (HasPoisonCover)
+            {
+                PaintCover(TileCover.None);
+                washed = true;
+            }
+
+            if (Material == MaterialId.Acid
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge))
+            {
+                Reshape(new TileDef(Kind, MaterialId.Scoured));
+                washed = true;
+            }
+
+            return washed;
+        }
+
+        /// <summary>
+        /// Liquid poison on the walk. Contact only; yield washes it.
+        /// </summary>
+        public void SlickPoison(float amount = 1f)
+        {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            {
+                return;
+            }
+
+            PaintCover(TileCover.Poison);
+            if (amount > 0f)
+            {
+                Wet = Mathf.Max(Wet, Mathf.Clamp01(amount * 0.35f));
+            }
+
             RefreshFx();
         }
 
@@ -947,12 +1005,17 @@ namespace RuneMagic
             }
 
             Miasma = Mathf.Clamp01(Miasma + amount);
+            if (Miasma > 0.2f && Cover == TileCover.None)
+            {
+                PaintCover(TileCover.Miasma);
+            }
+
             RefreshFx();
         }
 
         /// <summary>
-        /// Breath, hunger, or light takes what hangs on this cell.
-        /// Air also dries yield and scours an acid slick.
+        /// Breath lifts a hanging veil. Wind takes miasma. Yield
+        /// washes a poison slick — that is not this verb.
         /// </summary>
         public bool Vent(SpellId spell)
         {
@@ -966,20 +1029,17 @@ namespace RuneMagic
             if (Miasma > 0.05f && WorldWork.ClearsVeil(spell, VeilKind.Poison))
             {
                 Miasma = 0f;
+                if (Cover == TileCover.Miasma)
+                {
+                    PaintCover(TileCover.None);
+                }
+
                 changed = true;
             }
 
             if (WorldWork.IsAirWork(spell) && Wet > 0.05f)
             {
                 Dry(0.55f);
-                changed = true;
-            }
-
-            if ((WorldWork.IsAirWork(spell) || WorldWork.IsFireWork(spell))
-                && Material == MaterialId.Acid
-                && (Kind == TileKind.Floor || Kind == TileKind.Bridge))
-            {
-                Reshape(new TileDef(Kind, MaterialId.Scoured));
                 changed = true;
             }
 
@@ -1545,6 +1605,12 @@ namespace RuneMagic
                     return SpriteFactory.Named("tile-poison");
                 }
 
+                if (string.Equals(_coverId, "poison", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-poison", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-wet");
+                }
+
                 if (string.Equals(_coverId, "fog", System.StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(_coverId, "cover-fog", System.StringComparison.OrdinalIgnoreCase))
                 {
@@ -1668,7 +1734,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && !IsGeyser && _growth < 1)
+            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && !IsGeyser && !HasPoisonCover && _growth < 1)
             {
                 if (_fx != null)
                 {
@@ -1690,6 +1756,11 @@ namespace RuneMagic
             {
                 fx.sprite = SpriteFactory.Named("tile-poison");
                 fx.color = new Color(0.42f, 0.88f, 0.2f, 0.28f + Miasma * 0.45f);
+            }
+            else if (HasPoisonCover)
+            {
+                fx.sprite = SpriteFactory.Named("tile-wet");
+                fx.color = new Color(0.28f, 0.62f, 0.12f, 0.42f);
             }
             else if (Fog > 0.18f)
             {
@@ -1818,7 +1889,7 @@ namespace RuneMagic
                 return;
             }
 
-            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Miasma > 0.18f || Fog > 0.18f || Wet > 0.18f || Charge > 0.18f || Oil > 0.18f || IsGeyser || _growth >= 1 || _telegraph != MaterialId.None;
+            var live = SpriteFactory.Animates(ShownMaterial) || Fire > 0.08f || Miasma > 0.18f || Fog > 0.18f || Wet > 0.18f || Charge > 0.18f || Oil > 0.18f || IsGeyser || HasPoisonCover || _growth >= 1 || _telegraph != MaterialId.None;
             if (!live)
             {
                 return;
@@ -1848,6 +1919,10 @@ namespace RuneMagic
                 else if (Miasma > 0.18f)
                 {
                     _fx.sprite = SpriteFactory.Clip("tile-poison")[frame % 2];
+                }
+                else if (HasPoisonCover)
+                {
+                    _fx.sprite = SpriteFactory.Clip("tile-wet")[frame % 2];
                 }
                 else if (Fog > 0.18f)
                 {
