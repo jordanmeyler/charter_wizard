@@ -8,8 +8,8 @@ namespace RuneMagic
     /// family — Floor only if you stamped Floor or used a Floor brush.
     /// A look with Kind = None is never a floor, on any layer.
     /// Extra Floor / Tiles children merge; each Floor stamp still counts.
-    /// Cover is the overlay: look, gameplay, and what the cell answers.
-    /// Older Aura stamps still map onto Cover.
+    /// Cover is the overlay: look and what the cell answers.
+    /// Stamps do not start a reaction. Older Aura stamps still map onto Cover.
     /// </summary>
     [CreateAssetMenu(menuName = "Rune Magic/Map Tile", fileName = "MapTile")]
     public sealed class WorldPaintTile : Tile
@@ -24,7 +24,7 @@ namespace RuneMagic
         public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Prefer Cover. Play still reads this.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog over the walk tile. Look, work, and the same catalog mark as an inscription.")]
+        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Look and the catalog mark. Stamps do not start a reaction.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -131,6 +131,8 @@ namespace RuneMagic
                 case MaterialId.Plant:
                 case MaterialId.Grove:
                     return TileCover.Vine;
+                case MaterialId.Ash:
+                    return TileCover.Ash;
                 default:
                     return TileCover.None;
             }
@@ -152,11 +154,11 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Water / rain stamps only add qualities. They must not invent a
-        /// pool graphic when the painted sprite is missing.
+        /// Stamps add qualities over the tile you painted. They must
+        /// not invent a new floor graphic when the painted sprite is
+        /// missing.
         /// </summary>
-        public bool KeepsPaintedLook =>
-            material == MaterialId.Water || material == MaterialId.Rain;
+        public bool KeepsPaintedLook => true;
 
         public Sprite PreviewSprite(int x = 0, int y = 0)
         {

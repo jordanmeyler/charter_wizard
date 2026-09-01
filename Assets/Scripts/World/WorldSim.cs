@@ -4,9 +4,10 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Tiles speak to their neighbors. Fire spreads by burn rate, water grows plants,
-    /// retardant matter puts hunger out, and charge runs through what
-    /// conducts. Wood and plants break that path.
+    /// Tiles speak to their neighbors after a spell starts the work.
+    /// Fire spreads by burn rate, retardant matter puts hunger out,
+    /// and charge runs through what conducts. Wood and plants break
+    /// that path. Plants do not grow or spread on their own.
     /// </summary>
     public sealed class WorldSim : MonoBehaviour
     {
@@ -240,32 +241,9 @@ namespace RuneMagic
 
         void StepWet()
         {
-            var spreading = new List<WorldTile>();
             foreach (var tile in _grid.All)
             {
-                if (tile == null)
-                {
-                    continue;
-                }
-
-                var plant = tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail;
-                var watered = tile.Wet > 0.2f || _grid.TouchesOpenWater(tile);
-                if (plant && watered)
-                {
-                    if (tile.IsPlantish)
-                    {
-                        tile.Grow(1);
-                    }
-
-                    spreading.Add(tile);
-                }
-
-                tile.Dry(0.08f);
-            }
-
-            for (var i = 0; i < spreading.Count; i++)
-            {
-                _grid.SpreadPlant(spreading[i]);
+                tile?.Dry(0.08f);
             }
         }
 

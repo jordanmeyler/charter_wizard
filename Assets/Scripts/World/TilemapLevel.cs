@@ -685,6 +685,11 @@ namespace RuneMagic
                 return TileCover.Mud;
             }
 
+            if (NameHas(name, "ash", "cinder"))
+            {
+                return TileCover.Ash;
+            }
+
             return TileCover.None;
         }
 
@@ -800,9 +805,6 @@ namespace RuneMagic
                     break;
                 case TileCover.Fog:
                     tile.Cloak(1f);
-                    break;
-                case TileCover.Fire:
-                    tile.Kindle();
                     break;
             }
         }
