@@ -80,6 +80,7 @@ namespace RuneMagic
         /// reuses a mark lets the held working go.
         /// Burning and poison are meters: they run while the body
         /// still stands in that fire or foul, then empty is ash or death.
+        /// Leave the cover and the condition resets.
         /// </summary>
         public bool NeedsConcentration => IsWard || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;

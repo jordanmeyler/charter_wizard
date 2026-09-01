@@ -390,7 +390,13 @@ namespace RuneMagic
                 broken.Add("A span from floor to floor must hold");
             }
 
-            var hanging = new List<Vector2Int> { new(1, 0), new(2, 0), new(3, 0) };
+            var fromPit = new List<Vector2Int> { new(1, 0), new(2, 0), new(3, 0) };
+            if (!SpanIsSupported(fromPit, Seat))
+            {
+                broken.Add("A span that starts on the first pit cell must still grab the neighbouring floors");
+            }
+
+            var hanging = new List<Vector2Int> { new(1, 1), new(2, 1), new(3, 1) };
             if (SpanIsSupported(hanging, Seat))
             {
                 broken.Add("A span that misses a floor at each end must fall");

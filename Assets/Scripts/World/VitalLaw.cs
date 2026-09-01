@@ -18,8 +18,9 @@ namespace RuneMagic
     /// <summary>
     /// Burning and poison share one law: a named integrity clock.
     /// The clock only runs while the body still stands in matching
-    /// fire or foul. Sulphur work does not use this — it stays until
-    /// focus breaks.
+    /// fire or foul. Step off that cover and the condition lifts —
+    /// you are no longer on fire, no longer poisoned. Sulphur work
+    /// does not use this — it stays until focus breaks.
     /// </summary>
     public static class VitalLaw
     {
@@ -55,11 +56,19 @@ namespace RuneMagic
             ClockOf(id) == StatusClock.Meter;
 
         /// <summary>
-        /// Burning and poison only run while the body still stands in
+        /// Meters do not linger. Off the matching fire or foul, the
+        /// status drops instead of pausing.
+        /// </summary>
+        public static bool MeterEndsWithoutContact(StatusId id) =>
+            IsMeter(id);
+
+        /// <summary>
+        /// Burning and poison only hold while the body still stands in
         /// that kind of walk or covering. Hunger needs fire floor,
         /// fire cover, or a live flame. Poison needs a poison slick
         /// underfoot, or a miasma cloud (the tile, a neighbour, or a
-        /// hanging veil). Flight and hop lift the feet — the clock waits.
+        /// hanging veil). Leave the tile — or lift the feet — and
+        /// the condition resets.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -166,6 +175,24 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Floor-Fire, hearth, ember, lava. Rest hunger in the walk.
+        /// It does not burn out. Coverings and spells are what react.
+        /// </summary>
+        public static bool IsRestFire(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Fire:
+                case MaterialId.Ember:
+                case MaterialId.Hearth:
+                case MaterialId.Lava:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static float ItemBurnSeconds(MaterialId material)
         {
             switch (material)
@@ -254,7 +281,15 @@ namespace RuneMagic
                 || ContactFeeds(StatusId.Poisoned, null, default, true)
                 || ContactFeeds(StatusId.Frozen, null, default, true) == false)
             {
-                broken.Add("Meters wait when the feet leave the matching walk; timed clocks still lift");
+                broken.Add("Meters lift when the feet leave the matching walk; timed clocks still lift");
+            }
+
+            if (!MeterEndsWithoutContact(StatusId.Burning)
+                || !MeterEndsWithoutContact(StatusId.Poisoned)
+                || MeterEndsWithoutContact(StatusId.Frozen)
+                || MeterEndsWithoutContact(StatusId.Stunned))
+            {
+                broken.Add("Burning and poison must reset once the body leaves that fire or foul");
             }
 
             if (IsFireContact(null) || IsPoisonLiquidContact(null))
@@ -282,7 +317,15 @@ namespace RuneMagic
                 || BurnSeconds(CreatureNature.Fire, false) > 0f
                 || PoisonSeconds(CreatureNature.Earth, false) > 0f
                 || !CanBurn(MaterialId.Timber)
-                || CanBurn(MaterialId.Stone))
+                || CanBurn(MaterialId.Stone)
+                || CanBurn(MaterialId.Fire)
+                || CanBurn(MaterialId.Lava)
+                || CanBurn(MaterialId.Ember)
+                || !IsRestFire(MaterialId.Fire)
+                || !IsRestFire(MaterialId.Lava)
+                || !IsRestFire(MaterialId.Hearth)
+                || !IsRestFire(MaterialId.Ember)
+                || IsRestFire(MaterialId.Timber))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
             }
@@ -290,7 +333,7 @@ namespace RuneMagic
             if (OilBurnSeconds != 1f
                 || TimberBurnSeconds != 2f
                 || PlantBurnSeconds != 3f
-                || GroveBurnSeconds < SlowBurnSeconds
+                || GroveBurnSeconds != SlowBurnSeconds - 1f
                 || EmberBurnSeconds > 5f
                 || ItemBurnSeconds(MaterialId.Oil) != OilBurnSeconds
                 || ItemBurnSeconds(MaterialId.Timber) != TimberBurnSeconds

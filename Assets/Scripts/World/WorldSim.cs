@@ -123,6 +123,12 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
+                if (tile.IsFireFloor)
+                {
+                    StepRestFire(tile);
+                    continue;
+                }
+
                 if (tile.Kindled && !tile.LiveFire && tile.Wet < 0.15f && !tile.IsGeyser)
                 {
                     tile.KeepKindled();
@@ -162,7 +168,7 @@ namespace RuneMagic
                     quench += 0.8f;
                 }
 
-                if (tile.Kindled && tile.Wet < 0.15f)
+                if (tile.Kindled && tile.Wet < 0.15f && !tile.LiveFire)
                 {
                     tile.KeepKindled();
                 }
@@ -173,13 +179,66 @@ namespace RuneMagic
                     var plantFuel = tile.IsPlantish || tile.HasPlantishDetail;
                     var vineFuel = tile.HasVine;
                     var oilFuel = tile.HasOil && !tile.IsGeyser;
+                    var wallFuel = tile.Kind == TileKind.Wall && VitalLaw.CanBurn(tile.Material);
+                    var floorFuel = !tile.IsFireFloor
+                        && (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge)
+                        && (VitalLaw.CanBurn(tile.Material) || plantFuel || vineFuel || oilFuel);
                     tile.Ignite(-consume - quench);
                     if (quench < 0.4f && tile.Fire <= 0.08f
-                        && (plantFuel || vineFuel || oilFuel))
+                        && (floorFuel || wallFuel || plantFuel || vineFuel || oilFuel))
                     {
                         tile.BurnOut();
                     }
                 }
+            }
+        }
+
+        // Rest fire (Floor-Fire, lava, a hearth) is inert walk. A spell
+        // lights it; then it burns overlays and can jump to flammable
+        // neighbors. When the overlay is gone it goes dark again —
+        // unless the hall is kindled, in which case it stays hungry.
+        void StepRestFire(WorldTile tile)
+        {
+            if (tile.LiveFire)
+            {
+                var neighbors = _grid.Neighbors(tile.Coord);
+                var run = tile.BurnRate > 0.05f ? tile.BurnRate : 1f;
+                for (var n = 0; n < neighbors.Count; n++)
+                {
+                    var other = neighbors[n];
+                    var flam = other.Flammability;
+                    if (flam < 0f && !tile.FireIgnoresWater)
+                    {
+                        continue;
+                    }
+
+                    if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
+                    {
+                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
+                        if (catchable)
+                        {
+                            var fuel = flam > 0f ? flam : 1.2f;
+                            other.Ignite(fuel * run);
+                        }
+                    }
+                }
+            }
+
+            if (tile.HasOverlayFuel && (tile.LiveFire || tile.Kindled))
+            {
+                tile.TickOverlayFuel(Step);
+                return;
+            }
+
+            if (tile.LiveFire)
+            {
+                tile.EndSpellFire();
+                return;
+            }
+
+            if (tile.Kindled)
+            {
+                tile.KeepKindled();
             }
         }
 

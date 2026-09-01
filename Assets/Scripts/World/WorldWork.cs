@@ -1266,19 +1266,20 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (tile.IsDeepWater)
+                if ((tile.IsDeepWater || tile.HasWaterCover)
+                    && (SpanLaw.FreezesWater(grade) || FreezesWater(spell)))
                 {
-                    if (SpanLaw.FreezesWater(grade) || FreezesWater(spell))
+                    if (tile.LayIce())
                     {
-                        if (tile.FreezeSolid())
-                        {
-                            frozen++;
-                            filled++;
-                        }
-
-                        continue;
+                        frozen++;
+                        filled++;
                     }
 
+                    continue;
+                }
+
+                if (tile.IsDeepWater)
+                {
                     if (SpanLaw.MudsWater(grade))
                     {
                         if (tile.LayMudCover())
