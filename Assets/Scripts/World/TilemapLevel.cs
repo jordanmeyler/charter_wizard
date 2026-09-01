@@ -974,6 +974,11 @@ namespace RuneMagic
             {
                 broken.Add("A Wall stamp without a face must not reuse the floor as brick or invent a look");
             }
+
+            if (TileSprite.Solid(dirt) == null || TileSprite.Solid(stone) == null)
+            {
+                broken.Add("Stamped dirt and stone must keep a full-rect sprite with no sheet bleed");
+            }
         }
 
         static Sprite CoverLookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)
