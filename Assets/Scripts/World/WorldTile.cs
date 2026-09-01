@@ -401,8 +401,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How long a full fire lasts here. Oil is one second.
-        /// Wood is two. Plant is three.
+        /// How long a full fire lasts here. Oil is five seconds.
+        /// Wood is four. Plant is three. Oil on a cell extends
+        /// the clock; it does not cut a longer fuel short.
         /// </summary>
         public float BurnSeconds
         {
@@ -438,7 +439,7 @@ namespace RuneMagic
                 if (HasOil)
                 {
                     seconds = seconds > 0f
-                        ? Mathf.Min(seconds, VitalLaw.OilBurnSeconds)
+                        ? Mathf.Max(seconds, VitalLaw.OilBurnSeconds)
                         : VitalLaw.OilBurnSeconds;
                 }
 
@@ -454,7 +455,7 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How fast hunger leaves this cell. Faster fuel runs.
+        /// Clock leftover on this cell. Spread uses Hunger.
         /// A plant on water lights and stays put.
         /// </summary>
         public float BurnRate

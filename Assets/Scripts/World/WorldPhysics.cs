@@ -803,15 +803,15 @@ namespace RuneMagic
             var grove = MaterialCatalog.Of(MaterialId.Grove);
             var ember = MaterialCatalog.Of(MaterialId.Ember);
             var water = MaterialCatalog.Of(MaterialId.Water);
-            if (oil.BurnSeconds >= timber.BurnSeconds
-                || timber.BurnSeconds >= plant.BurnSeconds
-                || oil.BurnRate <= timber.BurnRate
-                || timber.BurnRate <= plant.BurnRate
+            if (oil.BurnSeconds <= timber.BurnSeconds
+                || timber.BurnSeconds <= plant.BurnSeconds
+                || oil.BurnRate >= timber.BurnRate
+                || timber.BurnRate >= plant.BurnRate
                 || oil.Flammability <= timber.Flammability
                 || timber.Flammability <= plant.Flammability
                 || plant.Flammability <= grove.Flammability)
             {
-                broken.Add("Wood must burn better than plant: oil, wood, plant, then grove");
+                broken.Add("Oil and wood last longer than plant; leftover is the short clock");
             }
 
             if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)

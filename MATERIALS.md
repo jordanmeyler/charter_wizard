@@ -100,7 +100,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Quench** | One 0–10 grade. The wet counterpart. Dry stone is 0. Mud suppresses. Water puts fire out. |
 | **Flammability** | Positive = how readily hunger takes it once it is allowed to catch. Zero = will not catch. Negative tracks Quench (about `−grade × 0.16`; water 10 → −1.6). |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
-| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 1, wood 2, plant 3, grove 4, ember 5). Independent of whether the body may *run*. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 4, ember 5). Independent of whether the body may *run*. Oil and wood last longer; they still spread on Hunger. |
 | **BurnRate** | Clock leftover `5 − seconds`. Not what walks fire to a neighbor. |
 
 **Hunger 0–10**
@@ -114,10 +114,10 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **4** | Soft | Same | No | 4 | Grove |
 | **5** | Plant | Same | No | 3 | Open — thatch / young plant |
 | **6** | Plant | Same | No — a plant field does not run | 3 | Living plant |
-| **7** | Timber | Strong source — reach **1** | Yes — equal-or-weaker fuel, touching fuel | 2 | Open — brush / dry wood |
-| **8** | Timber | Strong source — reach **2** | Yes | 2 | Timber |
-| **9** | Oil | Strong source — reach **3** | Yes; oil also flashes a slick | 1 | Open — pitch / grease |
-| **10** | Oil / hall | Strong source — reach **4** | Yes | 1 | Oil. Kindled hall counts as 10 |
+| **7** | Timber | Strong source — reach **1** | Yes — equal-or-weaker fuel, touching fuel | 4 | Open — brush / dry wood |
+| **8** | Timber | Strong source — reach **2** | Yes | 4 | Timber |
+| **9** | Oil | Strong source — reach **3** | Yes; oil also flashes a slick | 5 | Open — pitch / grease |
+| **10** | Oil / hall | Strong source — reach **4** | Yes | 5 | Oil. Kindled hall counts as 10 |
 
 **One spread rule:** a **strong source** is Hunger **7+**. Reach is the grade itself: **hunger − 6** (timber 2, oil / a hall 4). It may walk fire to equal-or-weaker fuel inside that reach if the cell **touches fuel toward the source**. A timber hall burns along the wood. Fire does not leap a stone or empty gap. Weaker fuel does not walk fire. A spell can still light whatever it hits.
 
@@ -149,8 +149,8 @@ Stood timber, plant, and oil props use the same 1–5 second clocks.
 
 | Material | Hunger | Quench | Flam | Cond | Sec | Note |
 | --- | --- | --- | --- | --- | --- | --- |
-| Oil | 10 | 0 | 2.2 | −0.25 | 1 | Strongest fuel. Floats. Flashes a slick. |
-| Timber | 8 | 0 | 1.6 | −0.9 | 2 | Wood. May run to adjacent wood / weaker fuel. |
+| Oil | 10 | 0 | 2.2 | −0.25 | 5 | Strongest fuel. Floats. Flashes a slick. Lasts. |
+| Timber | 8 | 0 | 1.6 | −0.9 | 4 | Wood. May run to adjacent wood / weaker fuel. Lasts. |
 | Plant | 6 | 0 | 1.1 | −1.1 | 3 | Catches within 2 of timber / oil / a hall. Does not run the field. |
 | Grove | 4 | 0 | 0.85 | −1.2 | 4 | Living mass. Catch-only. Longer clock. |
 | Moss | 3 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. |

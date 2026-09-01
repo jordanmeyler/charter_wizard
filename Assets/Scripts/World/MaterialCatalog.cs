@@ -147,10 +147,9 @@ namespace RuneMagic
         public float BurnSeconds { get; internal set; }
 
         /// <summary>
-        /// How fast a standing fire travels from this body. Derived
-        /// from <see cref="BurnSeconds"/>: faster fuel runs, four
-        /// seconds and slower stay put. Spread itself uses
-        /// <see cref="Hunger"/>, not this clock leftover.
+        /// Clock leftover <c>5 − seconds</c>. Oil and wood last
+        /// longer, so their leftover is small. Spread itself uses
+        /// <see cref="Hunger"/>, not this leftover.
         /// </summary>
         public float BurnRate { get; internal set; }
 
