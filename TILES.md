@@ -302,7 +302,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, and water stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber pack art. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave an ash covering on the same tile. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 

@@ -135,9 +135,6 @@ namespace RuneMagic
                 case MaterialId.Hearth:
                 case MaterialId.Lava:
                     return TileCover.Fire;
-                case MaterialId.Plant:
-                case MaterialId.Grove:
-                    return TileCover.Vine;
                 case MaterialId.Vein:
                     return TileCover.Lightning;
                 case MaterialId.Ash:
@@ -161,6 +158,19 @@ namespace RuneMagic
             color = tileData.color;
             tileData.flags = TileFlags.LockColor | TileFlags.LockTransform;
         }
+
+        /// <summary>
+        /// Plant / timber / water stamps add qualities over the tile
+        /// you painted. They must not invent a new floor graphic, and
+        /// they must not swap in pack art when a sprite is already there.
+        /// </summary>
+        public bool IsQualityStamp =>
+            material == MaterialId.Water ||
+            material == MaterialId.Rain ||
+            material == MaterialId.Plant ||
+            material == MaterialId.Grove ||
+            material == MaterialId.Moss ||
+            material == MaterialId.Timber;
 
         /// <summary>
         /// Stamps add qualities over the tile you painted. They must

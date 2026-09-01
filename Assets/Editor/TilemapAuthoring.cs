@@ -210,7 +210,7 @@ namespace RuneMagic
             tile.kind = kind;
             tile.cover = cover;
             tile.aura = aura;
-            if (tile.sprite == null)
+            if (tile.sprite == null && !tile.IsQualityStamp)
             {
                 tile.sprite = PackSprite(name) ?? tile.PreviewSprite();
             }
@@ -226,7 +226,7 @@ namespace RuneMagic
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(path);
                 var tile = AssetDatabase.LoadAssetAtPath<WorldPaintTile>(assetPath);
-                if (tile == null)
+                if (tile == null || tile.IsQualityStamp)
                 {
                     continue;
                 }

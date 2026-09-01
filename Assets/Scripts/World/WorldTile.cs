@@ -81,6 +81,7 @@ namespace RuneMagic
             if (_renderer != null)
             {
                 ApplyVisual();
+                ApplyCover();
             }
         }
 
@@ -1422,6 +1423,16 @@ namespace RuneMagic
                    material == MaterialId.Moss || material == MaterialId.Timber;
         }
 
+        static bool IsPlantPackCover(string id)
+        {
+            return string.Equals(id, "vine", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "cover-vine", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "cover-plant", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "cover-grove", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "cover-moss", System.StringComparison.OrdinalIgnoreCase)
+                || string.Equals(id, "cover-moss-b", System.StringComparison.OrdinalIgnoreCase);
+        }
+
         void ApplyCover()
         {
             if (_renderer == null)
@@ -1503,6 +1514,16 @@ namespace RuneMagic
                     return null;
                 }
 
+                // A Plant / Timber material stamp used to invent Vine
+                // cover. Keep the tileset; spells still PaintCover on
+                // stone or water and show a sheen.
+                if (_authoredLook != null &&
+                    IsPlantMaterial(Material) &&
+                    IsPlantPackCover(_coverId))
+                {
+                    return null;
+                }
+
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||
                             _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
                     ? _coverId
@@ -1546,6 +1567,14 @@ namespace RuneMagic
                         return ash;
                     }
                 }
+            }
+
+            // Plant / timber material stamps resolve to cover-plant /
+            // cover-vine. Those pack tiles hide the authored tileset.
+            // Spell-grown vine still arrives through _coverId above.
+            if (_authoredLook != null)
+            {
+                return null;
             }
 
             return TileAtlas.Cover(ShownMaterial, Coord.x, Coord.y);
