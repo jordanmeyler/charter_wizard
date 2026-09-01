@@ -70,6 +70,7 @@ namespace RuneMagic
             transform.position = new Vector3(coord.x + 0.5f, coord.y + 0.5f, 0f);
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
+            _renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             ApplyVisual();
             ApplyCover();
             ApplyCollider();
@@ -217,7 +218,10 @@ namespace RuneMagic
         /// detail. The floor underneath is not this.
         /// </summary>
         public bool HasOverlayFuel =>
-            HasVine || (HasOil && !IsGeyser) || HasPlantishDetail;
+            HasVine
+            || (HasOil && !IsGeyser)
+            || HasPlantishDetail
+            || (HasFireCover && !Kindled);
 
         public bool HasPoisonCover =>
             !HasAshCover
@@ -367,7 +371,7 @@ namespace RuneMagic
             {
                 if (HasAshCover)
                 {
-                    return MaterialCatalog.Of(MaterialId.Ash).Flammability;
+                    return 0f;
                 }
 
                 if (HasOil)
@@ -436,6 +440,13 @@ namespace RuneMagic
                     seconds = seconds > 0f
                         ? Mathf.Min(seconds, VitalLaw.OilBurnSeconds)
                         : VitalLaw.OilBurnSeconds;
+                }
+
+                if (HasFireCover && !Kindled)
+                {
+                    seconds = seconds > 0f
+                        ? Mathf.Min(seconds, VitalLaw.EmberBurnSeconds)
+                        : VitalLaw.EmberBurnSeconds;
                 }
 
                 return seconds;
@@ -509,6 +520,144 @@ namespace RuneMagic
         public bool Insulates => ChargeLaw.Insulates(Conductivity);
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
+        /// <summary>
+        /// Fuel hunger can finish. Kindled halls and rest fire floors
+        /// stay. Ember cover, timber walls, and plant / timber floors
+        /// catch once, then leftover dirt.
+        /// </summary>
+        public bool HoldsBurnFuel =>
+            !HasAshCover
+            && !IsFireFloor
+            && (IsPlantish
+                || HasPlantishDetail
+                || HasVine
+                || (HasOil && !IsGeyser)
+                || (HasFireCover && !Kindled)
+                || (Kind == TileKind.Wall && VitalLaw.CanBurn(Material))
+                || ((Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                    && VitalLaw.CanBurn(Material)));
+
+        /// <summary>
+        /// Neighbor fire may take this cell. Neutral walk (stone, dirt)
+        /// only lights when a spell's volume hits it. Weaker fuel still
+        /// needs a strong source (7+) within two tiles, and must touch
+        /// fuel toward that source so fire does not leap a gap.
+        /// </summary>
+        public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
+
+        /// <summary>
+        /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
+        /// oil, and ember cover raise the grade. Rest fire in the floor
+        /// stays 0 — a spell starts that source.
+        /// </summary>
+        public int Hunger
+        {
+            get
+            {
+                if (HasAshCover)
+                {
+                    return VitalLaw.HungerNeutral;
+                }
+
+                var hunger = IsFireFloor
+                    ? VitalLaw.HungerNeutral
+                    : VitalLaw.HungerOf(Material);
+                if (_detailMaterial != MaterialId.None)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerOf(_detailMaterial));
+                }
+
+                if (HasVine)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerPlant);
+                }
+
+                if (HasOil && !IsGeyser)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerOil);
+                }
+
+                if (HasFireCover && !Kindled)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerTinder);
+                }
+
+                return hunger;
+            }
+        }
+
+        /// <summary>
+        /// How hard this live flame may light other cells. A kindled
+        /// hall, a geyser, or a lit rest-fire walk is an oil-grade
+        /// source (10). Only a strong source (7+) walks fire, and
+        /// only onto flammable grades below it.
+        /// </summary>
+        public int FirePotency
+        {
+            get
+            {
+                if (Kindled || IsGeyser || (IsFireFloor && LiveFire))
+                {
+                    return VitalLaw.HungerOil;
+                }
+
+                return Hunger;
+            }
+        }
+
+        /// <summary>
+        /// 0–10 quench on this cell. Walk, a wet detail or cover, standing
+        /// water, ice, and spell wet raise the grade. Oil floats — it
+        /// stays dry even on a water foundation. Dry stone is 0.
+        /// </summary>
+        public int Quench
+        {
+            get
+            {
+                if (HasOil)
+                {
+                    return VitalLaw.QuenchDry;
+                }
+
+                var quench = VitalLaw.QuenchOf(Material);
+                if (_detailMaterial != MaterialId.None)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchOf(_detailMaterial));
+                }
+
+                var cover = CoverMaterial;
+                if (cover != MaterialId.None && cover != MaterialId.Oil)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchOf(cover));
+                }
+
+                if (HasWaterCover || IsDeepWater)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchWater);
+                }
+
+                if (HasIceCover)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchIce);
+                }
+
+                if (Wet >= 0.7f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchWater);
+                }
+                else if (Wet >= 0.35f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchRain);
+                }
+                else if (Wet > 0.15f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchDamp);
+                }
+
+                return quench;
+            }
+        }
+
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>
@@ -872,6 +1021,23 @@ namespace RuneMagic
 
             Foundation = Def;
             _hasFoundation = true;
+        }
+
+        /// <summary>
+        /// Put the fire out now. A kindled hall forgets the flame.
+        /// Rest fire in the walk stays as walk — only the live work dies.
+        /// </summary>
+        public void Snuff()
+        {
+            if (Fire <= 0f && !Kindled && !LiveFire)
+            {
+                return;
+            }
+
+            Fire = 0f;
+            Kindled = false;
+            LiveFire = false;
+            RefreshFx();
         }
 
         public void Ignite(float amount, bool live = true)
@@ -1802,7 +1968,7 @@ namespace RuneMagic
             {
                 var view = EnsureCover();
                 view.sprite = sheen;
-                view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
+                view.color = new Color(1f, 1f, 1f, CoverDrawAlpha());
                 view.sortingOrder = _renderer.sortingOrder + 1;
                 view.enabled = true;
             }
@@ -1847,6 +2013,24 @@ namespace RuneMagic
             }
         }
 
+        float CoverDrawAlpha()
+        {
+            var alpha = _coverAlpha > 0.01f ? _coverAlpha : 1f;
+            if (_authoredLook == null)
+            {
+                return alpha;
+            }
+
+            // A painted walk tile must stay visible. Opaque pack covers
+            // (hell lava, ice sheets) used to hide that sprite in Play.
+            if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud)
+            {
+                return Mathf.Min(alpha, 0.72f);
+            }
+
+            return Mathf.Min(alpha, 0.48f);
+        }
+
         Sprite ResolveCoverSprite()
         {
             if (_coverLook != null)
@@ -1863,6 +2047,20 @@ namespace RuneMagic
                     string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return null;
+                }
+
+                // cover-fire / cover-lightning are full hell tiles. A
+                // live wash sits on the authored floor instead.
+                if (string.Equals(_coverId, "fire", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-fire", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-fire");
+                }
+
+                if (string.Equals(_coverId, "lightning", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-lightning", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-charge");
                 }
 
                 // A Plant / Timber material stamp used to invent Vine

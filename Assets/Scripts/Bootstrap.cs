@@ -128,6 +128,10 @@ namespace RuneMagic
             cam.nearClipPlane = 0.1f;
             cam.transform.rotation = Quaternion.identity;
             cam.transform.position = new Vector3(2.5f, 5.5f, -10f);
+            // Same-order sprites were drawing in bake order, so a
+            // northern prop hid the one standing south of it.
+            cam.transparencySortMode = TransparencySortMode.CustomAxis;
+            cam.transparencySortAxis = new Vector3(0f, -1f, 0f);
 
             var follow = cam.GetComponent<FollowCamera2D>();
             if (follow == null)
@@ -161,6 +165,7 @@ namespace RuneMagic
             var sprite = player.AddComponent<SpriteRenderer>();
             sprite.sprite = AdeptStill();
             sprite.sortingOrder = 20;
+            sprite.spriteSortPoint = SpriteSortPoint.Pivot;
             sprite.color = Color.white;
             player.AddComponent<AdeptAvatar>();
             BindAdeptAnimator(player);
@@ -199,6 +204,7 @@ namespace RuneMagic
                 var sprite = player.AddComponent<SpriteRenderer>();
                 sprite.sprite = AdeptStill();
                 sprite.sortingOrder = 20;
+                sprite.spriteSortPoint = SpriteSortPoint.Pivot;
             }
 
             BindAdeptAnimator(player);

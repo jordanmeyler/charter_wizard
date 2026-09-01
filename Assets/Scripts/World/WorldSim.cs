@@ -5,11 +5,17 @@ namespace RuneMagic
 {
     /// <summary>
     /// Tiles speak to their neighbors after a spell starts the work.
-    /// Fire spreads by burn rate, retardant matter puts hunger out,
-    /// and charge runs through what conducts. Wood and plants break
-    /// that path. Plants do not grow on their own. Cover on water
-    /// stays put, like ice, unless a spell-watered land plant or
-    /// Forest asked for more.
+    /// Fire follows a 0–10 Hunger grade. A strong source (7+)
+    /// may spread to flammable grades below it, within two tiles,
+    /// if that cell touches fuel toward the source. Fire does not
+    /// leap a stone gap. Weaker fuel does not walk fire.
+    /// Quench is the wet counterpart (0–10): dry stone leaves a
+    /// fire alone, mud suppresses it, water puts it out. A tile
+    /// already alight does not recatch. Ember cover stays put and
+    /// then ashes. Charge runs through what conducts. Wood and
+    /// plants break that path. Plants do not grow on their own.
+    /// Cover on water stays put, like ice, unless a spell-watered
+    /// land plant or Forest asked for more.
     /// </summary>
     public sealed class WorldSim : MonoBehaviour
     {
@@ -141,31 +147,16 @@ namespace RuneMagic
                     continue;
                 }
 
-                var neighbors = _grid.Neighbors(tile.Coord);
-                var quench = 0f;
-                var run = tile.BurnRate;
-                for (var n = 0; n < neighbors.Count; n++)
+                var pressure = QuenchPressure(tile);
+                if (pressure.Snuff)
                 {
-                    var other = neighbors[n];
-                    var flam = other.Flammability;
-                    if (flam < 0f && !tile.FireIgnoresWater)
-                    {
-                        quench += -flam * 0.45f;
-                    }
-                    else if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
-                    {
-                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
-                        if (catchable)
-                        {
-                            var fuel = flam > 0f ? flam : 1.2f;
-                            other.Ignite(fuel * run);
-                        }
-                    }
+                    tile.Snuff();
+                    continue;
                 }
 
-                if (tile.Wet > 0.15f && !tile.FireIgnoresWater)
+                if (!pressure.Suppress)
                 {
-                    quench += 0.8f;
+                    SpreadFrom(tile);
                 }
 
                 if (tile.Kindled && tile.Wet < 0.15f && !tile.LiveFire)
@@ -176,16 +167,8 @@ namespace RuneMagic
                 {
                     var seconds = tile.BurnSeconds;
                     var consume = seconds > 0.05f ? Step / seconds : 0.12f;
-                    var plantFuel = tile.IsPlantish || tile.HasPlantishDetail;
-                    var vineFuel = tile.HasVine;
-                    var oilFuel = tile.HasOil && !tile.IsGeyser;
-                    var wallFuel = tile.Kind == TileKind.Wall && VitalLaw.CanBurn(tile.Material);
-                    var floorFuel = !tile.IsFireFloor
-                        && (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge)
-                        && (VitalLaw.CanBurn(tile.Material) || plantFuel || vineFuel || oilFuel);
-                    tile.Ignite(-consume - quench);
-                    if (quench < 0.4f && tile.Fire <= 0.08f
-                        && (floorFuel || wallFuel || plantFuel || vineFuel || oilFuel))
+                    tile.Ignite(-consume - pressure.Drain);
+                    if (tile.Fire <= 0.08f && tile.HoldsBurnFuel)
                     {
                         tile.BurnOut();
                     }
@@ -199,29 +182,16 @@ namespace RuneMagic
         // unless the hall is kindled, in which case it stays hungry.
         void StepRestFire(WorldTile tile)
         {
-            if (tile.LiveFire)
+            var pressure = QuenchPressure(tile);
+            if (pressure.Snuff)
             {
-                var neighbors = _grid.Neighbors(tile.Coord);
-                var run = tile.BurnRate > 0.05f ? tile.BurnRate : 1f;
-                for (var n = 0; n < neighbors.Count; n++)
-                {
-                    var other = neighbors[n];
-                    var flam = other.Flammability;
-                    if (flam < 0f && !tile.FireIgnoresWater)
-                    {
-                        continue;
-                    }
+                tile.Snuff();
+                return;
+            }
 
-                    if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
-                    {
-                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
-                        if (catchable)
-                        {
-                            var fuel = flam > 0f ? flam : 1.2f;
-                            other.Ignite(fuel * run);
-                        }
-                    }
-                }
+            if (tile.LiveFire && !pressure.Suppress)
+            {
+                SpreadFrom(tile);
             }
 
             if (tile.HasOverlayFuel && (tile.LiveFire || tile.Kindled))
@@ -268,7 +238,7 @@ namespace RuneMagic
                         continue;
                     }
 
-                    if (other.Fire < 0.35f)
+                    if (!other.LiveFire)
                     {
                         other.Ignite(1.15f);
                     }
@@ -278,6 +248,160 @@ namespace RuneMagic
             }
         }
 
+        struct QuenchHit
+        {
+            public bool Snuff;
+            public bool Suppress;
+            public float Drain;
+        }
+
+        /// <summary>
+        /// Dry stone is quench 0 — no drain, the fire keeps its full
+        /// clock and may spread. Mud (3+) smothers: no spread, extra
+        /// drain so the flame dies sooner. Water (9+) puts it out.
+        /// Oil and plant-on-water ignore yield.
+        /// </summary>
+        QuenchHit QuenchPressure(WorldTile tile)
+        {
+            var hit = new QuenchHit();
+            if (tile == null || tile.FireIgnoresWater)
+            {
+                return hit;
+            }
+
+            var own = tile.Quench;
+            var neighborMax = 0;
+            var neighborSum = 0;
+            var neighbors = _grid.Neighbors(tile.Coord);
+            for (var n = 0; n < neighbors.Count; n++)
+            {
+                var grade = neighbors[n].Quench;
+                if (grade <= VitalLaw.QuenchDry)
+                {
+                    continue;
+                }
+
+                if (grade > neighborMax)
+                {
+                    neighborMax = grade;
+                }
+
+                neighborSum += grade;
+            }
+
+            if (VitalLaw.SnuffsFire(own) || VitalLaw.SnuffsFire(neighborMax))
+            {
+                hit.Snuff = true;
+                hit.Suppress = true;
+                return hit;
+            }
+
+            if (VitalLaw.SuppressesFire(own) || VitalLaw.SuppressesFire(neighborMax))
+            {
+                hit.Suppress = true;
+                hit.Drain = neighborSum * VitalLaw.QuenchDrainPerGrade;
+                if (VitalLaw.SuppressesFire(own))
+                {
+                    hit.Drain += own * VitalLaw.QuenchDrainPerGrade;
+                }
+            }
+
+            return hit;
+        }
+
+        void SpreadFrom(WorldTile tile)
+        {
+            var potency = tile.FirePotency;
+            if (potency <= VitalLaw.HungerNeutral)
+            {
+                return;
+            }
+
+            _grid.ForEachInChebyshev(tile.Coord, VitalLaw.HungerCatchReach, (other, dist) =>
+            {
+                if (!AcceptsFireSpread(other))
+                {
+                    return;
+                }
+
+                if (!VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
+                {
+                    return;
+                }
+
+                if (!TouchesFuelToward(tile, other))
+                {
+                    return;
+                }
+
+                var fuel = other.Flammability > 0f ? other.Flammability : 1.2f;
+                other.Ignite(fuel);
+            });
+        }
+
+        /// <summary>
+        /// The target must sit next to fuel that leads back to the
+        /// source — the burning cell, or a flammable tile closer to
+        /// it. Isolated fuel two tiles away across stone stays dark.
+        /// </summary>
+        bool TouchesFuelToward(WorldTile source, WorldTile target)
+        {
+            if (source == null || target == null || _grid == null)
+            {
+                return false;
+            }
+
+            var reach = Chebyshev(source.Coord, target.Coord);
+            var found = false;
+            _grid.ForEachInChebyshev(target.Coord, 1, (other, _) =>
+            {
+                if (found || !IsFuelTouch(other))
+                {
+                    return;
+                }
+
+                if (other.Coord == source.Coord || Chebyshev(other.Coord, source.Coord) < reach)
+                {
+                    found = true;
+                }
+            });
+
+            return found;
+        }
+
+        static bool IsFuelTouch(WorldTile tile) =>
+            tile != null && (tile.LiveFire || tile.Kindled || tile.IsSpreadFuel);
+
+        static int Chebyshev(Vector2Int a, Vector2Int b) =>
+            Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+
+        /// <summary>
+        /// Hunger runs once through fuel. A tile already alight, or
+        /// already ash, does not catch again. Neutral stone and dirt
+        /// only light when a spell hits them. Weaker fuel still needs
+        /// a strong source (7+) within two tiles, a lower grade, and
+        /// a flammable neighbor toward that source.
+        /// </summary>
+        public static bool AcceptsFireSpread(WorldTile other)
+        {
+            if (other == null || other.LiveFire || other.HasAshCover || other.Kindled)
+            {
+                return false;
+            }
+
+            if (other.Fire >= 0.15f)
+            {
+                return false;
+            }
+
+            if (!CanCatch(other) || !other.IsSpreadFuel)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         static bool CanCatch(WorldTile other)
         {
             if (other.FireIgnoresWater)
@@ -285,7 +409,7 @@ namespace RuneMagic
                 return true;
             }
 
-            return other.Wet < 0.2f && !other.HasWaterCover && !other.IsDeepWater;
+            return !VitalLaw.BlocksCatch(other.Quench);
         }
 
         void StepWet()

@@ -42,6 +42,62 @@ namespace RuneMagic
         public const float EmberBurnSeconds = 5f;
         public const float SlowBurnSeconds = 5f;
 
+        /// <summary>
+        /// One 0–10 hunger grade. Catch and spread use this range.
+        /// Burn seconds stay their own 1–5 clock.
+        /// 0       Neutral — spell volume only. Stone, dirt, metal.
+        /// 1–2     Tinder — ember (1), dust / fire cover (2). Catch-only.
+        /// 3–4     Soft — moss (3), grove (4). Catch-only.
+        /// 5–6     Plant — living plant (6). Catches from a strong
+        ///         source. Does not run. 5 is free for later fuel.
+        /// 7–8     Timber — wood (8). A strong source: fire may walk
+        ///         to flammable grades below it. 7 is free for brush.
+        /// 9–10    Oil / a kindled hall (10). Strong source. 9 is free
+        ///         for later pitch / grease.
+        /// </summary>
+        public const int HungerNeutral = 0;
+        public const int HungerEmber = 1;
+        public const int HungerTinder = 2;
+        public const int HungerMoss = 3;
+        public const int HungerSoft = 4;
+        public const int HungerPlant = 6;
+        public const int HungerTimber = 8;
+        public const int HungerOil = 10;
+        public const int HungerMax = 10;
+        public const int HungerCatchReach = 2;
+        public const int HungerSpreadMin = 7;
+
+        /// <summary>
+        /// One 0–10 quench grade. The wet counterpart of Hunger.
+        /// Dry stone is 0 — it leaves a fire alone. Mud suppresses.
+        /// Water puts the fire out.
+        /// 0       Dry — stone, dirt, timber, oil. No neighbor effect.
+        /// 1–2     Trace moisture — salt crust (1). Below suppress.
+        /// 3–4     Mud / damp — mud (3), damp stone (4). Suppresses
+        ///         neighbor fire: no spread, the clock runs down sooner.
+        /// 5–6     Ice / snow / glacier. Melts, then wets. Suppresses.
+        /// 7–8     Rain (7). Strong suppress. 8 is free for shallow water.
+        /// 9–10    Water / flood (10). Puts fire out on the cell and
+        ///         on adjacent fuel (oil and plant-on-water still ignore it).
+        /// </summary>
+        public const int QuenchDry = 0;
+        public const int QuenchSalt = 1;
+        public const int QuenchMud = 3;
+        public const int QuenchDamp = 4;
+        public const int QuenchIce = 5;
+        public const int QuenchGlacier = 6;
+        public const int QuenchRain = 7;
+        public const int QuenchWater = 10;
+        public const int QuenchMax = 10;
+        public const int QuenchSuppressMin = 3;
+        public const int QuenchSnuffMin = 9;
+        /// <summary>
+        /// Extra fire drain per neighbor quench grade each sim step.
+        /// Four mud tiles (sum 12) smother a timber clock; dry stone
+        /// adds nothing, so the same timber burns its full seconds.
+        /// </summary>
+        public const float QuenchDrainPerGrade = 0.06f;
+
         public static StatusClock ClockOf(StatusId id)
         {
             if (id == StatusId.Burning || id == StatusId.Poisoned)
@@ -64,11 +120,12 @@ namespace RuneMagic
 
         /// <summary>
         /// Burning and poison only hold while the body still stands in
-        /// that kind of walk or covering. Hunger needs fire floor,
-        /// fire cover, or a live flame. Poison needs a poison slick
-        /// underfoot, or a miasma cloud (the tile, a neighbour, or a
-        /// hanging veil). Leave the tile — or lift the feet — and
-        /// the condition resets.
+        /// that kind of walk or covering. Hunger needs live fire, a
+        /// kindled hall, or a stood flame — a painted fire mark at
+        /// rest is not enough. Poison needs a poison slick underfoot,
+        /// or a miasma cloud (the tile, a neighbour, or a hanging
+        /// veil). Leave the tile — or lift the feet — and the
+        /// condition resets.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -104,8 +161,7 @@ namespace RuneMagic
             }
 
             return tile.IsBurning
-                || tile.HasFireCover
-                || tile.IsFireFloor
+                || tile.LiveFire
                 || tile.Kindled
                 || WorldWork.BurnsOccupants(tile);
         }
@@ -173,6 +229,113 @@ namespace RuneMagic
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// A cell that can catch from a potent source. Neutral walk
+        /// and rest fire in the floor do not. A spell can still hit
+        /// those cells.
+        /// </summary>
+        public static bool IsSpreadFuel(
+            MaterialId walk,
+            MaterialId detail = MaterialId.None,
+            bool vine = false,
+            bool oil = false)
+        {
+            if (IsRestFire(walk))
+            {
+                return false;
+            }
+
+            return HungerOf(walk) > HungerNeutral
+                || HungerOf(detail) > HungerNeutral
+                || vine
+                || oil;
+        }
+
+        /// <summary>
+        /// Catalog hunger for a material. Set it on
+        /// <c>MaterialCatalog.Flag(..., hunger)</c> when you add a body.
+        /// </summary>
+        public static int HungerOf(MaterialId material)
+        {
+            if (material == MaterialId.None)
+            {
+                return HungerNeutral;
+            }
+
+            return Mathf.Clamp(MaterialCatalog.Of(material).Hunger, HungerNeutral, HungerMax);
+        }
+
+        /// <summary>
+        /// Catalog quench for a material. Set it on
+        /// <c>MaterialCatalog.Flag(..., hunger, quench)</c> when you
+        /// add a wet body. Omit it and the body stays dry (0).
+        /// </summary>
+        public static int QuenchOf(MaterialId material)
+        {
+            if (material == MaterialId.None)
+            {
+                return QuenchDry;
+            }
+
+            return Mathf.Clamp(MaterialCatalog.Of(material).Quench, QuenchDry, QuenchMax);
+        }
+
+        /// <summary>
+        /// A strong source is Hunger 7+. Only those may walk fire to
+        /// a neighbor, and only onto flammable grades below them.
+        /// </summary>
+        public static bool IsStrongSource(int hunger) =>
+            hunger >= HungerSpreadMin;
+
+        public static bool SpreadsFire(int hunger) =>
+            IsStrongSource(hunger);
+
+        public static bool SuppressesFire(int quench) =>
+            quench >= QuenchSuppressMin;
+
+        public static bool SnuffsFire(int quench) =>
+            quench >= QuenchSnuffMin;
+
+        public static bool BlocksCatch(int quench) =>
+            quench >= QuenchSuppressMin;
+
+        /// <summary>
+        /// Suggested negative flam for a quench grade. Water 10 → −1.6.
+        /// New wet bodies can use this so the leftover flam number
+        /// stays in step with the 0–10 grade.
+        /// </summary>
+        public static float FlamFromQuench(int quench) =>
+            quench <= QuenchDry ? 0f : -quench * 0.16f;
+
+        /// <summary>
+        /// Whether a live source may light a target this many tiles
+        /// away (Chebyshev). A strong source (7+) may spread to any
+        /// flammable grade below it, within two tiles. The world also
+        /// requires the target to touch fuel toward the source — fire
+        /// does not leap a stone gap. Weaker fuel does not walk fire.
+        /// A vine wick takes any adjacent live flame. Neutral never
+        /// catches here.
+        /// </summary>
+        public static bool CanIgnite(int sourceHunger, int targetHunger, int chebyshev, bool vineWick)
+        {
+            if (targetHunger <= HungerNeutral || chebyshev <= 0)
+            {
+                return false;
+            }
+
+            if (vineWick && chebyshev == 1)
+            {
+                return true;
+            }
+
+            if (chebyshev > HungerCatchReach)
+            {
+                return false;
+            }
+
+            return IsStrongSource(sourceHunger) && targetHunger < sourceHunger;
         }
 
         /// <summary>
@@ -297,6 +460,11 @@ namespace RuneMagic
                 broken.Add("Empty ground cannot feed a burn or poison meter");
             }
 
+            if (FireRun(0f) != 0f || FireRun(EmberBurnSeconds) != 0f)
+            {
+                broken.Add("Zero fuel and ember must stay put — they do not run hunger");
+            }
+
             if (SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
                 || SpellVerb.Of(SpellId.Miasma).Tiles != TileVerb.Foul
                 || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
@@ -328,6 +496,61 @@ namespace RuneMagic
                 || IsRestFire(MaterialId.Timber))
             {
                 broken.Add("Burn and poison capacities must follow nature and matter");
+            }
+
+            if (IsSpreadFuel(MaterialId.Stone)
+                || IsSpreadFuel(MaterialId.Dirt)
+                || IsSpreadFuel(MaterialId.Fire)
+                || !IsSpreadFuel(MaterialId.Timber)
+                || !IsSpreadFuel(MaterialId.Oil)
+                || !IsSpreadFuel(MaterialId.Plant)
+                || !IsSpreadFuel(MaterialId.Stone, MaterialId.Timber)
+                || !IsSpreadFuel(MaterialId.Dirt, MaterialId.None, true, false)
+                || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
+            {
+                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — not a painted mark or rest fire");
+            }
+
+            if (HungerOf(MaterialId.Stone) != HungerNeutral
+                || HungerOf(MaterialId.Ember) != HungerEmber
+                || HungerOf(MaterialId.Dust) != HungerTinder
+                || HungerOf(MaterialId.Moss) != HungerMoss
+                || HungerOf(MaterialId.Grove) != HungerSoft
+                || HungerOf(MaterialId.Plant) != HungerPlant
+                || HungerOf(MaterialId.Timber) != HungerTimber
+                || HungerOf(MaterialId.Oil) != HungerOil
+                || IsStrongSource(HungerPlant)
+                || !IsStrongSource(HungerTimber)
+                || CanIgnite(HungerPlant, HungerSoft, 2, false)
+                || CanIgnite(HungerPlant, HungerPlant, 1, false)
+                || CanIgnite(HungerTimber, HungerTimber, 1, false)
+                || !CanIgnite(HungerTimber, HungerPlant, 2, false)
+                || !CanIgnite(HungerOil, HungerTimber, 1, false)
+                || CanIgnite(HungerOil, HungerOil, 1, false)
+                || CanIgnite(HungerTimber, HungerPlant, 3, false)
+                || !CanIgnite(HungerTinder, HungerPlant, 1, true))
+            {
+                broken.Add("Hunger 0–10: only a strong source (7+) spreads to flammable grades below it; the world also refuses a leap across a gap");
+            }
+
+            if (QuenchOf(MaterialId.Stone) != QuenchDry
+                || QuenchOf(MaterialId.Dirt) != QuenchDry
+                || QuenchOf(MaterialId.Timber) != QuenchDry
+                || QuenchOf(MaterialId.Mud) != QuenchMud
+                || QuenchOf(MaterialId.Damp) != QuenchDamp
+                || QuenchOf(MaterialId.Ice) != QuenchIce
+                || QuenchOf(MaterialId.Rain) != QuenchRain
+                || QuenchOf(MaterialId.Water) != QuenchWater
+                || SuppressesFire(QuenchDry)
+                || !SuppressesFire(QuenchMud)
+                || SnuffsFire(QuenchMud)
+                || SnuffsFire(QuenchRain)
+                || !SnuffsFire(QuenchWater)
+                || BlocksCatch(QuenchSalt)
+                || !BlocksCatch(QuenchMud)
+                || FlamFromQuench(QuenchWater) > -1.55f)
+            {
+                broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
             }
 
             if (OilBurnSeconds != 1f

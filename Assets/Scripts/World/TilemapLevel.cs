@@ -335,7 +335,21 @@ namespace RuneMagic
                     {
                         if (tile != null && look != null)
                         {
-                            tile.AuthorLook(look);
+                            // A later Floor / Tiles look sits on top.
+                            // It must not replace the walk sprite already
+                            // baked from the layer underneath.
+                            if (tile.AuthoredLook != null)
+                            {
+                                var detail = paint != null
+                                    ? paint.material
+                                    : GuessDetailMaterial(raw);
+                                tile.AuthorDetail(look, detail, paint != null && paint.blocks);
+                            }
+                            else
+                            {
+                                tile.AuthorLook(look);
+                            }
+
                             if (paint != null)
                             {
                                 ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
@@ -804,18 +818,7 @@ namespace RuneMagic
 
         static float VeilOpacity(TileBase tile)
         {
-            var cover = GuessCover(tile);
-            if (cover == TileCover.Miasma || cover == TileCover.Fog)
-            {
-                return 0.42f;
-            }
-
-            if (cover == TileCover.Ice || cover == TileCover.Water)
-            {
-                return 0.7f;
-            }
-
-            return 1f;
+            return WorldPaintTile.AutomaticOpacity(GuessCover(tile));
         }
 
         static bool GuessDetailBlocks(TileBase tile)

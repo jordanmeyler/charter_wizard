@@ -474,6 +474,8 @@ namespace RuneMagic
                 }
                 if (WorldWork.IsFireWork(sweep.Spell))
                 {
+                    // The spell volume lights whatever it hits, including
+                    // neutral stone. Neighbor spread still refuses those.
                     var wick = tile.HasOil || tile.Material == MaterialId.Oil || tile.HasVine;
                     tile.Ignite(wick ? 1.4f : 0.85f);
                     if (wick && tile.IsConjured && tile.Material == MaterialId.Oil)
@@ -840,10 +842,43 @@ namespace RuneMagic
             }
 
             if (ember.BurnRate != 0f
-                || grove.BurnRate <= 0f
-                || grove.BurnRate >= plant.BurnRate)
+                || ember.Hunger != VitalLaw.HungerEmber
+                || grove.Hunger != VitalLaw.HungerSoft
+                || plant.Hunger != VitalLaw.HungerPlant
+                || timber.Hunger != VitalLaw.HungerTimber
+                || oil.Hunger != VitalLaw.HungerOil
+                || VitalLaw.IsStrongSource(plant.Hunger)
+                || !VitalLaw.IsStrongSource(timber.Hunger)
+                || VitalLaw.CanIgnite(plant.Hunger, plant.Hunger, 1, false)
+                || VitalLaw.CanIgnite(timber.Hunger, timber.Hunger, 1, false)
+                || !VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 2, false)
+                || !VitalLaw.CanIgnite(oil.Hunger, timber.Hunger, 1, false))
             {
-                broken.Add("Ember stays put; grove still runs, weaker than plant");
+                broken.Add("Hunger 0–10: only a strong source (7+) spreads, and only to flammable grades below it; fire must touch fuel toward the source");
+            }
+
+            var mud = MaterialCatalog.Of(MaterialId.Mud);
+            if (mud.Hunger != VitalLaw.HungerNeutral
+                || mud.Quench != VitalLaw.QuenchMud
+                || timber.Quench != VitalLaw.QuenchDry
+                || water.Quench != VitalLaw.QuenchWater
+                || VitalLaw.SnuffsFire(mud.Quench)
+                || !VitalLaw.SnuffsFire(water.Quench)
+                || VitalLaw.SuppressesFire(timber.Quench)
+                || !VitalLaw.SuppressesFire(mud.Quench)
+                || water.Flammability >= 0f)
+            {
+                broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
+            }
+
+            if (WorldSim.AcceptsFireSpread(null)
+                || VitalLaw.IsSpreadFuel(MaterialId.Stone)
+                || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
+            {
+                broken.Add("Hunger must not run onto empty or neutral ground; timber, oil, and plant still catch");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

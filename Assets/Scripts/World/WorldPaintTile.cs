@@ -35,7 +35,7 @@ namespace RuneMagic
         public bool StampsFloor => StampsWalk && kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can spread when hunger is live. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
+        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can catch when hunger is live; ember stays put and then ashes. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -81,12 +81,30 @@ namespace RuneMagic
                 shown = TileCover.Miasma;
             }
 
-            if (shown == TileCover.Miasma || shown == TileCover.Fog)
-            {
-                return 0.42f;
-            }
+            return AutomaticOpacity(shown);
+        }
 
-            return 1f;
+        /// <summary>
+        /// Covers sit on the walk tile. Fire, lightning, and veils
+        /// are a sheen. Ice is thicker. A full 1 hides the floor.
+        /// </summary>
+        public static float AutomaticOpacity(TileCover cover)
+        {
+            switch (cover)
+            {
+                case TileCover.Miasma:
+                case TileCover.Fog:
+                case TileCover.Fire:
+                case TileCover.Lightning:
+                    return 0.42f;
+                case TileCover.Ice:
+                case TileCover.Water:
+                    return 0.7f;
+                case TileCover.None:
+                    return 1f;
+                default:
+                    return 0.55f;
+            }
         }
 
         public string CoverId()
@@ -256,6 +274,14 @@ namespace RuneMagic
                 || !IsQualityStampOf(TileKind.Wall, MaterialId.Fire))
             {
                 broken.Add("Floor and wall stamps must keep the tileset sprite they sit on");
+            }
+
+            if (AutomaticOpacity(TileCover.Fire) >= 0.95f
+                || AutomaticOpacity(TileCover.Lightning) >= 0.95f
+                || AutomaticOpacity(TileCover.Miasma) >= 0.95f
+                || AutomaticOpacity(TileCover.None) < 0.99f)
+            {
+                broken.Add("Fire and veil covers must be a sheen; they must not hide the walk tile");
             }
 
             if (!IsOverlayBrushOf("Cover-Ice", TileCover.Ice, TileAura.None)
