@@ -68,12 +68,14 @@ on top of the tile you painted. Spells and Cover stamps may.
 | **Wall-*** / **Kind = Wall** | Solid body + material | The sprite already on that cell. Same chip rule. No invented cobble under a wall you placed. |
 | **Pit / Door / Bridge** | That special look | The pit, leaf, or span. These *are* the picture. |
 | **Cover-*** / **Aura-*** | Overlay on the Cover layer | Sheen + spoken mark **on top of** the walk tile. Kind is None — these brushes do not stamp Floor. |
-| **Spell leftovers** | Wet, fire, charge, ash, vine… | FX / cover on top of the walk tile the spell found. |
+| **Spell leftovers** | Wet, fire, charge, vine… | FX / cover on top of the walk tile the spell found. |
+| **Spent plant / timber** | Stamp + look swap to leftover dirt | The leftover dirt tile. Not ash drawn over the old plant tile. |
 
 Paint the tileset first. Then stamp Floor or Wall so the cell walks or
 blocks. Then paint Cover, or let a spell leave a covering. If a Floor
 or Wall stamp still draws pack ice / water / plant / fire over your
-tileset, the stamp is wrong — it is a quality, not a new tile.
+tileset, the stamp is wrong — it is a quality, not a new tile. A plant
+that burns out swaps that stamp and that tile to dirt.
 
 ## Layers
 
@@ -152,9 +154,9 @@ once a spell starts work. Hunger only runs after a player or
 NPC spell starts it, after a covering a spell left behind
 (melt water, spell-fire on a bush), or when you paint the
 **Aura-Fire** brush (a kindled hall). When a vegetable body
-burns out, Play adds an ash covering, fire cover wears off, and a
-plant or timber floor becomes dirt (look and Earth). Masonry
-stays stone under the ash. A burned item ashes the cell under it.
+burns out, fire cover wears off, and a plant or timber floor
+swaps stamp and tile to leftover dirt (look and Earth). Masonry
+stays. A burned item spends the cell under it the same way.
 
 ### 2. Air — miasma, then the air stone
 
@@ -233,9 +235,11 @@ mark to draw Fire). Ice melts, oil fuels, metal conducts.
 do not spread on their own. Vine cover speaks Plant — Vine is
 a climbing shot (`Plant · Mercury`), not a rune, and hunger
 can run it as a wick. When hunger finishes the fuel, fire cover
-wears off and ash covers the cell (Ash · Fire · Plant). A plant
-or timber walk becomes dirt (look and Earth); masonry stays.
-Click any spoken cover — fire, ice, ash — to draw that rune.
+wears off. A plant or timber walk **swaps** stamp and tile to
+leftover dirt (look and Earth). It does not draw ash over the
+tile you placed. Masonry stays. Cover-Ash and spell leftovers
+may still sit on a tile. Click any spoken cover — fire, ice,
+ash — to draw that rune.
 Miasma is Cloud · Acid, Fog is Cloud. A kindled hall is the
 **Aura-Fire** brush.
 
@@ -341,9 +345,9 @@ A layer named **Enviroment Details** (the typo) still counts as Environment Deta
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Floor and wall stamps keep the tileset sprite they sit on — they do not swap in Floor-Stone / Floor-Plant / Floor-Fire pack art, and they do not draw a second graphic on top. **Cover-*** / **Aura-*** and spell leftovers may sit on that same tile. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on. The walk tile you already painted stays; a later Floor layer does not draw over it.
 
-**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, ash covers the cell, and a plant or timber floor becomes dirt (look and Earth). Stone floors do not catch; a burned table on stone leaves ash on the cobble. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
+**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, and a plant or timber floor swaps stamp and tile to leftover dirt (look and Earth). Stone floors do not catch; a burned table on stone is gone and the cobble stays. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
-Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns, the ash covering stays, the walk becomes dirt if it was plant or timber, and you can walk over it. Cover still applies to that cell (ice, fire, vine, ash, miasma).
+Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns, the walk becomes dirt if it was plant or timber, and you can walk over it. Cover still applies to that cell (ice, fire, vine, miasma) — only covers and spells draw over the leftover tile.
 
 `GameObject → Rune Magic → Decor` is still look-only art. Burning or blocking furniture has to be an Environment Details **tile**.
 

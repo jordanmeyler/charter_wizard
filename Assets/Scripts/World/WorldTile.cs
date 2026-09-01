@@ -1416,11 +1416,12 @@ namespace RuneMagic
 
         /// <summary>
         /// Hunger finishes the fuel. Fire cover wears off. A plant or
-        /// timber floor becomes dirt, or stone when a tileset sat
-        /// under that fuel. A timber or plant wall burns for its
-        /// clock, then the wall falls and ash takes its place so a
-        /// key behind it can be reached. Floor-Fire stays. It only
-        /// spends what sat on it.
+        /// timber floor swaps stamp and look to leftover dirt — it
+        /// does not draw ash over the tile you placed. A timber or
+        /// plant wall burns for its clock, then falls to that leftover
+        /// dirt so a key behind it can be reached. Floor-Fire stays.
+        /// It only spends what sat on it. Covers and spells may still
+        /// sit on the leftover.
         /// </summary>
         public void BurnOut()
         {
@@ -1469,7 +1470,6 @@ namespace RuneMagic
 
             _coverLook = null;
             var underLook = _underlayLook;
-            var keepLook = _authoredLook;
             if (fuelWall)
             {
                 if (IsConjured)
@@ -1491,11 +1491,7 @@ namespace RuneMagic
                     }
                 }
 
-                if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
-                {
-                    PaintCover(TileCover.Ash);
-                }
-
+                PaintCover(TileCover.None);
                 RefreshCollider();
                 RefreshFx();
                 return;
@@ -1510,22 +1506,10 @@ namespace RuneMagic
                 }
                 else
                 {
-                    var leftover = CoverCatalog.LeftoverFloor(Material, keepLook != null);
+                    var leftover = CoverCatalog.LeftoverFloor(Material);
                     if (leftover != MaterialId.None && leftover != Material)
                     {
-                        if (keepLook != null)
-                        {
-                            AuthorKind(Kind, leftover);
-                            AuthorLook(keepLook);
-                        }
-                        else
-                        {
-                            Reshape(new TileDef(Kind, leftover));
-                        }
-                    }
-                    else if (keepLook != null)
-                    {
-                        AuthorLook(keepLook);
+                        Reshape(new TileDef(Kind, leftover));
                     }
                 }
 
@@ -1548,16 +1532,7 @@ namespace RuneMagic
                 Reshape(new TileDef(Kind, leftoverWalk));
             }
 
-            if (waterWalk || Material == MaterialId.Lava || Material == MaterialId.Void
-                || (Kind != TileKind.Floor && Kind != TileKind.Bridge))
-            {
-                PaintCover(TileCover.None);
-            }
-            else
-            {
-                PaintCover(TileCover.Ash);
-            }
-
+            PaintCover(TileCover.None);
             RefreshCollider();
             RefreshFx();
         }

@@ -821,17 +821,17 @@ namespace RuneMagic
                 || !VitalLaw.CanBurn(MaterialId.Timber)
                 || VitalLaw.ItemBurnSeconds(MaterialId.Timber) != VitalLaw.TimberBurnSeconds)
             {
-                broken.Add("A timber wall must burn on the wood clock and fall to leftover dirt under ash");
+                broken.Add("A timber wall must burn on the wood clock and fall to leftover dirt");
             }
 
-            if (CoverCatalog.LeftoverFloor(MaterialId.Plant, false) != MaterialId.Dirt
-                || CoverCatalog.LeftoverFloor(MaterialId.Timber, true) != MaterialId.Stone)
+            if (CoverCatalog.LeftoverFloor(MaterialId.Plant) != MaterialId.Dirt
+                || CoverCatalog.LeftoverFloor(MaterialId.Timber) != MaterialId.Dirt)
             {
-                broken.Add("A spent burnable floor must leave dirt, or stone when a tileset sat under the fuel");
+                broken.Add("A spent plant or timber floor must swap to dirt (look and stamp)");
             }
 
-            if (CoverCatalog.LeftoverFloor(MaterialId.Fire, true) != MaterialId.Fire
-                || CoverCatalog.LeftoverFloor(MaterialId.Hearth, false) != MaterialId.Hearth
+            if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
+                || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
                 || VitalLaw.CanBurn(MaterialId.Fire)
                 || VitalLaw.CanBurn(MaterialId.Lava)
                 || !VitalLaw.IsRestFire(MaterialId.Ember))

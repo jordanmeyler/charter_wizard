@@ -9,9 +9,9 @@ namespace RuneMagic
     /// it can catch and interact once a spell starts work, and it
     /// always puts Fire in the weave so it can be drawn. It does
     /// not kindle a hall. Floor-Fire / Wall-Fire are rest matter.
-    /// When fuel is spent, fire cover wears off and ash covers the
-    /// leftover walk (dirt if the floor was fuel, masonry if it was
-    /// stone). Vine cover speaks Plant — Vine is a spell, not a rune.
+    /// When fuel is spent, fire cover wears off and a plant or
+    /// timber walk swaps to leftover dirt (look and stamp). Vine
+    /// cover speaks Plant — Vine is a spell, not a rune.
     /// Miasma is Cloud · Acid, a hanging fog wind must take.
     /// Poison is a liquid slick yield washes. Fog is the Cloud veil.
     /// </summary>
@@ -136,11 +136,10 @@ namespace RuneMagic
 
         /// <summary>
         /// What the walk becomes when fuel is spent. Plant, timber,
-        /// oil, and grit become dirt (scorched earth, Earth). A floor
-        /// that kept a tileset under that fuel leaves stone instead.
-        /// A timber or plant wall falls to leftover dirt under ash.
-        /// Masonry stays stone. Water, ice, lava, and void are not
-        /// leftover walks.
+        /// oil, and grit become dirt (look and stamp). A timber or
+        /// plant wall falls to that leftover dirt. Masonry stays
+        /// stone. This is a swap, not an ash covering. Water, ice,
+        /// lava, and void are not leftover walks.
         /// </summary>
         public static MaterialId RestAfterBurn(MaterialId walk)
         {
@@ -169,23 +168,13 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A spent burnable floor leaves dirt, or stone when the
-        /// tileset under the fuel was masonry.
+        /// A spent burnable floor leaves dirt. The stamp and the
+        /// floor tile both swap. Covers and spells may sit on that
+        /// leftover; burn-out does not draw ash over the old tile.
         /// </summary>
-        public static MaterialId LeftoverFloor(MaterialId walk, bool keepTileset)
+        public static MaterialId LeftoverFloor(MaterialId walk)
         {
-            var leftover = RestAfterBurn(walk);
-            if (leftover == MaterialId.None)
-            {
-                return MaterialId.None;
-            }
-
-            if (keepTileset && leftover == MaterialId.Dirt)
-            {
-                return MaterialId.Stone;
-            }
-
-            return leftover;
+            return RestAfterBurn(walk);
         }
 
         public static bool Speaks(TileCover cover, RuneId rune)
@@ -333,16 +322,16 @@ namespace RuneMagic
                 broken.Add("Spent fuel becomes dirt; masonry and fire-rest stay; water is not leftover walk");
             }
 
-            if (LeftoverFloor(MaterialId.Plant, false) != MaterialId.Dirt
-                || LeftoverFloor(MaterialId.Timber, true) != MaterialId.Stone
-                || LeftoverFloor(MaterialId.Stone, true) != MaterialId.Stone
-                || LeftoverFloor(MaterialId.Dirt, false) != MaterialId.Dirt)
+            if (LeftoverFloor(MaterialId.Plant) != MaterialId.Dirt
+                || LeftoverFloor(MaterialId.Timber) != MaterialId.Dirt
+                || LeftoverFloor(MaterialId.Stone) != MaterialId.Stone
+                || LeftoverFloor(MaterialId.Dirt) != MaterialId.Dirt)
             {
-                broken.Add("A spent burnable floor leaves dirt, or stone when a tileset sat under the fuel");
+                broken.Add("A spent plant or timber floor swaps to dirt (look and stamp), not an ash covering");
             }
 
-            if (LeftoverFloor(MaterialId.Fire, true) != MaterialId.Fire
-                || LeftoverFloor(MaterialId.Hearth, false) != MaterialId.Hearth)
+            if (LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
+                || LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth)
             {
                 broken.Add("Rest fire in the walk stays; it is not leftover dirt");
             }
