@@ -7,9 +7,9 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// Plant / timber / water palette stamps keep the tileset already
-    /// on the cell. Pack art on Floor-Plant / Floor-Timber is only a
-    /// chip preview — it must not replace the look you painted.
+    /// Plant / timber / water / fire palette stamps keep the tileset
+    /// already on the cell. Pack art on Floor-Plant / Floor-Fire is
+    /// only a chip preview — it must not replace the look you painted.
     /// </summary>
     [InitializeOnLoad]
     static class StampLookKeep

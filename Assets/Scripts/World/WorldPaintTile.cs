@@ -24,7 +24,7 @@ namespace RuneMagic
         public bool StampsFloor => kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Look, work, and the same catalog mark as an inscription. Fire cover only marks hunger so the weave speaks Fire — it does not kindle a hall. Stamps do not start a reaction.")]
+        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can spread when hunger is live. Aura-Fire still kindles a hall.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -160,9 +160,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Plant / timber / water stamps add qualities over the tile
-        /// you painted. They must not invent a new floor graphic, and
-        /// they must not swap in pack art when a sprite is already there.
+        /// Plant / timber / water / fire stamps add qualities over the
+        /// tile you painted. They must not invent a new floor graphic,
+        /// and they must not swap in pack art when a sprite is already
+        /// there. Fire is walk matter at rest, like stone — not a cover.
         /// </summary>
         public bool IsQualityStamp =>
             material == MaterialId.Water ||
@@ -170,7 +171,8 @@ namespace RuneMagic
             material == MaterialId.Plant ||
             material == MaterialId.Grove ||
             material == MaterialId.Moss ||
-            material == MaterialId.Timber;
+            material == MaterialId.Timber ||
+            material == MaterialId.Fire;
 
         /// <summary>
         /// Stamps add qualities over the tile you painted. They must

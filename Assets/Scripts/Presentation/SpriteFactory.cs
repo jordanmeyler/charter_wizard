@@ -1401,6 +1401,7 @@ namespace RuneMagic
                     canvas.Noise(rng, new Color(0.08f, 0.07f, 0.07f, 0.8f), 12);
                     break;
                 case MaterialPaint.Hearth:
+                case MaterialPaint.Fire:
                     PaintCobble(canvas, tone, rng);
                     PaintVein(canvas, new Color(0.92f, 0.38f, 0.16f, 0.7f), rng);
                     canvas.SoftCircle(rng.Range(8, 24), rng.Range(8, 24), 4, new Color(0.95f, 0.4f, 0.12f, 0.28f));
@@ -1614,6 +1615,7 @@ namespace RuneMagic
                 case MaterialPaint.Hearth:
                 case MaterialPaint.Ember:
                 case MaterialPaint.Lava:
+                case MaterialPaint.Fire:
                     PaintFlameWall(canvas, brick, rng);
                     break;
                 case MaterialPaint.Grove:
@@ -1768,6 +1770,7 @@ namespace RuneMagic
                 case MaterialPaint.Hearth:
                 case MaterialPaint.Ember:
                 case MaterialPaint.Lava:
+                case MaterialPaint.Fire:
                     canvas.Fill(12, 10, 8, 36, new Color(1f, 0.4f, 0.08f, 0.85f));
                     canvas.SoftCircle(16, 52, 8, new Color(1f, 0.45f, 0.1f, 0.55f));
                     break;

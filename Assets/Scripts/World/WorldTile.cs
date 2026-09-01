@@ -180,7 +180,8 @@ namespace RuneMagic
             Cover == TileCover.Fire
             || CoverMaterial == MaterialId.Ember
             || CoverMaterial == MaterialId.Hearth
-            || CoverMaterial == MaterialId.Lava;
+            || CoverMaterial == MaterialId.Lava
+            || CoverMaterial == MaterialId.Fire;
 
         public void PaintCover(TileCover cover)
         {

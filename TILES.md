@@ -32,6 +32,8 @@ each `WorldPaintTile` into a live `WorldTile`.
    no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / miasma over
    those cells if you would rather brush overlays than stamp them.
+   Covers are the live layer. **Floor-Fire** and **Wall-Fire** go on
+   Tiles / Walls — rest materials, like stone.
    Miasma and fog are see-through (about 40%). Check **Opacity** in
    Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
@@ -105,13 +107,15 @@ middle for the stone.
    that water.
 
 The player needs a **Fire** mark in reach so they can write
-Fireball. Stamp **Cover = Fire** (Tile Properties, Write onto
-Cover layer) on any walk cell — that is the fire stamp. It only
-marks hunger. The weave speaks Fire, and clicking the cover draws
-the rune. It does not kindle a hall and will not kill you. A
-fireball, a spreading burn, or oil that a spell left will still
-find that cover — the stamp is inert until work or a live
-reaction touches it. Ice cover melts when hunger crosses it.
+Fireball. **Floor-Fire** / **Wall-Fire** are walk stamps, like
+stone or dirt: hunger seated in the tile, at rest. The tileset
+stays. They do not spread and they do not kindle. **Cover =
+Fire** (Tile Properties, Write onto Cover layer, or the
+Cover-Fire brush) is the live layer — it can catch and interact
+once a spell starts work. The weave speaks Fire from either.
+Click the cover mark to draw the rune. A fireball, a spreading
+burn, or oil that a spell left will find the cover. Aura-Fire
+still kindles a hall. Ice cover melts when hunger crosses it.
 Oil or metal stamped on the Cover layer is the same: fuel or a
 path for the spark, not a reaction that starts itself.
 `GameObject → Rune Magic → Inscription` or **Pillar** still works
@@ -119,12 +123,12 @@ if you want a floating mark instead. Do not stamp fire on
 Environment Details and do not expect a painted torch tile
 to burn things. A torch is `GameObject → Rune Magic → Torch` — a
 lock you light with a spell. It sits in the Hierarchy like the
-stone, not on a tile layer. Painted fire (Cover = Fire) is
-scenery at rest. Stamps and covers sit over the tile you
-painted — they do not start a reaction. Hunger only runs after
-a player or NPC spell starts it, after a covering a spell left
-behind (melt water, spell-fire on a bush), or when you paint
-the **Aura-Fire** brush (a kindled hall). When a vegetable body
+stone, not on a tile layer. Floor and wall stamps sit at rest.
+Covers are the live layer: they can catch, melt, and interact
+once a spell starts work. Hunger only runs after a player or
+NPC spell starts it, after a covering a spell left behind
+(melt water, spell-fire on a bush), or when you paint the
+**Aura-Fire** brush (a kindled hall). When a vegetable body
 burns out, Play adds an ash covering and leaves the walk tile.
 
 ### 2. Air — miasma, then the air stone
@@ -190,17 +194,16 @@ Every catalog rune can be an inscription — roots, joins, and reserved names. `
 Same pattern. Stones already have their id and sprite on the prefab. For a custom Item, drag a sprite onto **Portrait**, or set `spriteId` / `catalogId`. A Door has two portraits — closed and open.
 
 **Tile covers (ice, fire, miasma, water after a melt).**
-These are tiles, not objects. A cover is the look and
-the same catalog mark as an inscription — Ice is Water · Earth,
-**Fire cover only marks hunger** so the Charter can speak Fire
-(click the mark to draw it; the floor stays safe). Spells and
-live reactions still find that cover — ice melts, oil fuels,
-metal conducts — the stamp does not start those itself. Vine cover
-speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a
-rune, and hunger can run it as a wick. Ash is Fire · Plant.
-Miasma is Cloud · Acid, Fog is Cloud. Stamps and covers do not
-start a reaction. A kindled hall is the **Aura-Fire** brush, not
-Cover-Fire.
+These are tiles, not objects. Floor and wall are at rest.
+A cover is the live layer: look, work, and the same catalog
+mark as an inscription. Ice is Water · Earth. **Fire cover**
+can catch and interact once a spell starts hunger (click the
+mark to draw Fire). Ice melts, oil fuels, metal conducts.
+**Floor-Fire / Wall-Fire** are rest matter, like stone — they
+do not spread on their own. Vine cover speaks Plant — Vine is
+a climbing shot (`Plant · Mercury`), not a rune, and hunger
+can run it as a wick. Ash is Fire · Plant. Miasma is Cloud ·
+Acid, Fog is Cloud. A kindled hall is the **Aura-Fire** brush.
 
 1. Select **Cover** in the Hierarchy.
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
@@ -302,7 +305,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, and water stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber pack art. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, water, and fire stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber / Floor-Fire pack art. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave an ash covering on the same tile. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 

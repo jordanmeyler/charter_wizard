@@ -44,7 +44,8 @@ namespace RuneMagic
         Oil,
         Miasma,
         Wardstone,
-        Aegis
+        Aegis,
+        Fire
     }
 
     public enum MaterialPaint
@@ -82,7 +83,8 @@ namespace RuneMagic
         Wardstone,
         Aegis,
         Void,
-        Dirt
+        Dirt,
+        Fire
     }
 
     /// <summary>
@@ -406,7 +408,13 @@ namespace RuneMagic
                     "Shown steel. Light seated in metal. Mostly spell-proof.",
                     RuneId.Metal, MaterialPaint.Aegis,
                     new Color(0.72f, 0.7f, 0.42f), new Color(0.56f, 0.54f, 0.3f), false,
-                    RuneId.Metal, RuneId.Lumen)
+                    RuneId.Metal, RuneId.Lumen),
+
+                new WorldMaterial(MaterialId.Fire, "fire",
+                    "Hunger seated in the walk. At rest until a spell finds it.",
+                    RuneId.Fire, MaterialPaint.Fire,
+                    new Color(0.86f, 0.28f, 0.08f), new Color(0.62f, 0.16f, 0.06f), false,
+                    RuneId.Fire)
             };
 
             ById = new Dictionary<MaterialId, WorldMaterial>(AllMaterials.Length);
@@ -449,6 +457,7 @@ namespace RuneMagic
             Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.EmberBurnSeconds);
             Flag(MaterialId.Wardstone, 0f, 0f);
             Flag(MaterialId.Aegis, 0f, 1.1f);
+            Flag(MaterialId.Fire, 0f, 0f);
         }
 
         static void Flag(MaterialId id, float flammability, float conductivity, float burnSeconds = 0f)
@@ -572,6 +581,7 @@ namespace RuneMagic
                         : material == MaterialId.Metal ? "iron wall"
                         : material == MaterialId.Ice ? "ice wall"
                         : material == MaterialId.Hearth ? "flame wall"
+                        : material == MaterialId.Fire ? "fire wall"
                         : material == MaterialId.Grove ? "vine wall"
                         : def.Name + " wall";
                 default:
