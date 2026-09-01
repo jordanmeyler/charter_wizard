@@ -151,7 +151,7 @@ The aspects taught *how a sentence stands or goes.* This stage is more open: key
 Open. Labels **Spark**, **Plant**, **Water**, and **Ice**. Four rooms stand off it. The north hall leads to Door III.
 
 ### Grove Court · "The Living Thicket" — *grow, then burn*
-A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Salt · Earth · Life** (Sprout). Plant and moss sit on both banks. **Water the plants** and they grow across the gap. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
+A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns write **Water · Salt · Earth · Life** (Sprout). Plant and moss sit on both banks. **Grow from the bank** — plant cover stands three tiles from your feet, the way ice covers water. Water a land plant and it may take a neighbouring water tile; cover already on water stays put. Forest drinks the whole pool. The **grove stone** waits on the west bank. A **living thicket** still seals the far alcove; fire it if you want to see hunger run.
 
 ### Cistern · "The Cistern" — *water drowns; ice is a floor*
 A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Ice · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
@@ -198,7 +198,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |
 | `door-ii` | Gate of Aspects | Three aspect stones. Opens section 3. |
 | `join-foyer` | The Wrought Cross | Spark, Plant, Water labelled. Open courts. |
-| `grove-court` | The Living Thicket | Columns write Sprout. Grow a four-tile gap. Grove stone on the far bank. |
+| `grove-court` | The Living Thicket | Columns write Sprout. Plant cover three tiles from the bank. Grove stone on the far bank. |
 | `cistern` | The Cistern | Columns write Ice-pillar. Water drowns. Ice freezes it. Flood stone past the water. |
 | `spark-cell` | The Seed of Charge | Columns write Fire · Air · Spark. Lightning drops the charge veil. Spark stone behind it. |
 | `arena` | The Mixed Court | Melee and ranged. Casters show their marks. Wall the ember adept and the floor hungers, then a flame-pillar stands. |

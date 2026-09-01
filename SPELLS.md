@@ -163,15 +163,15 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 6 | Hunger’s wildcard given a standing body — a wick that stays. | Ignite | Fire · Sulphur · Salt | — | Remote | Neither |
 | 7 | Hunger given breath and sent. A bolt, not a body. Walls stop it. | Lightning | Fire · Air · Mercury | Lightning · Mercury | Shot | Kill |
 | 8 | That bolt finds yield given a standing body. The pool, not the bolt, is what dies. | Chain | Fire · Air · Mercury · Water · Salt | Lightning · Mercury · Water · Salt | Remote | Kill |
-| 9 | The seed given a standing body around your feet. They cannot step. | Live-floor | Fire · Air · Salt | Spark · Salt | Spread | Kill / Restrain |
+| 9 | The seed given a standing body around your feet. They cannot step. | Live-floor | Fire · Air · Salt | Spark · Salt | Grow | Kill / Restrain |
 | 10 | The bolt, turned by Sulphur, reaches a mind. They lock. | Jolt | Fire · Air · Sulphur · Mercury | Spark · Sulphur · Mercury | Remote | Restrain |
-| 11 | The bolt meets rest, then every mind around you. They drop. | Thunderclap | Fire · Air · Earth · Sulphur | Lightning · Earth · Sulphur | Spread | Restrain |
+| 11 | The bolt meets rest, then every mind around you. They drop. | Thunderclap | Fire · Air · Earth · Sulphur | Lightning · Earth · Sulphur | Grow | Restrain |
 | 12 | The hanging veil given a body, then the bolt is sent from it. | Storm | Air · Water · Salt · Fire · Air · Mercury | Cloud · Salt · Lightning · Mercury | Remote | Kill / Neither |
 | 13 | The hanging veil yields more and is sent down. | Rain | Air · Water · Water · Mercury | Cloud · Water · Mercury | Remote | Neither |
-| 14 | The hanging veil is drawn to the ground. | Fog | Air · Water · Earth | Cloud · Earth | Spread | Neither |
+| 14 | The hanging veil is drawn to the ground. | Fog | Air · Water · Earth | Cloud · Earth | Grow | Neither |
 | 15 | Hunger forced through yield and sent. Soft life ends. | Scald | Fire · Water · Mercury | Steam · Mercury | Shot | Kill |
 | 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Mercury | — | Shot | Restrain / Neither |
-| 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Spread | Restrain |
+| 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Grow | Restrain |
 | 18 | Hard water asked to rest as a column. Over a pit it must join two floors. On water it freezes without banks. It will thaw. | Ice-pillar | Water · Earth · Salt · Earth | Ice · Salt · Earth | Pillar | Restrain / Neither |
 | 19 | Hard water sent. It does not freeze a living body. | Ice-spear | Water · Earth · Mercury | Ice · Mercury | Shot | Restrain |
 | 20 | The veil is given ice’s story and sent softly. They freeze. | Snowfall | Air · Water · Water · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
@@ -180,20 +180,20 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 23 | A body of rest asked to rest as more rest. Click start and stop. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. Water takes mud, not a bridge. | Wall | Earth · Salt · Earth | Stone · Earth | Pillar | Neither / Restrain |
 | 24 | Rest asked to go, given breath so it leaves a hollow. | Pit | Earth · Mercury · Air | — | Remote | Neither / Restrain |
 | 25 | A body of rest given breath and sent across. A two-tile span that must find floor or wall at each end, or it falls. Water takes mud, not a bridge. | Bridge | Earth · Salt · Air · Mercury | Stone · Air · Mercury | Remote | Neither |
-| 26 | Rest meeting yield, given a body. It holds them. | Quagmire | Earth · Water · Salt | Mud · Salt | Spread | Restrain |
+| 26 | Rest meeting yield, given a body. It holds them. | Quagmire | Earth · Water · Salt | Mud · Salt | Grow | Restrain |
 | 27 | Hungry earth asked to go. | Lava-flood | Fire · Earth · Mercury | Lava · Mercury | Remote | Kill |
 | 28 | Hungry earth quenched and given a body. The hazard becomes a path. | Obsidian path | Fire · Earth · Salt · Water | Lava · Salt · Water | Remote | Neither |
-| 29 | A vegetable body marked living, from the feet. | Sprout | Water · Salt · Earth · Life | Plant · Life | Spread | Neither |
+| 29 | A vegetable body marked living, from the feet. Plant cover in a three-tile disk. | Sprout | Water · Salt · Earth · Life | Plant · Life | Grow | Neither |
 | 30 | The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. A spell — the field speaks Plant. | Vine | Water · Salt · Earth · Mercury | Plant · Mercury | Shot | Restrain / Neither |
 | 31 | The sent plant asked to stand. | Vine-rise | Water · Salt · Earth · Mercury · Earth | Plant · Mercury · Earth | Pillar | Neither / Restrain |
-| 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Spread | Neither |
+| 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Grow | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |
 | 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
 | 35 | Fire sent, turned by Sulphur, into a mind. | Rage | Fire · Sulphur · Mercury | — | Remote | Neither |
 | 36 | The withheld reaches a mind. They flee or freeze. | Terror | Dark · Sulphur · Mercury | — | Remote | Restrain |
 | 37 | Yield reaches a mind. They sleep. They can be woken. | Lull | Water · Sulphur · Mercury | — | Remote | Restrain |
 | 38 | Breath going, more breath, so it can push. | Gale | Air · Mercury · Air | — | Shot | Restrain / Neither |
-| 39 | The withheld, a living body, as breath. Hard to see. | Veil | Dark · Life · Salt · Air | — | Spread | Neither |
+| 39 | The withheld, a living body, as breath. Hard to see. | Veil | Dark · Life · Salt · Air | — | Grow | Neither |
 | 40 | Flesh (rest, yield, a body), marked living, given a mind, sent here. You must know its formula. | Call beast | Earth · Water · Salt · Life · Sulphur · Mercury | — | Remote | Neither |
 
 **Call living** is the same story as 40, with the creature’s own matter in place of Earth · Water. Always Life. Always the formula you learned.
@@ -214,12 +214,12 @@ Death is not “still” as a household verb. Earth already means rest. Death me
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41 | A vegetable body, then the grave, given a body. Verdure rots. | Blight | Water · Salt · Earth · Death · Salt | Poison · Salt | Spread | Kill | Either |
+| 41 | A vegetable body, then the grave, given a body. Verdure rots. | Blight | Water · Salt · Earth · Death · Salt | Poison · Salt | Grow | Kill | Either |
 | 42 | Withheld, given a body, marked by the grave, and sent. No waking. | Shade | Dark · Death · Salt · Mercury | Shade · Mercury | Remote | Neither | Free |
 | 43 | The grave is sent into a living body. The waking is named so it can be taken. | Unmake | Death · Mercury · Life · Salt | — | Remote | Kill | Free |
 | 44 | The waking passion is given to the grave. They sleep as if dead. | Grave-sleep | Life · Sulphur · Death | — | Remote | Restrain | Free |
 | 45 | The four as a body, marked by the grave, and sent. It arrives dead. | Corpse-call | Salt · Water · Earth · Fire · Death · Mercury | — | Remote | Neither | Free |
-| 46 | Rest marked by the grave, given a body, from the feet. Earth-life and golems come apart. | Grave-dust | Earth · Death · Salt | — | Spread | Kill | Either |
+| 46 | Rest marked by the grave, given a body, from the feet. Earth-life and golems come apart. | Grave-dust | Earth · Death · Salt | — | Grow | Kill | Either |
 | 47 | Hunger marked by the grave and sent into a flame. The flame’s motion does not return. | Snuff | Fire · Death · Mercury | Ember · Mercury | Remote | Neither | Either |
 | 48 | The seed marked by the grave and sent. A live rod dies. | Blackout | Fire · Air · Death · Mercury | Spark · Death · Mercury | Shot | Neither | Either |
 | 49 | Yield given a body, then the grave. Ice that will not thaw like ordinary ice. | Grave-ice | Water · Salt · Death | — | Remote | Restrain | Either |
@@ -237,7 +237,7 @@ Time-stop is not soul-work. Mercury (spirit / going / the adept’s soul) is not
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Death · Sulphur · Salt | Ice · Dark · Life · Death · Sulphur · Salt | Spread | Restrain | Free |
+| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Death · Sulphur · Salt | Ice · Dark · Life · Death · Sulphur · Salt | Grow | Restrain | Free |
 
 Floor 1 needed two ordinary sentences the original forty did not write. They sit with the ordinary book even though they are numbered after Time-stop.
 
@@ -260,7 +260,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 66 | Breath given a body and sent. Wind that pushes the person. | Push | Air · Salt · Mercury | — | Shot | Restrain |
 | 67 | A spark given form from the air, moving at something. It falls from the sky. Walls will not hide them. | Lightning strike | Fire · Air · Salt · Air · Mercury | Spark · Salt · Air · Mercury | Remote | Kill |
 | 68 | A living mind is reached and sent. They fetch nearby prizes, and they fight what you have marked. | Charm | Life · Sulphur · Mercury | — | Remote | Restrain |
-| 69 | Rest meeting yield, going, given a body around your feet. A watery swamp. | Swamp | Earth · Water · Mercury · Salt | Mud · Mercury · Salt | Spread | Restrain |
+| 69 | Rest meeting yield, going, given a body around your feet. A watery swamp. | Swamp | Earth · Water · Mercury · Salt | Mud · Mercury · Salt | Grow | Restrain |
 | 70 | Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot. | Witchfire | Fire · Animus · Fire · Mercury | Flame · Mercury | Remote | Kill |
 | 71 | The vegetable body is withheld. Rest opens a damp cave. | Grotto | Water · Salt · Earth · Dark | Plant · Dark | Remote | Neither |
 | 72 | The arc meeting rest. | Thunder | Fire · Air · Earth | Lightning · Earth | Remote | Neither |
@@ -271,15 +271,15 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 77 | Fuel sent. Surfaces hold flame. Fire already standing grows. | Oil shot | Water · Salt · Earth · Fire · Earth · Mercury | Oil · Mercury | Shot | Neither |
 | 78 | A stood wick. A later fire sentence would make it a bomb. | Oil-pillar | Water · Salt · Earth · Fire · Earth · Salt · Earth | Oil · Salt · Earth | Pillar | Neither |
 | 79 | The grave of a plant, sent. | Poison | Water · Salt · Earth · Death · Mercury | Poison · Mercury | Shot | Kill |
-| 80 | The hanging veil forced through acid. Foul breath. | Miasma | Cloud · Acid | — | Spread | Kill |
+| 80 | The hanging veil forced through acid. Foul breath. | Miasma | Cloud · Acid | — | Grow | Kill |
 | 81 | Witchfire joined to the bolt and sent. Ordinary matter ends. | Plasma | Fire · Animus · Fire · Fire · Air · Air · Mercury | Flame · Lightning · Mercury | Shot | Kill |
 | 83 | Yield given a body and sent. A remote flood. The monsoon. | Monsoon | Water · Salt · Mercury | — | Remote | Restrain |
 | 84 | Rest sent without a body. Loose dirt. It smothers ground-fire. | Dirt toss | Earth · Mercury | — | Shot | Neither |
 | 85 | Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank. | Metal-pillar | Fire · Earth · Fire · Air · Earth · Salt · Earth | Metal · Salt · Earth | Pillar | Neither |
 | 86 | A body of iron asked to stand as more iron. Over a gap it needs no far rest. | Metal-wall | Fire · Earth · Fire · Air · Earth · Salt · Fire · Earth · Fire · Air · Earth | Metal · Salt · Metal | Pillar | Neither |
 | 87 | A body of black glass asked to stand as more black glass. Melt, Shatter, and hunger's thaw will not take it. Over a gap it needs no far rest. | Obsidian-wall | Fire · Earth · Salt · Water · Salt · Fire · Earth · Salt · Water | Obsidian · Salt · Obsidian | Pillar | Neither |
-| 88 | Care sent. Yield given mind and rest, then sent. It heals. | Balm | Water · Sulphur · Earth · Mercury | Anima · Mercury | Spread | Neither |
-| 89 | Care given a body around the feet. The work opens to many. | Chorus | Water · Sulphur · Earth · Salt | Anima · Salt | Spread | Neither |
+| 88 | Care sent. Yield given mind and rest, then sent. It heals. | Balm | Water · Sulphur · Earth · Mercury | Anima · Mercury | Grow | Neither |
+| 89 | Care given a body around the feet. The work opens to many. | Chorus | Water · Sulphur · Earth · Salt | Anima · Salt | Grow | Neither |
 | 90 | Hunger given mind and breath, then sent. Logos sent. It goes out and does not return. | Drive | Fire · Sulphur · Air · Mercury | Animus · Mercury | Shot | Kill |
 | 91 | A living vegetable body given a standing body. A tree. Over a pit it must join two floors, or it falls. On water it grows a walkable cover without banks. Hunger eats it. | Tree | Water · Salt · Earth · Life · Salt | Plant · Life · Salt | Pillar | Neither |
 | 92 | A living plant asked to stand as more living plant. A line of trees. Click start and stop. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats it. | Wood-wall | Water · Salt · Earth · Life · Salt · Water · Salt · Earth · Life | Plant · Life · Salt · Plant · Life | Pillar | Neither |
@@ -288,7 +288,7 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 95 | Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor. | Oil slick | Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth | Oil · Salt · Oil | Remote | Neither |
 | 96 | A living plant opened to many, then more living plant. It drinks every water still on the screen and covers the pool to the edge of what you can see. | Forest | Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life | Plant · Life · Anima · Plant · Life | Remote | Neither |
 
-**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Tree is the living plant stood (`Plant · Life · Salt`). Wood-wall is that same rest asked to stand as more living plant (`Plant · Life · Salt · Plant · Life`) — a line of trees. **Forest** opens that living plant to many (`Plant · Life · Anima · Plant · Life`) and covers every water still on the screen. A short water spell only wets what it hits. Sprout takes one wet neighbor. Call-growth takes two. Vine-rise is the sent plant asked to stand. **Vine is a spell** (`Plant · Mercury`); vine on the field speaks Plant. **Wind is a spell** (`Air · Mercury`) — a better name for the old gust. Inferno is not a rune; plasma is witchfire joined to the bolt. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb. **Oil puddle** is fuel stood (`Oil · Salt`). **Oil geyser** is that fountain sent (`Oil · Salt · Mercury`) — once lit it keeps burning like a kindled hall until water finds it. **Oil slick** repeats the fuel (`Oil · Salt · Oil`) and the covering runs outward from the click. Oil spreads flame across connected fuel in a flash, much faster than timber or plant. A film on water still burns and flashes.
+**Grotto is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body so a cave opens. Tree is the living plant stood (`Plant · Life · Salt`). Wood-wall is that same rest asked to stand as more living plant (`Plant · Life · Salt · Plant · Life`) — a line of trees. **Forest** opens that living plant to many (`Plant · Life · Anima · Plant · Life`) and covers every water still on the screen. A short water spell only wets what it hits. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. A watered land plant may take a neighbouring water tile. Plant cover on water stays put unless Forest drinks the screen. Vine-rise is the sent plant asked to stand. **Vine is a spell** (`Plant · Mercury`); vine on the field speaks Plant. **Wind is a spell** (`Air · Mercury`) — a better name for the old gust. Inferno is not a rune; plasma is witchfire joined to the bolt. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb. **Oil puddle** is fuel stood (`Oil · Salt`). **Oil geyser** is that fountain sent (`Oil · Salt · Mercury`) — once lit it keeps burning like a kindled hall until water finds it. **Oil slick** repeats the fuel (`Oil · Salt · Oil`) and the covering runs outward from the click. Oil spreads flame across connected fuel in a flash, much faster than timber or plant. A film on water still burns and flashes.
 
 **Anima** is `Water · Sulphur · Earth` — eros. Add it (or write it) and a sentence opens to many, or becomes care. Balm is Anima sent. Chorus is Anima stood around the feet. **Animus** is `Fire · Sulphur · Air` — logos. Add it and a sentence is asserted into a higher nature. **Flame** is fire given logos and fire again (`Fire · Animus · Fire`). **Glacier** is ice given logos and ice again (`Ice · Animus · Ice`). Drive is Animus sent. Male and Female are the old names; they parse as Animus and Anima. Touching a *soul* is still Free or divine — these two are stances of mind, not soul-work.
 

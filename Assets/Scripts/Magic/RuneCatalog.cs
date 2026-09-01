@@ -462,6 +462,19 @@ namespace RuneMagic
             RuneId.Lumen, RuneId.Umbra
         };
 
+        public static bool IsBasic(RuneId id)
+        {
+            for (var i = 0; i < BasicRunes.Length; i++)
+            {
+                if (BasicRunes[i] == id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         static readonly RuneId[] PlaceableLead =
         {
             RuneId.Fire, RuneId.Air, RuneId.Earth, RuneId.Water,

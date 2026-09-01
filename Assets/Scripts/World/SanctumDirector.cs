@@ -482,8 +482,8 @@ namespace RuneMagic
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
-                "The screen unrolls. You can walk. Draw only what is in view; what you have already strung stays until you cast or close.",
-                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
+                "The screen unrolls. You can walk. Every root mark is ready. What you have already strung stays until you cast or close.",
+                "The screen unrolls. You can walk. Draw marks from the wall or the weave. What you have already strung stays until you cast or close."));
         }
 
         public void CloseCharter(bool releaseString = true)
@@ -568,8 +568,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. Every written chain and join. Click a name to string it if those runes are in view. Kept workings are marked.",
-                "Your book. Workings you have kept. Click a page to send it if those marks are in view."));
+                "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
+                "Your book. Workings you have kept. Click a page to send it. The eleven roots are always ready."));
         }
 
         public void CloseGrimoire()
@@ -661,6 +661,11 @@ namespace RuneMagic
 
         public bool InVicinity(RuneId rune)
         {
+            if (RuneCatalog.IsBasic(rune))
+            {
+                return true;
+            }
+
             return Tapestry != null && Tapestry.InVicinity(rune);
         }
 
@@ -1303,9 +1308,17 @@ namespace RuneMagic
 
         void RefreshVisibleRunes()
         {
-            VisibleRunes = GlyphView.IsDevelop
-                ? RuneCatalog.BasicRunes
-                : Memory.Wall(RuneCatalog.BasicRunes);
+            var wall = new List<RuneId>(RuneCatalog.BasicRunes);
+            var kept = Memory.Kept;
+            for (var i = 0; i < kept.Count; i++)
+            {
+                if (!wall.Contains(kept[i]))
+                {
+                    wall.Add(kept[i]);
+                }
+            }
+
+            VisibleRunes = wall;
             if (Tapestry != null)
             {
                 Tapestry.Resample();
