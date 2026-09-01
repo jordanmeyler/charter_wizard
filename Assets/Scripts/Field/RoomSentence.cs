@@ -73,7 +73,7 @@ namespace RuneMagic
     /// </summary>
     public static class RoomSentence
     {
-        public const int GridCells = RuneTapestry.Rows * RuneTapestry.Cols;
+        public const int GridCells = RuneTapestry.Rows * RuneTapestry.DefaultCols;
         public const string PitOrigin = "the pit";
         public const string AirOrigin = "the air";
 
@@ -365,6 +365,7 @@ namespace RuneMagic
             foreach (var rune in spoken)
             {
                 tally.Add(rune, new WeaveGlyph(rune, material, WeaveKind.Material, origin));
+                ExpandComposing(tally, rune, material, WeaveKind.Material, origin);
             }
         }
 
@@ -462,6 +463,12 @@ namespace RuneMagic
                             tally.Add(
                                 runes[r],
                                 new WeaveGlyph(runes[r], MaterialId.None, WeaveKind.String, "an inscription"));
+                            ExpandComposing(
+                                tally,
+                                runes[r],
+                                MaterialId.None,
+                                WeaveKind.String,
+                                "an inscription");
                         }
                     }
                 }
@@ -503,6 +510,35 @@ namespace RuneMagic
                 if (buffer[i] != RuneId.None)
                 {
                     tally.Add(buffer[i], new WeaveGlyph(buffer[i], MaterialId.None, kind, origin));
+                    ExpandComposing(tally, buffer[i], MaterialId.None, kind, origin);
+                }
+            }
+        }
+
+        /// <summary>
+        /// A wrought join that already stands (Spark, Plant, Ice) is
+        /// itself in the weave. The basics that compose it are still
+        /// there, strewn by frequency — not glued to the join.
+        /// </summary>
+        static void ExpandComposing(
+            Tally tally,
+            RuneId wrought,
+            MaterialId material,
+            WeaveKind kind,
+            string origin)
+        {
+            if (tally == null || wrought == RuneId.None || !ChainBook.IsWrought(wrought))
+            {
+                return;
+            }
+
+            var recipe = new List<RuneId>(8);
+            ChainBook.ExpandRecipe(wrought, recipe);
+            for (var i = 0; i < recipe.Count; i++)
+            {
+                if (recipe[i] != RuneId.None && recipe[i] != wrought)
+                {
+                    tally.Add(recipe[i], new WeaveGlyph(recipe[i], material, kind, origin));
                 }
             }
         }
@@ -778,6 +814,18 @@ namespace RuneMagic
             if (CountShown(pitGrid, RuneId.Umbra) < 1 || CountShown(pitGrid, RuneId.Lumen) > 0)
             {
                 broken.Add("Pits must speak Dark and must not invent Light");
+            }
+
+            var spark = new Tally();
+            spark.Add(RuneId.Spark, new WeaveGlyph(RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal"));
+            ExpandComposing(spark, RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal");
+            var sparkGrid = Compose(spark, 5, GridCells);
+            if (CountShown(sparkGrid, RuneId.Spark) < 1
+                || CountShown(sparkGrid, RuneId.Fire) < 1
+                || CountShown(sparkGrid, RuneId.Air) < 1
+                || CountShown(sparkGrid, RuneId.Lumen) > 0)
+            {
+                broken.Add("A stood Spark must stand as itself with Fire and Air, and must not invent Light");
             }
         }
 

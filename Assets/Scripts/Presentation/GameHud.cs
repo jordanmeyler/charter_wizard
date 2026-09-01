@@ -884,8 +884,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. The weave is what the camera can see — hover a mark to see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. The weave is what the camera can see. Hover a mark to see where it is from. Draw a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover a mark to still the belt and see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Hover the weave to still it and see where a mark is from. Right-click a mark to remember it. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(
@@ -943,28 +943,56 @@ namespace RuneMagic
             var reading = tapestry != null && !string.IsNullOrEmpty(tapestry.Reading)
                 ? tapestry.Reading
                 : "the field is quiet";
-            GUI.Label(new Rect(196, top + 8, Screen.width - 420, 20), reading, hint);
+            GUI.Label(new Rect(196, top + 8, Screen.width - 480, 20), reading, hint);
 
+            const float pad = 12f;
+            const float header = 36f;
+            const float lip = 3f;
             var rows = RuneTapestry.Rows;
-            var cols = RuneTapestry.Cols;
-            var gap = 5f;
-            var gridTop = top + 46f;
-            var cell = Mathf.Min(56f, (height - 72f) / rows - gap);
-            cell = Mathf.Max(34f, cell);
-            var stride = cell + gap;
-            var width = cols * stride;
-            var left = Mathf.Max(28f, (Screen.width - width) * 0.5f);
-            var band = new Rect(left - 2f, gridTop - 18f, width + 4f, rows * stride + 22f);
+            var well = new Rect(
+                panel.x + pad,
+                top + header,
+                panel.width - pad * 2f,
+                Mathf.Max(1f, height - header - pad));
+            var inner = new Rect(
+                well.x + lip,
+                well.y + lip,
+                Mathf.Max(1f, well.width - lip * 2f),
+                Mathf.Max(1f, well.height - lip * 2f));
+            var cellH = inner.height / rows;
+            var cols = Mathf.Clamp(
+                Mathf.RoundToInt(inner.width / Mathf.Max(1f, cellH)),
+                8,
+                24);
+            if (tapestry != null)
+            {
+                tapestry.Columns = cols;
+            }
+
+            var cellW = inner.width / cols;
+            DrawWeaveWell(well);
+
+            var spoken = tapestry != null && tapestry.Sequence.Count > 0;
             var mouse = Event.current != null ? Event.current.mousePosition : Vector2.zero;
             if (tapestry != null)
             {
-                tapestry.HoverPaused = band.Contains(mouse);
+                tapestry.HoverPaused = spoken && well.Contains(mouse);
+            }
+
+            if (!spoken)
+            {
+                var quiet = Label(14, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
+                quiet.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(inner, "nothing on the screen speaks", quiet);
+                return;
             }
 
             var slide = tapestry != null ? tapestry.Scroll - Mathf.Floor(tapestry.Scroll) : 0f;
-            var shift = slide * stride;
+            var shift = slide * cellW;
             WeaveGlyph? hovered = null;
 
+            GUI.BeginGroup(inner);
+            var local = Event.current != null ? Event.current.mousePosition : Vector2.zero;
             for (var row = 0; row < rows; row++)
             {
                 var right = RuneTapestry.GoesRight(row);
@@ -972,9 +1000,9 @@ namespace RuneMagic
                 var placed = new List<(Rect Rect, WeaveGlyph Glyph)>(cols + 2);
                 for (var col = -1; col <= cols; col++)
                 {
-                    var x = left + col * stride + rowShift;
-                    var rect = new Rect(x, gridTop + row * stride, cell, cell);
-                    if (rect.xMax < band.xMin || rect.x > band.xMax)
+                    var x = col * cellW + rowShift;
+                    var rect = new Rect(x, row * cellH, cellW, cellH);
+                    if (rect.xMax <= 0f || rect.x >= inner.width)
                     {
                         continue;
                     }
@@ -990,7 +1018,7 @@ namespace RuneMagic
                 {
                     var glyph = placed[i].Glyph;
                     var rect = placed[i].Rect;
-                    if (rect.Contains(mouse))
+                    if (rect.Contains(local))
                     {
                         hovered = glyph;
                     }
@@ -1010,9 +1038,11 @@ namespace RuneMagic
                 }
             }
 
+            GUI.EndGroup();
+
             if (hovered.HasValue)
             {
-                DrawWeaveOrigin(new Rect(panel.x + 12, panel.yMax - 22, panel.width - 24, 18), hovered.Value);
+                DrawWeaveOrigin(new Rect(Screen.width - 292, top + 8, 260, 20), hovered.Value);
             }
         }
 
@@ -1028,6 +1058,18 @@ namespace RuneMagic
             var hint = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
             hint.alignment = TextAnchor.MiddleRight;
             GUI.Label(rect, line, hint);
+        }
+
+        static void DrawWeaveWell(Rect well)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.02f, 0.02f, 0.04f, 0.96f);
+            GUI.DrawTexture(well, Texture2D.whiteTexture);
+            GUI.color = new Color(0.96f, 0.82f, 0.38f, 0.92f);
+            DrawFrame(well, 3f);
+            GUI.color = new Color(1f, 0.92f, 0.7f, 0.18f);
+            GUI.DrawTexture(new Rect(well.x + 3f, well.y + 2f, well.width - 6f, 2f), Texture2D.whiteTexture);
+            GUI.color = previous;
         }
 
         void DrawJoinChunks(List<(Rect Rect, WeaveGlyph Glyph)> placed)
@@ -1073,13 +1115,8 @@ namespace RuneMagic
 
         void DrawJoinSlab(Rect bounds, WeaveGlyph glyph)
         {
-            const float pad = 4f;
-            const float banner = 16f;
-            var slab = new Rect(
-                bounds.x - pad,
-                bounds.y - banner,
-                bounds.width + pad * 2f,
-                bounds.height + banner + pad);
+            const float banner = 14f;
+            var slab = bounds;
 
             var wash = GlyphView.IsPlay
                 ? GlyphView.JoinWash
@@ -1094,7 +1131,7 @@ namespace RuneMagic
                 : new Color(0.98f, 0.82f, 0.32f, 0.96f);
             GUI.color = rim;
             DrawFrame(slab, 3f);
-            GUI.DrawTexture(new Rect(slab.x + 4f, bounds.y - 2f, slab.width - 8f, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(slab.x + 4f, slab.y + banner, slab.width - 8f, 2f), Texture2D.whiteTexture);
             GUI.DrawTexture(new Rect(slab.x + 8f, slab.yMax - 6f, slab.width - 16f, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
 

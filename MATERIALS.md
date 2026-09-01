@@ -22,7 +22,7 @@ Paint: the atlas draws **stone, dirt, or water** as the walk. Ice, fire, and lig
 1. **Signature** is the chain the room writes when you scan across that substance.
 2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Grove…). Layer runes alone are not enough — timber is Water · Salt · Earth · Plant, not “Earth.”
 3. Contiguous runs of the same material collapse to one clause so a floor of ash is one Ash sentence, not eighty copies.
-4. **Void** / pits tear the weave. The gap is **Dark** (withheld). Only what the camera can see speaks. Hover a mark in the Charter to see where it is from. Each available rune appears at least once; extra copies follow how often that material is on screen.
+4. **Void** / pits tear the weave. The gap is **Dark** (withheld). Only what the camera can see speaks. Hover the clipped belt to still it and see where a mark is from. Each available rune appears at least once; extra copies follow how often that material is on screen.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
 Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join unfolds to the full recipe and reads as one coloured chunk — Plant is a green bar of Water, Salt, Earth; Ash is a grey bar of Fire, Water, Salt, Earth. Each ingredient still has its own column. The gold ring and the join’s colour are the combined form. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
