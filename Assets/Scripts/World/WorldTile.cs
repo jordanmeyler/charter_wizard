@@ -1351,12 +1351,11 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Hunger finishes the fuel. Fire cover wears off. Ash covers
-        /// the walk. A plant or timber floor becomes dirt (look and
-        /// Earth). A timber or plant wall burns for its clock, then
-        /// the wall falls and ash takes its place so a key behind
-        /// it can be reached. Masonry and dirt stay. Kindled halls
-        /// do not ash.
+        /// Hunger finishes the fuel. Fire cover wears off. A plant or
+        /// timber floor becomes dirt, or stone when a tileset sat
+        /// under that fuel. A timber or plant wall burns for its
+        /// clock, then the wall falls and ash takes its place so a
+        /// key behind it can be reached. Kindled halls do not ash.
         /// </summary>
         public void BurnOut()
         {
@@ -1365,16 +1364,11 @@ namespace RuneMagic
                 return;
             }
 
-            var leftover = CoverCatalog.RestAfterBurn(Material);
             var waterWalk = Material == MaterialId.Water
                 || (_hasFoundation && Foundation.Material == MaterialId.Water);
             var fuelWall = Kind == TileKind.Wall && VitalLaw.CanBurn(Material);
-            var changeWalk = leftover != MaterialId.None
-                && leftover != Material
-                && (Kind == TileKind.Floor || Kind == TileKind.Bridge || fuelWall)
-                && !waterWalk
-                && Material != MaterialId.Lava
-                && Material != MaterialId.Void;
+            var fuelFloor = (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                && (VitalLaw.CanBurn(Material) || IsPlantish || HasPlantishDetail || HasVine || HasOil);
 
             Fire = 0f;
             LiveFire = false;
@@ -1391,6 +1385,7 @@ namespace RuneMagic
 
             _coverLook = null;
             var underLook = _underlayLook;
+            var keepLook = _authoredLook;
             if (fuelWall)
             {
                 if (IsConjured)
@@ -1399,7 +1394,12 @@ namespace RuneMagic
                 }
                 else
                 {
-                    var walk = leftover != MaterialId.None ? leftover : MaterialId.Dirt;
+                    var walk = CoverCatalog.RestAfterBurn(Material);
+                    if (walk == MaterialId.None)
+                    {
+                        walk = MaterialId.Dirt;
+                    }
+
                     Reshape(new TileDef(TileKind.Floor, walk));
                     if (underLook != null)
                     {
@@ -1417,9 +1417,51 @@ namespace RuneMagic
                 return;
             }
 
+            if (fuelFloor && !waterWalk
+                && Material != MaterialId.Lava && Material != MaterialId.Void)
+            {
+                if (IsConjured)
+                {
+                    RestoreFoundation();
+                }
+                else
+                {
+                    var leftover = CoverCatalog.LeftoverFloor(Material, keepLook != null);
+                    if (leftover != MaterialId.None && leftover != Material)
+                    {
+                        if (keepLook != null)
+                        {
+                            AuthorKind(Kind, leftover);
+                            AuthorLook(keepLook);
+                        }
+                        else
+                        {
+                            Reshape(new TileDef(Kind, leftover));
+                        }
+                    }
+                    else if (keepLook != null)
+                    {
+                        AuthorLook(keepLook);
+                    }
+                }
+
+                PaintCover(TileCover.None);
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
+            var leftoverWalk = CoverCatalog.RestAfterBurn(Material);
+            var changeWalk = leftoverWalk != MaterialId.None
+                && leftoverWalk != Material
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                && !waterWalk
+                && Material != MaterialId.Lava
+                && Material != MaterialId.Void;
+
             if (changeWalk)
             {
-                Reshape(new TileDef(Kind, leftover));
+                Reshape(new TileDef(Kind, leftoverWalk));
             }
 
             if (waterWalk || Material == MaterialId.Lava || Material == MaterialId.Void

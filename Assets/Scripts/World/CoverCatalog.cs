@@ -136,11 +136,11 @@ namespace RuneMagic
 
         /// <summary>
         /// What the walk becomes when fuel is spent. Plant, timber,
-        /// oil, and grit become dirt (scorched earth, Earth). A timber
-        /// or plant wall falls to that leftover walk under ash.
-        /// Masonry and dirt stay. Water, ice, lava, and void are not
-        /// leftover walks — the covering still turns to ash when the
-        /// fuel dies.
+        /// oil, and grit become dirt (scorched earth, Earth). A floor
+        /// that kept a tileset under that fuel leaves stone instead.
+        /// A timber or plant wall falls to leftover dirt under ash.
+        /// Masonry stays stone. Water, ice, lava, and void are not
+        /// leftover walks.
         /// </summary>
         public static MaterialId RestAfterBurn(MaterialId walk)
         {
@@ -166,6 +166,26 @@ namespace RuneMagic
                 default:
                     return MaterialId.None;
             }
+        }
+
+        /// <summary>
+        /// A spent burnable floor leaves dirt, or stone when the
+        /// tileset under the fuel was masonry.
+        /// </summary>
+        public static MaterialId LeftoverFloor(MaterialId walk, bool keepTileset)
+        {
+            var leftover = RestAfterBurn(walk);
+            if (leftover == MaterialId.None)
+            {
+                return MaterialId.None;
+            }
+
+            if (keepTileset && leftover == MaterialId.Dirt)
+            {
+                return MaterialId.Stone;
+            }
+
+            return leftover;
         }
 
         public static bool Speaks(TileCover cover, RuneId rune)
@@ -311,6 +331,14 @@ namespace RuneMagic
                 || RestAfterBurn(MaterialId.Water) != MaterialId.None)
             {
                 broken.Add("Spent fuel becomes dirt; masonry and fire-rest stay; water is not leftover walk");
+            }
+
+            if (LeftoverFloor(MaterialId.Plant, false) != MaterialId.Dirt
+                || LeftoverFloor(MaterialId.Timber, true) != MaterialId.Stone
+                || LeftoverFloor(MaterialId.Stone, true) != MaterialId.Stone
+                || LeftoverFloor(MaterialId.Dirt, false) != MaterialId.Dirt)
+            {
+                broken.Add("A spent burnable floor leaves dirt, or stone when a tileset sat under the fuel");
             }
 
             if (MaterialOf(TileCover.Fire) != MaterialId.Ember

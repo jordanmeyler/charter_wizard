@@ -824,6 +824,12 @@ namespace RuneMagic
                 broken.Add("A timber wall must burn on the wood clock and fall to leftover dirt under ash");
             }
 
+            if (CoverCatalog.LeftoverFloor(MaterialId.Plant, false) != MaterialId.Dirt
+                || CoverCatalog.LeftoverFloor(MaterialId.Timber, true) != MaterialId.Stone)
+            {
+                broken.Add("A spent burnable floor must leave dirt, or stone when a tileset sat under the fuel");
+            }
+
             if (ember.BurnRate != 0f
                 || grove.BurnRate <= 0f
                 || grove.BurnRate >= plant.BurnRate)

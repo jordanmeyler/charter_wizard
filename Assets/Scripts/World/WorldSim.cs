@@ -162,7 +162,7 @@ namespace RuneMagic
                     quench += 0.8f;
                 }
 
-                if (tile.Kindled && tile.Wet < 0.15f)
+                if (tile.Kindled && tile.Wet < 0.15f && !tile.LiveFire)
                 {
                     tile.KeepKindled();
                 }
@@ -174,9 +174,11 @@ namespace RuneMagic
                     var vineFuel = tile.HasVine;
                     var oilFuel = tile.HasOil && !tile.IsGeyser;
                     var wallFuel = tile.Kind == TileKind.Wall && VitalLaw.CanBurn(tile.Material);
+                    var floorFuel = (tile.Kind == TileKind.Floor || tile.Kind == TileKind.Bridge)
+                        && (VitalLaw.CanBurn(tile.Material) || plantFuel || vineFuel || oilFuel);
                     tile.Ignite(-consume - quench);
                     if (quench < 0.4f && tile.Fire <= 0.08f
-                        && (plantFuel || vineFuel || oilFuel || wallFuel))
+                        && (floorFuel || wallFuel || plantFuel || vineFuel || oilFuel))
                     {
                         tile.BurnOut();
                     }
