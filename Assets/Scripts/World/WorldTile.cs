@@ -278,8 +278,49 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How fast hunger leaves this cell. Oil runs hard. A plant
-        /// on water lights and stays put.
+        /// How long a full fire lasts here. Oil is one second.
+        /// Wood is two. Plant is three.
+        /// </summary>
+        public float BurnSeconds
+        {
+            get
+            {
+                var seconds = 0f;
+                if (Def.WorldMaterial.BurnSeconds > 0f)
+                {
+                    seconds = Def.WorldMaterial.BurnSeconds;
+                }
+
+                if (_detailMaterial != MaterialId.None)
+                {
+                    var detail = MaterialCatalog.Of(_detailMaterial).BurnSeconds;
+                    if (detail > 0f)
+                    {
+                        seconds = seconds > 0f ? Mathf.Min(seconds, detail) : detail;
+                    }
+                }
+
+                if (HasVine)
+                {
+                    seconds = seconds > 0f
+                        ? Mathf.Min(seconds, VitalLaw.PlantBurnSeconds)
+                        : VitalLaw.PlantBurnSeconds;
+                }
+
+                if (HasOil)
+                {
+                    seconds = seconds > 0f
+                        ? Mathf.Min(seconds, VitalLaw.OilBurnSeconds)
+                        : VitalLaw.OilBurnSeconds;
+                }
+
+                return seconds;
+            }
+        }
+
+        /// <summary>
+        /// How fast hunger leaves this cell. Faster fuel runs.
+        /// A plant on water lights and stays put.
         /// </summary>
         public float BurnRate
         {
@@ -290,23 +331,7 @@ namespace RuneMagic
                     return 0f;
                 }
 
-                var rate = Def.WorldMaterial.BurnRate;
-                if (_detailMaterial != MaterialId.None)
-                {
-                    rate = Mathf.Max(rate, MaterialCatalog.Of(_detailMaterial).BurnRate);
-                }
-
-                if (HasOil)
-                {
-                    rate = Mathf.Max(rate, MaterialCatalog.Of(MaterialId.Oil).BurnRate);
-                }
-
-                if (HasVine)
-                {
-                    rate = Mathf.Max(rate, WorldSim.VineFireRun);
-                }
-
-                return rate;
+                return VitalLaw.FireRun(BurnSeconds);
             }
         }
 
@@ -1038,12 +1063,25 @@ namespace RuneMagic
 
             if (detailBurned)
             {
-                // Coals on the pile so hunger can still run onto a
-                // plant or timber floor beside (or under) the furniture.
-                Fire = Mathf.Max(Fire, 0.65f);
+                Fire = 0.15f;
                 RefreshCollider();
                 RefreshFx();
             }
+        }
+
+        /// <summary>
+        /// The film is spent. A geyser keeps its fountain until yield
+        /// is thrown.
+        /// </summary>
+        public void SpendFuel()
+        {
+            if (IsGeyser)
+            {
+                return;
+            }
+
+            Oil = 0f;
+            RefreshFx();
         }
 
         void LeaveAshPile()
