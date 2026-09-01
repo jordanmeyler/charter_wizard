@@ -12,10 +12,10 @@ namespace RuneMagic
     {
         WorldGrid _grid;
         float _tick;
-        const float Step = 0.32f;
-        public const float DryFireRun = 0.4f;
-        public const float VineFireRun = 0.9f;
-        public const float OilFireRun = 2.4f;
+        public const float Step = 0.32f;
+        public const float DryFireRun = 3f;
+        public const float VineFireRun = 2f;
+        public const float OilFireRun = 4f;
         readonly List<OilWave> _slicks = new();
 
         struct OilWave
@@ -165,23 +165,29 @@ namespace RuneMagic
                 }
                 else
                 {
-                    var consume = 0.12f;
-                    if (tile.BurnRate > 0.05f)
-                    {
-                        consume *= tile.BurnRate / DryFireRun;
-                    }
-
+                    var seconds = tile.BurnSeconds;
+                    var consume = seconds > 0.05f ? Step / seconds : 0.12f;
+                    var plantFuel = tile.IsPlantish || tile.HasPlantishDetail;
+                    var vineFuel = tile.HasVine;
+                    var oilFuel = tile.HasOil && !tile.IsGeyser;
                     tile.Ignite(-consume - quench);
-                }
+                    if (quench < 0.4f && tile.Fire <= 0.08f)
+                    {
+                        if (plantFuel)
+                        {
+                            tile.BurnDown();
+                        }
 
-                if (tile.Fire > 0.55f && (tile.IsPlantish || tile.HasPlantishDetail))
-                {
-                    tile.BurnDown();
-                }
+                        if (vineFuel)
+                        {
+                            tile.BurnVine();
+                        }
 
-                if (tile.Fire > 0.55f && tile.HasVine)
-                {
-                    tile.BurnVine();
+                        if (oilFuel)
+                        {
+                            tile.SpendFuel();
+                        }
+                    }
                 }
             }
         }
