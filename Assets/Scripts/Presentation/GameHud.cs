@@ -944,7 +944,7 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover a mark to still the belt and see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover a mark to still the belt and see where it is from. Each available rune appears often enough to click; more copies follow how often that material is on screen, and uncommon marks take a larger share. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
                     "Walk while the weave is open. Draw marks from the grid, or send a kept working from the Grimoire if those marks are around. Hover the weave to still it and see where a mark is from. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
