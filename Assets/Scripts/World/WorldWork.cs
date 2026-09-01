@@ -214,6 +214,30 @@ namespace RuneMagic
         public static bool IsFireWork(SpellId spell) =>
             MatterLaw.HeatOf(spell) >= Heat.Fire;
 
+        /// <summary>
+        /// Hunger given breath — a bolt, a strike, live-floor, jolt.
+        /// Charge gates and rods take this work.
+        /// </summary>
+        public static bool IsChargeWork(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.LightningBolt:
+                case SpellId.LightningStrike:
+                case SpellId.LiveFloor:
+                case SpellId.Jolt:
+                case SpellId.BrilliantArc:
+                case SpellId.Blackout:
+                case SpellId.ChainLightning:
+                case SpellId.StormCall:
+                case SpellId.Thunderclap:
+                case SpellId.Plasma:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public const int OilPuddleRadius = 1;
         public const int OilSlickRadius = 4;
 

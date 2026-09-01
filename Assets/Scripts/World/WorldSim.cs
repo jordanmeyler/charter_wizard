@@ -146,7 +146,7 @@ namespace RuneMagic
                     }
                     else if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
                     {
-                        var catchable = flam > 0f || other.HasVine || other.HasOil;
+                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
                         if (catchable)
                         {
                             var fuel = flam > 0f ? flam : 1.2f;

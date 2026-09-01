@@ -260,6 +260,10 @@ namespace RuneMagic
             }
 
             CoverCatalog.Speak(tile.Cover, live);
+            if (tile.Cover == TileCover.None && tile.CoverMaterial != MaterialId.None)
+            {
+                CoverCatalog.SpeakMaterial(tile.CoverMaterial, live);
+            }
         }
 
         static void EnsureLiveRunes(List<WeaveGlyph> scatter, HashSet<RuneId> live)

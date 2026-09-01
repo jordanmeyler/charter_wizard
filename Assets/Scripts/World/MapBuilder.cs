@@ -273,6 +273,10 @@ namespace RuneMagic
                 case "gate":
                     BindLock(room, locks, SpawnGate(prop, world, grid, origin));
                     break;
+                case "charge-gate":
+                case "electric-gate":
+                    BindLock(room, locks, SpawnChargeGate(prop, world, grid, origin));
+                    break;
                 case "fog":
                     BindLock(room, locks, SpawnFog(prop, world, origin, grid));
                     break;
@@ -369,6 +373,23 @@ namespace RuneMagic
                 prop.finishes,
                 prop.note,
                 prop.sprite,
+                grid,
+                LocalCells(origin, prop.cells));
+            return gate;
+        }
+
+        static ChargeGate SpawnChargeGate(MapProp prop, Vector3 world, WorldGrid grid, Vector2Int origin)
+        {
+            var actor = new GameObject(NameOf(prop, "Electric Gate"));
+            actor.transform.position = world;
+            var gate = actor.AddComponent<ChargeGate>();
+            gate.Bind(
+                NameOf(prop, "Electric Gate"),
+                IdOf(prop, "electric-gate"),
+                ParseKeys(prop.keys, RodKeys),
+                prop.finishes,
+                prop.note,
+                string.IsNullOrEmpty(prop.sprite) ? "rod" : prop.sprite,
                 grid,
                 LocalCells(origin, prop.cells));
             return gate;
@@ -630,6 +651,8 @@ namespace RuneMagic
                     case "charm":
                     case "barrier":
                     case "gate":
+                    case "charge-gate":
+                    case "electric-gate":
                     case "crystal":
                         prop.type = item.kind;
                         break;

@@ -239,6 +239,9 @@ namespace RuneMagic
                 case SocketGate gate:
                     gate.BindFromAuthoring(grid);
                     break;
+                case ChargeGate charge:
+                    charge.BindFromAuthoring(grid);
+                    break;
                 case BarrierLock barrier:
                     barrier.BindFromAuthoring(grid);
                     break;

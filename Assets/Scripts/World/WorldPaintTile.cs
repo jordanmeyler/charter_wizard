@@ -22,9 +22,9 @@ namespace RuneMagic
         public bool StampsWalk => kind != TileKind.None;
 
         public bool StampsFloor => kind == TileKind.Floor;
-        [Tooltip("Legacy veil stamp. Prefer Cover. Play still reads this.")]
+        [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Look and the catalog mark. Stamps do not start a reaction.")]
+        [Tooltip("Ice / fire / miasma / fog / ash over the walk tile. Look, work, and the same catalog mark as an inscription. Fire cover only marks hunger so the weave speaks Fire — it does not kindle a hall. Stamps do not start a reaction.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -46,6 +46,11 @@ namespace RuneMagic
 
         public TileAura ResolvedAura()
         {
+            if (aura != TileAura.None)
+            {
+                return aura;
+            }
+
             return AuraFromCover(ResolvedCover() != TileCover.None ? ResolvedCover() : CoverFromMaterial(material));
         }
 
@@ -91,6 +96,10 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Veils map back to an aura. Fire cover is a mark, not a
+        /// kindled hall — only an explicit Fire aura kindles.
+        /// </summary>
         public static TileAura AuraFromCover(TileCover cover)
         {
             switch (cover)
@@ -99,8 +108,6 @@ namespace RuneMagic
                     return TileAura.Miasma;
                 case TileCover.Fog:
                     return TileAura.Fog;
-                case TileCover.Fire:
-                    return TileAura.Fire;
                 default:
                     return TileAura.None;
             }
@@ -131,6 +138,8 @@ namespace RuneMagic
                 case MaterialId.Plant:
                 case MaterialId.Grove:
                     return TileCover.Vine;
+                case MaterialId.Vein:
+                    return TileCover.Lightning;
                 case MaterialId.Ash:
                     return TileCover.Ash;
                 default:

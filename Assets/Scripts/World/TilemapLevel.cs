@@ -310,7 +310,7 @@ namespace RuneMagic
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true));
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
                         continue;
                     }
 
@@ -338,7 +338,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
                     }
                 }
             }
@@ -472,7 +472,7 @@ namespace RuneMagic
 
                         if (paint != null)
                         {
-                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
                         }
 
                         continue;
@@ -531,7 +531,7 @@ namespace RuneMagic
 
             if (paint != null)
             {
-                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
             }
         }
 
@@ -609,6 +609,24 @@ namespace RuneMagic
             if (name.IndexOf("ice", System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return MaterialId.Ice;
+            }
+
+            if (name.IndexOf("oil", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Oil;
+            }
+
+            if (name.IndexOf("metal", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("iron", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("steel", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Metal;
+            }
+
+            if (name.IndexOf("plant", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("vine", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Plant;
             }
 
             return MaterialId.Stone;
@@ -790,22 +808,43 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyCoverWork(WorldTile tile, TileCover cover)
+        static void ApplyCoverWork(
+            WorldTile tile,
+            TileCover cover,
+            WorldPaintTile paint = null,
+            TileBase raw = null,
+            bool overlay = false)
         {
-            if (tile == null || cover == TileCover.None)
+            if (tile == null)
             {
                 return;
             }
 
-            tile.PaintCover(cover);
-            switch (cover)
+            if (cover != TileCover.None)
             {
-                case TileCover.Miasma:
-                    tile.Foul(1f);
-                    break;
-                case TileCover.Fog:
-                    tile.Cloak(1f);
-                    break;
+                tile.PaintCover(cover);
+                switch (cover)
+                {
+                    case TileCover.Miasma:
+                        tile.Foul(1f);
+                        break;
+                    case TileCover.Fog:
+                        tile.Cloak(1f);
+                        break;
+                }
+            }
+            else if (overlay)
+            {
+                var material = paint != null ? paint.material : GuessMaterial(raw);
+                if (CoverCatalog.IsOverlayMaterial(material))
+                {
+                    tile.AuthorCoverMaterial(material);
+                }
+            }
+
+            if (paint != null && paint.aura == TileAura.Fire)
+            {
+                tile.Kindle();
             }
         }
     }

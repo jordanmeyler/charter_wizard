@@ -15,6 +15,8 @@ namespace RuneMagic
 
     /// <summary>
     /// Atmosphere stamped when a painted cell is baked. Not the walk family.
+    /// Fire is a kindled hall. Cover-Fire is the hunger mark and does
+    /// not set this.
     /// </summary>
     public enum TileAura
     {

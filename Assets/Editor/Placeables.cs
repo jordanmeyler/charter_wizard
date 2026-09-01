@@ -97,6 +97,9 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Gate", false, 25)]
         static void Gate() => Spawn("Gate", typeof(SocketGate));
 
+        [MenuItem("GameObject/Rune Magic/Electric Gate", false, 25)]
+        static void ElectricGate() => Spawn("Electric Gate", typeof(ChargeGate));
+
         [MenuItem("GameObject/Rune Magic/Door", false, 25)]
         static void Door() => Spawn("Door", typeof(WorldDoor));
 

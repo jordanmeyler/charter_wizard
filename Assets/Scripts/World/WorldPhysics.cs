@@ -801,8 +801,18 @@ namespace RuneMagic
                 broken.Add("Darkness must withhold sight even when the floor is cloaked");
             }
 
+            if (!WorldWork.IsChargeWork(SpellId.LightningBolt)
+                || !WorldWork.IsChargeWork(SpellId.LightningStrike)
+                || !WorldWork.IsChargeWork(SpellId.LiveFloor)
+                || WorldWork.IsChargeWork(SpellId.Fireball)
+                || WorldWork.IsChargeWork(SpellId.Douse))
+            {
+                broken.Add("A bolt, strike, and live-floor must be charge work; hunger and yield must not");
+            }
+
             MatterLaw.Audit(broken);
             ChargeLaw.Audit(broken);
+            CoverCatalog.Audit(broken);
             PlantLaw.Audit(broken);
         }
 
