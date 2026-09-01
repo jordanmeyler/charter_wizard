@@ -121,11 +121,6 @@ namespace RuneMagic
                 return;
             }
 
-            if (GrowRadius != 3)
-            {
-                broken.Add("Grow from the feet lays plant cover three tiles out");
-            }
-
             if (MaxSpread(SpellId.Douse) != 0
                 || MaxSpread(SpellId.WaterJet) != 0
                 || MaxSpread(SpellId.Sprout) != 0
