@@ -753,6 +753,26 @@ namespace RuneMagic
                 broken.Add("Oil must spread flame much faster than dry matter");
             }
 
+            var oil = MaterialCatalog.Of(MaterialId.Oil);
+            var timber = MaterialCatalog.Of(MaterialId.Timber);
+            var plant = MaterialCatalog.Of(MaterialId.Plant);
+            var water = MaterialCatalog.Of(MaterialId.Water);
+            if (oil.BurnRate < timber.BurnRate * 4f
+                || oil.BurnRate + 0.01f < WorldSim.OilFireRun)
+            {
+                broken.Add("Oil must burn and run much faster than timber");
+            }
+
+            if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)
+            {
+                broken.Add("Land plants and timber must carry a burn rate");
+            }
+
+            if (water.BurnRate > 0f || water.Flammability >= 0f)
+            {
+                broken.Add("Water itself must quench hunger, not carry it");
+            }
+
             if (!WorldWork.IsVineWork(SpellId.Vine)
                 || !SweepsPath(SpellId.Vine, SpellShape.Shot)
                 || SpellVerb.Of(SpellId.Vine).Tiles != TileVerb.Vine)
