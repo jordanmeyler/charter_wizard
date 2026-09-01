@@ -60,8 +60,8 @@ namespace RuneMagic
     /// stands (Spark, Plant, Ice) appears as itself so it can be drawn.
     /// The basics that compose it are strewn through the grid. Creature
     /// recipes stay as written — Life marks a living formula and is not
-    /// unfolded. Every enemy carries that mark when the weave is
-    /// populated. The adept is mind, body, and soul.
+    /// unfolded. Off-screen tiles do not speak. The adept is mind, body,
+    /// and soul. Air is ambient wherever the room can be breathed.
     /// </summary>
     public static class RoomSentence
     {
@@ -77,7 +77,6 @@ namespace RuneMagic
             var sequence = new List<WeaveGlyph>(64);
             if (grid == null || view.width <= 0f || view.height <= 0f)
             {
-                EnsureBasicRunes(sequence);
                 return sequence;
             }
 
@@ -118,8 +117,7 @@ namespace RuneMagic
             }
 
             EnsureLiveRunes(scatter, live);
-            ScatterComposing(sequence, scatter, FieldView.Key(view));
-            EnsureBasicRunes(sequence);
+            ScatterComposing(sequence, scatter);
 
             if (breathable)
             {
@@ -136,34 +134,6 @@ namespace RuneMagic
                 atHead: true);
 
             return sequence;
-        }
-
-        /// <summary>
-        /// The eleven roots stay in the weave so a sentence can
-        /// always be written, even when the room does not speak them.
-        /// </summary>
-        static void EnsureBasicRunes(List<WeaveGlyph> sequence)
-        {
-            if (sequence == null)
-            {
-                return;
-            }
-
-            var seen = new HashSet<RuneId>();
-            for (var i = 0; i < sequence.Count; i++)
-            {
-                seen.Add(sequence[i].Shown);
-                seen.Add(sequence[i].Rune);
-            }
-
-            for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
-            {
-                var rune = RuneCatalog.BasicRunes[i];
-                if (seen.Add(rune))
-                {
-                    sequence.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
-                }
-            }
         }
 
         static void AddAmbient(List<WeaveGlyph> sequence, RuneId rune)
@@ -394,18 +364,52 @@ namespace RuneMagic
             }
         }
 
-        static void ScatterComposing(List<WeaveGlyph> sequence, List<WeaveGlyph> extras, int seed)
+        static void ScatterComposing(List<WeaveGlyph> sequence, List<WeaveGlyph> extras)
         {
             if (sequence == null || extras == null || extras.Count == 0)
             {
                 return;
             }
 
-            var rng = new System.Random(seed == int.MinValue ? 1 : seed);
+            extras.Sort(CompareGlyphs);
+            var span = sequence.Count;
             for (var i = 0; i < extras.Count; i++)
             {
-                var at = rng.Next(0, sequence.Count + 1);
+                var at = span <= 0
+                    ? sequence.Count
+                    : StableSlot(extras[i], i, span + 1);
                 sequence.Insert(at, extras[i]);
+                span++;
+            }
+        }
+
+        static int CompareGlyphs(WeaveGlyph a, WeaveGlyph b)
+        {
+            var shown = a.Shown.CompareTo(b.Shown);
+            if (shown != 0)
+            {
+                return shown;
+            }
+
+            var join = a.Rune.CompareTo(b.Rune);
+            return join != 0 ? join : a.Material.CompareTo(b.Material);
+        }
+
+        static int StableSlot(WeaveGlyph glyph, int order, int modulus)
+        {
+            if (modulus <= 1)
+            {
+                return 0;
+            }
+
+            unchecked
+            {
+                var hash = (int)glyph.Shown * 73856093
+                    ^ (int)glyph.Rune * 19349663
+                    ^ (int)glyph.Material * 83492791
+                    ^ order * 39916801;
+                var wrapped = hash % modulus;
+                return wrapped < 0 ? wrapped + modulus : wrapped;
             }
         }
 
