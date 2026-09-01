@@ -92,7 +92,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, conductivity, a burn clock, and a **0–5 Hunger grade** set in `MaterialCatalog.Flag` / `VitalLaw.HungerOf`. `BurnRate` is still `5 − seconds` (the clock leftover). **Spread uses Hunger, not BurnRate.** A spell volume can still light whatever it hits.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, conductivity, a burn clock, and a **0–5 Hunger grade**. Set all four on `MaterialCatalog.Flag` when you add a body (`Flag(id, flam, cond, seconds, hunger)`). Omit hunger and it stays **0** (neutral). `VitalLaw.HungerOf` reads that catalog number. `BurnRate` is still `5 − seconds` (the clock leftover). **Spread uses Hunger, not BurnRate.** A spell volume can still light whatever it hits.
 
 | Flag | Meaning |
 | --- | --- |
@@ -113,7 +113,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **4** | Timber | Adjacent from Hunger ≥ 4 | Yes — adjacent equal-or-weaker fuel | 2 |
 | **5** | Oil / hall | Adjacent; oil also flashes a connected slick | Yes | 1 |
 
-A live kindled hall, geyser, or lit Floor-Fire counts as a **5**. Vine is a wick: any adjacent live flame can run that line. Neutral stone / dirt never catch from a neighbor.
+A **kindled hall** is the **Aura-Fire** brush (or a Flame Hall plaque): painted walk that stays lit until yield is thrown. It is not a material — it is a source. Live Aura-Fire, a geyser, or lit Floor-Fire counts as Hunger **5**. Vine is a wick: any adjacent live flame can run that line. Neutral stone / dirt never catch from a neighbor.
 
 Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–5 Hunger grade (plant does not run a field). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, and Floor-Fire stay; fire cover wears off. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 

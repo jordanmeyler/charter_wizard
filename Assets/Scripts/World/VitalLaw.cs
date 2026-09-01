@@ -48,9 +48,9 @@ namespace RuneMagic
         /// 0 neutral — spell volume only.
         /// 1 tinder — catches within 2 of a stronger source, does not run.
         /// 2 soft — grove / moss. Same catch rule, longer clock.
-        /// 3 plant — catches within 2 of timber / oil / a hall, does not run the field.
+        /// 3 plant — catches within 2 of timber / oil / Aura-Fire, does not run the field.
         /// 4 timber — runs to adjacent equal-or-weaker fuel.
-        /// 5 oil / a live hall — strongest source; oil also flashes a slick.
+        /// 5 oil / a kindled hall — strongest source; oil also flashes a slick.
         /// </summary>
         public const int HungerNeutral = 0;
         public const int HungerTinder = 1;
@@ -216,25 +216,18 @@ namespace RuneMagic
                 || oil;
         }
 
+        /// <summary>
+        /// Catalog hunger for a material. Set it on
+        /// <c>MaterialCatalog.Flag(..., hunger)</c> when you add a body.
+        /// </summary>
         public static int HungerOf(MaterialId material)
         {
-            switch (material)
+            if (material == MaterialId.None)
             {
-                case MaterialId.Oil:
-                    return HungerOil;
-                case MaterialId.Timber:
-                    return HungerTimber;
-                case MaterialId.Plant:
-                    return HungerPlant;
-                case MaterialId.Grove:
-                case MaterialId.Moss:
-                    return HungerSoft;
-                case MaterialId.Ember:
-                case MaterialId.Dust:
-                    return HungerTinder;
-                default:
-                    return HungerNeutral;
+                return HungerNeutral;
             }
+
+            return Mathf.Clamp(MaterialCatalog.Of(material).Hunger, HungerNeutral, HungerOil);
         }
 
         public static bool SpreadsFire(int hunger) =>

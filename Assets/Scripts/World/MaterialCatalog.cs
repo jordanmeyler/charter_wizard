@@ -433,13 +433,13 @@ namespace RuneMagic
 
             Flag(MaterialId.Stone, 0f, 0f);
             Flag(MaterialId.Ash, 0.05f, 0f, VitalLaw.EmberBurnSeconds);
-            Flag(MaterialId.Timber, 1.6f, -0.9f, VitalLaw.TimberBurnSeconds);
+            Flag(MaterialId.Timber, 1.6f, -0.9f, VitalLaw.TimberBurnSeconds, VitalLaw.HungerTimber);
             Flag(MaterialId.Hearth, 0f, 0f);
-            Flag(MaterialId.Ember, 0.35f, 0f, VitalLaw.EmberBurnSeconds);
+            Flag(MaterialId.Ember, 0.35f, 0f, VitalLaw.EmberBurnSeconds, VitalLaw.HungerTinder);
             Flag(MaterialId.Damp, -0.7f, 0.35f);
             Flag(MaterialId.Vein, 0f, 0.85f);
             Flag(MaterialId.Scoured, 0f, 0f);
-            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.PlantBurnSeconds);
+            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerSoft);
             Flag(MaterialId.Metal, 0f, 1.6f);
             Flag(MaterialId.SaltCrust, -0.15f, 0.2f);
             Flag(MaterialId.Void, 0f, 0f);
@@ -448,27 +448,37 @@ namespace RuneMagic
             Flag(MaterialId.Mud, -0.35f, 0.25f);
             Flag(MaterialId.Lava, 0.2f, 0.3f);
             Flag(MaterialId.Steam, 0f, 0f);
-            Flag(MaterialId.Dust, 0.55f, 0f, VitalLaw.GroveBurnSeconds);
+            Flag(MaterialId.Dust, 0.55f, 0f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerTinder);
             Flag(MaterialId.Glass, 0f, 0f);
             Flag(MaterialId.Crystal, 0f, 0.35f);
             Flag(MaterialId.Obsidian, 0f, 0f);
-            Flag(MaterialId.Grove, 0.85f, -1.2f, VitalLaw.GroveBurnSeconds);
+            Flag(MaterialId.Grove, 0.85f, -1.2f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerSoft);
             Flag(MaterialId.Cloud, 0f, 0f);
             Flag(MaterialId.Rain, -1.1f, 0.7f);
             Flag(MaterialId.Snow, -0.65f, 0f);
             Flag(MaterialId.Glacier, -0.9f, 0f);
             Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.EmberBurnSeconds);
             Flag(MaterialId.Water, -1.6f, 1.25f);
-            Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds);
+            Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerPlant);
             Flag(MaterialId.Dirt, 0f, 0f);
-            Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds);
+            Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds, VitalLaw.HungerOil);
             Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.EmberBurnSeconds);
             Flag(MaterialId.Wardstone, 0f, 0f);
             Flag(MaterialId.Aegis, 0f, 1.1f);
             Flag(MaterialId.Fire, 0f, 0f);
         }
 
-        static void Flag(MaterialId id, float flammability, float conductivity, float burnSeconds = 0f)
+        /// <summary>
+        /// Stamp catch / quench, conductivity, burn clock, and the
+        /// 0–5 Hunger grade. New materials take a hunger here — omit
+        /// it and they stay neutral (0).
+        /// </summary>
+        static void Flag(
+            MaterialId id,
+            float flammability,
+            float conductivity,
+            float burnSeconds = 0f,
+            int hunger = VitalLaw.HungerNeutral)
         {
             if (ById.TryGetValue(id, out var material))
             {
@@ -476,7 +486,7 @@ namespace RuneMagic
                 material.Conductivity = conductivity;
                 material.BurnSeconds = burnSeconds;
                 material.BurnRate = VitalLaw.FireRun(burnSeconds);
-                material.Hunger = VitalLaw.HungerOf(id);
+                material.Hunger = Mathf.Clamp(hunger, VitalLaw.HungerNeutral, VitalLaw.HungerOil);
             }
         }
 
