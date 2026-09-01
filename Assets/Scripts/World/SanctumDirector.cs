@@ -2271,6 +2271,11 @@ namespace RuneMagic
                 return true;
             }
 
+            if (encounter is ChargeGate charge && charge.YieldsTo(spell))
+            {
+                return true;
+            }
+
             if (encounter?.AcceptedKeys == null)
             {
                 return false;
@@ -2317,10 +2322,11 @@ namespace RuneMagic
             var hasFloorGate = false;
             foreach (var encounter in _locks)
             {
-                if (encounter is SocketGate gate && gate.FinishesFloor)
+                if ((encounter is SocketGate socket && socket.FinishesFloor)
+                    || (encounter is ChargeGate charge && charge.FinishesFloor))
                 {
                     hasFloorGate = true;
-                    if (gate.Resolved)
+                    if (encounter.Resolved)
                     {
                         _finished = true;
                         Log("The sockets of this floor are seated. The way down stands open.");

@@ -5,9 +5,10 @@ namespace RuneMagic
 {
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
-    /// Ice is Water · Earth. Vine cover speaks Plant — Vine is a
-    /// spell, not a rune. Miasma is Cloud · Acid. Fog is the Cloud
-    /// veil — weather, not its own rune.
+    /// Ice is Water · Earth. Fire cover only marks hunger so the
+    /// weave can speak Fire — it does not kindle a hall. Vine cover
+    /// speaks Plant — Vine is a spell, not a rune. Miasma is Cloud ·
+    /// Acid. Fog is the Cloud veil — weather, not its own rune.
     /// </summary>
     public static class CoverCatalog
     {
@@ -128,13 +129,36 @@ namespace RuneMagic
             rune = RuneId.None;
             var grid = Object.FindFirstObjectByType<WorldGrid>();
             var tile = grid != null ? grid.TileAtWorld(world) : null;
-            if (tile == null || !tile.IsEmitting)
+            if (tile == null)
             {
                 return false;
             }
 
             rune = RuneOf(tile.Cover);
             return rune != RuneId.None;
+        }
+
+        public static void Audit(List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            if (RuneOf(TileCover.Fire) != RuneId.Fire)
+            {
+                broken.Add("Fire cover must speak Fire so a stamp can grant the rune");
+            }
+
+            if (WorldPaintTile.AuraFromCover(TileCover.Fire) != TileAura.None)
+            {
+                broken.Add("Fire cover is a mark — it must not map onto a kindled hall aura");
+            }
+
+            if (WorldPaintTile.CoverFromAura(TileAura.Fire) != TileCover.Fire)
+            {
+                broken.Add("A Fire aura still looks like fire cover");
+            }
         }
     }
 }

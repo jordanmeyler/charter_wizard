@@ -105,15 +105,19 @@ middle for the stone.
    that water.
 
 The player needs a **Fire** mark in reach so they can write
-Fireball. `GameObject → Rune Magic → Inscription` or **Pillar**,
-Inspector `authoredRune` = Fire, near the room mouth. Do not stamp
-fire on Environment Details and do not expect a painted torch tile
+Fireball. Stamp **Cover = Fire** (Tile Properties, Write onto
+Cover layer) on any walk cell — that is the fire stamp. It only
+marks hunger. The weave speaks Fire, and clicking the cover draws
+the rune. It does not kindle a hall and will not kill you.
+`GameObject → Rune Magic → Inscription` or **Pillar** still works
+if you want a floating mark instead. Do not stamp fire on
+Environment Details and do not expect a painted torch tile
 to burn things. A torch is `GameObject → Rune Magic → Torch` — a
 lock you light with a spell. It sits in the Hierarchy like the
-stone, not on a tile layer. Painted fire (Cover = Fire) is
-scenery at rest. Hunger only runs after a player or NPC
-spell starts it, or after a covering a spell left behind (melt
-water, spell-fire on a bush).
+stone, not on a tile layer. Hunger only runs after a player or NPC
+spell starts it, after a covering a spell left behind (melt
+water, spell-fire on a bush), or when you paint the **Aura-Fire**
+brush (a kindled hall).
 
 ### 2. Air — miasma, then the air stone
 
@@ -180,7 +184,12 @@ Same pattern. Stones already have their id and sprite on the prefab. For a custo
 **Tile covers (ice, fire, miasma, water after a melt).**
 These are tiles, not objects. A cover is the look, the work, and
 the same catalog mark as an inscription — Ice is Water · Earth,
-Vine cover speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a rune, and hunger can run it as a wick. Miasma is Cloud · Acid, Fog is Cloud.
+**Fire cover only marks hunger** so the Charter can speak Fire
+(click the mark to draw it; the floor stays safe). Vine cover
+speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a
+rune, and hunger can run it as a wick. Miasma is Cloud · Acid,
+Fog is Cloud. A kindled hall is the **Aura-Fire** brush, not
+Cover-Fire.
 
 1. Select **Cover** in the Hierarchy.
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
@@ -231,6 +240,16 @@ Walk up to the Gate holding every required stone and it turns.
 The default look is a generated painter. Same path as the Door: drag a
 slice from your sheet onto **Portrait**. Scene view shows it immediately.
 
+### 2b. The electric gate
+
+Drag `Assets/Prefabs/Electric Gate` (or `GameObject → Rune Magic →
+Electric Gate`). Same Doors list as a stone gate. A bolt, a spark
+sentence, live-floor, or charge walking onto its cells opens those
+doors. Sensor Cells are the tiles that take the spark — leave them
+empty to use the gate’s own cell. Hide Look is on by default;
+paint the look on the Tilemap. Uncheck it and set Portrait if you
+want a picture on the lock itself.
+
 ### 3. The door (an object)
 
 Drag `Assets/Prefabs/Door` onto the floor gap in the wall — not a Door stamp on the Tilemap. Inspector:
@@ -242,9 +261,9 @@ Drag `Assets/Prefabs/Door` onto the floor gap in the wall — not a Door stamp o
 
 Drag your own closed and open sprites onto the two Portrait fields. The Scene gizmo is amber when shut, green when open. Toggle **Start State** to preview the other picture.
 
-On the Gate, drag that Door into **Doors**. When the lock turns, those objects open: collider drops, the open sprite shows, walking and shots go through.
+On the Gate or Electric Gate, drag that Door into **Doors**. When the lock turns, those objects open: collider drops, the open sprite shows, walking and shots go through.
 
-If **Doors** and **Door Cells** are both empty, the Gate opens any Door standing within about four tiles.
+If **Doors** and **Door Cells** are both empty, the lock opens any Door standing within about four tiles.
 
 Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**). Prefer the Door object when you want your own open and closed art.
 
@@ -255,6 +274,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 | **Torch** | cold torch | keys |
 | **Rod** | storm rod | keys |
 | **Gate** | Gate of Elements | `requires` item ids, **Doors** |
+| **Electric Gate** | spark lock | lightning / charge opens **Doors** |
 | **Door** | wooden leaf with open / closed states | start state, closed / open sprites |
 | **Barrier** | ice cage | formula, cover cells, clear material |
 | **Chasm** | pit lock | nearby pits, or list cells |
@@ -363,7 +383,7 @@ Each spoken cover uses the same generated mark as that rune.
 | Cover | Speaks | Sheen | Mark |
 |---|---|---|---|
 | `ice` | Ice · Water · Earth | Sanctuary — ice over stone | Ice |
-| `fire` | Fire | Hell — lava / fire | Fire |
+| `fire` | Fire | Hell — lava / fire | Fire (mark only; Aura-Fire kindles) |
 | `lightning` | Lightning · Spark · Air | Atlantis — charged seal | Lightning |
 | `water` | Water | Cavern water tile | Water |
 | `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |

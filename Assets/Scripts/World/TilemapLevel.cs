@@ -310,7 +310,7 @@ namespace RuneMagic
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true));
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint);
                         continue;
                     }
 
@@ -338,7 +338,7 @@ namespace RuneMagic
 
                     if (paint != null)
                     {
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
                     }
                 }
             }
@@ -472,7 +472,7 @@ namespace RuneMagic
 
                         if (paint != null)
                         {
-                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
                         }
 
                         continue;
@@ -531,7 +531,7 @@ namespace RuneMagic
 
             if (paint != null)
             {
-                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false));
+                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
             }
         }
 
@@ -775,25 +775,30 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyCoverWork(WorldTile tile, TileCover cover)
+        static void ApplyCoverWork(WorldTile tile, TileCover cover, WorldPaintTile paint = null)
         {
-            if (tile == null || cover == TileCover.None)
+            if (tile == null)
             {
                 return;
             }
 
-            tile.PaintCover(cover);
-            switch (cover)
+            if (cover != TileCover.None)
             {
-                case TileCover.Miasma:
-                    tile.Foul(1f);
-                    break;
-                case TileCover.Fog:
-                    tile.Cloak(1f);
-                    break;
-                case TileCover.Fire:
-                    tile.Kindle();
-                    break;
+                tile.PaintCover(cover);
+                switch (cover)
+                {
+                    case TileCover.Miasma:
+                        tile.Foul(1f);
+                        break;
+                    case TileCover.Fog:
+                        tile.Cloak(1f);
+                        break;
+                }
+            }
+
+            if (paint != null && paint.aura == TileAura.Fire)
+            {
+                tile.Kindle();
             }
         }
     }

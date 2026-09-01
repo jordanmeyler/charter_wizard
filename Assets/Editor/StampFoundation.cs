@@ -384,6 +384,12 @@ namespace RuneMagic
                     var gate = host.AddComponent<SocketGate>();
                     SetString(gate, "authoredName", prop.displayName);
                     break;
+                case "charge-gate":
+                case "electric-gate":
+                    host = new GameObject("Electric Gate");
+                    var charge = host.AddComponent<ChargeGate>();
+                    SetString(charge, "authoredName", prop.displayName);
+                    break;
                 case "charm":
                     host = new GameObject("Charm");
                     host.AddComponent<FreeCharm>();
@@ -460,7 +466,7 @@ namespace RuneMagic
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or
-                    TorchFixture or SocketGate or WorldDoor or FreeCharm or SpawnCrystal or BarrierLock)
+                    TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or SpawnCrystal or BarrierLock)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

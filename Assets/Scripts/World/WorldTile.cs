@@ -29,7 +29,9 @@ namespace RuneMagic
         public bool BlocksTravel =>
             Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen) || _detailBlocks;
 
-        public bool IsEmitting => !Def.TearsTapestry && Emission.Count > 0;
+        public bool IsEmitting =>
+            !Def.TearsTapestry
+            && (Emission.Count > 0 || CoverCatalog.RuneOf(Cover) != RuneId.None);
         public Vector3 WorldOrigin => transform.position;
         public float VoiceRadius => 2.4f;
         public float VoiceWeight => Kind == TileKind.Wall ? 0.55f : 1f;

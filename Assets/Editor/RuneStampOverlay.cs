@@ -448,6 +448,12 @@ namespace RuneMagic
                 return true;
             }
 
+            if (paint.aura == TileAura.Fire)
+            {
+                color = AuraFire;
+                return true;
+            }
+
             switch (paint.ResolvedCover() != TileCover.None
                 ? paint.ResolvedCover()
                 : WorldPaintTile.CoverFromMaterial(paint.material))
@@ -532,9 +538,16 @@ namespace RuneMagic
                     return "Blocks";
                 }
 
+                if (paint.aura == TileAura.Fire)
+                {
+                    return "Kindled";
+                }
+
                 if (paint.ResolvedCover() != TileCover.None)
                 {
-                    return paint.ResolvedCover() + " cover";
+                    return paint.ResolvedCover() == TileCover.Fire
+                        ? "Fire mark"
+                        : paint.ResolvedCover() + " cover";
                 }
 
                 if (paint.kind == TileKind.None)

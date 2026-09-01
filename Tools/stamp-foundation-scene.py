@@ -19,6 +19,7 @@ PLAQUE_GUID = "813811c7afd64d4f83d7773870e8043f"
 CRYSTAL_GUID = "072a4e1835f6ad94e270c1b38405e6f7"
 TORCH_GUID = "7efda3cc1e3945d0a3c074e14475aefc"
 GATE_GUID = "b96f9601482f4e9ca74087f8f18e20b7"
+CHARGE_GATE_GUID = "e7a1c3f509284b6d8e2f4a6b8c0d1e2f"
 
 
 def load_guids() -> dict[str, str]:
@@ -51,8 +52,9 @@ def brush(kind: str, material: str, guids: dict[str, str]) -> str | None:
 
 
 def overlay_name(aura: str, cover: str) -> str | None:
-    key = (cover or aura or "").strip().lower()
-    return {
+    cover_key = (cover or "").strip().lower()
+    aura_key = (aura or "").strip().lower()
+    covers = {
         "ice": "Cover-Ice",
         "fire": "Cover-Fire",
         "lightning": "Cover-Lightning",
@@ -61,10 +63,19 @@ def overlay_name(aura: str, cover: str) -> str | None:
         "cracks": "Cover-Cracks",
         "crack": "Cover-Cracks",
         "seal": "Cover-Seal",
+        "miasma": "Cover-Miasma",
+        "poison": "Cover-Miasma",
+        "fog": "Cover-Fog",
+    }
+    auras = {
+        "fire": "Aura-Fire",
         "miasma": "Aura-Miasma",
         "poison": "Aura-Miasma",
         "fog": "Aura-Fog",
-    }.get(key)
+    }
+    if cover_key:
+        return covers.get(cover_key)
+    return auras.get(aura_key)
 
 
 def find_room(rooms, ident):
@@ -485,6 +496,23 @@ MonoBehaviour:
                     f"  doorCells: []\n"
                 )
                 add_object(prop.get("displayName") or "Gate", GATE_GUID, pos, fields)
+            elif typ in ("charge-gate", "electric-gate"):
+                fields = (
+                    f"  authoredName: {prop.get('displayName') or 'Electric Gate'}\n"
+                    f"  authoredId: electric-gate\n"
+                    f"  finishes: {1 if prop.get('finishes') else 0}\n"
+                    f"  note: {prop.get('note') or ''}\n"
+                    f"  keys: []\n"
+                    f"  spriteId: rod\n"
+                    f"  spriteLit: rod-live\n"
+                    f"  portrait: {{fileID: 0}}\n"
+                    f"  idleFrames: []\n"
+                    f"  liveFrames: []\n"
+                    f"  hideLook: 1\n"
+                    f"  doorCells: []\n"
+                    f"  sensorCells: []\n"
+                )
+                add_object(prop.get("displayName") or "Electric Gate", CHARGE_GATE_GUID, pos, fields)
 
     fields = (
         "  spriteId: spawn-crystal\n"
@@ -528,7 +556,7 @@ def main() -> None:
         paint_room(room, cells, overlays, guids)
     floor_guid = brush("Floor", "Stone", guids)
     wall_guid = brush("Wall", "Stone", guids)
-    fire_guid = guids.get("Cover-Fire")
+    fire_guid = guids.get("Aura-Fire") or guids.get("Cover-Fire")
     for hall in data.get("halls") or []:
         paint_hall(data, hall, cells, overlays, floor_guid, wall_guid, fire_guid)
 
