@@ -169,8 +169,8 @@ namespace RuneMagic
             EditorGUILayout.EndHorizontal();
             room.width = Mathf.Max(3, EditorGUILayout.IntField("Width", room.width));
             room.height = Mathf.Max(3, EditorGUILayout.IntField("Height", room.height));
-            room.wall = EditorGUILayout.EnumPopup("Wall", MapFile.ParseMaterial(room.wall)).ToString();
-            room.floor = EditorGUILayout.EnumPopup("Floor", MapFile.ParseMaterial(room.floor)).ToString();
+            room.wall = TilePropertyPaint.StampMaterialPopup("Wall", MapFile.ParseMaterial(room.wall)).ToString();
+            room.floor = TilePropertyPaint.StampMaterialPopup("Floor", MapFile.ParseMaterial(room.floor)).ToString();
             room.exit = EditorGUILayout.TextField("Exit (east/west/north/south/none)", room.exit);
         }
 
@@ -178,7 +178,7 @@ namespace RuneMagic
         {
             EditorGUILayout.BeginHorizontal();
             _kind = (TileKind)EditorGUILayout.EnumPopup("Stamp", _kind);
-            _material = (MaterialId)EditorGUILayout.EnumPopup(_material);
+            _material = TilePropertyPaint.StampMaterialPopup(_material);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.BeginHorizontal();
             _propType = EditorGUILayout.TextField("Prop", _propType);

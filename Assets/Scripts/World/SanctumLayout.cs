@@ -132,7 +132,6 @@ namespace RuneMagic
         {
             grid.RoomShell(o.x, o.y, o.x + RoomW - 1, o.y + RoomH - 1, MaterialId.Stone, MaterialId.Ash);
 
-            Stamp(grid, o, TileKind.Floor, MaterialId.Ember, 6, 6, 7, 5, 8, 6, 7, 7, 6, 5, 8, 5);
             Stamp(grid, o, TileKind.Floor, MaterialId.SaltCrust, 6, 7, 8, 7, 5, 6, 9, 6);
 
             var room = new RoomInfo("ash-court", "Ash Court",

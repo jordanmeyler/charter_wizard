@@ -31,23 +31,23 @@ namespace RuneMagic
         public const float IceBurnSeconds = 4f;
         public const float EarthBurnSeconds = 12f;
         /// <summary>
-        /// Fuel clocks are one to five seconds. Oil and wood last
-        /// longer than plant. Leftover is 5 − seconds, floored at 0.
-        /// Ember (5s) stays put; nothing goes negative. Spread uses
-        /// Hunger, not this leftover.
+        /// Fuel clocks are one to five seconds, inverted: oil and
+        /// wood last, plant and grove burn out sooner. Leftover is
+        /// 5 − seconds, floored at 0. Spread uses Hunger, not this
+        /// leftover. Ember is not fuel.
         /// </summary>
         public const float OilBurnSeconds = 5f;
         public const float TimberBurnSeconds = 4f;
         public const float PlantBurnSeconds = 3f;
-        public const float GroveBurnSeconds = 4f;
-        public const float EmberBurnSeconds = 5f;
+        public const float GroveBurnSeconds = 2f;
+        public const float TinderBurnSeconds = 2f;
         public const float SlowBurnSeconds = 5f;
 
         /// <summary>
         /// One 0–10 hunger grade. Catch and spread use this range.
         /// Burn seconds stay their own 1–5 clock.
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
-        /// 1–2     Tinder — ember (1), dust / fire cover (2). Catch-only.
+        /// 1–2     Tinder — dust / fire cover (2). 1 is open. Catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
         /// 5–6     Plant — living plant (6). Catches from a strong
         ///         source. Does not run. 5 is free for later fuel.
@@ -357,8 +357,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Floor-Fire, hearth, ember, lava. Rest hunger in the walk.
-        /// It does not burn out. Coverings and spells are what react.
+        /// Floor-Fire, hearth, leftover ember tiles, lava. Rest
+        /// hunger in the walk — a weak source, not fuel. It does
+        /// not burn out. Coverings and spells are what react.
         /// </summary>
         public static bool IsRestFire(MaterialId material)
         {
@@ -394,7 +395,7 @@ namespace RuneMagic
 
         /// <summary>
         /// Clock leftover: 5 − seconds. Oil 0, wood 1, plant 2,
-        /// grove 1, ember 0. Not what walks fire — Hunger does.
+        /// grove 3. Not what walks fire — Hunger does.
         /// Flammability is a separate catch number.
         /// </summary>
         public static float FireRun(float burnSeconds)
@@ -404,7 +405,7 @@ namespace RuneMagic
                 return 0f;
             }
 
-            var run = EmberBurnSeconds - burnSeconds;
+            var run = SlowBurnSeconds - burnSeconds;
             return run > 0f ? run : 0f;
         }
 
@@ -478,9 +479,9 @@ namespace RuneMagic
                 broken.Add("Empty ground cannot feed a burn or poison meter");
             }
 
-            if (FireRun(0f) != 0f || FireRun(EmberBurnSeconds) != 0f)
+            if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
             {
-                broken.Add("Zero fuel and ember must stay put — they do not run hunger");
+                broken.Add("Zero fuel and a full five-second clock leftover stay put — they do not run hunger");
             }
 
             if (SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
@@ -519,6 +520,7 @@ namespace RuneMagic
             if (IsSpreadFuel(MaterialId.Stone)
                 || IsSpreadFuel(MaterialId.Dirt)
                 || IsSpreadFuel(MaterialId.Fire)
+                || IsSpreadFuel(MaterialId.Ember)
                 || !IsSpreadFuel(MaterialId.Timber)
                 || !IsSpreadFuel(MaterialId.Oil)
                 || !IsSpreadFuel(MaterialId.Plant)
@@ -530,7 +532,7 @@ namespace RuneMagic
             }
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral
-                || HungerOf(MaterialId.Ember) != HungerEmber
+                || HungerOf(MaterialId.Ember) != HungerNeutral
                 || HungerOf(MaterialId.Dust) != HungerTinder
                 || HungerOf(MaterialId.Moss) != HungerMoss
                 || HungerOf(MaterialId.Grove) != HungerSoft
@@ -575,24 +577,26 @@ namespace RuneMagic
                 broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
             }
 
-            if (OilBurnSeconds != EmberBurnSeconds
-                || TimberBurnSeconds != EmberBurnSeconds - 1f
+            if (OilBurnSeconds != SlowBurnSeconds
+                || TimberBurnSeconds != SlowBurnSeconds - 1f
                 || PlantBurnSeconds != 3f
-                || GroveBurnSeconds != SlowBurnSeconds - 1f
-                || EmberBurnSeconds > 5f
+                || GroveBurnSeconds != TinderBurnSeconds
+                || TinderBurnSeconds != 2f
                 || OilBurnSeconds <= TimberBurnSeconds
                 || TimberBurnSeconds <= PlantBurnSeconds
+                || PlantBurnSeconds <= GroveBurnSeconds
                 || ItemBurnSeconds(MaterialId.Oil) != OilBurnSeconds
                 || ItemBurnSeconds(MaterialId.Timber) != TimberBurnSeconds
                 || ItemBurnSeconds(MaterialId.Plant) != PlantBurnSeconds
                 || ItemBurnSeconds(MaterialId.Moss) != PlantBurnSeconds
-                || FireRun(OilBurnSeconds) != EmberBurnSeconds - OilBurnSeconds
-                || FireRun(TimberBurnSeconds) != EmberBurnSeconds - TimberBurnSeconds
-                || FireRun(PlantBurnSeconds) != EmberBurnSeconds - PlantBurnSeconds
-                || FireRun(GroveBurnSeconds) != EmberBurnSeconds - GroveBurnSeconds
-                || FireRun(EmberBurnSeconds) != 0f)
+                || ItemBurnSeconds(MaterialId.Grove) != GroveBurnSeconds
+                || FireRun(OilBurnSeconds) != SlowBurnSeconds - OilBurnSeconds
+                || FireRun(TimberBurnSeconds) != SlowBurnSeconds - TimberBurnSeconds
+                || FireRun(PlantBurnSeconds) != SlowBurnSeconds - PlantBurnSeconds
+                || FireRun(GroveBurnSeconds) != SlowBurnSeconds - GroveBurnSeconds
+                || FireRun(SlowBurnSeconds) != 0f)
             {
-                broken.Add("Fuel clocks last longer on oil and wood: oil 5, wood 4, plant 3, grove 4, ember 5");
+                broken.Add("Fuel clocks last longer on oil and wood: oil 5, wood 4, plant 3, grove 2");
             }
 
             if (SpellCodex.TryGet(SpellId.Vine, out var vine) && vine.Shape != SpellShape.Shot)

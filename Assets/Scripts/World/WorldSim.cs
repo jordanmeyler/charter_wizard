@@ -11,7 +11,7 @@ namespace RuneMagic
     /// Fire does not leap a stone gap. Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
-    /// already alight does not recatch. Ember cover stays put and
+    /// already alight does not recatch. Fire cover is tinder and
     /// then ashes. Charge runs through what conducts. Wood and
     /// plants break that path. Plants do not grow on their own.
     /// Cover on water stays put, like ice, unless a spell-watered

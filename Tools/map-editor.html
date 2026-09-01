@@ -154,7 +154,7 @@
   <script>
     const MATERIALS = [
       ["Stone", "#474752"], ["Ash", "#382e29"], ["Timber", "#754d29"], ["Hearth", "#6b3829"],
-      ["Ember", "#331a14"], ["Damp", "#334766"], ["Vein", "#524d3d"], ["Scoured", "#4d5761"],
+      ["Damp", "#334766"], ["Vein", "#524d3d"], ["Scoured", "#4d5761"],
       ["Moss", "#474229"], ["Metal", "#6b707a"], ["SaltCrust", "#6b6661"], ["Void", "#080508"],
       ["Ice", "#9ec7e6"], ["Sand", "#b89a61"], ["Mud", "#523824"], ["Lava", "#8c2910"],
       ["Steam", "#b3bdc7"], ["Dust", "#857561"], ["Glass", "#476b75"], ["Crystal", "#8c6bb8"],
@@ -178,7 +178,6 @@
       rooms: [
         { id: "ash-court", name: "Ash Court", origin: { x: 0, y: 0 }, width: 13, height: 11, wall: "Stone", floor: "Ash", exit: "east",
           stamps: [
-            { kind: "Floor", material: "Ember", cells: [6,6,7,5,8,6,7,7,6,5,8,5] },
             { kind: "Floor", material: "SaltCrust", cells: [6,7,8,7,5,6,9,6] }
           ],
           props: [

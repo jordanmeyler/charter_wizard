@@ -39,11 +39,10 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | --- | --- | --- | --- |
 | **Stone** | Earth · Salt · Stone | Stone | Walls, The Drop floor, halls |
 | **Ash** | Fire · Plant · Ash | Ash | Ash Court floor |
-| **Ember** | Fire · Ash · Ember | Ember | Ash Court bed |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall. Tree and Wood-wall stand this wood. |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
-| **Fire** | Fire | Fire | Rest stamp on floor or wall. Speaks Fire. Does not spread until a spell starts work. Cover-Fire is the live layer. |
+| **Fire** | Fire | Fire | Rest stamp. Weak source, not fuel. Speaks Fire. Does not spread until a spell starts work. Cover-Fire is the live layer. |
 | **Moss** | Water · Salt · Earth · Plant · Life | Plant | Chapel corners |
 | **Void** | Dark (tear) | — | The Drop pits. On camera they speak Dark. |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
@@ -100,7 +99,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Quench** | One 0–10 grade. The wet counterpart. Dry stone is 0. Mud suppresses. Water puts fire out. |
 | **Flammability** | Positive = how readily hunger takes it once it is allowed to catch. Zero = will not catch. Negative tracks Quench (about `−grade × 0.16`; water 10 → −1.6). |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
-| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 4, ember 5). Independent of whether the body may *run*. Oil and wood last longer; they still spread on Hunger. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember is not a stamp or fuel. |
 | **BurnRate** | Clock leftover `5 − seconds`. Not what walks fire to a neighbor. |
 
 **Hunger 0–10**
@@ -108,10 +107,10 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | Grade | Band | Catch from neighbors | Spreads | Typical seconds | Now / later |
 | --- | --- | --- | --- | --- | --- |
 | **0** | Neutral | No — only a spell that hits the cell | No | 0 | Stone, dirt, metal |
-| **1** | Tinder | From a strong source, inside that source's reach, touching fuel toward it | No | 5 | Ember |
-| **2** | Tinder | Same | No | 4 | Dust, fire cover |
+| **1** | Tinder | From a strong source, inside that source's reach, touching fuel toward it | No | — | Open — spent fire / coals |
+| **2** | Tinder | Same | No | 2 | Dust, fire cover |
 | **3** | Soft | Same | No | 3 | Moss |
-| **4** | Soft | Same | No | 4 | Grove |
+| **4** | Soft | Same | No | 2 | Grove |
 | **5** | Plant | Same | No | 3 | Open — thatch / young plant |
 | **6** | Plant | Same | No — a plant field does not run | 3 | Living plant |
 | **7** | Timber | Strong source — reach **1** | Yes — equal-or-weaker fuel, touching fuel | 4 | Open — brush / dry wood |
@@ -152,10 +151,9 @@ Stood timber, plant, and oil props use the same 1–5 second clocks.
 | Oil | 10 | 0 | 2.2 | −0.25 | 5 | Strongest fuel. Floats. Flashes a slick. Lasts. |
 | Timber | 8 | 0 | 1.6 | −0.9 | 4 | Wood. May run to adjacent wood / weaker fuel. Lasts. |
 | Plant | 6 | 0 | 1.1 | −1.1 | 3 | Catches within 2 of timber / oil / a hall. Does not run the field. |
-| Grove | 4 | 0 | 0.85 | −1.2 | 4 | Living mass. Catch-only. Longer clock. |
+| Grove | 4 | 0 | 0.85 | −1.2 | 2 | Living mass. Catch-only. Burns out sooner. |
 | Moss | 3 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. |
-| Dust | 2 | 0 | 0.55 | 0 | 4 | Loose grit. Tinder. |
-| Ember | 1 | 0 | 0.35 | 0 | 5 | Coals. Catch-only. Stay put. |
+| Dust | 2 | 0 | 0.55 | 0 | 2 | Loose grit. Tinder. |
 | Stone / Dirt | 0 | 0 | 0 | 0 | 0 | Neutral and dry. Spell volume only. Leaves neighbor fire alone. |
 | Salt crust | 0 | 1 | −0.15 | 0.2 | 0 | Trace moisture. Below suppress. |
 | Mud | 0 | 3 | −0.35 | 0.25 | 0 | Suppresses neighbor fire. Does not put it out. |

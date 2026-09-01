@@ -147,8 +147,8 @@ namespace RuneMagic
         public float BurnSeconds { get; internal set; }
 
         /// <summary>
-        /// Clock leftover <c>5 − seconds</c>. Oil and wood last
-        /// longer, so their leftover is small. Spread itself uses
+        /// Clock leftover <c>5 − seconds</c>. Oil and wood last;
+        /// plant and grove burn out sooner. Spread itself uses
         /// <see cref="Hunger"/>, not this leftover.
         /// </summary>
         public float BurnRate { get; internal set; }
@@ -247,7 +247,7 @@ namespace RuneMagic
                     RuneId.Fire, RuneId.Salt, RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Ember, "ember bed",
-                    "Hunger after the motion has gone. Ash that still wants.",
+                    "Withdrawn stamp. Leftover tiles are a weak rest-fire source, not fuel.",
                     RuneId.Ember, MaterialPaint.Ember,
                     new Color(0.2f, 0.1f, 0.08f), new Color(0.24f, 0.12f, 0.1f), false,
                     RuneId.Fire, RuneId.Ash, RuneId.Ember),
@@ -439,10 +439,10 @@ namespace RuneMagic
             }
 
             Flag(MaterialId.Stone, 0f, 0f);
-            Flag(MaterialId.Ash, 0.05f, 0f, VitalLaw.EmberBurnSeconds);
+            Flag(MaterialId.Ash, 0.05f, 0f, VitalLaw.TinderBurnSeconds);
             Flag(MaterialId.Timber, 1.6f, -0.9f, VitalLaw.TimberBurnSeconds, VitalLaw.HungerTimber);
             Flag(MaterialId.Hearth, 0f, 0f);
-            Flag(MaterialId.Ember, 0.35f, 0f, VitalLaw.EmberBurnSeconds, VitalLaw.HungerEmber);
+            Flag(MaterialId.Ember, 0f, 0f);
             Flag(MaterialId.Damp, -0.7f, 0.35f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDamp);
             Flag(MaterialId.Vein, 0f, 0.85f);
             Flag(MaterialId.Scoured, 0f, 0f);
@@ -464,12 +464,12 @@ namespace RuneMagic
             Flag(MaterialId.Rain, -1.1f, 0.7f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchRain);
             Flag(MaterialId.Snow, -0.65f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce);
             Flag(MaterialId.Glacier, -0.9f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchGlacier);
-            Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.EmberBurnSeconds);
+            Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.TinderBurnSeconds);
             Flag(MaterialId.Water, -1.6f, 1.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchWater);
             Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerPlant);
             Flag(MaterialId.Dirt, 0f, 0f);
             Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds, VitalLaw.HungerOil);
-            Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.EmberBurnSeconds);
+            Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.TinderBurnSeconds);
             Flag(MaterialId.Wardstone, 0f, 0f);
             Flag(MaterialId.Aegis, 0f, 1.1f);
             Flag(MaterialId.Fire, 0f, 0f);
@@ -501,6 +501,13 @@ namespace RuneMagic
         }
 
         public static IReadOnlyList<WorldMaterial> All => AllMaterials;
+
+        /// <summary>
+        /// Ember is a leftover rest-fire alias, not a palette stamp.
+        /// Use Floor-Fire or hearth if you want a weak fire source.
+        /// </summary>
+        public static bool IsStampable(MaterialId id) =>
+            id != MaterialId.None && id != MaterialId.Ember;
 
         public static WorldMaterial Of(MaterialId id)
         {
@@ -585,7 +592,7 @@ namespace RuneMagic
                 case RuneId.Miasma: return MaterialId.Miasma;
                 case RuneId.Poison: return MaterialId.Acid;
                 case RuneId.Flame: return MaterialId.Hearth;
-                case RuneId.Ember: return MaterialId.Ember;
+                case RuneId.Ember: return MaterialId.Fire;
                 case RuneId.Stone: return MaterialId.Stone;
                 case RuneId.None: return MaterialId.Void;
                 default: return MaterialId.Stone;

@@ -805,13 +805,15 @@ namespace RuneMagic
             var water = MaterialCatalog.Of(MaterialId.Water);
             if (oil.BurnSeconds <= timber.BurnSeconds
                 || timber.BurnSeconds <= plant.BurnSeconds
+                || plant.BurnSeconds <= grove.BurnSeconds
                 || oil.BurnRate >= timber.BurnRate
                 || timber.BurnRate >= plant.BurnRate
+                || plant.BurnRate >= grove.BurnRate
                 || oil.Flammability <= timber.Flammability
                 || timber.Flammability <= plant.Flammability
                 || plant.Flammability <= grove.Flammability)
             {
-                broken.Add("Oil and wood last longer than plant; leftover is the short clock");
+                broken.Add("Oil and wood last longer than plant; grove burns out sooner");
             }
 
             if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)
@@ -834,15 +836,18 @@ namespace RuneMagic
 
             if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
                 || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
+                || CoverCatalog.LeftoverFloor(MaterialId.Ember) != MaterialId.Ember
                 || VitalLaw.CanBurn(MaterialId.Fire)
                 || VitalLaw.CanBurn(MaterialId.Lava)
+                || VitalLaw.CanBurn(MaterialId.Ember)
                 || !VitalLaw.IsRestFire(MaterialId.Ember))
             {
                 broken.Add("Rest fire in the walk stays; it is not fuel and does not leftover to dirt");
             }
 
             if (ember.BurnRate != 0f
-                || ember.Hunger != VitalLaw.HungerEmber
+                || ember.BurnSeconds != 0f
+                || ember.Hunger != VitalLaw.HungerNeutral
                 || grove.Hunger != VitalLaw.HungerSoft
                 || plant.Hunger != VitalLaw.HungerPlant
                 || timber.Hunger != VitalLaw.HungerTimber

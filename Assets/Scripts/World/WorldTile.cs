@@ -207,9 +207,9 @@ namespace RuneMagic
             || CoverMaterial == MaterialId.Fire;
 
         /// <summary>
-        /// Hunger seated in the walk itself — Floor-Fire, ember, a hearth, lava.
+        /// Hunger seated in the walk itself — Floor-Fire, a hearth, lava.
         /// Rest matter. It does not burn out. Coverings and spells
-        /// are what react.
+        /// are what react. Leftover ember tiles count as this too.
         /// </summary>
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
@@ -402,8 +402,9 @@ namespace RuneMagic
 
         /// <summary>
         /// How long a full fire lasts here. Oil is five seconds.
-        /// Wood is four. Plant is three. Oil on a cell extends
-        /// the clock; it does not cut a longer fuel short.
+        /// Wood is four. Plant is three. Grove is two. Oil on a
+        /// cell extends the clock; it does not cut a longer fuel
+        /// short. Fire cover is tinder — a short clock.
         /// </summary>
         public float BurnSeconds
         {
@@ -446,8 +447,8 @@ namespace RuneMagic
                 if (HasFireCover && !Kindled)
                 {
                     seconds = seconds > 0f
-                        ? Mathf.Min(seconds, VitalLaw.EmberBurnSeconds)
-                        : VitalLaw.EmberBurnSeconds;
+                        ? Mathf.Min(seconds, VitalLaw.TinderBurnSeconds)
+                        : VitalLaw.TinderBurnSeconds;
                 }
 
                 return seconds;
@@ -523,7 +524,7 @@ namespace RuneMagic
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
         /// Fuel hunger can finish. Kindled halls and rest fire floors
-        /// stay. Ember cover, timber walls, and plant / timber floors
+        /// stay. Fire cover, timber walls, and plant / timber floors
         /// catch once, then leftover dirt.
         /// </summary>
         public bool HoldsBurnFuel =>
@@ -548,7 +549,7 @@ namespace RuneMagic
 
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
-        /// oil, and ember cover raise the grade. Rest fire in the floor
+        /// oil, and fire cover raise the grade. Rest fire in the floor
         /// stays 0 — a spell starts that source.
         /// </summary>
         public int Hunger
