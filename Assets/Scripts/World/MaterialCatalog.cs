@@ -157,7 +157,7 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger grade. 0 is neutral; 1–6 catch from a strong
         /// source (7+) and do not run; 7–10 are strong sources and
-        /// may walk fire to flammable grades below them.
+        /// may walk fire to equal-or-weaker fuel out to hunger − 6.
         /// </summary>
         public int Hunger { get; internal set; }
 

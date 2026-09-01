@@ -540,8 +540,8 @@ namespace RuneMagic
         /// <summary>
         /// Neighbor fire may take this cell. Neutral walk (stone, dirt)
         /// only lights when a spell's volume hits it. Weaker fuel still
-        /// needs a strong source (7+) within two tiles, and must touch
-        /// fuel toward that source so fire does not leap a gap.
+        /// needs a strong source (7+) within that source's reach, and
+        /// must touch fuel toward it so fire does not leap a gap.
         /// </summary>
         public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
 
@@ -589,8 +589,8 @@ namespace RuneMagic
         /// <summary>
         /// How hard this live flame may light other cells. A kindled
         /// hall, a geyser, or a lit rest-fire walk is an oil-grade
-        /// source (10). Only a strong source (7+) walks fire, and
-        /// only onto flammable grades below it.
+        /// source (10). Only a strong source (7+) walks fire, onto
+        /// equal-or-weaker fuel, out to its own reach.
         /// </summary>
         public int FirePotency
         {
@@ -1080,7 +1080,7 @@ namespace RuneMagic
                 NoteSpokenChange();
             }
 
-            if (Fire > 0.05f)
+            if (amount > 0f && Fire > 0.05f)
             {
                 Wet = Mathf.Max(0f, Wet - amount);
             }
@@ -1616,6 +1616,11 @@ namespace RuneMagic
 
             var waterWalk = Material == MaterialId.Water
                 || (_hasFoundation && Foundation.Material == MaterialId.Water);
+            if (!waterWalk)
+            {
+                Wet = 0f;
+            }
+
             var fuelWall = Kind == TileKind.Wall && VitalLaw.CanBurn(Material);
             var fuelFloor = !IsFireFloor
                 && (Kind == TileKind.Floor || Kind == TileKind.Bridge)

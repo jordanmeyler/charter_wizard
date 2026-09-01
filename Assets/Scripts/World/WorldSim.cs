@@ -6,9 +6,9 @@ namespace RuneMagic
     /// <summary>
     /// Tiles speak to their neighbors after a spell starts the work.
     /// Fire follows a 0–10 Hunger grade. A strong source (7+)
-    /// may spread to flammable grades below it, within two tiles,
-    /// if that cell touches fuel toward the source. Fire does not
-    /// leap a stone gap. Weaker fuel does not walk fire.
+    /// may spread to equal-or-weaker fuel out to its own reach
+    /// (hunger − 6) if that cell touches fuel toward the source.
+    /// Fire does not leap a stone gap. Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Ember cover stays put and
@@ -317,7 +317,7 @@ namespace RuneMagic
                 return;
             }
 
-            _grid.ForEachInChebyshev(tile.Coord, VitalLaw.HungerCatchReach, (other, dist) =>
+            _grid.ForEachInChebyshev(tile.Coord, VitalLaw.CatchReach(potency), (other, dist) =>
             {
                 if (!AcceptsFireSpread(other))
                 {
@@ -379,8 +379,8 @@ namespace RuneMagic
         /// Hunger runs once through fuel. A tile already alight, or
         /// already ash, does not catch again. Neutral stone and dirt
         /// only light when a spell hits them. Weaker fuel still needs
-        /// a strong source (7+) within two tiles, a lower grade, and
-        /// a flammable neighbor toward that source.
+        /// a strong source (7+) within that source's reach, an
+        /// equal-or-weaker grade, and fuel toward the flame.
         /// </summary>
         public static bool AcceptsFireSpread(WorldTile other)
         {

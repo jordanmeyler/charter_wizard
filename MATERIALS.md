@@ -108,18 +108,18 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | Grade | Band | Catch from neighbors | Spreads | Typical seconds | Now / later |
 | --- | --- | --- | --- | --- | --- |
 | **0** | Neutral | No — only a spell that hits the cell | No | 0 | Stone, dirt, metal |
-| **1** | Tinder | From a strong source (7+) within **2**, if this cell touches fuel toward it | No | 5 | Ember |
+| **1** | Tinder | From a strong source, inside that source's reach, touching fuel toward it | No | 5 | Ember |
 | **2** | Tinder | Same | No | 4 | Dust, fire cover |
 | **3** | Soft | Same | No | 3 | Moss |
 | **4** | Soft | Same | No | 4 | Grove |
 | **5** | Plant | Same | No | 3 | Open — thatch / young plant |
 | **6** | Plant | Same | No — a plant field does not run | 3 | Living plant |
-| **7** | Timber | Strong source | Yes — flammable grades below it, within 2, touching fuel | 2 | Open — brush / dry wood |
-| **8** | Timber | Strong source | Yes | 2 | Timber |
-| **9** | Oil | Strong source | Yes; oil also flashes a slick | 1 | Open — pitch / grease |
-| **10** | Oil / hall | Strong source | Yes | 1 | Oil. Kindled hall counts as 10 |
+| **7** | Timber | Strong source — reach **1** | Yes — equal-or-weaker fuel, touching fuel | 2 | Open — brush / dry wood |
+| **8** | Timber | Strong source — reach **2** | Yes | 2 | Timber |
+| **9** | Oil | Strong source — reach **3** | Yes; oil also flashes a slick | 1 | Open — pitch / grease |
+| **10** | Oil / hall | Strong source — reach **4** | Yes | 1 | Oil. Kindled hall counts as 10 |
 
-**One spread rule:** a **strong source** is Hunger **7+**. It may walk fire to any flammable grade **below** it, within two tiles, if that cell **touches fuel toward the source** (the burning tile, or a flammable tile closer to it). Fire does not leap a stone or empty gap. Weaker fuel does not walk fire. A spell can still light whatever it hits.
+**One spread rule:** a **strong source** is Hunger **7+**. Reach is the grade itself: **hunger − 6** (timber 2, oil / a hall 4). It may walk fire to equal-or-weaker fuel inside that reach if the cell **touches fuel toward the source**. A timber hall burns along the wood. Fire does not leap a stone or empty gap. Weaker fuel does not walk fire. A spell can still light whatever it hits.
 
 A **kindled hall** is the **Aura-Fire** brush (or a Flame Hall plaque): painted walk that stays lit until yield is thrown. It is not a material — it is a source. Live Aura-Fire, a geyser, or lit Floor-Fire counts as Hunger **10**. Vine is a wick: any adjacent live flame can run that line. Neutral stone / dirt never catch from a neighbor.
 
@@ -141,7 +141,7 @@ Dry stone next to timber leaves that fire alone — full clock, full vigor, it m
 | **9** | Water | Puts fire out | Open — flood edge |
 | **10** | Water | Puts fire out on the cell and neighbors | Standing water |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, grades below it, within 2, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, and Floor-Fire stay; fire cover wears off. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
+Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, equal-or-weaker fuel, out to that source's reach, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, and Floor-Fire stay; fire cover wears off. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
 **Oil floats.** A film on water still catches, flashes, and runs at oil’s rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but it does not run.** Land plants keep their three-second clock. A spell may still walk them onto neighboring water, weaker than wood.
 
