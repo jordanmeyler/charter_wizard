@@ -69,6 +69,7 @@ namespace RuneMagic
             transform.position = new Vector3(coord.x + 0.5f, coord.y + 0.5f, 0f);
 
             _renderer = gameObject.AddComponent<SpriteRenderer>();
+            _renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             ApplyVisual();
             ApplyCover();
             ApplyCollider();
@@ -356,7 +357,7 @@ namespace RuneMagic
             {
                 if (HasAshCover)
                 {
-                    return MaterialCatalog.Of(MaterialId.Ash).Flammability;
+                    return 0f;
                 }
 
                 if (HasOil)
@@ -425,6 +426,13 @@ namespace RuneMagic
                     seconds = seconds > 0f
                         ? Mathf.Min(seconds, VitalLaw.OilBurnSeconds)
                         : VitalLaw.OilBurnSeconds;
+                }
+
+                if (HasFireCover && !Kindled)
+                {
+                    seconds = seconds > 0f
+                        ? Mathf.Min(seconds, VitalLaw.EmberBurnSeconds)
+                        : VitalLaw.EmberBurnSeconds;
                 }
 
                 return seconds;
@@ -498,6 +506,17 @@ namespace RuneMagic
         public bool Insulates => ChargeLaw.Insulates(Conductivity);
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
+        /// <summary>
+        /// Fuel hunger can finish. Kindled halls stay until yield.
+        /// Ember cover is fuel: it catches, stays put, then ashes.
+        /// </summary>
+        public bool HoldsBurnFuel =>
+            !HasAshCover
+            && (IsPlantish
+                || HasPlantishDetail
+                || HasVine
+                || (HasOil && !IsGeyser)
+                || (HasFireCover && !Kindled));
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>
@@ -1614,7 +1633,7 @@ namespace RuneMagic
             {
                 var view = EnsureCover();
                 view.sprite = sheen;
-                view.color = new Color(1f, 1f, 1f, _coverAlpha > 0.01f ? _coverAlpha : 1f);
+                view.color = new Color(1f, 1f, 1f, CoverDrawAlpha());
                 view.sortingOrder = _renderer.sortingOrder + 1;
                 view.enabled = true;
             }
@@ -1658,6 +1677,24 @@ namespace RuneMagic
             }
         }
 
+        float CoverDrawAlpha()
+        {
+            var alpha = _coverAlpha > 0.01f ? _coverAlpha : 1f;
+            if (_authoredLook == null)
+            {
+                return alpha;
+            }
+
+            // A painted walk tile must stay visible. Opaque pack covers
+            // (hell lava, ice sheets) used to hide that sprite in Play.
+            if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud)
+            {
+                return Mathf.Min(alpha, 0.72f);
+            }
+
+            return Mathf.Min(alpha, 0.48f);
+        }
+
         Sprite ResolveCoverSprite()
         {
             if (_coverLook != null)
@@ -1674,6 +1711,20 @@ namespace RuneMagic
                     string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return null;
+                }
+
+                // cover-fire / cover-lightning are full hell tiles. A
+                // live wash sits on the authored floor instead.
+                if (string.Equals(_coverId, "fire", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-fire", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-fire");
+                }
+
+                if (string.Equals(_coverId, "lightning", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-lightning", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("tile-charge");
                 }
 
                 // A Plant / Timber material stamp used to invent Vine

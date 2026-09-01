@@ -307,6 +307,11 @@ namespace RuneMagic
                 broken.Add("Fire cover is a mark — it must not map onto a kindled hall aura");
             }
 
+            if (WorldPaintTile.AutomaticOpacity(TileCover.Fire) >= 0.95f)
+            {
+                broken.Add("Fire cover is a sheen over the walk tile, not an opaque replacement");
+            }
+
             if (WorldPaintTile.CoverFromAura(TileAura.Fire) != TileCover.Fire)
             {
                 broken.Add("A Fire aura still looks like fire cover");

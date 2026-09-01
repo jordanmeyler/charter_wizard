@@ -30,6 +30,7 @@ namespace RuneMagic
         {
             var renderer = GetOrAdd<SpriteRenderer>(host);
             renderer.sortingOrder = sortingOrder;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             if (frames != null && frames.Length > 0)
             {
                 SpriteAnim.On(host, renderer).Play(frames, fps, true, spriteId ?? "authored");

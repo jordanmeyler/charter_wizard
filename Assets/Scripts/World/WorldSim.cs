@@ -5,11 +5,14 @@ namespace RuneMagic
 {
     /// <summary>
     /// Tiles speak to their neighbors after a spell starts the work.
-    /// Fire spreads by burn rate, retardant matter puts hunger out,
-    /// and charge runs through what conducts. Wood and plants break
-    /// that path. Plants do not grow on their own. Cover on water
-    /// stays put, like ice, unless a spell-watered land plant or
-    /// Forest asked for more.
+    /// Fire spreads by burn rate onto fuel that has not already
+    /// caught. A tile already alight does not recatch — that loop
+    /// is what made a grove burn forever. Ember cover stays put and
+    /// then ashes. Retardant matter puts hunger out, and charge
+    /// runs through what conducts. Wood and plants break that path.
+    /// Plants do not grow on their own. Cover on water stays put,
+    /// like ice, unless a spell-watered land plant or Forest asked
+    /// for more.
     /// </summary>
     public sealed class WorldSim : MonoBehaviour
     {
@@ -146,14 +149,10 @@ namespace RuneMagic
                     {
                         quench += -flam * 0.45f;
                     }
-                    else if (other.Fire < 0.15f && CanCatch(other) && run > 0.05f)
+                    else if (AcceptsFireSpread(other) && run > 0.05f)
                     {
-                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
-                        if (catchable)
-                        {
-                            var fuel = flam > 0f ? flam : 1.2f;
-                            other.Ignite(fuel * run);
-                        }
+                        var fuel = flam > 0f ? flam : 1.2f;
+                        other.Ignite(fuel * run);
                     }
                 }
 
@@ -170,12 +169,8 @@ namespace RuneMagic
                 {
                     var seconds = tile.BurnSeconds;
                     var consume = seconds > 0.05f ? Step / seconds : 0.12f;
-                    var plantFuel = tile.IsPlantish || tile.HasPlantishDetail;
-                    var vineFuel = tile.HasVine;
-                    var oilFuel = tile.HasOil && !tile.IsGeyser;
                     tile.Ignite(-consume - quench);
-                    if (quench < 0.4f && tile.Fire <= 0.08f
-                        && (plantFuel || vineFuel || oilFuel))
+                    if (quench < 0.4f && tile.Fire <= 0.08f && tile.HoldsBurnFuel)
                     {
                         tile.BurnOut();
                     }
@@ -209,7 +204,7 @@ namespace RuneMagic
                         continue;
                     }
 
-                    if (other.Fire < 0.35f)
+                    if (!other.LiveFire)
                     {
                         other.Ignite(1.15f);
                     }
@@ -217,6 +212,32 @@ namespace RuneMagic
                     queue.Enqueue(other);
                 }
             }
+        }
+
+        /// <summary>
+        /// Hunger runs once through a body. A tile already alight, or
+        /// already ash, does not catch again — that recatch is what
+        /// made a grove burn forever. Ember cover can catch, then it
+        /// stays put and wears off.
+        /// </summary>
+        public static bool AcceptsFireSpread(WorldTile other)
+        {
+            if (other == null || other.LiveFire || other.HasAshCover || other.Kindled)
+            {
+                return false;
+            }
+
+            if (other.Fire >= 0.15f)
+            {
+                return false;
+            }
+
+            if (!CanCatch(other))
+            {
+                return false;
+            }
+
+            return other.Flammability > 0f || other.HasVine || other.HasOil || other.HasFireCover;
         }
 
         static bool CanCatch(WorldTile other)

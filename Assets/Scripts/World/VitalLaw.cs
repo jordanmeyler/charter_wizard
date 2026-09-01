@@ -56,10 +56,11 @@ namespace RuneMagic
 
         /// <summary>
         /// Burning and poison only run while the body still stands in
-        /// that kind of walk or covering. Hunger needs fire floor,
-        /// fire cover, or a live flame. Poison needs a poison slick
-        /// underfoot, or a miasma cloud (the tile, a neighbour, or a
-        /// hanging veil). Flight and hop lift the feet — the clock waits.
+        /// that kind of walk or covering. Hunger needs live fire, a
+        /// kindled hall, or a stood flame — a painted fire mark at
+        /// rest is not enough. Poison needs a poison slick underfoot,
+        /// or a miasma cloud (the tile, a neighbour, or a hanging
+        /// veil). Flight and hop lift the feet — the clock waits.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -95,8 +96,7 @@ namespace RuneMagic
             }
 
             return tile.IsBurning
-                || tile.HasFireCover
-                || tile.IsFireFloor
+                || tile.LiveFire
                 || tile.Kindled
                 || WorldWork.BurnsOccupants(tile);
         }
@@ -260,6 +260,11 @@ namespace RuneMagic
             if (IsFireContact(null) || IsPoisonLiquidContact(null))
             {
                 broken.Add("Empty ground cannot feed a burn or poison meter");
+            }
+
+            if (FireRun(0f) != 0f || FireRun(EmberBurnSeconds) != 0f)
+            {
+                broken.Add("Zero fuel and ember must stay put — they do not run hunger");
             }
 
             if (SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison

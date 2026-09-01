@@ -824,6 +824,11 @@ namespace RuneMagic
                 broken.Add("Ember stays put; grove still runs, weaker than plant");
             }
 
+            if (WorldSim.AcceptsFireSpread(null))
+            {
+                broken.Add("Hunger must not run onto empty ground");
+            }
+
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
             {
                 broken.Add("Water itself must quench hunger, not carry it");
