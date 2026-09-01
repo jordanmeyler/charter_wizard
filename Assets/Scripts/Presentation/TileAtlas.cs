@@ -356,7 +356,13 @@ namespace RuneMagic
                 return null;
             }
 
-            return Sprite.Create(texture, new Rect(x, y, width, height), ParsePivot(def.pivot), ppu);
+            return Sprite.Create(
+                texture,
+                new Rect(x, y, width, height),
+                ParsePivot(def.pivot),
+                ppu,
+                0,
+                SpriteMeshType.FullRect);
         }
 
         static Vector2 ParsePivot(string text)

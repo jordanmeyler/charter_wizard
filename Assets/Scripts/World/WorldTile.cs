@@ -80,7 +80,7 @@ namespace RuneMagic
 
         public void AuthorLook(Sprite sprite)
         {
-            _authoredLook = sprite;
+            _authoredLook = TileSprite.Solid(sprite);
             if (_renderer != null)
             {
                 ApplyVisual();
@@ -114,7 +114,7 @@ namespace RuneMagic
         /// </summary>
         public void AuthorUnderlay(Sprite sprite, MaterialId floor = MaterialId.Stone)
         {
-            _underlayLook = sprite;
+            _underlayLook = TileSprite.Solid(sprite);
             _underlayMaterial = floor == MaterialId.None ? MaterialId.Stone : floor;
             if (_renderer != null)
             {
@@ -160,7 +160,7 @@ namespace RuneMagic
         /// </summary>
         public void AuthorDetail(Sprite sprite, MaterialId material, bool blocks = false)
         {
-            _detailLook = sprite;
+            _detailLook = TileSprite.Solid(sprite);
             _detailMaterial = material;
             _detailBlocks = blocks;
             if (_renderer != null)
@@ -291,7 +291,7 @@ namespace RuneMagic
 
         public void AuthorCoverLook(Sprite sprite, float alpha = 1f)
         {
-            _coverLook = sprite;
+            _coverLook = TileSprite.Solid(sprite);
             _coverAlpha = Mathf.Clamp01(alpha <= 0f ? 1f : alpha);
             ApplyCover();
         }
@@ -1789,7 +1789,7 @@ namespace RuneMagic
             {
                 if (_authoredLook != null && _telegraph == MaterialId.None && !IsConjured)
                 {
-                    _renderer.sprite = _authoredLook;
+                    _renderer.sprite = TileSprite.Solid(_authoredLook);
                     _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
                     ApplyDetail();
                     ApplyUnderlay();
@@ -2189,6 +2189,18 @@ namespace RuneMagic
                     EnsureOverlay().sprite = SpriteFactory.WallShadow();
                     _overlay.sortingOrder = _renderer.sortingOrder + 2;
                     _overlay.enabled = true;
+                    return;
+                }
+
+                // Stamped / painted tilesets are the picture. The old
+                // brown pit bars sat on dirt and read as random lines.
+                if (_authoredLook != null)
+                {
+                    if (_overlay != null)
+                    {
+                        _overlay.enabled = false;
+                    }
+
                     return;
                 }
 
