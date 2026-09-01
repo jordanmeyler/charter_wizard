@@ -842,7 +842,7 @@ namespace RuneMagic
             }
 
             if (ember.BurnRate != 0f
-                || ember.Hunger != VitalLaw.HungerTinder
+                || ember.Hunger != VitalLaw.HungerEmber
                 || grove.Hunger != VitalLaw.HungerSoft
                 || plant.Hunger != VitalLaw.HungerPlant
                 || timber.Hunger != VitalLaw.HungerTimber
@@ -852,7 +852,21 @@ namespace RuneMagic
                 || VitalLaw.CanIgnite(plant.Hunger, plant.Hunger, 1, false)
                 || !VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 2, false))
             {
-                broken.Add("Hunger 0–5: ember / grove / plant catch and do not run the field; timber and oil may");
+                broken.Add("Hunger 0–10: ember / grove / plant catch and do not run the field; timber and oil may");
+            }
+
+            var mud = MaterialCatalog.Of(MaterialId.Mud);
+            if (mud.Hunger != VitalLaw.HungerNeutral
+                || mud.Quench != VitalLaw.QuenchMud
+                || timber.Quench != VitalLaw.QuenchDry
+                || water.Quench != VitalLaw.QuenchWater
+                || VitalLaw.SnuffsFire(mud.Quench)
+                || !VitalLaw.SnuffsFire(water.Quench)
+                || VitalLaw.SuppressesFire(timber.Quench)
+                || !VitalLaw.SuppressesFire(mud.Quench)
+                || water.Flammability >= 0f)
+            {
+                broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
             }
 
             if (WorldSim.AcceptsFireSpread(null)

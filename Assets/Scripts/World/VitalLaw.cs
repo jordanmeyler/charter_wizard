@@ -43,23 +43,60 @@ namespace RuneMagic
         public const float SlowBurnSeconds = 5f;
 
         /// <summary>
-        /// One 0–5 hunger grade. Catch, spread, and burn time are
-        /// separate applications of the same range.
-        /// 0 neutral — spell volume only.
-        /// 1 tinder — catches within 2 of a stronger source, does not run.
-        /// 2 soft — grove / moss. Same catch rule, longer clock.
-        /// 3 plant — catches within 2 of timber / oil / Aura-Fire, does not run the field.
-        /// 4 timber — runs to adjacent equal-or-weaker fuel.
-        /// 5 oil / a kindled hall — strongest source; oil also flashes a slick.
+        /// One 0–10 hunger grade. Catch and spread use this range.
+        /// Burn seconds stay their own 1–5 clock.
+        /// 0       Neutral — spell volume only. Stone, dirt, metal.
+        /// 1–2     Tinder — ember (1), dust / fire cover (2). Catch-only.
+        /// 3–4     Soft — moss (3), grove (4). Catch-only.
+        /// 5–6     Plant — living plant (6). Catch within 2 of a stronger
+        ///         source. Does not run the field. 5 is free for later fuel.
+        /// 7–8     Timber — wood (8). May run to adjacent equal-or-weaker.
+        ///         7 is free for later brush / dry wood.
+        /// 9–10    Oil / a kindled hall (10). Strongest source. 9 is free
+        ///         for later pitch / grease.
         /// </summary>
         public const int HungerNeutral = 0;
-        public const int HungerTinder = 1;
-        public const int HungerSoft = 2;
-        public const int HungerPlant = 3;
-        public const int HungerTimber = 4;
-        public const int HungerOil = 5;
+        public const int HungerEmber = 1;
+        public const int HungerTinder = 2;
+        public const int HungerMoss = 3;
+        public const int HungerSoft = 4;
+        public const int HungerPlant = 6;
+        public const int HungerTimber = 8;
+        public const int HungerOil = 10;
+        public const int HungerMax = 10;
         public const int HungerCatchReach = 2;
-        public const int HungerSpreadMin = 4;
+        public const int HungerSpreadMin = 7;
+
+        /// <summary>
+        /// One 0–10 quench grade. The wet counterpart of Hunger.
+        /// Dry stone is 0 — it leaves a fire alone. Mud suppresses.
+        /// Water puts the fire out.
+        /// 0       Dry — stone, dirt, timber, oil. No neighbor effect.
+        /// 1–2     Trace moisture — salt crust (1). Below suppress.
+        /// 3–4     Mud / damp — mud (3), damp stone (4). Suppresses
+        ///         neighbor fire: no spread, the clock runs down sooner.
+        /// 5–6     Ice / snow / glacier. Melts, then wets. Suppresses.
+        /// 7–8     Rain (7). Strong suppress. 8 is free for shallow water.
+        /// 9–10    Water / flood (10). Puts fire out on the cell and
+        ///         on adjacent fuel (oil and plant-on-water still ignore it).
+        /// </summary>
+        public const int QuenchDry = 0;
+        public const int QuenchSalt = 1;
+        public const int QuenchMud = 3;
+        public const int QuenchDamp = 4;
+        public const int QuenchIce = 5;
+        public const int QuenchGlacier = 6;
+        public const int QuenchRain = 7;
+        public const int QuenchWater = 10;
+        public const int QuenchMax = 10;
+        public const int QuenchSuppressMin = 3;
+        public const int QuenchSnuffMin = 9;
+        /// <summary>
+        /// Extra fire drain per neighbor quench grade each sim step.
+        /// Four mud tiles (sum 12) smother a timber clock; dry stone
+        /// adds nothing, so the same timber burns its full seconds.
+        /// </summary>
+        public const float QuenchDrainPerGrade = 0.06f;
 
         public static StatusClock ClockOf(StatusId id)
         {
@@ -227,18 +264,51 @@ namespace RuneMagic
                 return HungerNeutral;
             }
 
-            return Mathf.Clamp(MaterialCatalog.Of(material).Hunger, HungerNeutral, HungerOil);
+            return Mathf.Clamp(MaterialCatalog.Of(material).Hunger, HungerNeutral, HungerMax);
+        }
+
+        /// <summary>
+        /// Catalog quench for a material. Set it on
+        /// <c>MaterialCatalog.Flag(..., hunger, quench)</c> when you
+        /// add a wet body. Omit it and the body stays dry (0).
+        /// </summary>
+        public static int QuenchOf(MaterialId material)
+        {
+            if (material == MaterialId.None)
+            {
+                return QuenchDry;
+            }
+
+            return Mathf.Clamp(MaterialCatalog.Of(material).Quench, QuenchDry, QuenchMax);
         }
 
         public static bool SpreadsFire(int hunger) =>
             hunger >= HungerSpreadMin;
 
+        public static bool SuppressesFire(int quench) =>
+            quench >= QuenchSuppressMin;
+
+        public static bool SnuffsFire(int quench) =>
+            quench >= QuenchSnuffMin;
+
+        public static bool BlocksCatch(int quench) =>
+            quench >= QuenchSuppressMin;
+
+        /// <summary>
+        /// Suggested negative flam for a quench grade. Water 10 → −1.6.
+        /// New wet bodies can use this so the leftover flam number
+        /// stays in step with the 0–10 grade.
+        /// </summary>
+        public static float FlamFromQuench(int quench) =>
+            quench <= QuenchDry ? 0f : -quench * 0.16f;
+
         /// <summary>
         /// Whether a live source of this hunger may light a target
-        /// this many tiles away (Chebyshev). Catch-only fuel needs a
-        /// strictly stronger source within two tiles. Timber and oil
-        /// may run into adjacent equal-or-weaker fuel. A vine wick
-        /// takes any adjacent live flame. Neutral never catches here.
+        /// this many tiles away (Chebyshev). Catch-only fuel (1–6)
+        /// needs a strictly stronger source within two tiles. Timber
+        /// and oil (7–10) may run into adjacent equal-or-weaker fuel.
+        /// A vine wick takes any adjacent live flame. Neutral never
+        /// catches here.
         /// </summary>
         public static bool CanIgnite(int sourceHunger, int targetHunger, int chebyshev, bool vineWick)
         {
@@ -439,7 +509,9 @@ namespace RuneMagic
             }
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral
-                || HungerOf(MaterialId.Ember) != HungerTinder
+                || HungerOf(MaterialId.Ember) != HungerEmber
+                || HungerOf(MaterialId.Dust) != HungerTinder
+                || HungerOf(MaterialId.Moss) != HungerMoss
                 || HungerOf(MaterialId.Grove) != HungerSoft
                 || HungerOf(MaterialId.Plant) != HungerPlant
                 || HungerOf(MaterialId.Timber) != HungerTimber
@@ -453,7 +525,27 @@ namespace RuneMagic
                 || !CanIgnite(HungerPlant, HungerSoft, 2, false)
                 || !CanIgnite(HungerTinder, HungerPlant, 1, true))
             {
-                broken.Add("Hunger 0–5: plant catches within 2 of a stronger source and does not run; timber and oil may");
+                broken.Add("Hunger 0–10: plant catches within 2 of a stronger source and does not run; timber and oil may");
+            }
+
+            if (QuenchOf(MaterialId.Stone) != QuenchDry
+                || QuenchOf(MaterialId.Dirt) != QuenchDry
+                || QuenchOf(MaterialId.Timber) != QuenchDry
+                || QuenchOf(MaterialId.Mud) != QuenchMud
+                || QuenchOf(MaterialId.Damp) != QuenchDamp
+                || QuenchOf(MaterialId.Ice) != QuenchIce
+                || QuenchOf(MaterialId.Rain) != QuenchRain
+                || QuenchOf(MaterialId.Water) != QuenchWater
+                || SuppressesFire(QuenchDry)
+                || !SuppressesFire(QuenchMud)
+                || SnuffsFire(QuenchMud)
+                || SnuffsFire(QuenchRain)
+                || !SnuffsFire(QuenchWater)
+                || BlocksCatch(QuenchSalt)
+                || !BlocksCatch(QuenchMud)
+                || FlamFromQuench(QuenchWater) > -1.55f)
+            {
+                broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
             }
 
             if (OilBurnSeconds != 1f

@@ -545,7 +545,7 @@ namespace RuneMagic
         public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
 
         /// <summary>
-        /// 0–5 hunger on this cell. Walk, a timber / plant detail, vine,
+        /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and ember cover raise the grade. Rest fire in the floor
         /// stays 0 — a spell starts that source.
         /// </summary>
@@ -602,6 +602,60 @@ namespace RuneMagic
                 return Hunger;
             }
         }
+
+        /// <summary>
+        /// 0–10 quench on this cell. Walk, a wet detail or cover, standing
+        /// water, ice, and spell wet raise the grade. Oil floats — it
+        /// stays dry even on a water foundation. Dry stone is 0.
+        /// </summary>
+        public int Quench
+        {
+            get
+            {
+                if (HasOil)
+                {
+                    return VitalLaw.QuenchDry;
+                }
+
+                var quench = VitalLaw.QuenchOf(Material);
+                if (_detailMaterial != MaterialId.None)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchOf(_detailMaterial));
+                }
+
+                var cover = CoverMaterial;
+                if (cover != MaterialId.None && cover != MaterialId.Oil)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchOf(cover));
+                }
+
+                if (HasWaterCover || IsDeepWater)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchWater);
+                }
+
+                if (HasIceCover)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchIce);
+                }
+
+                if (Wet >= 0.7f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchWater);
+                }
+                else if (Wet >= 0.35f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchRain);
+                }
+                else if (Wet > 0.15f)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchDamp);
+                }
+
+                return quench;
+            }
+        }
+
         public bool HasDetail =>
             _detailLook != null || _detailMaterial != MaterialId.None;
         float DetailFlammability =>
@@ -965,6 +1019,23 @@ namespace RuneMagic
 
             Foundation = Def;
             _hasFoundation = true;
+        }
+
+        /// <summary>
+        /// Put the fire out now. A kindled hall forgets the flame.
+        /// Rest fire in the walk stays as walk — only the live work dies.
+        /// </summary>
+        public void Snuff()
+        {
+            if (Fire <= 0f && !Kindled && !LiveFire)
+            {
+                return;
+            }
+
+            Fire = 0f;
+            Kindled = false;
+            LiveFire = false;
+            RefreshFx();
         }
 
         public void Ignite(float amount, bool live = true)
