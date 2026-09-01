@@ -156,20 +156,20 @@ namespace RuneMagic
             painted.Add(WriteTile(SpecialFolder, "Bridge", MaterialId.Stone, TileKind.Bridge));
             painted.Add(WriteTile(FloorFolder, "Floor-Fire", MaterialId.Fire, TileKind.Floor));
             painted.Add(WriteTile(WallFolder, "Wall-Fire", MaterialId.Fire, TileKind.Wall));
-            painted.Add(WriteTile(CoverFolder, "Cover-Ice", MaterialId.Stone, TileKind.Floor, TileCover.Ice));
-            painted.Add(WriteTile(CoverFolder, "Cover-Fire", MaterialId.Dirt, TileKind.Floor, TileCover.Fire));
-            painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.Floor, TileCover.Lightning));
-            painted.Add(WriteTile(CoverFolder, "Cover-Water", MaterialId.Stone, TileKind.Floor, TileCover.Water));
-            painted.Add(WriteTile(CoverFolder, "Cover-Vine", MaterialId.Dirt, TileKind.Floor, TileCover.Vine));
-            painted.Add(WriteTile(CoverFolder, "Cover-Ash", MaterialId.Stone, TileKind.Floor, TileCover.Ash));
-            painted.Add(WriteTile(CoverFolder, "Cover-Miasma", MaterialId.Miasma, TileKind.Floor, TileCover.Miasma, TileAura.Miasma));
-            painted.Add(WriteTile(CoverFolder, "Cover-Poison", MaterialId.Acid, TileKind.Floor, TileCover.Poison));
-            painted.Add(WriteTile(CoverFolder, "Cover-Fog", MaterialId.Cloud, TileKind.Floor, TileCover.Fog, TileAura.Fog));
-            painted.Add(WriteTile(CoverFolder, "Cover-Cracks", MaterialId.Stone, TileKind.Floor, TileCover.Cracks));
-            painted.Add(WriteTile(CoverFolder, "Cover-Seal", MaterialId.Stone, TileKind.Floor, TileCover.Seal));
-            painted.Add(WriteTile(CoverFolder, "Aura-Fire", MaterialId.Stone, TileKind.Floor, TileCover.Fire, TileAura.Fire));
-            painted.Add(WriteTile(CoverFolder, "Aura-Miasma", MaterialId.Stone, TileKind.Floor, TileCover.Miasma, TileAura.Miasma));
-            painted.Add(WriteTile(CoverFolder, "Aura-Fog", MaterialId.Stone, TileKind.Floor, TileCover.Fog, TileAura.Fog));
+            painted.Add(WriteTile(CoverFolder, "Cover-Ice", MaterialId.Stone, TileKind.None, TileCover.Ice));
+            painted.Add(WriteTile(CoverFolder, "Cover-Fire", MaterialId.Dirt, TileKind.None, TileCover.Fire));
+            painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.None, TileCover.Lightning));
+            painted.Add(WriteTile(CoverFolder, "Cover-Water", MaterialId.Stone, TileKind.None, TileCover.Water));
+            painted.Add(WriteTile(CoverFolder, "Cover-Vine", MaterialId.Dirt, TileKind.None, TileCover.Vine));
+            painted.Add(WriteTile(CoverFolder, "Cover-Ash", MaterialId.Stone, TileKind.None, TileCover.Ash));
+            painted.Add(WriteTile(CoverFolder, "Cover-Miasma", MaterialId.Miasma, TileKind.None, TileCover.Miasma, TileAura.Miasma));
+            painted.Add(WriteTile(CoverFolder, "Cover-Poison", MaterialId.Acid, TileKind.None, TileCover.Poison));
+            painted.Add(WriteTile(CoverFolder, "Cover-Fog", MaterialId.Cloud, TileKind.None, TileCover.Fog, TileAura.Fog));
+            painted.Add(WriteTile(CoverFolder, "Cover-Cracks", MaterialId.Stone, TileKind.None, TileCover.Cracks));
+            painted.Add(WriteTile(CoverFolder, "Cover-Seal", MaterialId.Stone, TileKind.None, TileCover.Seal));
+            painted.Add(WriteTile(CoverFolder, "Aura-Fire", MaterialId.Stone, TileKind.None, TileCover.Fire, TileAura.Fire));
+            painted.Add(WriteTile(CoverFolder, "Aura-Miasma", MaterialId.Stone, TileKind.None, TileCover.Miasma, TileAura.Miasma));
+            painted.Add(WriteTile(CoverFolder, "Aura-Fog", MaterialId.Stone, TileKind.None, TileCover.Fog, TileAura.Fog));
             WritePalette(painted);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -218,6 +218,10 @@ namespace RuneMagic
             {
                 tile.sprite = PackSprite(name) ?? tile.PreviewSprite();
             }
+            else if (tile.sprite == null && tile.IsOverlayBrush)
+            {
+                tile.sprite = PackSprite(name);
+            }
 
             EditorUtility.SetDirty(tile);
             return tile;
@@ -230,7 +234,7 @@ namespace RuneMagic
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(path);
                 var tile = AssetDatabase.LoadAssetAtPath<WorldPaintTile>(assetPath);
-                if (tile == null || tile.IsQualityStamp)
+                if (tile == null || (tile.IsQualityStamp && !tile.IsOverlayBrush))
                 {
                     continue;
                 }
@@ -439,7 +443,7 @@ namespace RuneMagic
             DrawDefaultInspector();
             if (EditorGUI.EndChangeCheck())
             {
-                if (tile.sprite == null)
+                if (tile.sprite == null && !tile.IsQualityStamp)
                 {
                     tile.sprite = tile.PreviewSprite();
                 }
@@ -448,9 +452,9 @@ namespace RuneMagic
             }
 
             EditorGUILayout.HelpBox(
-                "Paint this from Window → 2D → Tile Palette. Kind = Floor is walkable ground. Kind = None is look only — not a floor, on any layer. Cover and aura are overlays — paint those on the Cover Tilemap so they sit on top of an existing floor. Drag a sliced sprite onto Sprite to replace the atlas look.",
+                "Paint this from Window → 2D → Tile Palette. Kind = Floor or Wall keeps the tileset you already painted — pack art on the brush is only a chip. Kind = None is look only. Cover-* / Aura-* are overlays: paint them on the Cover Tilemap so ice, fire, and veils sit on top of the walk tile. Spells may also draw on top. Drag a sliced sprite onto Sprite to replace the atlas look.",
                 MessageType.Info);
-            if (GUILayout.Button("Refresh sprite from atlas"))
+            if (!tile.IsQualityStamp && GUILayout.Button("Refresh sprite from atlas"))
             {
                 tile.sprite = tile.PreviewSprite();
                 EditorUtility.SetDirty(tile);

@@ -305,12 +305,29 @@ namespace RuneMagic
                         }
 
                         var alpha = paint != null ? paint.ResolvedOpacity() : VeilOpacity(raw);
-                        if (look != null && (paint == null || !paint.IsQualityStamp))
+                        var sheen = CoverLookOf(map, pos, paint, raw);
+                        if (sheen != null && (paint == null || paint.IsOverlayBrush || !paint.IsQualityStamp))
                         {
-                            tile.AuthorCoverLook(look, alpha);
+                            tile.AuthorCoverLook(sheen, alpha);
                         }
 
                         ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
+                        continue;
+                    }
+
+                    if (paint != null && paint.IsOverlayBrush)
+                    {
+                        if (tile != null)
+                        {
+                            var sheen = CoverLookOf(map, pos, paint, raw);
+                            if (sheen != null)
+                            {
+                                tile.AuthorCoverLook(sheen, paint.ResolvedOpacity());
+                            }
+
+                            ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
+                        }
+
                         continue;
                     }
 
@@ -405,7 +422,7 @@ namespace RuneMagic
             bool replace)
         {
             var priorLook = tile != null ? tile.AuthoredLook : null;
-            var underlay = KeepFloorUnder(kind, tile, x, y, out var underFloor);
+            var underlay = KeepFloorUnder(kind, tile, out var underFloor);
             if (tile == null)
             {
                 tile = grid.Set(x, y, kind, material);
@@ -454,7 +471,7 @@ namespace RuneMagic
             }
         }
 
-        static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y, out MaterialId floor)
+        static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, out MaterialId floor)
         {
             floor = MaterialId.Stone;
             if (kind != TileKind.Wall && kind != TileKind.Door)
@@ -462,31 +479,20 @@ namespace RuneMagic
                 return null;
             }
 
-            if (prior != null && prior.AuthoredLook != null)
+            // Only keep a floor the author already placed. Do not invent
+            // pack cobble under a wall or door they painted themselves.
+            if (prior == null || (prior.Kind != TileKind.Floor && prior.Kind != TileKind.Bridge))
             {
-                floor = prior.Kind == TileKind.Floor && !WorldWork.IsIceBody(prior.Material)
-                    ? prior.Material
-                    : MaterialId.Stone;
-                if (floor == MaterialId.None)
-                {
-                    floor = MaterialId.Stone;
-                }
-
-                return prior.AuthoredLook;
+                return null;
             }
 
-            if (prior != null && prior.Kind == TileKind.Floor)
+            floor = WorldWork.IsIceBody(prior.Material) ? MaterialId.Stone : prior.Material;
+            if (floor == MaterialId.None)
             {
-                floor = WorldWork.IsIceBody(prior.Material) ? MaterialId.Stone : prior.Material;
-                if (floor == MaterialId.None)
-                {
-                    floor = MaterialId.Stone;
-                }
-
-                return SpriteFactory.Floor(floor, x, y);
+                floor = MaterialId.Stone;
             }
 
-            return SpriteFactory.Floor(MaterialId.Stone, x, y);
+            return prior.AuthoredLook;
         }
 
         static bool StampDetail(
@@ -528,6 +534,23 @@ namespace RuneMagic
                     var material = paint != null
                         ? paint.material
                         : kind != null ? GuessMaterial(raw) : GuessDetailMaterial(raw);
+                    if (paint != null && paint.IsOverlayBrush)
+                    {
+                        var existing = grid.Get(x, y);
+                        if (existing != null)
+                        {
+                            var sheen = CoverLookOf(map, pos, paint, raw);
+                            if (sheen != null)
+                            {
+                                existing.AuthorCoverLook(sheen, paint.ResolvedOpacity());
+                            }
+
+                            ApplyCoverWork(existing, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
+                        }
+
+                        continue;
+                    }
+
                     if (kind != null)
                     {
                         var tile = grid.Get(x, y);
@@ -835,6 +858,13 @@ namespace RuneMagic
 
         static Sprite LookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)
         {
+            // Cover-* / Aura-* pack art is a sheen. It must never become
+            // the walk or wall sprite the author already placed.
+            if (paint != null && paint.IsOverlayBrush)
+            {
+                return null;
+            }
+
             if (paint != null && paint.sprite != null && !IsPaletteChip(paint))
             {
                 return paint.sprite;
@@ -877,7 +907,28 @@ namespace RuneMagic
             var name = paint.name;
             return name.StartsWith("Floor-", System.StringComparison.OrdinalIgnoreCase)
                 || name.StartsWith("Wall-", System.StringComparison.OrdinalIgnoreCase)
-                || name.StartsWith("Cover-", System.StringComparison.OrdinalIgnoreCase);
+                || name.StartsWith("Cover-", System.StringComparison.OrdinalIgnoreCase)
+                || name.StartsWith("Aura-", System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        static Sprite CoverLookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)
+        {
+            if (paint != null && paint.IsOverlayBrush && paint.sprite != null)
+            {
+                return paint.sprite;
+            }
+
+            if (paint != null && paint.IsQualityStamp)
+            {
+                return null;
+            }
+
+            if (raw is Tile painted && painted.sprite != null)
+            {
+                return painted.sprite;
+            }
+
+            return map != null ? map.GetSprite(pos) : null;
         }
 
         static Sprite SpriteOf(TileBase tile)
