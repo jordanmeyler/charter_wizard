@@ -48,11 +48,11 @@ namespace RuneMagic
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
         /// 1–2     Tinder — ember (1), dust / fire cover (2). Catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
-        /// 5–6     Plant — living plant (6). Catch within 2 of a stronger
-        ///         source. Does not run the field. 5 is free for later fuel.
-        /// 7–8     Timber — wood (8). May run to adjacent equal-or-weaker.
-        ///         7 is free for later brush / dry wood.
-        /// 9–10    Oil / a kindled hall (10). Strongest source. 9 is free
+        /// 5–6     Plant — living plant (6). Catches from a strong
+        ///         source. Does not run. 5 is free for later fuel.
+        /// 7–8     Timber — wood (8). A strong source: fire may walk
+        ///         to flammable grades below it. 7 is free for brush.
+        /// 9–10    Oil / a kindled hall (10). Strong source. 9 is free
         ///         for later pitch / grease.
         /// </summary>
         public const int HungerNeutral = 0;
@@ -282,8 +282,15 @@ namespace RuneMagic
             return Mathf.Clamp(MaterialCatalog.Of(material).Quench, QuenchDry, QuenchMax);
         }
 
-        public static bool SpreadsFire(int hunger) =>
+        /// <summary>
+        /// A strong source is Hunger 7+. Only those may walk fire to
+        /// a neighbor, and only onto flammable grades below them.
+        /// </summary>
+        public static bool IsStrongSource(int hunger) =>
             hunger >= HungerSpreadMin;
+
+        public static bool SpreadsFire(int hunger) =>
+            IsStrongSource(hunger);
 
         public static bool SuppressesFire(int quench) =>
             quench >= QuenchSuppressMin;
@@ -303,10 +310,11 @@ namespace RuneMagic
             quench <= QuenchDry ? 0f : -quench * 0.16f;
 
         /// <summary>
-        /// Whether a live source of this hunger may light a target
-        /// this many tiles away (Chebyshev). Catch-only fuel (1–6)
-        /// needs a strictly stronger source within two tiles. Timber
-        /// and oil (7–10) may run into adjacent equal-or-weaker fuel.
+        /// Whether a live source may light a target this many tiles
+        /// away (Chebyshev). A strong source (7+) may spread to any
+        /// flammable grade below it, within two tiles. The world also
+        /// requires the target to touch fuel toward the source — fire
+        /// does not leap a stone gap. Weaker fuel does not walk fire.
         /// A vine wick takes any adjacent live flame. Neutral never
         /// catches here.
         /// </summary>
@@ -327,12 +335,7 @@ namespace RuneMagic
                 return false;
             }
 
-            if (SpreadsFire(sourceHunger) && chebyshev == 1 && targetHunger <= sourceHunger)
-            {
-                return true;
-            }
-
-            return sourceHunger > targetHunger;
+            return IsStrongSource(sourceHunger) && targetHunger < sourceHunger;
         }
 
         /// <summary>
@@ -516,16 +519,18 @@ namespace RuneMagic
                 || HungerOf(MaterialId.Plant) != HungerPlant
                 || HungerOf(MaterialId.Timber) != HungerTimber
                 || HungerOf(MaterialId.Oil) != HungerOil
-                || SpreadsFire(HungerPlant)
-                || !SpreadsFire(HungerTimber)
+                || IsStrongSource(HungerPlant)
+                || !IsStrongSource(HungerTimber)
+                || CanIgnite(HungerPlant, HungerSoft, 2, false)
                 || CanIgnite(HungerPlant, HungerPlant, 1, false)
+                || CanIgnite(HungerTimber, HungerTimber, 1, false)
                 || !CanIgnite(HungerTimber, HungerPlant, 2, false)
-                || !CanIgnite(HungerTimber, HungerTimber, 1, false)
+                || !CanIgnite(HungerOil, HungerTimber, 1, false)
+                || CanIgnite(HungerOil, HungerOil, 1, false)
                 || CanIgnite(HungerTimber, HungerPlant, 3, false)
-                || !CanIgnite(HungerPlant, HungerSoft, 2, false)
                 || !CanIgnite(HungerTinder, HungerPlant, 1, true))
             {
-                broken.Add("Hunger 0–10: plant catches within 2 of a stronger source and does not run; timber and oil may");
+                broken.Add("Hunger 0–10: only a strong source (7+) spreads to flammable grades below it; the world also refuses a leap across a gap");
             }
 
             if (QuenchOf(MaterialId.Stone) != QuenchDry

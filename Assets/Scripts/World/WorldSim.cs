@@ -5,9 +5,10 @@ namespace RuneMagic
 {
     /// <summary>
     /// Tiles speak to their neighbors after a spell starts the work.
-    /// Fire follows a 0–10 Hunger grade. Catch-only fuel (1–6)
-    /// lights within two tiles of a stronger source and does not
-    /// run. Timber and oil (7–10) may pass fire to a neighbor.
+    /// Fire follows a 0–10 Hunger grade. A strong source (7+)
+    /// may spread to flammable grades below it, within two tiles,
+    /// if that cell touches fuel toward the source. Fire does not
+    /// leap a stone gap. Weaker fuel does not walk fire.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Ember cover stays put and
@@ -328,16 +329,58 @@ namespace RuneMagic
                     return;
                 }
 
+                if (!TouchesFuelToward(tile, other))
+                {
+                    return;
+                }
+
                 var fuel = other.Flammability > 0f ? other.Flammability : 1.2f;
                 other.Ignite(fuel);
             });
         }
 
         /// <summary>
+        /// The target must sit next to fuel that leads back to the
+        /// source — the burning cell, or a flammable tile closer to
+        /// it. Isolated fuel two tiles away across stone stays dark.
+        /// </summary>
+        bool TouchesFuelToward(WorldTile source, WorldTile target)
+        {
+            if (source == null || target == null || _grid == null)
+            {
+                return false;
+            }
+
+            var reach = Chebyshev(source.Coord, target.Coord);
+            var found = false;
+            _grid.ForEachInChebyshev(target.Coord, 1, (other, _) =>
+            {
+                if (found || !IsFuelTouch(other))
+                {
+                    return;
+                }
+
+                if (other.Coord == source.Coord || Chebyshev(other.Coord, source.Coord) < reach)
+                {
+                    found = true;
+                }
+            });
+
+            return found;
+        }
+
+        static bool IsFuelTouch(WorldTile tile) =>
+            tile != null && (tile.LiveFire || tile.Kindled || tile.IsSpreadFuel);
+
+        static int Chebyshev(Vector2Int a, Vector2Int b) =>
+            Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+
+        /// <summary>
         /// Hunger runs once through fuel. A tile already alight, or
         /// already ash, does not catch again. Neutral stone and dirt
-        /// only light when a spell hits them. Catch-only fuel still
-        /// needs a stronger source within two tiles.
+        /// only light when a spell hits them. Weaker fuel still needs
+        /// a strong source (7+) within two tiles, a lower grade, and
+        /// a flammable neighbor toward that source.
         /// </summary>
         public static bool AcceptsFireSpread(WorldTile other)
         {

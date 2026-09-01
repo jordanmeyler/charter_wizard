@@ -539,8 +539,9 @@ namespace RuneMagic
 
         /// <summary>
         /// Neighbor fire may take this cell. Neutral walk (stone, dirt)
-        /// only lights when a spell's volume hits it. Catch-only fuel
-        /// still needs a stronger source within two tiles.
+        /// only lights when a spell's volume hits it. Weaker fuel still
+        /// needs a strong source (7+) within two tiles, and must touch
+        /// fuel toward that source so fire does not leap a gap.
         /// </summary>
         public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
 
@@ -588,7 +589,8 @@ namespace RuneMagic
         /// <summary>
         /// How hard this live flame may light other cells. A kindled
         /// hall, a geyser, or a lit rest-fire walk is an oil-grade
-        /// source. Catch-only fuel only lights weaker cells.
+        /// source (10). Only a strong source (7+) walks fire, and
+        /// only onto flammable grades below it.
         /// </summary>
         public int FirePotency
         {

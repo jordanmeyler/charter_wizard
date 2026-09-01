@@ -155,8 +155,9 @@ namespace RuneMagic
         public float BurnRate { get; internal set; }
 
         /// <summary>
-        /// 0–10 hunger grade. 0 is neutral; 1–6 catch from a stronger
-        /// source and do not run; 7–10 may pass fire to a neighbor.
+        /// 0–10 hunger grade. 0 is neutral; 1–6 catch from a strong
+        /// source (7+) and do not run; 7–10 are strong sources and
+        /// may walk fire to flammable grades below them.
         /// </summary>
         public int Hunger { get; internal set; }
 
