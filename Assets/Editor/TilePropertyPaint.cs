@@ -122,7 +122,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Stamps sit over the tile you painted and do not start a reaction — only player and NPC spells do. Plant, timber, and water stamps keep the tileset sprite; they do not swap in Floor-Plant / Floor-Timber pack art. A watered plant may spread onto one neighboring water floor or water covering. Hunger spent on timber or plant adds an ash covering; the walk tile stays. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. A later fireball, spreading burn, or oil a spell left will still find that cover. Ice cover melts when hunger crosses it. Oil or metal stamped on the Cover layer is fuel or a path for the spark — the stamp does not start the reaction. Vine is Plant · Mercury. Ash is Fire · Plant. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Stamps sit over the tile you painted and do not start a reaction — only player and NPC spells do. Plant, timber, water, and fire stamps keep the tileset sprite; they do not swap in Floor-Plant / Floor-Timber / Floor-Fire pack art. Floor-Fire and Wall-Fire mark hunger on the walk or wall cell — they do not kindle a hall. A watered plant may spread onto one neighboring water floor or water covering. Hunger spent on timber or plant adds an ash covering; the walk tile stays. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. A later fireball, spreading burn, or oil a spell left will still find that cover. Ice cover melts when hunger crosses it. Oil or metal stamped on the Cover layer is fuel or a path for the spark — the stamp does not start the reaction. Vine is Plant · Mercury. Ash is Fire · Plant. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
         }
 
@@ -393,7 +393,9 @@ namespace RuneMagic
         public static WorldPaintTile KeepLook(
             Sprite sprite,
             WorldPaintTile stamp,
-            TileCover? cover = null)
+            TileCover? cover = null,
+            TileKind? kind = null,
+            MaterialId? material = null)
         {
             if (stamp == null)
             {
@@ -402,8 +404,8 @@ namespace RuneMagic
 
             return EnsureTile(
                 sprite,
-                stamp.kind,
-                stamp.material,
+                kind ?? stamp.kind,
+                material ?? stamp.material,
                 cover ?? stamp.ResolvedCover(),
                 stamp.blocks,
                 stamp.opacity);

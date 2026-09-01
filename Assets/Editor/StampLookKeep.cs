@@ -7,14 +7,21 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// Plant / timber / water palette stamps keep the tileset already
-    /// on the cell. Pack art on Floor-Plant / Floor-Timber is only a
-    /// chip preview — it must not replace the look you painted.
+    /// Plant / timber / water / fire palette stamps keep the tileset
+    /// already on the cell. Pack art on Floor-Plant / Floor-Fire is
+    /// only a chip preview — it must not replace the look you painted.
     /// </summary>
     [InitializeOnLoad]
     static class StampLookKeep
     {
-        static readonly Dictionary<int, Dictionary<Vector3Int, Sprite>> Seen = new();
+        sealed class SeenCell
+        {
+            public Sprite sprite;
+            public TileKind kind;
+            public MaterialId material;
+        }
+
+        static readonly Dictionary<int, Dictionary<Vector3Int, SeenCell>> Seen = new();
         static bool _writing;
         static double _nextCache;
 
@@ -60,7 +67,7 @@ namespace RuneMagic
             var id = map.GetInstanceID();
             if (!Seen.TryGetValue(id, out var cells))
             {
-                cells = new Dictionary<Vector3Int, Sprite>();
+                cells = new Dictionary<Vector3Int, SeenCell>();
                 Seen[id] = cells;
             }
 
@@ -71,7 +78,7 @@ namespace RuneMagic
                 {
                     var pos = new Vector3Int(x, y, 0);
                     var tile = map.GetTile(pos);
-                    if (tile is WorldPaintTile paint && paint.IsQualityStamp)
+                    if (tile is WorldPaintTile quality && quality.IsQualityStamp)
                     {
                         continue;
                     }
@@ -82,10 +89,18 @@ namespace RuneMagic
                         sprite = painted.sprite;
                     }
 
-                    if (sprite != null)
+                    if (sprite == null && tile == null)
                     {
-                        cells[pos] = sprite;
+                        continue;
                     }
+
+                    var prior = tile as WorldPaintTile;
+                    cells[pos] = new SeenCell
+                    {
+                        sprite = sprite,
+                        kind = prior != null ? prior.kind : TilemapLevel.GuessKindForEditor(tile),
+                        material = prior != null ? prior.material : TilemapLevel.GuessMaterialForEditor(tile)
+                    };
                 }
             }
         }
@@ -107,28 +122,41 @@ namespace RuneMagic
                 }
 
                 var pos = tiles[i].position;
+                var fire = paint.ResolvedCover() == TileCover.Fire;
                 if (cover)
                 {
                     if (paint.sprite != null)
                     {
-                        Replace(map, pos, paint, null, TileCover.None);
+                        Replace(
+                            map,
+                            pos,
+                            paint,
+                            null,
+                            fire ? TileCover.Fire : TileCover.None);
                     }
 
                     continue;
                 }
 
-                var keep = CachedSprite(map, pos);
-                if (keep != null && paint.sprite != keep)
+                var keep = Cached(map, pos);
+                if (keep != null && keep.sprite != null && paint.sprite != keep.sprite)
                 {
-                    Replace(map, pos, paint, keep, stampCover: null);
+                    Replace(
+                        map,
+                        pos,
+                        paint,
+                        keep.sprite,
+                        fire ? TileCover.Fire : (TileCover?)null,
+                        paint.kind,
+                        fire ? keep.material : (MaterialId?)null);
                 }
             }
         }
 
-        static Sprite CachedSprite(Tilemap map, Vector3Int pos)
+        static SeenCell Cached(Tilemap map, Vector3Int pos)
         {
-            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var sprite)
-                ? sprite
+            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var cell)
+                ? cell
                 : null;
         }
 
@@ -137,9 +165,11 @@ namespace RuneMagic
             Vector3Int pos,
             WorldPaintTile stamp,
             Sprite sprite,
-            TileCover? stampCover)
+            TileCover? stampCover,
+            TileKind? kind = null,
+            MaterialId? material = null)
         {
-            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover);
+            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover, kind, material);
             if (authored == null || authored == map.GetTile(pos))
             {
                 return;

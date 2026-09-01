@@ -89,6 +89,7 @@ namespace RuneMagic
                         BindPackSprites();
                     }
 
+                    EnsureQualityStamps();
                     return;
                 }
 
@@ -153,6 +154,8 @@ namespace RuneMagic
             painted.Add(WriteTile(SpecialFolder, "Pit", MaterialId.Void, TileKind.Pit));
             painted.Add(WriteTile(SpecialFolder, "Door", MaterialId.Stone, TileKind.Door));
             painted.Add(WriteTile(SpecialFolder, "Bridge", MaterialId.Stone, TileKind.Bridge));
+            painted.Add(WriteTile(FloorFolder, "Floor-Fire", MaterialId.Stone, TileKind.Floor, TileCover.Fire));
+            painted.Add(WriteTile(WallFolder, "Wall-Fire", MaterialId.Stone, TileKind.Wall, TileCover.Fire));
             painted.Add(WriteTile(CoverFolder, "Cover-Ice", MaterialId.Stone, TileKind.Floor, TileCover.Ice));
             painted.Add(WriteTile(CoverFolder, "Cover-Fire", MaterialId.Dirt, TileKind.Floor, TileCover.Fire));
             painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.Floor, TileCover.Lightning));
@@ -299,11 +302,23 @@ namespace RuneMagic
             return pack != null ? pack.sprite : null;
         }
 
+        static void EnsureQualityStamps()
+        {
+            var painted = new List<WorldPaintTile>
+            {
+                WriteTile(FloorFolder, "Floor-Fire", MaterialId.Stone, TileKind.Floor, TileCover.Fire),
+                WriteTile(WallFolder, "Wall-Fire", MaterialId.Stone, TileKind.Wall, TileCover.Fire)
+            };
+            WritePalette(painted);
+            AssetDatabase.SaveAssets();
+        }
+
         static void WritePalette(List<WorldPaintTile> tiles)
         {
             var existing = AssetDatabase.LoadAssetAtPath<GameObject>(PalettePath);
             if (existing != null)
             {
+                AppendMissingPaletteTiles(tiles);
                 return;
             }
 
@@ -325,6 +340,71 @@ namespace RuneMagic
 
             PrefabUtility.SaveAsPrefabAsset(root, PalettePath);
             UnityEngine.Object.DestroyImmediate(root);
+        }
+
+        static void AppendMissingPaletteTiles(List<WorldPaintTile> tiles)
+        {
+            if (tiles == null || tiles.Count == 0)
+            {
+                return;
+            }
+
+            var root = PrefabUtility.LoadPrefabContents(PalettePath);
+            try
+            {
+                var map = root.GetComponentInChildren<Tilemap>();
+                if (map == null)
+                {
+                    return;
+                }
+
+                var have = new HashSet<TileBase>();
+                var bounds = map.cellBounds;
+                for (var y = bounds.yMin; y < bounds.yMax; y++)
+                {
+                    for (var x = bounds.xMin; x < bounds.xMax; x++)
+                    {
+                        var tile = map.GetTile(new Vector3Int(x, y, 0));
+                        if (tile != null)
+                        {
+                            have.Add(tile);
+                        }
+                    }
+                }
+
+                var slot = 0;
+                const int cols = 8;
+                while (map.HasTile(new Vector3Int(slot % cols, -(slot / cols), 0)))
+                {
+                    slot++;
+                    if (slot > 512)
+                    {
+                        return;
+                    }
+                }
+
+                var added = 0;
+                for (var i = 0; i < tiles.Count; i++)
+                {
+                    if (tiles[i] == null || have.Contains(tiles[i]))
+                    {
+                        continue;
+                    }
+
+                    map.SetTile(new Vector3Int(slot % cols, -(slot / cols), 0), tiles[i]);
+                    slot++;
+                    added++;
+                }
+
+                if (added > 0)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(root, PalettePath);
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
         }
 
         static void EnsureFolder(string path)

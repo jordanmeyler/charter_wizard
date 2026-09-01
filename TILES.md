@@ -32,6 +32,8 @@ each `WorldPaintTile` into a live `WorldTile`.
    no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / miasma over
    those cells if you would rather brush overlays than stamp them.
+   **Floor-Fire** and **Wall-Fire** on Tiles / Walls are the same hunger
+   mark without leaving the walk layer.
    Miasma and fog are see-through (about 40%). Check **Opacity** in
    Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
@@ -106,8 +108,9 @@ middle for the stone.
 
 The player needs a **Fire** mark in reach so they can write
 Fireball. Stamp **Cover = Fire** (Tile Properties, Write onto
-Cover layer) on any walk cell — that is the fire stamp. It only
-marks hunger. The weave speaks Fire, and clicking the cover draws
+Cover layer) on any walk cell, or paint **Floor-Fire** /
+**Wall-Fire** on the tileset — that is the fire stamp. It only
+marks hunger. The tileset sprite stays. The weave speaks Fire, and clicking the cover draws
 the rune. It does not kindle a hall and will not kill you. A
 fireball, a spreading burn, or oil that a spell left will still
 find that cover — the stamp is inert until work or a live
@@ -302,7 +305,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, and water stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber pack art. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, water, and fire stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber / Floor-Fire pack art. **Floor-Fire** and **Wall-Fire** mark hunger on that cell (same as Cover = Fire). They do not kindle a hall. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove and leave an ash covering on the same tile. Stone floors do not catch. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 

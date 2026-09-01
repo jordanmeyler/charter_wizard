@@ -160,11 +160,19 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Plant / timber / water stamps add qualities over the tile
-        /// you painted. They must not invent a new floor graphic, and
-        /// they must not swap in pack art when a sprite is already there.
+        /// Plant / timber / water / fire stamps add qualities over the
+        /// tile you painted. They must not invent a new floor graphic,
+        /// and they must not swap in pack art when a sprite is already
+        /// there. Floor-Fire / Wall-Fire are a hunger mark, not the
+        /// Cover-Fire sheen and not a kindled Aura-Fire hall.
         /// </summary>
+        public bool IsFireWalkStamp =>
+            cover == TileCover.Fire &&
+            aura != TileAura.Fire &&
+            material == MaterialId.Stone;
+
         public bool IsQualityStamp =>
+            IsFireWalkStamp ||
             material == MaterialId.Water ||
             material == MaterialId.Rain ||
             material == MaterialId.Plant ||
