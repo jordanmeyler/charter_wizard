@@ -56,8 +56,7 @@ namespace RuneMagic
         {
             var view = FieldView.OnScreen();
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
-            var sequence = RoomSentence.Read(grid, locks, strings, view, extras);
+            var sequence = RoomSentence.Read(grid, locks, strings, view, FieldExtras());
             var seen = new List<RuneId>();
             for (var i = 0; i < sequence.Count; i++)
             {
@@ -134,8 +133,7 @@ namespace RuneMagic
             Scroll = 0f;
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
-            var read = RoomSentence.Read(_grid, _locks, strings, view, extras);
+            var read = RoomSentence.Read(_grid, _locks, strings, view, FieldExtras());
             for (var i = 0; i < read.Count; i++)
             {
                 _sequence.Add(read[i]);
@@ -182,6 +180,34 @@ namespace RuneMagic
             }
 
             seen.Add(rune);
+        }
+
+        static IRuneSource[] FieldExtras()
+        {
+            var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var crystals = Object.FindObjectsByType<SpawnCrystal>(FindObjectsSortMode.None);
+            if (crystals == null || crystals.Length == 0)
+            {
+                return steles;
+            }
+
+            if (steles == null || steles.Length == 0)
+            {
+                return crystals;
+            }
+
+            var extras = new IRuneSource[steles.Length + crystals.Length];
+            for (var i = 0; i < steles.Length; i++)
+            {
+                extras[i] = steles[i];
+            }
+
+            for (var i = 0; i < crystals.Length; i++)
+            {
+                extras[steles.Length + i] = crystals[i];
+            }
+
+            return extras;
         }
 
         static int Mod(int value, int modulus)

@@ -884,8 +884,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. Every root mark is on the wall and in the weave. Elemental joins sit beside them; grey means that join is not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the wall is open. Hover a weave mark to see where it is from — Light from the crystal, Dark from the pit, Air from breath. Every root mark is on the wall and in the weave. Elemental joins sit beside them; grey means that join is not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Hover a mark to see where it is from. Draw from the wall or the weave, or click a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(
@@ -939,17 +939,17 @@ namespace RuneMagic
 
             var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.76f, 0.84f));
-            GUI.Label(new Rect(28, top + 8, 720, 20), "The room’s weave", heading);
+            GUI.Label(new Rect(28, top + 8, 160, 20), "The room’s weave", heading);
             var reading = tapestry != null && !string.IsNullOrEmpty(tapestry.Reading)
                 ? tapestry.Reading
                 : "the field is quiet";
-            GUI.Label(new Rect(220, top + 8, Screen.width - 260, 20), reading, hint);
+            GUI.Label(new Rect(196, top + 8, Screen.width - 420, 20), reading, hint);
 
             var rows = RuneTapestry.Rows;
             var cols = RuneTapestry.Cols;
             var gap = 5f;
             var gridTop = top + 46f;
-            var cell = Mathf.Min(56f, (height - 54f) / rows - gap);
+            var cell = Mathf.Min(56f, (height - 72f) / rows - gap);
             cell = Mathf.Max(34f, cell);
             var stride = cell + gap;
             var width = cols * stride;
@@ -963,6 +963,7 @@ namespace RuneMagic
 
             var slide = tapestry != null ? tapestry.Scroll - Mathf.Floor(tapestry.Scroll) : 0f;
             var shift = slide * stride;
+            WeaveGlyph? hovered = null;
 
             for (var row = 0; row < rows; row++)
             {
@@ -989,6 +990,11 @@ namespace RuneMagic
                 {
                     var glyph = placed[i].Glyph;
                     var rect = placed[i].Rect;
+                    if (rect.Contains(mouse))
+                    {
+                        hovered = glyph;
+                    }
+
                     if (glyph.IsTear)
                     {
                         DrawEmptySlot(rect, "tear");
@@ -1003,6 +1009,25 @@ namespace RuneMagic
                     DrawRuneCard(rect, shown, () => _director.WeaveFromField(pick), true, true, chunk);
                 }
             }
+
+            if (hovered.HasValue)
+            {
+                DrawWeaveOrigin(new Rect(panel.x + 12, panel.yMax - 22, panel.width - 24, 18), hovered.Value);
+            }
+        }
+
+        static void DrawWeaveOrigin(Rect rect, WeaveGlyph glyph)
+        {
+            var origin = RoomSentence.OriginOf(glyph);
+            var mark = glyph.IsTear
+                ? "tear"
+                : RuneCatalog.NameOf(glyph.Shown);
+            var line = GlyphView.Speak(
+                mark + " · from " + origin,
+                "from " + origin);
+            var hint = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
+            hint.alignment = TextAnchor.MiddleRight;
+            GUI.Label(rect, line, hint);
         }
 
         void DrawJoinChunks(List<(Rect Rect, WeaveGlyph Glyph)> placed)

@@ -67,6 +67,13 @@ namespace RuneMagic
                 return "empty air.";
             }
 
+            if (tile.Kind == TileKind.Pit || tile.Material == MaterialId.Void)
+            {
+                return GlyphView.Speak(
+                    "a tear where rest should stand. Dark — withheld. Light sits on the crystal.",
+                    "a tear where rest should stand. The veil is drawn.");
+            }
+
             if (tile.Kindled && tile.Fire > 0.1f)
             {
                 return GlyphView.Speak(
@@ -128,7 +135,9 @@ namespace RuneMagic
         }
 
         public static string OfCrystal() =>
-            "the first standing body. Death sends you back here.";
+            GlyphView.Speak(
+                "the first standing body. Light — shown. Death sends you back here. The pit is Dark.",
+                "the first standing body. Shown. Death sends you back here.");
 
         public static string OfDoor(WorldDoor door)
         {

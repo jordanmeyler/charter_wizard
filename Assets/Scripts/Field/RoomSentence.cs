@@ -19,6 +19,11 @@ namespace RuneMagic
         {
         }
 
+        public WeaveGlyph(RuneId rune, MaterialId material, WeaveKind kind, string origin)
+            : this(rune, rune, material, kind, 0, 0, 1, null, false, origin)
+        {
+        }
+
         public WeaveGlyph(
             RuneId shown,
             RuneId join,
@@ -28,7 +33,8 @@ namespace RuneMagic
             int groupIndex,
             int groupSize,
             string title = null,
-            bool living = false)
+            bool living = false,
+            string origin = null)
         {
             Shown = shown;
             Rune = join;
@@ -39,6 +45,7 @@ namespace RuneMagic
             GroupSize = groupSize < 1 ? 1 : groupSize;
             Title = title ?? string.Empty;
             Living = living;
+            Origin = origin ?? string.Empty;
         }
 
         public RuneId Shown { get; }
@@ -50,6 +57,7 @@ namespace RuneMagic
         public int GroupSize { get; }
         public string Title { get; }
         public bool Living { get; }
+        public string Origin { get; }
         public bool IsGroup => GroupId != 0 && GroupSize > 1;
         public bool IsTear => Kind == WeaveKind.Tear || (Shown == RuneId.None && Rune == RuneId.None);
         public string GroupTitle => !string.IsNullOrEmpty(Title) ? Title : string.Empty;
@@ -139,6 +147,58 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Hover text: where this mark is from. Light is the crystal
+        /// (shown). Dark is the pit (withheld). Air is breath. The
+        /// eleven roots that no tile spoke are "always ready".
+        /// </summary>
+        public static string OriginOf(WeaveGlyph glyph)
+        {
+            if (!string.IsNullOrEmpty(glyph.Origin))
+            {
+                return glyph.Origin;
+            }
+
+            if (!string.IsNullOrEmpty(glyph.Title))
+            {
+                return glyph.Title == AdeptAvatar.DisplayTitle ? "you" : glyph.Title;
+            }
+
+            if (glyph.IsTear || glyph.Material == MaterialId.Void)
+            {
+                return PitOrigin;
+            }
+
+            if (glyph.Kind == WeaveKind.Ambient)
+            {
+                return glyph.Shown == RuneId.Air || glyph.Rune == RuneId.Air
+                    ? AirOrigin
+                    : ReadyOrigin;
+            }
+
+            if (glyph.Material != MaterialId.None)
+            {
+                return MaterialCatalog.Of(glyph.Material).Name;
+            }
+
+            if (glyph.Kind == WeaveKind.String)
+            {
+                return "an inscription";
+            }
+
+            if (glyph.Kind == WeaveKind.Lock)
+            {
+                return "a lock";
+            }
+
+            return "the room";
+        }
+
+        public const string PitOrigin = "the pit";
+        public const string CrystalOrigin = "the crystal";
+        public const string AirOrigin = "the air";
+        public const string ReadyOrigin = "always ready";
+
+        /// <summary>
         /// The eleven roots stay in the weave so a sentence can
         /// always be written, even when the room does not speak them.
         /// </summary>
@@ -161,7 +221,7 @@ namespace RuneMagic
                 var rune = RuneCatalog.BasicRunes[i];
                 if (seen.Add(rune))
                 {
-                    sequence.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
+                    sequence.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient, ReadyOrigin));
                 }
             }
         }
@@ -176,7 +236,8 @@ namespace RuneMagic
                 }
             }
 
-            sequence.Insert(0, new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
+            var origin = rune == RuneId.Air ? AirOrigin : ReadyOrigin;
+            sequence.Insert(0, new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient, origin));
         }
 
         static void CollectLive(WorldTile tile, HashSet<RuneId> live)
@@ -340,7 +401,8 @@ namespace RuneMagic
             {
                 if (!lastWasTear)
                 {
-                    sequence.Add(new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear));
+                    sequence.Add(new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear, PitOrigin));
+                    sequence.Add(new WeaveGlyph(RuneId.Umbra, MaterialId.Void, WeaveKind.Material, PitOrigin));
                     lastWasTear = true;
                 }
 
@@ -361,7 +423,8 @@ namespace RuneMagic
             if (def.Manifestation != RuneId.None && ChainBook.IsWrought(def.Manifestation))
             {
                 sequence.Add(new WeaveGlyph(
-                    def.Manifestation, def.Manifestation, material, WeaveKind.Material, 0, 0, 1));
+                    def.Manifestation, def.Manifestation, material, WeaveKind.Material, 0, 0, 1,
+                    origin: def.Name));
                 CollectComposing(scatter, def.Manifestation, material);
                 return;
             }
@@ -506,7 +569,8 @@ namespace RuneMagic
                 }
 
                 spokenStrings.Add(id);
-                AppendSource(sequence, scatter, extra, MaterialId.None, WeaveKind.String);
+                var origin = extra is SpawnCrystal ? CrystalOrigin : null;
+                AppendSource(sequence, scatter, extra, MaterialId.None, WeaveKind.String, origin);
             }
         }
 
@@ -515,15 +579,21 @@ namespace RuneMagic
             List<WeaveGlyph> scatter,
             IRuneSource source,
             MaterialId material,
-            WeaveKind kind)
+            WeaveKind kind,
+            string origin = null)
         {
             var buffer = new List<RuneId>(6);
             source.Collect(buffer);
+            if (string.IsNullOrEmpty(origin) && source is SpawnCrystal)
+            {
+                origin = CrystalOrigin;
+            }
+
             for (var i = 0; i < buffer.Count; i++)
             {
                 if (buffer[i] != RuneId.None)
                 {
-                    AppendRune(sequence, scatter, buffer[i], material, kind);
+                    AppendRune(sequence, scatter, buffer[i], material, kind, origin);
                 }
             }
         }
@@ -618,21 +688,27 @@ namespace RuneMagic
             List<WeaveGlyph> scatter,
             RuneId rune,
             MaterialId material,
-            WeaveKind kind)
+            WeaveKind kind,
+            string origin = null)
         {
             if (rune == RuneId.None)
             {
                 return;
             }
 
+            if (string.IsNullOrEmpty(origin) && material != MaterialId.None)
+            {
+                origin = MaterialCatalog.Of(material).Name;
+            }
+
             if (ChainBook.IsWrought(rune))
             {
-                sequence.Add(new WeaveGlyph(rune, rune, material, kind, 0, 0, 1));
+                sequence.Add(new WeaveGlyph(rune, rune, material, kind, 0, 0, 1, origin: origin));
                 CollectComposing(scatter, rune, material);
                 return;
             }
 
-            sequence.Add(new WeaveGlyph(rune, material, kind));
+            sequence.Add(new WeaveGlyph(rune, material, kind, origin));
         }
 
         static bool AtCell(Vector3 world, int x, int y)
@@ -653,6 +729,30 @@ namespace RuneMagic
                 || !ChainBook.IsWrought(RuneId.Plant))
             {
                 broken.Add("Spark, Ice, Lightning, and Plant must stand as themselves in the weave");
+            }
+
+            var pitDark = new WeaveGlyph(RuneId.Umbra, MaterialId.Void, WeaveKind.Material, PitOrigin);
+            if (OriginOf(pitDark) != PitOrigin)
+            {
+                broken.Add("Dark must read as from the pit");
+            }
+
+            var crystalLight = new WeaveGlyph(RuneId.Lumen, MaterialId.None, WeaveKind.String, CrystalOrigin);
+            if (OriginOf(crystalLight) != CrystalOrigin)
+            {
+                broken.Add("Light must read as from the crystal");
+            }
+
+            var stuffed = new WeaveGlyph(RuneId.Lumen, MaterialId.None, WeaveKind.Ambient, ReadyOrigin);
+            if (OriginOf(stuffed) != ReadyOrigin)
+            {
+                broken.Add("A root the room did not speak must read as always ready");
+            }
+
+            var tear = new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear);
+            if (OriginOf(tear) != PitOrigin)
+            {
+                broken.Add("A tear must read as from the pit");
             }
         }
     }

@@ -22,7 +22,7 @@ Paint: the atlas draws **stone, dirt, or water** as the walk. Ice, fire, and lig
 1. **Signature** is the chain the room writes when you scan across that substance.
 2. **Manifestation** is the wrought rune the mix has already become (Ash, Ice, Grove…). Layer runes alone are not enough — timber is Water · Salt · Earth · Plant, not “Earth.”
 3. Contiguous runs of the same material collapse to one clause so a floor of ash is one Ash sentence, not eighty copies.
-4. **Void** / pits tear the weave. They contribute a gap, not a rune.
+4. **Void** / pits tear the weave. The gap is **Dark** (withheld). **Light** sits on the spawn crystal (shown). Hover a mark in the Charter to see where it is from.
 5. Locks and world-strings enter the sentence when the scan reaches their tile.
 
 Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join unfolds to the full recipe and reads as one coloured chunk — Plant is a green bar of Water, Salt, Earth; Ash is a grey bar of Fire, Water, Salt, Earth. Each ingredient still has its own column. The gold ring and the join’s colour are the combined form. **Only tiles on the screen speak.** A rune that is off-camera cannot be drawn, even if it lives elsewhere in the room.
@@ -45,7 +45,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
 | **Fire** | Fire | Fire | Rest stamp on floor or wall. Speaks Fire. Does not spread until a spell starts work. Cover-Fire is the live layer. |
 | **Moss** | Water · Salt · Earth · Plant · Life | Plant | Chapel corners |
-| **Void** | — (tear) | — | The Drop pits |
+| **Void** | Dark (tear) | — | The Drop pits. Hover Dark: from the pit. |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |
 | **Scoured** | Air · Earth · Dust | Dust | Storm Cell wind-cut stone |
 | **Metal** | Fire · Earth · Lava · Spark · Metal | Metal | Storm Cell plate. Lava · Spark · Earth. Conducts heat and the spark. |
