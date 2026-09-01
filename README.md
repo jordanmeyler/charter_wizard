@@ -78,7 +78,7 @@ Walk into a pit — or into water — and you return to the last safe floor. You
 
 **Wards** are `Element · Salt · Sulphur` — mind spells, held by **focus**. Water douses Fire (water ward stops fireballs). Fire scorches Earth. Earth stands against Air, and Stoneskin also stops a physical blow. Air dries Water, and a wind ward also turns miasma. Only one ward stands at a time. Focus also holds sleep, fear, rage, charm, confuse, and command until you reuse a mark from that sentence. Burning and poison are **meters** — they run down to ash or death, and a later hit does not refill them. Frozen and stun lift on their own. Ice-spear does not freeze the living; Freeze and Snowstorm do. Fire, ice, and earth shrug poison. Timber and plant burn to an ash covering on their own clock.
 
-Spells are single-target, area, or self. Status chips name what holds on you and on them. A water spell grows a plant and may spread it onto neighboring water. Stamps and covers do not start that work. Fire a spell starts still spreads onto flammable tiles and dies against water and ice. A spent plant or timber leaves an ash covering. Charge runs metal and wet stone. Neutral stone can take a bolt but will not pass it. Wood and plants break the path.
+Spells are single-target, area, or self. Status chips name what holds on you and on them. A water or plant spell grows a plant. Short sentences stay local; Forest covers every water still on the screen. Stamps and covers do not start that work. Fire a spell starts still spreads onto flammable tiles and dies against water and ice. A spent plant or timber leaves an ash covering. Charge runs metal and wet stone. Neutral stone can take a bolt but will not pass it. Wood and plants break the path.
 
 ## Building levels and scenes
 

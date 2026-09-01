@@ -147,53 +147,111 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A spell-watered plant may take one neighboring tile that
-        /// already holds water — a water floor or a water covering.
-        /// Stamps, covers, and dry pits do not spread. One neighbor
-        /// per call so a pool does not fill itself.
+        /// A spell-watered plant may take neighboring tiles that
+        /// already hold water — a water floor or a water covering.
+        /// Budget is the spell's reach. Forest also stays on screen.
         /// </summary>
         public bool SpreadPlant(WorldTile from)
         {
-            if (from == null || !from.HasWaterSource)
+            return SpreadPlant(from, 1) > 0;
+        }
+
+        public int SpreadPlant(WorldTile from, int budget, bool visibleOnly = false)
+        {
+            if (from == null || budget <= 0)
             {
-                return false;
+                return 0;
             }
 
-            if (!from.IsPlantish && !from.HasPlantCover && !from.HasPlantishDetail)
+            if (!from.HasWaterSource
+                && !from.IsPlantish
+                && !from.HasPlantCover
+                && !from.HasPlantishDetail
+                && !from.IsDeepWater
+                && !from.HasWaterCover)
             {
-                return false;
+                return 0;
             }
 
-            if (from.IsPlantish && from.Growth < 1 && !from.HasPlantCover)
-            {
-                return false;
-            }
-
-            var neighbors = Neighbors(from.Coord);
             var grown = from.Growth >= 2 || from.Material == MaterialId.Grove
                 ? MaterialId.Grove
                 : MaterialId.Plant;
-            for (var i = 0; i < neighbors.Count; i++)
+            var used = 0;
+            var seen = new HashSet<Vector2Int>();
+            var queue = new Queue<WorldTile>();
+            EnqueueWater(from, seen, queue, visibleOnly);
+            var startNeighbors = Neighbors(from.Coord);
+            for (var i = 0; i < startNeighbors.Count; i++)
             {
-                var other = neighbors[i];
-                if (other.IsPlantish || other.HasPlantCover || other.HasAshCover)
+                EnqueueWater(startNeighbors[i], seen, queue, visibleOnly);
+            }
+
+            while (queue.Count > 0 && used < budget)
+            {
+                var tile = queue.Dequeue();
+                if (tile.HasAshCover)
                 {
                     continue;
                 }
 
-                if (other.IsDeepWater)
+                if (tile.IsPlantish || tile.HasPlantCover)
                 {
-                    return other.GrowOverWater(grown);
+                    var next = Neighbors(tile.Coord);
+                    for (var n = 0; n < next.Count; n++)
+                    {
+                        EnqueueWater(next[n], seen, queue, visibleOnly);
+                    }
+
+                    continue;
                 }
 
-                if (other.HasWaterCover)
+                var took = false;
+                if (tile.IsDeepWater)
                 {
-                    other.PaintCover(TileCover.Vine);
-                    return true;
+                    took = tile.GrowOverWater(grown);
+                }
+                else if (tile.HasWaterCover)
+                {
+                    tile.PaintCover(TileCover.Vine);
+                    took = true;
+                }
+
+                if (!took)
+                {
+                    continue;
+                }
+
+                used++;
+                var around = Neighbors(tile.Coord);
+                for (var n = 0; n < around.Count; n++)
+                {
+                    EnqueueWater(around[n], seen, queue, visibleOnly);
                 }
             }
 
-            return false;
+            return used;
+        }
+
+        void EnqueueWater(
+            WorldTile tile,
+            HashSet<Vector2Int> seen,
+            Queue<WorldTile> queue,
+            bool visibleOnly)
+        {
+            if (tile == null || !seen.Add(tile.Coord))
+            {
+                return;
+            }
+
+            if (visibleOnly && !PlantLaw.OnScreen(tile.WorldOrigin))
+            {
+                return;
+            }
+
+            if (tile.IsDeepWater || tile.HasWaterCover || tile.HasPlantCover || tile.IsPlantish)
+            {
+                queue.Enqueue(tile);
+            }
         }
 
         public static Vector3 Center(int x, int y) => new(x + 0.5f, y + 0.5f, 0f);

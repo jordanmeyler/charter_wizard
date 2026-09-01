@@ -175,7 +175,8 @@ namespace RuneMagic
             E(92, SpellBook.GrowHeal, SpellId.WoodWall, "A living plant asked to stand as more living plant. A line of trees. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it grows a walkable cover without banks. Hunger eats it.", "Wood-wall", "Water · Salt · Earth · Life · Salt · Water · Salt · Earth · Life", "Plant · Life · Salt · Plant · Life", "Pillar", SpellOutcome.Neither),
             E(93, SpellBook.End, SpellId.OilPuddle, "Fuel given a standing body. A puddle. Surfaces hold flame.", "Oil puddle", "Water · Salt · Earth · Fire · Earth · Salt", "Oil · Salt", "Remote", SpellOutcome.Neither),
             E(94, SpellBook.End, SpellId.OilGeyser, "A stood fountain of fuel, sent to a point. Hunger that finds it will not leave — it burns as hall-fire does, until yield is thrown.", "Oil geyser", "Water · Salt · Earth · Fire · Earth · Salt · Mercury", "Oil · Salt · Mercury", "Remote", SpellOutcome.Neither),
-            E(95, SpellBook.End, SpellId.OilSlick, "Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor.", "Oil slick", "Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth", "Oil · Salt · Oil", "Remote", SpellOutcome.Neither)
+            E(95, SpellBook.End, SpellId.OilSlick, "Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor.", "Oil slick", "Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth", "Oil · Salt · Oil", "Remote", SpellOutcome.Neither),
+            E(96, SpellBook.GrowHeal, SpellId.Forest, "A living plant opened to many, then more living plant. It drinks every water still on the screen and covers the pool to the edge of what you can see.", "Forest", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life", "Plant · Life · Anima · Plant · Life", "Remote", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -794,9 +795,31 @@ namespace RuneMagic
                 broken.Add("Tree and Wood-wall must be written in the developer book");
             }
 
-            if (TryGet(SpellId.Forest, out _))
+            var forest = Composition.FromSequence(new[]
             {
-                broken.Add("Forest is not a written spell — Tree stands in its place");
+                RuneId.Plant, RuneId.Vita, RuneId.Anima, RuneId.Plant, RuneId.Vita
+            });
+            var forestExact = ChainBook.CollectExact(forest, SpellShape.None);
+            if (forestExact.Count == 0 || forestExact[0].Spell != SpellId.Forest)
+            {
+                broken.Add("Plant · Life · Anima · Plant · Life should be Forest");
+            }
+
+            var forestRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Vita,
+                RuneId.Water, RuneId.Sulphur, RuneId.Earth,
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Vita
+            });
+            var forestFromRoots = ChainBook.CollectExact(forestRoots, SpellShape.None);
+            if (forestFromRoots.Count == 0 || forestFromRoots[0].Spell != SpellId.Forest)
+            {
+                broken.Add("Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life should be Forest");
+            }
+
+            if (!TryGet(SpellId.Forest, out _))
+            {
+                broken.Add("Forest must be written in the developer book");
             }
 
             var oilPuddle = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Salt });
@@ -832,9 +855,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 94)
+            if (Entries.Length < 95)
             {
-                broken.Add("The written book must keep every catalog spell, including 91–92 Tree and Wood-wall and 93–95 oil coverings");
+                broken.Add("The written book must keep every catalog spell, including 91–92 Tree and Wood-wall, 93–95 oil coverings, and 96 Forest");
             }
         }
 
