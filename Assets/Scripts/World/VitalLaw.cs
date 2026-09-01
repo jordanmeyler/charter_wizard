@@ -42,6 +42,12 @@ namespace RuneMagic
         public const float GroveBurnSeconds = 2f;
         public const float TinderBurnSeconds = 2f;
         public const float SlowBurnSeconds = 5f;
+        /// <summary>
+        /// Hunger stood without rest (Fire · Salt). No fuel, kindled
+        /// hall, geyser, or rest-fire walk under it — the column
+        /// goes out on this clock.
+        /// </summary>
+        public const float FirePillarSeconds = 3f;
 
         /// <summary>
         /// One 0–10 hunger grade. Catch and spread use this range.

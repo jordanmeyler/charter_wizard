@@ -393,7 +393,9 @@ namespace RuneMagic
                 || HeatOf(SpellId.Melt) != Heat.Fire
                 || HeatOf(SpellId.Thaw) != Heat.Fire
                 || HeatOf(SpellId.Ignite) != Heat.Fire
-                || HeatOf(SpellId.FlamePillar) != Heat.Fire)
+                || HeatOf(SpellId.FlamePillar) != Heat.Fire
+                || HeatOf(SpellId.FirePillar) != Heat.Fire
+                || HeatOf(SpellId.LavaPillar) != Heat.Fire)
             {
                 broken.Add("Ordinary fire-work must carry Fire heat");
             }
