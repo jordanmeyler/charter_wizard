@@ -101,10 +101,46 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// One sheen per spoken cover. Ice-shot, ice-wall over water,
+        /// and a stamped ice mark all draw the same ice sheet.
+        /// </summary>
+        public static string SheenId(TileCover cover)
+        {
+            switch (cover)
+            {
+                case TileCover.Ice: return "cover-ice";
+                case TileCover.Fire: return "cover-fire";
+                case TileCover.Lightning: return "cover-lightning";
+                case TileCover.Vine: return "cover-vine";
+                case TileCover.Miasma: return "tile-poison";
+                case TileCover.Poison: return "tile-wet";
+                case TileCover.Fog: return "tile-fog";
+                case TileCover.Mud: return "floor-mud";
+                case TileCover.Ash: return "floor-ash";
+                default: return null;
+            }
+        }
+
+        public static Sprite Sheen(TileCover cover)
+        {
+            var id = SheenId(cover);
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+
+            return TileAtlas.TryGet(id, out var sprite) && sprite != null
+                ? sprite
+                : null;
+        }
+
+        /// <summary>
         /// What the walk becomes when fuel is spent. Plant, timber,
-        /// oil, and grit become dirt (scorched earth, Earth). Masonry
-        /// and dirt stay. Water, ice, lava, and void are not leftover
-        /// walks — the covering still turns to ash when the fuel dies.
+        /// oil, and grit become dirt (scorched earth, Earth). A floor
+        /// that kept a tileset under that fuel leaves stone instead.
+        /// A timber or plant wall falls to leftover dirt under ash.
+        /// Masonry stays stone. Water, ice, lava, and void are not
+        /// leftover walks.
         /// </summary>
         public static MaterialId RestAfterBurn(MaterialId walk)
         {
@@ -130,6 +166,26 @@ namespace RuneMagic
                 default:
                     return MaterialId.None;
             }
+        }
+
+        /// <summary>
+        /// A spent burnable floor leaves dirt, or stone when the
+        /// tileset under the fuel was masonry.
+        /// </summary>
+        public static MaterialId LeftoverFloor(MaterialId walk, bool keepTileset)
+        {
+            var leftover = RestAfterBurn(walk);
+            if (leftover == MaterialId.None)
+            {
+                return MaterialId.None;
+            }
+
+            if (keepTileset && leftover == MaterialId.Dirt)
+            {
+                return MaterialId.Stone;
+            }
+
+            return leftover;
         }
 
         public static bool Speaks(TileCover cover, RuneId rune)
@@ -277,6 +333,20 @@ namespace RuneMagic
                 broken.Add("Spent fuel becomes dirt; masonry and fire-rest stay; water is not leftover walk");
             }
 
+            if (LeftoverFloor(MaterialId.Plant, false) != MaterialId.Dirt
+                || LeftoverFloor(MaterialId.Timber, true) != MaterialId.Stone
+                || LeftoverFloor(MaterialId.Stone, true) != MaterialId.Stone
+                || LeftoverFloor(MaterialId.Dirt, false) != MaterialId.Dirt)
+            {
+                broken.Add("A spent burnable floor leaves dirt, or stone when a tileset sat under the fuel");
+            }
+
+            if (LeftoverFloor(MaterialId.Fire, true) != MaterialId.Fire
+                || LeftoverFloor(MaterialId.Hearth, false) != MaterialId.Hearth)
+            {
+                broken.Add("Rest fire in the walk stays; it is not leftover dirt");
+            }
+
             if (MaterialOf(TileCover.Fire) != MaterialId.Ember
                 || MaterialOf(TileCover.Ice) != MaterialId.Ice
                 || MaterialOf(TileCover.Water) != MaterialId.Water
@@ -310,6 +380,15 @@ namespace RuneMagic
             if (WorldPaintTile.CoverFromAura(TileAura.Fire) != TileCover.Fire)
             {
                 broken.Add("A Fire aura still looks like fire cover");
+            }
+
+            if (SheenId(TileCover.Ice) != "cover-ice"
+                || SheenId(TileCover.Fire) != "cover-fire"
+                || SheenId(TileCover.Lightning) != "cover-lightning"
+                || SheenId(TileCover.Miasma) != "tile-poison"
+                || SheenId(TileCover.Poison) != "tile-wet")
+            {
+                broken.Add("Each spoken cover must use one sheen so ice-shot and ice-wall match");
             }
         }
     }
