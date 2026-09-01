@@ -87,7 +87,7 @@ namespace RuneMagic
             switch (cover)
             {
                 case TileCover.Ice: return MaterialId.Ice;
-                case TileCover.Fire: return MaterialId.Ember;
+                case TileCover.Fire: return MaterialId.Fire;
                 case TileCover.Lightning: return MaterialId.Vein;
                 case TileCover.Water: return MaterialId.Water;
                 case TileCover.Vine: return MaterialId.Plant;
@@ -161,6 +161,7 @@ namespace RuneMagic
                 case MaterialId.SaltCrust:
                 case MaterialId.Wardstone:
                 case MaterialId.Fire:
+                case MaterialId.Ember:
                     return walk;
                 default:
                     return MaterialId.None;
@@ -331,12 +332,21 @@ namespace RuneMagic
             }
 
             if (LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
-                || LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth)
+                || LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
+                || LeftoverFloor(MaterialId.Ember) != MaterialId.Ember)
             {
-                broken.Add("Rest fire in the walk stays; it is not leftover dirt");
+                broken.Add("Fire, hearth, and ember marks stay; they are not leftover dirt");
             }
 
-            if (MaterialOf(TileCover.Fire) != MaterialId.Ember
+            var emberSpeak = new HashSet<RuneId>();
+            SpeakMaterial(MaterialId.Ember, emberSpeak);
+            if (!emberSpeak.Contains(RuneId.Fire)
+                || MaterialCatalog.Of(MaterialId.Ember).Manifestation != RuneId.Fire)
+            {
+                broken.Add("Ember must speak Fire and stay neutral to hunger");
+            }
+
+            if (MaterialOf(TileCover.Fire) != MaterialId.Fire
                 || MaterialOf(TileCover.Ice) != MaterialId.Ice
                 || MaterialOf(TileCover.Water) != MaterialId.Water
                 || MaterialOf(TileCover.Lightning) != MaterialId.Vein

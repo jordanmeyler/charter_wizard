@@ -139,7 +139,7 @@ namespace RuneMagic
             var painted = new List<WorldPaintTile>();
             foreach (MaterialId material in Enum.GetValues(typeof(MaterialId)))
             {
-                if (material == MaterialId.None)
+                if (!MaterialCatalog.IsStampable(material))
                 {
                     continue;
                 }

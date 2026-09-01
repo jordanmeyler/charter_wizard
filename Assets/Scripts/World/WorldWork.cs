@@ -337,7 +337,7 @@ namespace RuneMagic
             material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier;
 
         public static bool IsFlameBody(MaterialId material) =>
-            material == MaterialId.Hearth || material == MaterialId.Ember;
+            material == MaterialId.Hearth;
 
         public static bool IsLavaBody(MaterialId material) =>
             material == MaterialId.Lava;
