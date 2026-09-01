@@ -290,7 +290,7 @@ namespace RuneMagic
             if (OilBurnSeconds != 1f
                 || TimberBurnSeconds != 2f
                 || PlantBurnSeconds != 3f
-                || GroveBurnSeconds < SlowBurnSeconds
+                || GroveBurnSeconds != SlowBurnSeconds - 1f
                 || EmberBurnSeconds > 5f
                 || ItemBurnSeconds(MaterialId.Oil) != OilBurnSeconds
                 || ItemBurnSeconds(MaterialId.Timber) != TimberBurnSeconds
