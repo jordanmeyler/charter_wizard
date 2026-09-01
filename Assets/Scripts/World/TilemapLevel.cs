@@ -305,7 +305,7 @@ namespace RuneMagic
                         }
 
                         var alpha = paint != null ? paint.ResolvedOpacity() : VeilOpacity(raw);
-                        if (look != null)
+                        if (look != null && (paint == null || !paint.IsQualityStamp))
                         {
                             tile.AuthorCoverLook(look, alpha);
                         }
