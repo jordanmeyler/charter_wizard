@@ -316,25 +316,22 @@ namespace RuneMagic
 
                     if (kind == null)
                     {
+                        if (tile != null && look != null)
+                        {
+                            tile.AuthorLook(look);
+                            if (paint != null)
+                            {
+                                ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);
+                            }
+
+                            continue;
+                        }
+
                         ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks: false);
                         continue;
                     }
 
-                    var underlay = KeepFloorUnder(kind.Value, tile, x, y, out var underFloor);
-                    if (tile == null || replace)
-                    {
-                        tile = grid.Set(x, y, kind.Value, material);
-                    }
-
-                    if (underlay != null)
-                    {
-                        tile.AuthorUnderlay(underlay, underFloor);
-                    }
-
-                    if (look != null)
-                    {
-                        tile.AuthorLook(look);
-                    }
+                    tile = ApplyWalkStamp(grid, tile, x, y, kind.Value, material, look, replace);
 
                     if (paint != null)
                     {
@@ -390,12 +387,68 @@ namespace RuneMagic
             maxY = y1;
         }
 
+        /// <summary>
+        /// Stamp kind / material onto a cell without discarding the
+        /// tileset an earlier layer already authored. Floor-Stone pack
+        /// art is a chip preview — it must not draw over that look.
+        /// </summary>
+        static WorldTile ApplyWalkStamp(
+            WorldGrid grid,
+            WorldTile tile,
+            int x,
+            int y,
+            TileKind kind,
+            MaterialId material,
+            Sprite look,
+            bool replace)
+        {
+            var priorLook = tile != null ? tile.AuthoredLook : null;
+            var underlay = KeepFloorUnder(kind, tile, x, y, out var underFloor);
+            if (tile == null)
+            {
+                tile = grid.Set(x, y, kind, material);
+            }
+            else if (replace || tile.Kind != kind || tile.Material != material)
+            {
+                tile.AuthorKind(kind, material);
+            }
+
+            if (underlay != null)
+            {
+                tile.AuthorUnderlay(underlay, underFloor);
+            }
+
+            if (priorLook != null)
+            {
+                tile.AuthorLook(priorLook);
+            }
+            else if (look != null)
+            {
+                tile.AuthorLook(look);
+            }
+
+            return tile;
+        }
+
         static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, int x, int y, out MaterialId floor)
         {
             floor = MaterialId.Stone;
             if (kind != TileKind.Wall && kind != TileKind.Door)
             {
                 return null;
+            }
+
+            if (prior != null && prior.AuthoredLook != null)
+            {
+                floor = prior.Kind == TileKind.Floor && !WorldWork.IsIceBody(prior.Material)
+                    ? prior.Material
+                    : MaterialId.Stone;
+                if (floor == MaterialId.None)
+                {
+                    floor = MaterialId.Stone;
+                }
+
+                return prior.AuthoredLook;
             }
 
             if (prior != null && prior.Kind == TileKind.Floor)
@@ -406,7 +459,7 @@ namespace RuneMagic
                     floor = MaterialId.Stone;
                 }
 
-                return prior.AuthoredLook != null ? prior.AuthoredLook : SpriteFactory.Floor(floor, x, y);
+                return SpriteFactory.Floor(floor, x, y);
             }
 
             return SpriteFactory.Floor(MaterialId.Stone, x, y);
@@ -454,22 +507,8 @@ namespace RuneMagic
                     if (kind != null)
                     {
                         var tile = grid.Get(x, y);
-                        var underlay = KeepFloorUnder(kind.Value, tile, x, y, out var underFloor);
-                        if (tile == null || tile.Kind == TileKind.Pit || kind == TileKind.Wall || kind == TileKind.Door)
-                        {
-                            tile = grid.Set(x, y, kind.Value, material);
-                        }
-
-                        if (underlay != null)
-                        {
-                            tile.AuthorUnderlay(underlay, underFloor);
-                        }
-
-                        if (look != null)
-                        {
-                            tile.AuthorLook(look);
-                        }
-
+                        var replace = tile == null || tile.Kind == TileKind.Pit || kind == TileKind.Wall || kind == TileKind.Door;
+                        tile = ApplyWalkStamp(grid, tile, x, y, kind.Value, material, look, replace);
                         if (paint != null)
                         {
                             ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: false), paint);

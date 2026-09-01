@@ -7,9 +7,9 @@ using UnityEngine.Tilemaps;
 namespace RuneMagic
 {
     /// <summary>
-    /// Plant / timber / water / fire palette stamps keep the tileset
-    /// already on the cell. Pack art on Floor-Plant / Floor-Fire is
-    /// only a chip preview — it must not replace the look you painted.
+    /// Floor / wall palette stamps keep the tileset already on the
+    /// cell. Pack art on Floor-Stone / Floor-Plant is only a chip
+    /// preview — it must not replace the look you painted.
     /// </summary>
     [InitializeOnLoad]
     static class StampLookKeep
@@ -71,21 +71,25 @@ namespace RuneMagic
                 {
                     var pos = new Vector3Int(x, y, 0);
                     var tile = map.GetTile(pos);
-                    if (tile is WorldPaintTile paint && paint.IsQualityStamp)
-                    {
-                        continue;
-                    }
-
                     var sprite = map.GetSprite(pos);
                     if (sprite == null && tile is Tile painted)
                     {
                         sprite = painted.sprite;
                     }
 
-                    if (sprite != null)
+                    if (sprite == null)
                     {
-                        cells[pos] = sprite;
+                        continue;
                     }
+
+                    // First look on the cell wins. A later Floor stamp
+                    // must not teach the cache its pack preview.
+                    if (tile is WorldPaintTile paint && paint.IsQualityStamp && cells.ContainsKey(pos))
+                    {
+                        continue;
+                    }
+
+                    cells[pos] = sprite;
                 }
             }
         }
@@ -111,7 +115,7 @@ namespace RuneMagic
                 {
                     if (paint.sprite != null)
                     {
-                        Replace(map, pos, paint, null, TileCover.None);
+                        Replace(map, pos, paint, null, paint.ResolvedCover());
                     }
 
                     continue;
