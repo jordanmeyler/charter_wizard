@@ -1089,13 +1089,8 @@ namespace RuneMagic
 
         void DrawJoinSlab(Rect bounds, WeaveGlyph glyph)
         {
-            const float pad = 4f;
-            const float banner = 16f;
-            var slab = new Rect(
-                bounds.x - pad,
-                bounds.y - banner,
-                bounds.width + pad * 2f,
-                bounds.height + banner + pad);
+            const float banner = 14f;
+            var slab = bounds;
 
             var wash = GlyphView.IsPlay
                 ? GlyphView.JoinWash
@@ -1110,7 +1105,7 @@ namespace RuneMagic
                 : new Color(0.98f, 0.82f, 0.32f, 0.96f);
             GUI.color = rim;
             DrawFrame(slab, 3f);
-            GUI.DrawTexture(new Rect(slab.x + 4f, bounds.y - 2f, slab.width - 8f, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(slab.x + 4f, slab.y + banner, slab.width - 8f, 2f), Texture2D.whiteTexture);
             GUI.DrawTexture(new Rect(slab.x + 8f, slab.yMax - 6f, slab.width - 16f, 2f), Texture2D.whiteTexture);
             GUI.color = previous;
 
