@@ -1740,12 +1740,10 @@ namespace RuneMagic
             // Plant / timber material stamps resolve to cover-plant /
             // cover-vine. Those pack tiles hide the authored tileset.
             // Spell-grown vine still arrives through _coverId above.
-            if (_authoredLook != null)
-            {
-                return null;
-            }
-
-            return TileAtlas.Cover(ShownMaterial, Coord.x, Coord.y);
+            // A Floor / Wall stamp is the tile the author placed — do
+            // not invent a material sheen on top of it. Spells and
+            // Cover stamps set _coverId / _coverLook when they may draw.
+            return null;
         }
 
         SpriteRenderer EnsureCover()

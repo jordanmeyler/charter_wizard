@@ -35,6 +35,6 @@ MonoBehaviour:
   m_Flags: 2
   m_ColliderType: 0
   material: 1
-  kind: 0
+  kind: 5
   aura: 0
   cover: 1

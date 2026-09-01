@@ -34,8 +34,10 @@ each `WorldPaintTile` into a live `WorldTile`.
    no glow are look only.
 6. Select **Cover** and paint ice / fire / lightning / vine / miasma over
    those cells if you would rather brush overlays than stamp them.
-   Covers are the live layer. **Floor-Fire** and **Wall-Fire** go on
-   Tiles / Walls — rest materials, like stone.
+   **Cover-*** / **Aura-*** have Kind = None — they sit on the tile you
+   placed; they do not stamp a new floor. Covers are the live layer.
+   **Floor-Fire** and **Wall-Fire** go on Tiles / Walls — rest
+   materials, like stone.
    Miasma and fog are see-through (about 40%). Check **Opacity** in
    Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
@@ -53,6 +55,25 @@ each `WorldPaintTile` into a live `WorldTile`.
 Play hides the editor Tilemap renderers and builds the live grid from
 what you painted. JSON under `Assets/Resources/Maps/` is leftover and
 is not loaded unless Level Authoring is set to **Named Map**.
+
+## Stamp roles
+
+The stamp's **kind** and **cover** decide what Play draws. That is the
+whole contract. A Floor or Wall stamp never invents a second graphic
+on top of the tile you painted. Spells and Cover stamps may.
+
+| Stamp | What it writes | What Play draws |
+|---|---|---|
+| **Floor-*** / **Kind = Floor** | Walk family + material | The sprite already on that cell. Pack art on Floor-Stone / Floor-Plant / Floor-Ice is a palette chip only. |
+| **Wall-*** / **Kind = Wall** | Solid body + material | The sprite already on that cell. Same chip rule. No invented cobble under a wall you placed. |
+| **Pit / Door / Bridge** | That special look | The pit, leaf, or span. These *are* the picture. |
+| **Cover-*** / **Aura-*** | Overlay on the Cover layer | Sheen + spoken mark **on top of** the walk tile. Kind is None — these brushes do not stamp Floor. |
+| **Spell leftovers** | Wet, fire, charge, ash, vine… | FX / cover on top of the walk tile the spell found. |
+
+Paint the tileset first. Then stamp Floor or Wall so the cell walks or
+blocks. Then paint Cover, or let a spell leave a covering. If a Floor
+or Wall stamp still draws pack ice / water / plant / fire over your
+tileset, the stamp is wrong — it is a quality, not a new tile.
 
 ## Layers
 
@@ -222,7 +243,7 @@ Miasma is Cloud · Acid, Fog is Cloud. A kindled hall is the
 2. Paint any ice / fire / water / fog tile from any palette — that *is* the sheen.
 3. Or stamp in Tile Properties: pick the **mark** (same chips as Inscriptions), **Write onto Cover layer**. Play draws that generated sign on the cell. Click the cover to draw the rune into the Charter. Painted sheen stays underneath when you supplied one (`cover-ice`, `tile-poison` for miasma).
 
-**Spell leftovers** (wet floor after melt, hunger on a bush) draw `tile-wet` / `tile-fire` from the catalog. To change those globally, add or replace those ids in `Assets/Resources/Catalog` / the sprite sheets. A Cover tile you painted stays as the floor look; the wet/fire glow sits on top.
+**Spell leftovers** (wet floor after melt, hunger on a bush) draw `tile-wet` / `tile-fire` from the catalog. To change those globally, add or replace those ids in `Assets/Resources/Catalog` / the sprite sheets. The walk tile you painted stays; the wet/fire glow sits on top. A Floor or Wall stamp never adds that glow — only a Cover stamp or a spell leftover does.
 
 Do **not** make a Tilemap for interactables. Puzzle pieces are GameObjects: `GameObject → Rune Magic → …`. A tile cannot hold a formula, key list, or inventory id.
 
@@ -318,7 +339,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Floor and wall stamps keep the tileset sprite they sit on — they do not swap in Floor-Stone / Floor-Plant / Floor-Fire pack art. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on. The walk tile you already painted stays; a later Floor layer does not draw over it.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Floor and wall stamps keep the tileset sprite they sit on — they do not swap in Floor-Stone / Floor-Plant / Floor-Fire pack art, and they do not draw a second graphic on top. **Cover-*** / **Aura-*** and spell leftovers may sit on that same tile. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on. The walk tile you already painted stays; a later Floor layer does not draw over it.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, ash covers the cell, and a plant or timber floor becomes dirt (look and Earth). Stone floors do not catch; a burned table on stone leaves ash on the cobble. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
