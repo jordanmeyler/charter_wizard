@@ -139,6 +139,7 @@ namespace RuneMagic
             Tone(MaterialId.Miasma, 0.4f, 0.72f, 0.12f);
             Tone(MaterialId.Wardstone, 0.56f, 0.4f, 0.78f);
             Tone(MaterialId.Aegis, 0.86f, 0.82f, 0.28f);
+            Tone(MaterialId.Fire, 1f, 0.42f, 0.1f);
         }
 
         static void Tone(MaterialId id, float r, float g, float b)

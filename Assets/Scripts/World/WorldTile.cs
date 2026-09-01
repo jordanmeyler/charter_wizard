@@ -180,7 +180,8 @@ namespace RuneMagic
             Cover == TileCover.Fire
             || CoverMaterial == MaterialId.Ember
             || CoverMaterial == MaterialId.Hearth
-            || CoverMaterial == MaterialId.Lava;
+            || CoverMaterial == MaterialId.Lava
+            || CoverMaterial == MaterialId.Fire;
 
         public void PaintCover(TileCover cover)
         {
@@ -1509,9 +1510,7 @@ namespace RuneMagic
                 // mark. cover-water is the same opaque pool as floor-water
                 // and would hide the tile the author already stamped.
                 if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(_coverId, "fire", System.StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(_coverId, "cover-fire", System.StringComparison.OrdinalIgnoreCase))
+                    string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return null;
                 }

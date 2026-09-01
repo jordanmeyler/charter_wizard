@@ -43,6 +43,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall. Tree and Wood-wall stand this wood. |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
+| **Fire** | Fire | Fire | Rest stamp on floor or wall. Speaks Fire. Does not spread until a spell starts work. Cover-Fire is the live layer. |
 | **Moss** | Water · Salt · Earth · Plant · Life | Plant | Chapel corners |
 | **Void** | — (tear) | — | The Drop pits |
 | **Vein** | Fire · Air · Spark · Earth | Spark | Storm Cell floor, storm hall |

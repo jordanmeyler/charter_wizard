@@ -5,12 +5,11 @@ namespace RuneMagic
 {
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
-    /// Ice is Water · Earth. Fire cover only marks hunger so the
-    /// weave can speak Fire — it does not kindle a hall. A stamped
-    /// cover is inert until a spell or a live reaction finds it;
-    /// then it uses the overlay material (ice melts, oil is fuel,
-    /// metal conducts). Vine cover speaks Plant — Vine is a spell,
-    /// not a rune. Miasma is Cloud · Acid. Fog is the Cloud veil.
+    /// Ice is Water · Earth. Fire cover is the live hunger layer:
+    /// it can catch and interact once a spell starts work. It does
+    /// not kindle a hall. Floor-Fire / Wall-Fire are rest matter.
+    /// Vine cover speaks Plant — Vine is a spell, not a rune.
+    /// Miasma is Cloud · Acid. Fog is the Cloud veil.
     /// </summary>
     public static class CoverCatalog
     {

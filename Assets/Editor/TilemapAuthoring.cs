@@ -154,8 +154,8 @@ namespace RuneMagic
             painted.Add(WriteTile(SpecialFolder, "Pit", MaterialId.Void, TileKind.Pit));
             painted.Add(WriteTile(SpecialFolder, "Door", MaterialId.Stone, TileKind.Door));
             painted.Add(WriteTile(SpecialFolder, "Bridge", MaterialId.Stone, TileKind.Bridge));
-            painted.Add(WriteTile(FloorFolder, "Floor-Fire", MaterialId.Stone, TileKind.Floor, TileCover.Fire));
-            painted.Add(WriteTile(WallFolder, "Wall-Fire", MaterialId.Stone, TileKind.Wall, TileCover.Fire));
+            painted.Add(WriteTile(FloorFolder, "Floor-Fire", MaterialId.Fire, TileKind.Floor));
+            painted.Add(WriteTile(WallFolder, "Wall-Fire", MaterialId.Fire, TileKind.Wall));
             painted.Add(WriteTile(CoverFolder, "Cover-Ice", MaterialId.Stone, TileKind.Floor, TileCover.Ice));
             painted.Add(WriteTile(CoverFolder, "Cover-Fire", MaterialId.Dirt, TileKind.Floor, TileCover.Fire));
             painted.Add(WriteTile(CoverFolder, "Cover-Lightning", MaterialId.Stone, TileKind.Floor, TileCover.Lightning));
@@ -306,8 +306,8 @@ namespace RuneMagic
         {
             var painted = new List<WorldPaintTile>
             {
-                WriteTile(FloorFolder, "Floor-Fire", MaterialId.Stone, TileKind.Floor, TileCover.Fire),
-                WriteTile(WallFolder, "Wall-Fire", MaterialId.Stone, TileKind.Wall, TileCover.Fire)
+                WriteTile(FloorFolder, "Floor-Fire", MaterialId.Fire, TileKind.Floor),
+                WriteTile(WallFolder, "Wall-Fire", MaterialId.Fire, TileKind.Wall)
             };
             WritePalette(painted);
             AssetDatabase.SaveAssets();

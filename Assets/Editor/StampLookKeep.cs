@@ -14,14 +14,7 @@ namespace RuneMagic
     [InitializeOnLoad]
     static class StampLookKeep
     {
-        sealed class SeenCell
-        {
-            public Sprite sprite;
-            public TileKind kind;
-            public MaterialId material;
-        }
-
-        static readonly Dictionary<int, Dictionary<Vector3Int, SeenCell>> Seen = new();
+        static readonly Dictionary<int, Dictionary<Vector3Int, Sprite>> Seen = new();
         static bool _writing;
         static double _nextCache;
 
@@ -67,7 +60,7 @@ namespace RuneMagic
             var id = map.GetInstanceID();
             if (!Seen.TryGetValue(id, out var cells))
             {
-                cells = new Dictionary<Vector3Int, SeenCell>();
+                cells = new Dictionary<Vector3Int, Sprite>();
                 Seen[id] = cells;
             }
 
@@ -78,7 +71,7 @@ namespace RuneMagic
                 {
                     var pos = new Vector3Int(x, y, 0);
                     var tile = map.GetTile(pos);
-                    if (tile is WorldPaintTile quality && quality.IsQualityStamp)
+                    if (tile is WorldPaintTile paint && paint.IsQualityStamp)
                     {
                         continue;
                     }
@@ -89,18 +82,10 @@ namespace RuneMagic
                         sprite = painted.sprite;
                     }
 
-                    if (sprite == null && tile == null)
+                    if (sprite != null)
                     {
-                        continue;
+                        cells[pos] = sprite;
                     }
-
-                    var prior = tile as WorldPaintTile;
-                    cells[pos] = new SeenCell
-                    {
-                        sprite = sprite,
-                        kind = prior != null ? prior.kind : TilemapLevel.GuessKindForEditor(tile),
-                        material = prior != null ? prior.material : TilemapLevel.GuessMaterialForEditor(tile)
-                    };
                 }
             }
         }
@@ -122,41 +107,28 @@ namespace RuneMagic
                 }
 
                 var pos = tiles[i].position;
-                var fire = paint.ResolvedCover() == TileCover.Fire;
                 if (cover)
                 {
                     if (paint.sprite != null)
                     {
-                        Replace(
-                            map,
-                            pos,
-                            paint,
-                            null,
-                            fire ? TileCover.Fire : TileCover.None);
+                        Replace(map, pos, paint, null, TileCover.None);
                     }
 
                     continue;
                 }
 
-                var keep = Cached(map, pos);
-                if (keep != null && keep.sprite != null && paint.sprite != keep.sprite)
+                var keep = CachedSprite(map, pos);
+                if (keep != null && paint.sprite != keep)
                 {
-                    Replace(
-                        map,
-                        pos,
-                        paint,
-                        keep.sprite,
-                        fire ? TileCover.Fire : (TileCover?)null,
-                        paint.kind,
-                        fire ? keep.material : (MaterialId?)null);
+                    Replace(map, pos, paint, keep, stampCover: null);
                 }
             }
         }
 
-        static SeenCell Cached(Tilemap map, Vector3Int pos)
+        static Sprite CachedSprite(Tilemap map, Vector3Int pos)
         {
-            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var cell)
-                ? cell
+            return Seen.TryGetValue(map.GetInstanceID(), out var cells) && cells.TryGetValue(pos, out var sprite)
+                ? sprite
                 : null;
         }
 
@@ -165,11 +137,9 @@ namespace RuneMagic
             Vector3Int pos,
             WorldPaintTile stamp,
             Sprite sprite,
-            TileCover? stampCover,
-            TileKind? kind = null,
-            MaterialId? material = null)
+            TileCover? stampCover)
         {
-            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover, kind, material);
+            var authored = TilePropertyPaint.KeepLook(sprite, stamp, stampCover);
             if (authored == null || authored == map.GetTile(pos))
             {
                 return;
