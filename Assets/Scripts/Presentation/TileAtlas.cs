@@ -165,18 +165,23 @@ namespace RuneMagic
 
         public static Sprite Wall(MaterialId material, int x, int y)
         {
+            return Get(WallId(material, x, y));
+        }
+
+        /// <summary>
+        /// One wall face per material. Position-hashed wall-b / wall-c /
+        /// wall-crack used to spawn random brick on stamped stone.
+        /// </summary>
+        public static string WallId(MaterialId material, int x = 0, int y = 0)
+        {
+            _ = x;
+            _ = y;
             if (material == MaterialId.Moss || material == MaterialId.Plant || material == MaterialId.Grove)
             {
-                return Get("wall-moss");
+                return "wall-moss";
             }
 
-            if (material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier)
-            {
-                return Get((x + y) % 2 == 0 ? "wall" : "wall-b");
-            }
-
-            var variants = new[] { "wall", "wall-b", "wall-c", "wall-crack" };
-            return Get(variants[Mathf.Abs(x * 13 + y * 7) % variants.Length]);
+            return "wall";
         }
 
         public static Sprite Column(MaterialId material)
@@ -214,7 +219,7 @@ namespace RuneMagic
                         return "floor-ash";
                     }
 
-                    return Pick(x, y, "floor-dirt", "floor-dirt-b", "floor-pebble");
+                    return "floor-dirt";
                 case FloorFamily.Water:
                     return (frame & 1) == 0 ? "floor-water" : "floor-water-b";
                 default:
@@ -223,7 +228,7 @@ namespace RuneMagic
                         return "pit";
                     }
 
-                    return Pick(x, y, "floor-stone", "floor-stone-b", "floor-cracked");
+                    return "floor-stone";
             }
         }
 
@@ -280,6 +285,38 @@ namespace RuneMagic
                     return FloorFamily.Water;
                 default:
                     return FloorFamily.Stone;
+            }
+        }
+
+        public static void Audit(System.Collections.Generic.List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            if (FloorId(MaterialId.Dirt, 0, 0) != "floor-dirt"
+                || FloorId(MaterialId.Dirt, 4, 9) != "floor-dirt"
+                || FloorId(MaterialId.Dirt, 3, 7) == "floor-pebble"
+                || FloorId(MaterialId.Dirt, 1, 2) == "floor-dirt-b")
+            {
+                broken.Add("Dirt must stay floor-dirt; do not spawn pebble or brown-line variants");
+            }
+
+            if (FloorId(MaterialId.Stone, 0, 0) != "floor-stone"
+                || FloorId(MaterialId.Stone, 5, 3) != "floor-stone"
+                || FloorId(MaterialId.Stone, 2, 8) == "floor-cracked")
+            {
+                broken.Add("Stone floors must stay floor-stone; do not spawn cracked or wall slices");
+            }
+
+            if (WallId(MaterialId.Stone, 0, 0) != "wall"
+                || WallId(MaterialId.Stone, 6, 4) != "wall"
+                || WallId(MaterialId.Stone, 1, 1) == "wall-crack"
+                || WallId(MaterialId.Stone, 2, 3) == "wall-c"
+                || WallId(MaterialId.Ice, 1, 0) != "wall")
+            {
+                broken.Add("Stone and ice walls must stay the wall tile; do not spawn random brick");
             }
         }
 

@@ -924,6 +924,8 @@ namespace RuneMagic
             CoverCatalog.Audit(broken);
             PlantLaw.Audit(broken);
             WorldPaintTile.Audit(broken);
+            TilemapLevel.Audit(broken);
+            TileAtlas.Audit(broken);
             RoomSentence.Audit(broken);
         }
 
