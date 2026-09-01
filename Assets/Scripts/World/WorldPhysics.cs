@@ -817,6 +817,13 @@ namespace RuneMagic
                 broken.Add("Land plants and timber must carry a burn rate");
             }
 
+            if (CoverCatalog.RestAfterBurn(MaterialId.Timber) != MaterialId.Dirt
+                || !VitalLaw.CanBurn(MaterialId.Timber)
+                || VitalLaw.ItemBurnSeconds(MaterialId.Timber) != VitalLaw.TimberBurnSeconds)
+            {
+                broken.Add("A timber wall must burn on the wood clock and fall to leftover dirt under ash");
+            }
+
             if (ember.BurnRate != 0f
                 || grove.BurnRate <= 0f
                 || grove.BurnRate >= plant.BurnRate)

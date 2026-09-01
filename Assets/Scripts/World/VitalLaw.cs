@@ -18,8 +18,9 @@ namespace RuneMagic
     /// <summary>
     /// Burning and poison share one law: a named integrity clock.
     /// The clock only runs while the body still stands in matching
-    /// fire or foul. Sulphur work does not use this — it stays until
-    /// focus breaks.
+    /// fire or foul. Step off that cover and the condition lifts —
+    /// you are no longer on fire, no longer poisoned. Sulphur work
+    /// does not use this — it stays until focus breaks.
     /// </summary>
     public static class VitalLaw
     {
@@ -55,11 +56,19 @@ namespace RuneMagic
             ClockOf(id) == StatusClock.Meter;
 
         /// <summary>
-        /// Burning and poison only run while the body still stands in
+        /// Meters do not linger. Off the matching fire or foul, the
+        /// status drops instead of pausing.
+        /// </summary>
+        public static bool MeterEndsWithoutContact(StatusId id) =>
+            IsMeter(id);
+
+        /// <summary>
+        /// Burning and poison only hold while the body still stands in
         /// that kind of walk or covering. Hunger needs fire floor,
         /// fire cover, or a live flame. Poison needs a poison slick
         /// underfoot, or a miasma cloud (the tile, a neighbour, or a
-        /// hanging veil). Flight and hop lift the feet — the clock waits.
+        /// hanging veil). Leave the tile — or lift the feet — and
+        /// the condition resets.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -254,7 +263,15 @@ namespace RuneMagic
                 || ContactFeeds(StatusId.Poisoned, null, default, true)
                 || ContactFeeds(StatusId.Frozen, null, default, true) == false)
             {
-                broken.Add("Meters wait when the feet leave the matching walk; timed clocks still lift");
+                broken.Add("Meters lift when the feet leave the matching walk; timed clocks still lift");
+            }
+
+            if (!MeterEndsWithoutContact(StatusId.Burning)
+                || !MeterEndsWithoutContact(StatusId.Poisoned)
+                || MeterEndsWithoutContact(StatusId.Frozen)
+                || MeterEndsWithoutContact(StatusId.Stunned))
+            {
+                broken.Add("Burning and poison must reset once the body leaves that fire or foul");
             }
 
             if (IsFireContact(null) || IsPoisonLiquidContact(null))

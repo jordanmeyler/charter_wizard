@@ -231,6 +231,11 @@ namespace RuneMagic
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
             Cover = ParseCover(_coverId);
             _coverMaterial = CoverCatalog.MaterialOf(Cover);
+            if (before != Cover)
+            {
+                _coverLook = null;
+            }
+
             if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
             {
                 _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
@@ -667,16 +672,67 @@ namespace RuneMagic
 
         public bool FreezeSolid()
         {
-            if (!IsDeepWater)
+            if (HasIceCover && (Kind == TileKind.Floor || Kind == TileKind.Bridge) && !IsDeepWater)
+            {
+                return true;
+            }
+
+            if (IsDeepWater)
+            {
+                BecomeWalkable(MaterialId.Ice, conjured: true);
+                PaintIceCover();
+                Wet = Mathf.Min(Wet, 0.15f);
+                RefreshFx();
+                return true;
+            }
+
+            if (HasWaterCover)
+            {
+                PaintIceCover();
+                Wet = Mathf.Min(Wet, 0.15f);
+                RefreshFx();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Hard water on this cell. Water becomes the same ice sheet
+        /// ice-wall uses. A dry walk takes that same cover sheen.
+        /// </summary>
+        public bool LayIce()
+        {
+            if (FreezeSolid())
+            {
+                return true;
+            }
+
+            if (Kind != TileKind.Floor && Kind != TileKind.Bridge)
             {
                 return false;
             }
 
-            BecomeWalkable(MaterialId.Ice, conjured: true);
-            PaintCover(TileCover.Ice);
+            if (Material == MaterialId.Lava || Material == MaterialId.Void || HasAshCover)
+            {
+                return false;
+            }
+
+            if (HasIceCover)
+            {
+                return true;
+            }
+
+            PaintIceCover();
             Wet = Mathf.Min(Wet, 0.15f);
             RefreshFx();
             return true;
+        }
+
+        void PaintIceCover()
+        {
+            _coverLook = null;
+            PaintCover(TileCover.Ice);
         }
 
         /// <summary>
@@ -1297,7 +1353,10 @@ namespace RuneMagic
         /// <summary>
         /// Hunger finishes the fuel. Fire cover wears off. Ash covers
         /// the walk. A plant or timber floor becomes dirt (look and
-        /// Earth). Masonry and dirt stay. Kindled halls do not ash.
+        /// Earth). A timber or plant wall burns for its clock, then
+        /// the wall falls and ash takes its place so a key behind
+        /// it can be reached. Masonry and dirt stay. Kindled halls
+        /// do not ash.
         /// </summary>
         public void BurnOut()
         {
@@ -1309,9 +1368,10 @@ namespace RuneMagic
             var leftover = CoverCatalog.RestAfterBurn(Material);
             var waterWalk = Material == MaterialId.Water
                 || (_hasFoundation && Foundation.Material == MaterialId.Water);
+            var fuelWall = Kind == TileKind.Wall && VitalLaw.CanBurn(Material);
             var changeWalk = leftover != MaterialId.None
                 && leftover != Material
-                && (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge || fuelWall)
                 && !waterWalk
                 && Material != MaterialId.Lava
                 && Material != MaterialId.Void;
@@ -1330,6 +1390,33 @@ namespace RuneMagic
             }
 
             _coverLook = null;
+            var underLook = _underlayLook;
+            if (fuelWall)
+            {
+                if (IsConjured)
+                {
+                    RestoreFoundation();
+                }
+                else
+                {
+                    var walk = leftover != MaterialId.None ? leftover : MaterialId.Dirt;
+                    Reshape(new TileDef(TileKind.Floor, walk));
+                    if (underLook != null)
+                    {
+                        AuthorLook(underLook);
+                    }
+                }
+
+                if (Kind == TileKind.Floor || Kind == TileKind.Bridge)
+                {
+                    PaintCover(TileCover.Ash);
+                }
+
+                RefreshCollider();
+                RefreshFx();
+                return;
+            }
+
             if (changeWalk)
             {
                 Reshape(new TileDef(Kind, leftover));
@@ -1624,6 +1711,7 @@ namespace RuneMagic
             }
 
             ApplyCoverMark();
+            RefreshLinger();
         }
 
         void ApplyCoverMark()
@@ -1685,7 +1773,16 @@ namespace RuneMagic
                 {
                     return null;
                 }
+            }
 
+            var sheen = CoverCatalog.Sheen(Cover);
+            if (sheen != null)
+            {
+                return sheen;
+            }
+
+            if (!string.IsNullOrEmpty(_coverId))
+            {
                 var named = _coverId.StartsWith("cover-", System.StringComparison.OrdinalIgnoreCase) ||
                             _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
                     ? _coverId
@@ -1939,12 +2036,7 @@ namespace RuneMagic
         void RefreshLinger()
         {
             ClearLinger();
-            if (!IsConjured)
-            {
-                return;
-            }
-
-            var look = ElementLook.For(Element);
+            var look = LingerLook();
             if (!NeedsLinger(look.Family))
             {
                 return;
@@ -1954,6 +2046,28 @@ namespace RuneMagic
                 ? new Vector3(0f, 0.55f, 0f)
                 : new Vector3(0f, 0.2f, 0f);
             _linger = ElementFx.Linger(transform, look, 0.85f, offset);
+        }
+
+        ElementLook LingerLook()
+        {
+            if (IsConjured)
+            {
+                return ElementLook.For(Element);
+            }
+
+            switch (Cover)
+            {
+                case TileCover.Ice:
+                    return ElementLook.Of(ElementFamily.Ice);
+                case TileCover.Fire:
+                    return ElementLook.Of(ElementFamily.Fire);
+                case TileCover.Lightning:
+                    return ElementLook.Of(ElementFamily.Lightning);
+                case TileCover.Vine:
+                    return ElementLook.Of(ElementFamily.Plant);
+                default:
+                    return default;
+            }
         }
 
         static bool NeedsLinger(ElementFamily family)

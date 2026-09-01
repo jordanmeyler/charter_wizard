@@ -578,8 +578,10 @@ namespace RuneMagic
                 }
 
                 if (_effects[i].Spec.IsMeter
+                    && VitalLaw.MeterEndsWithoutContact(_effects[i].Id)
                     && !VitalLaw.ContactFeeds(_effects[i].Id, grid, transform.position, airborne))
                 {
+                    _effects.RemoveAt(i);
                     continue;
                 }
 

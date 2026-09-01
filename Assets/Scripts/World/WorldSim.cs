@@ -173,9 +173,10 @@ namespace RuneMagic
                     var plantFuel = tile.IsPlantish || tile.HasPlantishDetail;
                     var vineFuel = tile.HasVine;
                     var oilFuel = tile.HasOil && !tile.IsGeyser;
+                    var wallFuel = tile.Kind == TileKind.Wall && VitalLaw.CanBurn(tile.Material);
                     tile.Ignite(-consume - quench);
                     if (quench < 0.4f && tile.Fire <= 0.08f
-                        && (plantFuel || vineFuel || oilFuel))
+                        && (plantFuel || vineFuel || oilFuel || wallFuel))
                     {
                         tile.BurnOut();
                     }
