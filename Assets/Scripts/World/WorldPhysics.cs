@@ -814,6 +814,7 @@ namespace RuneMagic
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);
             PlantLaw.Audit(broken);
+            RoomSentence.Audit(broken);
         }
 
         static List<Vector2Int> CellsAlong(WorldGrid grid, Vector3 from, Vector3 to, float width)

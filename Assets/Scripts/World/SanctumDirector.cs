@@ -53,7 +53,7 @@ namespace RuneMagic
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
         public RuneTapestry Tapestry { get; private set; }
         public string FieldReading { get; private set; } = string.Empty;
-        public IReadOnlyList<RuneId> VisibleRunes { get; private set; } = System.Array.Empty<RuneId>();
+        public IReadOnlyList<RuneId> VisibleRunes => BuildWallRunes();
         public IReadOnlyList<SpellShape> AvailableShapes { get; private set; } = System.Array.Empty<SpellShape>();
         public SpellShape ChosenShape { get; private set; }
         public string PendingPreview { get; private set; } = string.Empty;
@@ -1303,13 +1303,65 @@ namespace RuneMagic
 
         void RefreshVisibleRunes()
         {
-            VisibleRunes = GlyphView.IsDevelop
-                ? RuneCatalog.BasicRunes
-                : Memory.Wall(RuneCatalog.BasicRunes);
             if (Tapestry != null)
             {
                 Tapestry.Resample();
             }
+        }
+
+        /// <summary>
+        /// Develop: the eleven, then every wrought elemental the room
+        /// is speaking (Spark, Ice, Plant…). Play: kept marks, then
+        /// those same spoken joins so a fire or vein can be drawn.
+        /// </summary>
+        List<RuneId> BuildWallRunes()
+        {
+            var list = new List<RuneId>(16);
+            var seen = new HashSet<RuneId>();
+            void Offer(RuneId rune)
+            {
+                if (rune != RuneId.None && seen.Add(rune))
+                {
+                    list.Add(rune);
+                }
+            }
+
+            if (GlyphView.IsDevelop)
+            {
+                for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
+                {
+                    Offer(RuneCatalog.BasicRunes[i]);
+                }
+
+                for (var i = 0; i < RuneCatalog.ElementalJoins.Length; i++)
+                {
+                    Offer(RuneCatalog.ElementalJoins[i]);
+                }
+            }
+            else
+            {
+                var kept = Memory.Wall(RuneCatalog.BasicRunes);
+                for (var i = 0; i < kept.Count; i++)
+                {
+                    Offer(kept[i]);
+                }
+            }
+
+            var vicinity = Tapestry != null ? Tapestry.Vicinity : null;
+            if (vicinity == null)
+            {
+                return list;
+            }
+
+            for (var i = 0; i < vicinity.Count; i++)
+            {
+                if (RuneCatalog.OffersOnWall(vicinity[i]))
+                {
+                    Offer(vicinity[i]);
+                }
+            }
+
+            return list;
         }
 
         void HandleWorldClick()

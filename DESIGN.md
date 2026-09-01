@@ -234,12 +234,12 @@ A **recent-cast strip** (last twenty-five) sits on the Charter and the world, wi
 | | **Play** | **Develop** |
 |---|---|---|
 | Marks | Abstract work-signs. No letters, names, or element colours. | Letters, names, birth recipes, and the palette. |
-| Wall | Empty until a mark is kept. | The eleven, named, as a working board. |
+| Wall | Empty until a mark is kept, then any wrought join the room is speaking (Spark, Ice, Plant…). | The eleven plus the elemental joins (Spark, Lightning, Ice, Plant…), named. Off-screen marks stay grey. |
 | Book | Kept marks and kept workings only. Click a saved page to send it. | The full written ledger (click a name to string it). |
 
 Play is the game. Part of the fun is learning what a mark *does*. Simple sentences stay worthwhile because you have to find the marks and keep them. Develop is for authoring.
 
-1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as Fire · Water · Earth · Salt, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes Spark as Fire · Air.
+1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as itself, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes **Spark** as itself; Fire and Air are strewn through the grid.
 2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
 3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Spread, Remote, or Self. Click where that form goes. Unwritten or scrambled Charter strings fizzle. Free unscrambles a valid bag, fills up to the fill budget, and, on a clash, attunement picks the whole sentence — form included.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar. A missed key can still leave a status or start a tile reaction. A slam or a shot that lands sends you to the crystal.

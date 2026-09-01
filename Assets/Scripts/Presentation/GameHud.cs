@@ -997,7 +997,10 @@ namespace RuneMagic
 
                     var shown = glyph.Shown;
                     var chunk = glyph.IsGroup ? glyph.Rune : RuneId.None;
-                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true, true, chunk);
+                    var pick = glyph.IsGroup && ChainBook.IsWrought(glyph.Rune)
+                        ? glyph.Rune
+                        : shown;
+                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(pick), true, true, chunk);
                 }
             }
         }
