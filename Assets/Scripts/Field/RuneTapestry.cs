@@ -5,9 +5,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// The on-screen weave, read only in the Charter. Exploring shows tiles,
-    /// not glyphs. The sentence is everything in the camera view, laid
-    /// boustrophedon and scrolled sideways. The eleven roots always sit
-    /// in the grid so a sentence can be written.
+    /// not glyphs. The sentence is what the camera can see. Generation
+    /// puts at least one of each available rune in the grid; extra
+    /// copies follow how often that material appears.
     /// </summary>
     public sealed class RuneTapestry : MonoBehaviour
     {
@@ -56,7 +56,8 @@ namespace RuneMagic
         {
             var view = FieldView.OnScreen();
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var sequence = RoomSentence.Read(grid, locks, strings, view, FieldExtras());
+            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var sequence = RoomSentence.Read(grid, locks, strings, view, extras);
             var seen = new List<RuneId>();
             for (var i = 0; i < sequence.Count; i++)
             {
@@ -133,7 +134,8 @@ namespace RuneMagic
             Scroll = 0f;
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var read = RoomSentence.Read(_grid, _locks, strings, view, FieldExtras());
+            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var read = RoomSentence.Read(_grid, _locks, strings, view, extras);
             for (var i = 0; i < read.Count; i++)
             {
                 _sequence.Add(read[i]);
@@ -180,34 +182,6 @@ namespace RuneMagic
             }
 
             seen.Add(rune);
-        }
-
-        static IRuneSource[] FieldExtras()
-        {
-            var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
-            var crystals = Object.FindObjectsByType<SpawnCrystal>(FindObjectsSortMode.None);
-            if (crystals == null || crystals.Length == 0)
-            {
-                return steles;
-            }
-
-            if (steles == null || steles.Length == 0)
-            {
-                return crystals;
-            }
-
-            var extras = new IRuneSource[steles.Length + crystals.Length];
-            for (var i = 0; i < steles.Length; i++)
-            {
-                extras[i] = steles[i];
-            }
-
-            for (var i = 0; i < crystals.Length; i++)
-            {
-                extras[steles.Length + i] = crystals[i];
-            }
-
-            return extras;
         }
 
         static int Mod(int value, int modulus)

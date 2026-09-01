@@ -884,8 +884,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. Hover a weave mark to see where it is from — Light from the crystal, Dark from the pit, Air from breath. Every root mark is on the wall and in the weave. Elemental joins sit beside them; grey means that join is not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. Hover a mark to see where it is from. Draw from the wall or the weave, or click a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the wall is open. The weave is what the camera can see — hover a mark to see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. The weave is what the camera can see. Hover a mark to see where it is from. Draw a mark the room is speaking. Right-click a mark to remember it. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(

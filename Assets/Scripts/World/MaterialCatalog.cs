@@ -274,7 +274,7 @@ namespace RuneMagic
                     RuneId.Salt, RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Void, "void",
-                    "No floor. The weave tears. Dark — withheld. Light sits on the crystal.",
+                    "No floor. The weave tears. Dark — withheld.",
                     RuneId.None, MaterialPaint.Void,
                     new Color(0.03f, 0.02f, 0.03f), new Color(0.06f, 0.05f, 0.06f), true),
 

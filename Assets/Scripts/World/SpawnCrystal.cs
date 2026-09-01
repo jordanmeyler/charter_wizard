@@ -1,13 +1,11 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuneMagic
 {
     /// <summary>
-    /// The first standing body. Shown — Light sits here. Death
-    /// sends the adept back. The pit is the twin: Dark, withheld.
+    /// The first standing body. Death sends the adept back here.
     /// </summary>
-    public sealed class SpawnCrystal : MonoBehaviour, ILookable, IRuneSource
+    public sealed class SpawnCrystal : MonoBehaviour, ILookable
     {
         [Header("Authoring")]
         [SerializeField] string spriteId = "spawn-crystal";
@@ -20,17 +18,6 @@ namespace RuneMagic
         public float LookRadius => 0.7f;
         public bool CanLook => true;
         public string LookText => Sight.OfCrystal();
-
-        public bool IsEmitting => true;
-        public Vector3 WorldOrigin => transform.position;
-        public float VoiceRadius => 1.4f;
-        public float VoiceWeight => 2.4f;
-        public RuneSourceKind SourceKind => RuneSourceKind.Presence;
-
-        public void Collect(List<RuneId> buffer)
-        {
-            buffer.Add(RuneId.Lumen);
-        }
 
         public static SpawnCrystal Spawn(Vector3 world)
         {
