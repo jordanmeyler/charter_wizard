@@ -466,9 +466,11 @@ namespace RuneMagic
                 broken.Add("Snowfall, Freeze, and Snowstorm must freeze");
             }
 
-            if (SpellVerb.Of(SpellId.Blight).Status != StatusId.Poisoned)
+            if (SpellVerb.Of(SpellId.Blight).Status != StatusId.Poisoned
+                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
+                || SpellVerb.Of(SpellId.Miasma).Tiles != TileVerb.Foul)
             {
-                broken.Add("Blight must poison");
+                broken.Add("Blight and miasma must foul a cloud; Poison must slick a liquid");
             }
 
             if (!WorldWork.StopsOnWalls(SpellId.Fireball)

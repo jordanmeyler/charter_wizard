@@ -64,13 +64,13 @@ def overlay_name(aura: str, cover: str) -> str | None:
         "crack": "Cover-Cracks",
         "seal": "Cover-Seal",
         "miasma": "Cover-Miasma",
-        "poison": "Cover-Miasma",
+        "poison": "Cover-Poison",
         "fog": "Cover-Fog",
     }
     auras = {
         "fire": "Aura-Fire",
         "miasma": "Aura-Miasma",
-        "poison": "Aura-Miasma",
+        "poison": "Cover-Poison",
         "fog": "Aura-Fog",
     }
     if cover_key:

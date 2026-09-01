@@ -74,11 +74,11 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
 | **Snow** | Air · Water · Cloud · Ice | Ice | Weather left on the stone, not a rune |
 | **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. It floats: a film on water still burns. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
-| **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
+| **Miasma** | Cloud · Acid · Miasma | Miasma | Airborne poison fog. Contact, a wider cloud, wind must take it. |
 | **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
 | **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
 | **Glacier** | Water · Earth · Ice · Animus · Glacier | Glacier | Ice given logos and ice again. Ordinary fire cannot take it; witchfire can |
-| **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Steam forced through Metal |
+| **Acid** | Fire · Water · Steam · Metal · Acid | Acid | Poison liquid on the walk. Contact only; yield washes it. Steam forced through Metal. |
 | **Damp stone** | Water · Stone | Water | Wet rest, not ice |
 | **Dirt** | Earth | Earth | Loose rest from Dirt toss. Smothers ground-fire. |
 

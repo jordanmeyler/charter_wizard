@@ -224,7 +224,9 @@ namespace RuneMagic
                     return;
                 }
             }
-            else if (Underfoot != null && Underfoot.IsPoisonWater && (adept == null || !adept.IsAirborne))
+            else if ((adept == null || !adept.IsAirborne)
+                && ((Underfoot != null && Underfoot.IsPoisonWater)
+                    || WorldPhysics.MiasmaCloudAt(Grid, player.position)))
             {
                 var host = StatusHost.On(player);
                 if (host == null || !host.Fends(Essence.Poison))

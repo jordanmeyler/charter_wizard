@@ -370,7 +370,12 @@ namespace RuneMagic
                 return false;
             }
 
-            if (matter == Essence.Poison || matter == Essence.Air)
+            if (matter == Essence.Poison)
+            {
+                return WorldWork.IsAirWork(spell) || WorldWork.IsWaterWork(spell);
+            }
+
+            if (matter == Essence.Air)
             {
                 return WorldWork.ClearsVeils(spell);
             }
@@ -438,6 +443,7 @@ namespace RuneMagic
 
             var fog = 0;
             var poison = 0;
+            var washed = 0;
             var scoured = 0;
             var burned = 0;
             var melted = 0;
@@ -454,7 +460,7 @@ namespace RuneMagic
 
                 var hadFog = tile.HasFog;
                 var hadMiasma = tile.HasMiasma;
-                var acid = tile.Material == MaterialId.Acid;
+                var hadPoison = tile.IsPoisonWater;
                 var burning = tile.IsBurning;
                 var before = tile.Material;
                 if (MatterLaw.ResistsMagic(before)
@@ -480,6 +486,10 @@ namespace RuneMagic
                 if (WorldWork.IsWaterWork(sweep.Spell))
                 {
                     tile.Drench(1f);
+                    if (hadPoison && !tile.IsPoisonWater)
+                    {
+                        washed++;
+                    }
                 }
 
                 if (tile.MeltWith(sweep.Spell))
@@ -503,7 +513,7 @@ namespace RuneMagic
                         poison++;
                     }
 
-                    if (acid && tile.Material == MaterialId.Scoured)
+                    if (hadPoison && tile.Material == MaterialId.Scoured)
                     {
                         scoured++;
                     }
@@ -517,9 +527,12 @@ namespace RuneMagic
 
             if (poison > 0)
             {
-                return WorldWork.IsAirWork(sweep.Spell)
-                    ? "Breath finds the foul tile and takes it."
-                    : "Hunger eats the foul breath on the floor.";
+                return "Breath finds the foul tile and takes it.";
+            }
+
+            if (washed > 0)
+            {
+                return "Yield washes the poison from the tile.";
             }
 
             if (fog > 0)
@@ -531,9 +544,7 @@ namespace RuneMagic
 
             if (scoured > 0)
             {
-                return WorldWork.IsAirWork(sweep.Spell)
-                    ? "Breath dries the slick. The poison water forgets the tile."
-                    : "Hunger drinks the slick. The poison water is gone.";
+                return "Yield washes the poison from the tile.";
             }
 
             if (melted > 0)
@@ -569,6 +580,34 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Miasma is a cloud: the tile, a neighbour, or a hanging veil.
+        /// Liquid poison is the cell underfoot — that is not this.
+        /// </summary>
+        public static bool MiasmaCloudAt(WorldGrid grid, Vector3 world)
+        {
+            if (VeilField.Covering(world, out var field) && field == VeilKind.Poison)
+            {
+                return true;
+            }
+
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var tiles = grid.TilesInRadius(world, 1f);
+            for (var i = 0; i < tiles.Count; i++)
+            {
+                if (tiles[i] != null && tiles[i].HasMiasma)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// A Darkness or poison field wins over leftover cloak on the
         /// tile. Cloak is how fog and darkness both stain the floor;
         /// the field is what the room is actually doing.
@@ -595,7 +634,7 @@ namespace RuneMagic
 
         public static int BlowFog(IReadOnlyList<ISpellLock> locks, SpellSweep sweep)
         {
-            if (locks == null || (!WorldWork.IsAirWork(sweep.Spell) && !WorldWork.ClearsVeils(sweep.Spell)))
+            if (locks == null || !WorldWork.IsAirWork(sweep.Spell))
             {
                 return 0;
             }
@@ -694,9 +733,12 @@ namespace RuneMagic
                 broken.Add("Air work must sweep a path");
             }
 
-            if (!UnmakesMatter(SpellId.Gust, Essence.Poison) || !UnmakesMatter(SpellId.Fireball, Essence.Water))
+            if (!UnmakesMatter(SpellId.Gust, Essence.Poison)
+                || !UnmakesMatter(SpellId.Douse, Essence.Poison)
+                || UnmakesMatter(SpellId.Fireball, Essence.Poison)
+                || !UnmakesMatter(SpellId.Fireball, Essence.Water))
             {
-                broken.Add("Air must yield poison breath, and hunger must yield ice");
+                broken.Add("Air must yield miasma, yield must wash poison, and hunger must yield ice");
             }
 
             if (UnmakesMatter(SpellId.Gust, Essence.Earth))

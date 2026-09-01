@@ -7,7 +7,8 @@ namespace RuneMagic
     /// Focus holds mind spells. Charm, command, lull, rage, terror,
     /// confuse, and the four wards (they all write Sulphur) stay
     /// until another sentence reuses a mark from the held working.
-    /// Burning and poison are meters — they run down to ash or death.
+    /// Burning and poison are meters — they run while the body
+    /// still stands in that fire or foul, then empty is ash or death.
     /// Other elemental work (a wall, frost, stun) stands on its own clock.
     /// </summary>
     public static class FocusLaw

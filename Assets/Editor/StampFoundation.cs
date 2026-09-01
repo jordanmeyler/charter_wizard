@@ -516,7 +516,8 @@ namespace RuneMagic
                 "vine" => "Cover-Vine",
                 "cracks" or "crack" => "Cover-Cracks",
                 "seal" => "Cover-Seal",
-                "miasma" or "poison" => "Aura-Miasma",
+                "miasma" => "Aura-Miasma",
+                "poison" => "Cover-Poison",
                 "fog" => "Aura-Fog",
                 _ => null
             };

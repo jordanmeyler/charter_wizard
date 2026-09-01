@@ -238,6 +238,10 @@ namespace RuneMagic
                         tile.Foul(1f);
                         changed++;
                         break;
+                    case TileVerb.Poison:
+                        tile.SlickPoison();
+                        changed++;
+                        break;
                     case TileVerb.Vent:
                         if (tile.Vent(spell))
                         {
@@ -320,11 +324,13 @@ namespace RuneMagic
                                     ? "The hanging veil is given a body."
                                     : verb.Tiles == TileVerb.Foul
                                         ? "A sick mist stands on the floor."
-                                        : verb.Tiles == TileVerb.Dirt
-                                            ? "Loose rest lands. Ground-fire dies. Earth speaks here."
-                                            : verb.Tiles == TileVerb.Vine
-                                                ? "The vegetable body climbs. Hunger can run this line as a wick."
-                                                : "Yield finds the floor.");
+                                        : verb.Tiles == TileVerb.Poison
+                                            ? "A poison slick finds the walk. Yield will wash it."
+                                            : verb.Tiles == TileVerb.Dirt
+                                                ? "Loose rest lands. Ground-fire dies. Earth speaks here."
+                                                : verb.Tiles == TileVerb.Vine
+                                                    ? "The vegetable body climbs. Hunger can run this line as a wick."
+                                                    : "Yield finds the floor.");
             }
         }
 

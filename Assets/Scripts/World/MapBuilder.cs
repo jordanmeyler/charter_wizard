@@ -170,8 +170,10 @@ namespace RuneMagic
             switch (aura.Trim().ToLowerInvariant())
             {
                 case "miasma":
-                case "poison":
                     tile.Foul(1f);
+                    break;
+                case "poison":
+                    tile.SlickPoison();
                     break;
                 case "fog":
                     tile.Cloak(1f);

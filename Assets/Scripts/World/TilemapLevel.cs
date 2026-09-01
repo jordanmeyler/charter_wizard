@@ -702,9 +702,14 @@ namespace RuneMagic
         static TileCover GuessCover(TileBase tile)
         {
             var name = tile != null ? tile.name : string.Empty;
-            if (NameHas(name, "miasma", "poison", "gas"))
+            if (NameHas(name, "miasma", "gas"))
             {
                 return TileCover.Miasma;
+            }
+
+            if (NameHas(name, "poison", "acid", "slick"))
+            {
+                return TileCover.Poison;
             }
 
             if (NameHas(name, "fog", "mist", "smoke", "haze"))
@@ -866,6 +871,9 @@ namespace RuneMagic
                 {
                     case TileCover.Miasma:
                         tile.Foul(1f);
+                        break;
+                    case TileCover.Poison:
+                        tile.SlickPoison();
                         break;
                     case TileCover.Fog:
                         tile.Cloak(1f);

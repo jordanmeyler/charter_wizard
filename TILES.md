@@ -137,8 +137,13 @@ stays stone under the ash. A burned item ashes the cell under it.
 
 ### 2. Air — miasma, then the air stone
 
-Miasma is not a wall. Walking in it throws you back to the last
-safe floor. **Wind** (`Air · Mercury`) or Gale clears it.
+Miasma is not a wall. It is airborne poison fog — a cloud with
+a wider reach than a slick. Walking in the thick of it throws
+you back to the last safe floor. Standing beside it still
+counts as contact. **Wind** (`Air · Mercury`) or Gale clears
+it. **Poison** is a different cover: a liquid on the walk.
+It needs contact, and **yield** (Douse / Rain / Water-jet)
+washes it. Do not stamp poison when you mean miasma.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind. On **Cover** (or **Write onto
@@ -410,7 +415,8 @@ Each spoken cover uses the same generated mark as that rune.
 | `water` | Water | Cavern water tile | Water |
 | `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |
 | `ash` | Ash · Fire · Plant | Scorched rock over the tile | Ash |
-| `miasma` | Miasma · Cloud · Acid | Poison veil | Miasma |
+| `miasma` | Miasma · Cloud · Acid | Airborne poison fog. Wind must take it. Wider than a slick. | Miasma |
+| `poison` | Poison · Plant · Death | Liquid slick. Contact only; yield washes it. | Poison |
 | `fog` | Cloud · Air · Water | Cloud veil | Cloud |
 | `cracks` | — (look only) | Crypt cracks | — |
 | `seal` | — (look only) | Atlantis seal | — |

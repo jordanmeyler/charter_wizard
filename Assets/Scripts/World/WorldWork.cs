@@ -167,12 +167,17 @@ namespace RuneMagic
                 case SpellId.Blight:
                 case SpellId.GraveDust:
                 case SpellId.Miasma:
-                case SpellId.Poison:
                     return true;
                 default:
                     return false;
             }
         }
+
+        /// <summary>
+        /// The grave of a plant, sent as a liquid. Not a cloud.
+        /// </summary>
+        public static bool IsPoisonLiquid(SpellId spell) =>
+            spell == SpellId.Poison;
 
         public static bool LaysVeil(SpellId spell) =>
             IsSightVeil(spell) || IsPoisonVeil(spell);
@@ -299,6 +304,11 @@ namespace RuneMagic
             if (kind == VeilKind.None)
             {
                 return false;
+            }
+
+            if (kind == VeilKind.Poison)
+            {
+                return IsAirWork(spell);
             }
 
             if (IsAirWork(spell) || IsFireWork(spell))

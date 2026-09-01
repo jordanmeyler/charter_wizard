@@ -4,8 +4,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// A hanging veil that stays: fog that withholds the room, or a poison
-    /// mist that does not lift until another element tears it.
+    /// A hanging veil that stays: fog that withholds the room, or a
+    /// miasma cloud that does not lift until wind takes it.
     /// </summary>
     public sealed class VeilField : MonoBehaviour
     {

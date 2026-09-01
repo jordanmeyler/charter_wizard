@@ -12,7 +12,8 @@ namespace RuneMagic
     /// When fuel is spent, fire cover wears off and ash covers the
     /// leftover walk (dirt if the floor was fuel, masonry if it was
     /// stone). Vine cover speaks Plant — Vine is a spell, not a rune.
-    /// Miasma is Cloud · Acid. Fog is the Cloud veil.
+    /// Miasma is Cloud · Acid, a hanging fog wind must take.
+    /// Poison is a liquid slick yield washes. Fog is the Cloud veil.
     /// </summary>
     public static class CoverCatalog
     {
@@ -24,6 +25,7 @@ namespace RuneMagic
             TileCover.Water,
             TileCover.Vine,
             TileCover.Miasma,
+            TileCover.Poison,
             TileCover.Fog,
             TileCover.Mud,
             TileCover.Ash
@@ -39,6 +41,7 @@ namespace RuneMagic
                 case TileCover.Water: return RuneId.Water;
                 case TileCover.Vine: return RuneId.Plant;
                 case TileCover.Miasma: return RuneId.Miasma;
+                case TileCover.Poison: return RuneId.Poison;
                 case TileCover.Fog: return RuneId.Cloud;
                 case TileCover.Mud: return RuneId.Mud;
                 case TileCover.Ash: return RuneId.Ash;
@@ -64,8 +67,10 @@ namespace RuneMagic
                 case RuneId.Plant:
                     return TileCover.Vine;
                 case RuneId.Miasma:
-                case RuneId.Poison:
                     return TileCover.Miasma;
+                case RuneId.Poison:
+                case RuneId.Acid:
+                    return TileCover.Poison;
                 case RuneId.Cloud:
                     return TileCover.Fog;
                 case RuneId.Mud:
@@ -87,6 +92,7 @@ namespace RuneMagic
                 case TileCover.Water: return MaterialId.Water;
                 case TileCover.Vine: return MaterialId.Plant;
                 case TileCover.Miasma: return MaterialId.Miasma;
+                case TileCover.Poison: return MaterialId.Acid;
                 case TileCover.Fog: return MaterialId.Cloud;
                 case TileCover.Mud: return MaterialId.Mud;
                 case TileCover.Ash: return MaterialId.Ash;
@@ -275,9 +281,18 @@ namespace RuneMagic
                 || MaterialOf(TileCover.Ice) != MaterialId.Ice
                 || MaterialOf(TileCover.Water) != MaterialId.Water
                 || MaterialOf(TileCover.Lightning) != MaterialId.Vein
-                || MaterialOf(TileCover.Vine) != MaterialId.Plant)
+                || MaterialOf(TileCover.Vine) != MaterialId.Plant
+                || MaterialOf(TileCover.Poison) != MaterialId.Acid
+                || MaterialOf(TileCover.Miasma) != MaterialId.Miasma)
             {
                 broken.Add("Spoken covers must name an overlay material so spells can find them");
+            }
+
+            if (CoverOf(RuneId.Poison) != TileCover.Poison
+                || CoverOf(RuneId.Miasma) != TileCover.Miasma
+                || CoverOf(RuneId.Acid) != TileCover.Poison)
+            {
+                broken.Add("Poison is a liquid slick; miasma is the airborne cloud");
             }
 
             if (!IsOverlayMaterial(MaterialId.Oil)

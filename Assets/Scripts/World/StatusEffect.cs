@@ -78,7 +78,8 @@ namespace RuneMagic
         /// Focus holds mind work — ailments and wards. Wards use
         /// Sulphur; they are mind spells. A later sentence that
         /// reuses a mark lets the held working go.
-        /// Burning and poison are meters: they run down to ash or death.
+        /// Burning and poison are meters: they run while the body
+        /// still stands in that fire or foul, then empty is ash or death.
         /// </summary>
         public bool NeedsConcentration => IsWard || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;

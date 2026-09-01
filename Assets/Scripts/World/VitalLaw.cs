@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RuneMagic
 {
@@ -16,7 +17,9 @@ namespace RuneMagic
 
     /// <summary>
     /// Burning and poison share one law: a named integrity clock.
-    /// Sulphur work does not use this — it stays until focus breaks.
+    /// The clock only runs while the body still stands in matching
+    /// fire or foul. Sulphur work does not use this — it stays until
+    /// focus breaks.
     /// </summary>
     public static class VitalLaw
     {
@@ -50,6 +53,56 @@ namespace RuneMagic
 
         public static bool IsMeter(StatusId id) =>
             ClockOf(id) == StatusClock.Meter;
+
+        /// <summary>
+        /// Burning and poison only run while the body still stands in
+        /// that kind of walk or covering. Hunger needs fire floor,
+        /// fire cover, or a live flame. Poison needs a poison slick
+        /// underfoot, or a miasma cloud (the tile, a neighbour, or a
+        /// hanging veil). Flight and hop lift the feet — the clock waits.
+        /// </summary>
+        public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
+        {
+            if (!IsMeter(id))
+            {
+                return true;
+            }
+
+            if (airborne)
+            {
+                return false;
+            }
+
+            var tile = grid != null ? grid.TileAtWorld(world) : null;
+            if (id == StatusId.Burning)
+            {
+                return IsFireContact(tile);
+            }
+
+            if (id == StatusId.Poisoned)
+            {
+                return IsPoisonLiquidContact(tile) || WorldPhysics.MiasmaCloudAt(grid, world);
+            }
+
+            return false;
+        }
+
+        public static bool IsFireContact(WorldTile tile)
+        {
+            if (tile == null)
+            {
+                return false;
+            }
+
+            return tile.IsBurning
+                || tile.HasFireCover
+                || tile.IsFireFloor
+                || tile.Kindled
+                || WorldWork.BurnsOccupants(tile);
+        }
+
+        public static bool IsPoisonLiquidContact(WorldTile tile) =>
+            tile != null && tile.IsPoisonWater;
 
         public static float Seconds(StatusId id, CreatureNature nature, bool adept)
         {
@@ -195,6 +248,34 @@ namespace RuneMagic
                 || ClockOf(StatusId.Rooted) != StatusClock.Timed)
             {
                 broken.Add("Frost, stun, and root must lift on a clock, not kill");
+            }
+
+            if (ContactFeeds(StatusId.Burning, null, default, true)
+                || ContactFeeds(StatusId.Poisoned, null, default, true)
+                || ContactFeeds(StatusId.Frozen, null, default, true) == false)
+            {
+                broken.Add("Meters wait when the feet leave the matching walk; timed clocks still lift");
+            }
+
+            if (IsFireContact(null) || IsPoisonLiquidContact(null))
+            {
+                broken.Add("Empty ground cannot feed a burn or poison meter");
+            }
+
+            if (SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
+                || SpellVerb.Of(SpellId.Miasma).Tiles != TileVerb.Foul
+                || SpellVerb.Of(SpellId.Blight).Tiles != TileVerb.Foul)
+            {
+                broken.Add("Poison must slick a liquid; blight and miasma must foul a cloud");
+            }
+
+            if (WorldWork.IsPoisonVeil(SpellId.Poison)
+                || !WorldWork.IsPoisonVeil(SpellId.Miasma)
+                || !WorldWork.ClearsVeil(SpellId.Gust, VeilKind.Poison)
+                || WorldWork.ClearsVeil(SpellId.Fireball, VeilKind.Poison)
+                || WorldWork.ClearsVeil(SpellId.Douse, VeilKind.Poison))
+            {
+                broken.Add("Miasma is a cloud wind must take; poison is a liquid, not a veil");
             }
 
             if (BurnSeconds(CreatureNature.Flesh, true) != AdeptBurnSeconds
