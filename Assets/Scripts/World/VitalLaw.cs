@@ -132,17 +132,20 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How hard a standing fire runs from a body. Faster fuel
-        /// spreads; four seconds and slower stay put.
+        /// How hard a standing fire runs from a body.
+        /// max(0, 4 − seconds): oil 3, wood 2, plant 1.
+        /// Grove (4s) and ember (5s) are 0 — not a negative clock.
+        /// Flammability is a separate catch number.
         /// </summary>
         public static float FireRun(float burnSeconds)
         {
-            if (burnSeconds <= 0f || burnSeconds >= SlowBurnSeconds)
+            if (burnSeconds <= 0f)
             {
                 return 0f;
             }
 
-            return SlowBurnSeconds - burnSeconds;
+            var run = SlowBurnSeconds - burnSeconds;
+            return run > 0f ? run : 0f;
         }
 
         public static string FatalNote(StatusId id, string who, bool adept)
@@ -215,8 +218,8 @@ namespace RuneMagic
                 || ItemBurnSeconds(MaterialId.Moss) != PlantBurnSeconds
                 || FireRun(OilBurnSeconds) <= FireRun(TimberBurnSeconds)
                 || FireRun(TimberBurnSeconds) <= FireRun(PlantBurnSeconds)
-                || FireRun(GroveBurnSeconds) > 0f
-                || FireRun(EmberBurnSeconds) > 0f)
+                || FireRun(GroveBurnSeconds) != 0f
+                || FireRun(EmberBurnSeconds) != 0f)
             {
                 broken.Add("Fuel clocks are 1–5s: oil, wood, plant; slow bodies do not spread");
             }

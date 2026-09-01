@@ -193,7 +193,7 @@ Each material now carries flammability, conductivity, and a burn clock in `Mater
 | **Flammability** | Fire-retardant — puts nearby fire out (water −1.6, ice −0.85, rain −1.1) | Will not catch | How readily hunger takes it (oil 2.2, timber 1.6, plant 1.1, grove 0.85) |
 | **Conductivity** | Insulator — wood and plants disrupt the path (timber −0.9, plant −1.1, grove −1.2) | Neutral — may hold a spark but will not pass it (stone, dirt, sand) | How freely a spark travels (metal 1.6, water 1.25, vein 0.85) |
 | **BurnSeconds** | — | Not fuel | How long a full fire lasts (oil 1s, wood 2s, plant 3s, grove 4s, ember 5s) |
-| **BurnRate** | — | Slow fuel — burns in place (4s+) | How hard hunger runs (derived: oil 3, wood 2, plant 1) |
+| **BurnRate** | — | Slow fuel — `max(0, 4 − seconds)` so 4s+ is 0, never negative | How hard hunger runs (oil 3, wood 2, plant 1) |
 
 Tiles keep live state: **Fire**, **Wet**, **Charge**, **Growth**. Plant a vegetable body (`Sprout`) and water it — the patch grows toward Grove. Fire spreads onto flammable neighbors and burns plants to Ash. Retardant neighbors quench. Charge walks **conductive** tiles (metal, water, wet stone, vein). Neutral stone can take a bolt but will not pass it unless a neighbor conducts. Wood and plants **insulate** — they break the path, even on metal. Overlays (`tile-fire`, `tile-wet`, `tile-charge`, `tile-grow`) make the reaction visible.
 

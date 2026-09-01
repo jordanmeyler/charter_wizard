@@ -98,7 +98,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not catch. Positive = how readily hunger takes it. |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
 | **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 1, wood 2, plant 3, grove 4, ember 5). Wood burns better than plant. Zero is not fuel. |
-| **BurnRate** | How fast a standing fire travels from this tile. Derived from the clock: faster fuel runs harder. **Four seconds and slower stay put.** |
+| **BurnRate** | How fast a standing fire travels from this tile. `max(0, 4 − seconds)` so oil is 3, wood 2, plant 1. Grove and ember floor at 0 — they do not go negative. Flammability is the separate catch number. |
 
 Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
