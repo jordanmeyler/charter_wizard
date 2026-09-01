@@ -470,7 +470,7 @@ namespace RuneMagic
                 {
                     var wick = tile.HasOil || tile.Material == MaterialId.Oil || tile.HasVine;
                     tile.Ignite(wick ? 1.4f : 0.85f);
-                    if (oiled && tile.IsConjured && tile.Material == MaterialId.Oil)
+                    if (wick && tile.IsConjured && tile.Material == MaterialId.Oil)
                     {
                         DetonateOil(grid, tile.Coord);
                         detonated++;
@@ -748,8 +748,7 @@ namespace RuneMagic
                 broken.Add("Oil puddle and geyser slick the floor; a slick must cover a wide radius");
             }
 
-            if (WorldSim.OilFireRun <= WorldSim.DryFireRun
-                || WorldSim.DryFireRun <= WorldSim.VineFireRun)
+            if (!FireRunsFaster(WorldSim.OilFireRun, WorldSim.DryFireRun, WorldSim.VineFireRun))
             {
                 broken.Add("Oil must run faster than wood, wood faster than plant");
             }
@@ -839,6 +838,11 @@ namespace RuneMagic
             }
 
             return cells;
+        }
+
+        static bool FireRunsFaster(float oil, float wood, float plant)
+        {
+            return oil > wood && wood > plant;
         }
 
         static bool CanTake(ISpellLock encounter, SpellVerb verb)

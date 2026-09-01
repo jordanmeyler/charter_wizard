@@ -744,6 +744,16 @@ namespace RuneMagic
 
         static Sprite LookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)
         {
+            if (paint != null && paint.sprite != null)
+            {
+                return paint.sprite;
+            }
+
+            if (raw is Tile painted && painted.sprite != null)
+            {
+                return painted.sprite;
+            }
+
             if (map != null)
             {
                 var shown = map.GetSprite(pos);
@@ -753,9 +763,9 @@ namespace RuneMagic
                 }
             }
 
-            if (paint != null)
+            if (paint != null && !paint.KeepsPaintedLook)
             {
-                return paint.sprite != null ? paint.sprite : paint.PreviewSprite(pos.x, pos.y);
+                return paint.PreviewSprite(pos.x, pos.y);
             }
 
             return SpriteOf(raw);

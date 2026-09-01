@@ -689,9 +689,9 @@ namespace RuneMagic
 
             if (spell == SpellId.OilSlick)
             {
-                var origin = CoordOf(to);
-                SlickOil(grid, new List<Vector2Int> { origin });
-                WorldSim.Ensure(grid)?.BeginSlick(origin, OilSlickRadius);
+                var mouth = CoordOf(to);
+                SlickOil(grid, new List<Vector2Int> { mouth });
+                WorldSim.Ensure(grid)?.BeginSlick(mouth, OilSlickRadius);
                 notes.Add("Fuel runs outward from the point. A wide floor will hold flame.");
             }
             else if (IsOilWork(spell))

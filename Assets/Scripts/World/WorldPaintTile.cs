@@ -139,7 +139,7 @@ namespace RuneMagic
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
         {
             base.GetTileData(position, tilemap, ref tileData);
-            if (tileData.sprite == null)
+            if (tileData.sprite == null && !KeepsPaintedLook)
             {
                 tileData.sprite = PreviewSprite(position.x, position.y);
             }
@@ -151,11 +151,23 @@ namespace RuneMagic
             tileData.flags = TileFlags.LockColor | TileFlags.LockTransform;
         }
 
+        /// <summary>
+        /// Water / rain stamps only add qualities. They must not invent a
+        /// pool graphic when the painted sprite is missing.
+        /// </summary>
+        public bool KeepsPaintedLook =>
+            material == MaterialId.Water || material == MaterialId.Rain;
+
         public Sprite PreviewSprite(int x = 0, int y = 0)
         {
             if (sprite != null)
             {
                 return sprite;
+            }
+
+            if (KeepsPaintedLook)
+            {
+                return null;
             }
 
             TileAtlas.Ensure();
