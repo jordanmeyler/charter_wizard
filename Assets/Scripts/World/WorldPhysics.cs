@@ -821,6 +821,7 @@ namespace RuneMagic
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);
             PlantLaw.Audit(broken);
+            WorldPaintTile.Audit(broken);
             RoomSentence.Audit(broken);
         }
 

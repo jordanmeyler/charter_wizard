@@ -160,19 +160,50 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Plant / timber / water / fire stamps add qualities over the
-        /// tile you painted. They must not invent a new floor graphic,
-        /// and they must not swap in pack art when a sprite is already
-        /// there. Fire is walk matter at rest, like stone — not a cover.
+        /// Floor and wall stamps add qualities over the tile you
+        /// painted. Pack art on Floor-Stone / Floor-Plant is only a
+        /// chip preview — it must not replace the tileset already on
+        /// that cell. Fire is walk matter at rest, like stone.
         /// </summary>
-        public bool IsQualityStamp =>
-            material == MaterialId.Water ||
-            material == MaterialId.Rain ||
-            material == MaterialId.Plant ||
-            material == MaterialId.Grove ||
-            material == MaterialId.Moss ||
-            material == MaterialId.Timber ||
-            material == MaterialId.Fire;
+        public bool IsQualityStamp => IsQualityStampOf(kind, material);
+
+        public static bool IsQualityStampOf(TileKind kind, MaterialId material)
+        {
+            if (kind == TileKind.Floor || kind == TileKind.Wall)
+            {
+                return true;
+            }
+
+            switch (material)
+            {
+                case MaterialId.Water:
+                case MaterialId.Rain:
+                case MaterialId.Plant:
+                case MaterialId.Grove:
+                case MaterialId.Moss:
+                case MaterialId.Timber:
+                case MaterialId.Fire:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static void Audit(System.Collections.Generic.List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            if (!IsQualityStampOf(TileKind.Floor, MaterialId.Stone)
+                || !IsQualityStampOf(TileKind.Floor, MaterialId.Dirt)
+                || !IsQualityStampOf(TileKind.Floor, MaterialId.Ice)
+                || !IsQualityStampOf(TileKind.Wall, MaterialId.Stone))
+            {
+                broken.Add("Floor and wall stamps must keep the tileset sprite they sit on");
+            }
+        }
 
         /// <summary>
         /// Stamps add qualities over the tile you painted. They must

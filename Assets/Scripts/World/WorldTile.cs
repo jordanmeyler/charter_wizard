@@ -87,6 +87,26 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Change walk family / material without throwing away the
+        /// tileset already stamped on this cell.
+        /// </summary>
+        public void AuthorKind(TileKind kind, MaterialId material)
+        {
+            if (kind == TileKind.None)
+            {
+                return;
+            }
+
+            Def = new TileDef(kind, material);
+            if (_renderer != null)
+            {
+                ApplyVisual();
+                ApplyCover();
+                RefreshCollider();
+            }
+        }
+
+        /// <summary>
         /// Floor under a wall or door. Pack wall tiles leave the cobble
         /// transparent in the same cell; Play used to show the void there.
         /// </summary>

@@ -17,7 +17,9 @@ each `WorldPaintTile` into a live `WorldTile`.
    ElvGames palette. Erase or overwrite the starter room as you like.
    Cells you leave empty are the drop at Play. A painted look is **not**
    floor until you stamp **Kind = Floor** or use a **Floor-** brush.
-   Raise a pillar or wall to cross a drop.
+   A Floor or wall stamp on a painted cell keeps that cell's sprite —
+   pack art on the brush is only a palette chip. Raise a pillar or
+   wall to cross a drop.
 5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
    Select the layer you just painted (Tiles, Walls, or Environment
    Details), turn on **Paint in Scene view**, pick Kind / Material /
@@ -311,7 +313,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 
 A layer named **Enviroment Details** (the typo) still counts as Environment Details.
 
-Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Plant, timber, water, and fire stamps keep the tileset sprite they sit on — they do not swap in Floor-Plant / Floor-Timber / Floor-Fire pack art. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on.
+Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Floor and wall stamps keep the tileset sprite they sit on — they do not swap in Floor-Stone / Floor-Plant / Floor-Fire pack art. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on. The walk tile you already painted stays; a later Floor layer does not draw over it.
 
 **Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, ash covers the cell, and a plant or timber floor becomes dirt (look and Earth). Stone floors do not catch; a burned table on stone leaves ash on the cobble. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
