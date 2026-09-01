@@ -495,7 +495,7 @@ namespace RuneMagic
         /// <summary>
         /// Wrought elementals that sit on the Develop Charter wall so
         /// Spark, Ice, Plant and the rest can be strung like the eleven.
-        /// Play offers them when the room is already speaking them.
+        /// Play draws them from the weave when the room is speaking them.
         /// </summary>
         public static readonly RuneId[] ElementalJoins =
         {

@@ -225,7 +225,7 @@ A beginner wizard writes a fireball for **two seconds** and commits the facing w
 
 The verb is **casting**, not puzzle-solving. You craft a spell from the runes available and cast it to overcome the obstacle — rarely one "correct" answer, only spells you can build.
 
-The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and, only in the Charter, a **woven grid** of runes spoken by those tiles, by creature formulas, and by world-strings **that are on screen**. Glyphs are not glued to a floor square and they do not follow you while you explore. **Space** opens the **Charter**. The weave is the room’s sentence. The **wall at the top is not the eleven by default** — it holds only marks the player has **remembered**. For now, remember is a select (right-click / Shift-click a mark in the weave). Later a rune’s depth will ask for a variety of casts and other conditions. You cannot string a rune that is not in the camera, except that Air is already there wherever the room can be breathed, and **you** are already there as mind · body · soul. Those three are also **carved into the hub floor** and held on pillars around the crystal, so the adept’s recipe can be read in the room. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a cell in the weave to draw that rune.
+The player **moves and casts**. Perception is a stance, not a tile overlay. The world has two pictures: the **tiles** (what you walk on) and, only in the Charter, a **woven grid** of runes spoken by those tiles, by creature formulas, and by world-strings **that are on screen**. Glyphs are not glued to a floor square and they do not follow you while you explore. **Space** opens the **Charter**. The weave is the room’s sentence. Play does **not** keep a wall of root marks at the top — you draw from the grid, or send a kept Grimoire working if those marks are around. Remembered marks will sit on that wall later. You cannot string a rune that is not in the camera, except that Air is already there wherever the room can be breathed, and **you** are already there as mind · body · soul. Those three are also **carved into the hub floor** and held on pillars around the crystal, so the adept’s recipe can be read in the room. You string runes — up to eight — then **Charter Cast**, **Store** (Charter only), or **Free Cast**. Click a cell in the weave to draw that rune. A Grimoire page that needs marks not in the weave says so, and shows the missing marks.
 
 World altars do not teach by writing FIRE. They put the **mark beside a picture** of the thing — flame, water, rock, gale; a standing body, an opening path, a mind. Play hides the name. Develop still writes it.
 
@@ -236,13 +236,13 @@ A **recent-cast strip** (last twenty-five) sits on the Charter and the world, wi
 | | **Play** | **Develop** |
 |---|---|---|
 | Marks | Abstract work-signs. No letters, names, or element colours. | Letters, names, birth recipes, and the palette. |
-| Wall | Empty until a mark is kept, then any wrought join the room is speaking (Spark, Ice, Plant…). | The eleven plus the elemental joins (Spark, Lightning, Ice, Plant…), named. Off-screen marks stay grey. |
-| Book | Kept marks and kept workings only. Click a saved page to send it. | The full written ledger (click a name to string it). |
+| Wall | Hidden. Draw from the weave. Remembered marks will sit here later. | The eleven plus the elemental joins (Spark, Lightning, Ice, Plant…), named. Off-screen marks stay grey. |
+| Book | Kept workings only. Click a saved page to send it if those marks are in the weave. | The full written ledger (click a name to string it). |
 
 Play is the game. Part of the fun is learning what a mark *does*. Simple sentences stay worthwhile because you have to find the marks and keep them. Develop is for authoring.
 
 1. **Assess** — the obstacle (an enemy's nature/weakness, or terrain in the way), and the sentence the room is writing. Ash Court reads Ash as itself, then the mite as Fire · Salt · Life, and you as mind · body · soul. The Drop is a tear. Storm Cell writes **Spark** as itself; Fire and Air are strewn through the grid.
-2. **Craft** — assemble a chain from the Charter wall, or draw glyphs out of the room’s weave. Two runes birth a join or wait. A finished spell is a sentence.
+2. **Craft** — draw glyphs out of the room’s weave, or send a kept Grimoire working if those marks are around. Two runes birth a join or wait. A finished spell is a sentence.
 3. **Aim** — Charter Cast or Free Cast from the wall, or later from the held Charter slot. The chain already chose Shot, Pillar, Grow, Remote, or Self. Click where that form goes. Unwritten or scrambled Charter strings fizzle. Free unscrambles a valid bag, fills up to the fill budget, and, on a clash, attunement picks the whole sentence — form included.
 4. **Overcome** — the right spell at the right place resolves it at once. No HP bar. A missed key can still leave a status or start a tile reaction. A slam or a shot that lands sends you to the crystal.
 
@@ -263,7 +263,7 @@ Knowing an enemy's composition tells you *what spell it's vulnerable to* — you
 - [~] **Free attunement** — use grows a type and a named spell (clash weight + potency). Fill budget is 1, stored as a number. Free also unscrambles a valid bag of runes. Decay of unused types, higher budgets, and a Free-store item are still open.
 - [ ] **Free attunement tuning** — build/decay rates, how many focus runes, off-focus penalty steepness.
 - [ ] **Path model** — hard class, taint accumulation, or fully fluid with consequences only.
-- [~] **Learning surface** — Play sight hides names; the Charter wall always holds the eleven roots so a sentence can be written. Remembered joins and any wrought elemental the room is speaking (Spark, Ice, Plant…) sit beside them. Later: keep-conditions by rune depth (a variety of casts, and other gates). The Develop ledger remains the full book.
+- [~] **Learning surface** — Play sight hides names and the Charter wall. Draw from the weave, or send a kept Grimoire working if those marks are around. Remembered marks will sit on the wall later, with keep-conditions by rune depth. The Develop ledger remains the full book and still lists the eleven on the wall.
 - [~] **"Reading" creatures** — Play hides formula text on the chrome. The weave still shows the marks. Whether the player *understands* a living recipe is still open.
 - [ ] **Item catalogue** — concrete mythic items and the gates they touch.
 - [ ] **Magnum Opus color meta** — Nigredo → Albedo → Citrinitas → Rubedo as chapter/tier/world-tint.

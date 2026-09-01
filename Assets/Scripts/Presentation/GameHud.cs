@@ -160,6 +160,11 @@ namespace RuneMagic
             }
 
             GUI.enabled = previousEnabled;
+            if (!EditingName)
+            {
+                DrawCastNotice();
+            }
+
             if (EditingName)
             {
                 DrawKeepModal();
@@ -218,6 +223,61 @@ namespace RuneMagic
                 names.alignment = TextAnchor.MiddleCenter;
                 GUI.Label(new Rect(panel.x + 16, panel.y + 140, panel.width - 32, 20),
                     WorkingNames.RunePhrase(runes), names);
+            }
+        }
+
+        void DrawCastNotice()
+        {
+            if (_director == null || !_director.HasCastNotice)
+            {
+                return;
+            }
+
+            var missing = _director.CastNoticeRunes;
+            var markRow = missing != null && missing.Count > 0;
+            var ledgerOpen = _director.Mode == PlayMode.Charter
+                || _director.Mode == PlayMode.Exploring
+                || _director.Mode == PlayMode.Aiming;
+            var right = ledgerOpen ? Screen.width - LedgerWidth - 28f : Screen.width - 24f;
+            var width = Mathf.Min(720f, Mathf.Max(280f, right - 24f));
+            var height = markRow ? 88f : 64f;
+            var y = _director.Mode == PlayMode.Exploring || _director.Mode == PlayMode.Aiming
+                ? 216f
+                : 92f;
+            var x = ledgerOpen ? 16f : (Screen.width - width) * 0.5f;
+            var panel = new Rect(x, y, width, height);
+            DrawPanel(panel.x, panel.y, panel.width, panel.height);
+            var previous = GUI.color;
+            GUI.color = new Color(0.95f, 0.72f, 0.28f, 0.95f);
+            DrawFrame(panel, 2f);
+            GUI.color = previous;
+
+            var body = Label(15, FontStyle.Bold, new Color(0.98f, 0.9f, 0.62f));
+            body.alignment = TextAnchor.MiddleCenter;
+            var textTop = markRow ? panel.y + 6f : panel.y;
+            var textHeight = markRow ? 28f : panel.height;
+            GUI.Label(new Rect(panel.x + 12, textTop, panel.width - 24, textHeight),
+                _director.CastNotice, body);
+
+            if (!markRow)
+            {
+                return;
+            }
+
+            const float slot = 36f;
+            const float gap = 8f;
+            var start = panel.x + (panel.width - missing.Count * (slot + gap) + gap) * 0.5f;
+            var markY = panel.y + 42f;
+            for (var i = 0; i < missing.Count; i++)
+            {
+                var rect = new Rect(start + i * (slot + gap), markY, slot, slot);
+                var previousFill = GUI.color;
+                GUI.color = new Color(0.12f, 0.1f, 0.08f, 0.9f);
+                GUI.DrawTexture(rect, Texture2D.whiteTexture);
+                GUI.color = new Color(0.95f, 0.72f, 0.28f, 0.85f);
+                DrawFrame(rect, 1.5f);
+                GUI.color = previousFill;
+                RuneMark.DrawGui(rect, missing[i], RunePalette.MarkInk(missing[i]));
             }
         }
 
@@ -885,16 +945,21 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
                     "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover a mark to still the belt and see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Hover the weave to still it and see where a mark is from. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the weave is open. Draw marks from the grid, or send a kept working from the Grimoire if those marks are around. Hover the weave to still it and see where a mark is from. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(
                     "F / Enter Charter Cast   ·   X Free Cast   ·   R Store (Charter only)   ·   Space close   ·   Esc / Grimoire   ·   F1 Play",
-                    "F / Enter Charter Cast   ·   X Free Cast   ·   R Store   ·   Right-click keep   ·   Space close   ·   F1 Develop"),
+                    "F / Enter Charter Cast   ·   X Free Cast   ·   R Store   ·   Space close   ·   Esc / Grimoire   ·   F1 Develop"),
                 hint);
 
-            var wallBottom = DrawRuneWall();
-            DrawRoomWeave(wallBottom + 6f);
+            var weaveTop = GlyphView.IsPlay ? 98f : DrawRuneWall();
+            if (GlyphView.IsPlay && _director.HasCastNotice)
+            {
+                weaveTop = Mathf.Max(weaveTop, 186f);
+            }
+
+            DrawRoomWeave(weaveTop + 6f);
             DrawComposeDock();
         }
 
@@ -1167,7 +1232,7 @@ namespace RuneMagic
             var accent = Label(16, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             GUI.Label(new Rect(24, dockTop + 10, 640, 22), "String", accent);
             GUI.Label(new Rect(24, dockTop + 86, Screen.width - 48, 20),
-                _director.Composer.Describe(), body);
+                _director.HasCastNotice ? _director.CastNotice : _director.Composer.Describe(), body);
             GUI.Label(new Rect(24, dockTop + 106, Screen.width - 48, 20),
                 _director.Composer.DescribeFree(_director.Attunement), body);
 
@@ -1385,7 +1450,7 @@ namespace RuneMagic
             GUI.Label(new Rect(40, 56, 980, 22),
                 GlyphView.Speak(
                     $"{_director.Attunement.Notes()}   ·   Every rune and written spell. Click a join (Metal is Lava · Spark · Earth) or a spell to string it. The eleven roots are always ready. Esc closes.",
-                    "Your book. Workings you have kept, and marks you remember. Click a page to send it. The eleven roots are always ready. Esc closes."),
+                    "Your book. Workings you have kept. Click a page to send it — the marks must be in the weave. Esc closes."),
                 subtitle);
 
             var view = new Rect(40, 92, Screen.width - 80, Screen.height - BarHeight - 112);
@@ -1490,7 +1555,7 @@ namespace RuneMagic
             if (loadable)
             {
                 GUI.Label(new Rect(0, y, 1100, 18),
-                    "Click a wrought name to string the recipe. The eleven roots are always ready.",
+                    "Click a wrought name to string the recipe. The eleven roots sit on the Develop wall.",
                     muted);
                 y += 20f;
             }
@@ -1724,7 +1789,7 @@ namespace RuneMagic
             {
                 var muted = Label(14, FontStyle.Italic, new Color(0.72f, 0.74f, 0.82f));
                 GUI.Label(new Rect(0, y, 900, 20),
-                    "No wall marks kept yet. Right-click a mark in the Charter weave to remember it.",
+                    "No marks kept yet. Remembering a mark for the wall comes later. Draw from the weave for now.",
                     muted);
                 return y + 28f;
             }
@@ -1740,7 +1805,7 @@ namespace RuneMagic
                     _director.CloseGrimoire();
                     _director.OpenCharter();
                     _director.AddRune(rune);
-                }, true);
+                }, _director.InVicinity(rune));
             }
 
             return y + size + 16f;
@@ -1753,7 +1818,7 @@ namespace RuneMagic
             {
                 var muted = Label(16, FontStyle.Italic, new Color(0.72f, 0.74f, 0.82f));
                 GUI.Label(new Rect(view.x + 12, view.y + 12, view.width - 24, 80),
-                    "Nothing is kept yet. Open the Charter and right-click a mark in the weave to remember it.",
+                    "Nothing is kept yet. Remembering a mark for the wall comes later. Draw from the weave for now.",
                     muted);
                 return;
             }
@@ -1772,7 +1837,7 @@ namespace RuneMagic
                     _director.CloseGrimoire();
                     _director.OpenCharter();
                     _director.AddRune(rune);
-                }, true);
+                }, _director.InVicinity(rune));
             }
         }
 

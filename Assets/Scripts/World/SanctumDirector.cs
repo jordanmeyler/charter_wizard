@@ -54,6 +54,10 @@ namespace RuneMagic
         public RuneTapestry Tapestry { get; private set; }
         public string FieldReading { get; private set; } = string.Empty;
         public IReadOnlyList<RuneId> VisibleRunes => BuildWallRunes();
+        public string CastNotice { get; private set; } = string.Empty;
+        public IReadOnlyList<RuneId> CastNoticeRunes { get; private set; } = System.Array.Empty<RuneId>();
+        public bool HasCastNotice =>
+            !string.IsNullOrEmpty(CastNotice) && Time.unscaledTime < _castNoticeUntil;
         public IReadOnlyList<SpellShape> AvailableShapes { get; private set; } = System.Array.Empty<SpellShape>();
         public SpellShape ChosenShape { get; private set; }
         public string PendingPreview { get; private set; } = string.Empty;
@@ -74,6 +78,7 @@ namespace RuneMagic
         Vector3 _spawnPoint;
         bool _finished;
         PlayMode _modeBeforePause = PlayMode.Exploring;
+        float _castNoticeUntil;
         ISpellLock _focus;
         SpriteRenderer _targetRing;
         SpriteRenderer _aimMark;
@@ -485,7 +490,7 @@ namespace RuneMagic
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
                 "The screen unrolls. You can walk. Every root mark is ready. What you have already strung stays until you cast or close.",
-                "The screen unrolls. You can walk. Draw marks from the wall or the weave. What you have already strung stays until you cast or close."));
+                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
         }
 
         public void CloseCharter(bool releaseString = true)
@@ -571,7 +576,7 @@ namespace RuneMagic
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
                 "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
-                "Your book. Workings you have kept. Click a page to send it. The eleven roots are always ready."));
+                "Your book. Workings you have kept. Click a page to send it — the marks must be in the weave."));
         }
 
         public void CloseGrimoire()
@@ -663,12 +668,29 @@ namespace RuneMagic
 
         public bool InVicinity(RuneId rune)
         {
-            if (RuneCatalog.IsBasic(rune))
+            if (rune == RuneId.None)
+            {
+                return false;
+            }
+
+            // Develop still keeps the eleven on the wall so a sentence
+            // can be written without hunting the weave.
+            if (GlyphView.IsDevelop && RuneCatalog.IsBasic(rune))
             {
                 return true;
             }
 
-            return Tapestry != null && Tapestry.InVicinity(rune);
+            if (Tapestry != null)
+            {
+                Tapestry.Resample();
+                if (Tapestry.InVicinity(rune))
+                {
+                    return true;
+                }
+            }
+
+            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
+            return perceived != null && perceived.Contains(rune);
         }
 
         public void AddRune(RuneId rune)
@@ -680,10 +702,11 @@ namespace RuneMagic
 
             if (!InVicinity(rune))
             {
-                Log(OffScreenNote(rune));
+                ShowCastNotice(OffScreenNote(rune), new[] { rune });
                 return;
             }
 
+            ClearCastNotice();
             Composer.TryAdd(rune, out var note);
             Log(note);
         }
@@ -708,10 +731,11 @@ namespace RuneMagic
 
             if (!InVicinity(rune))
             {
-                Log(OffScreenNote(rune));
+                ShowCastNotice(OffScreenNote(rune), new[] { rune });
                 return;
             }
 
+            ClearCastNotice();
             Composer.TryAdd(rune, out var note);
             Log(GlyphView.Speak(
                 $"You draw {RuneCatalog.NameOf(rune)} from the weave. {note}",
@@ -1030,15 +1054,18 @@ namespace RuneMagic
                 : $"  ({extras})";
             if (FieldOffers(sources))
             {
+                ClearCastNotice();
                 Log(GlyphView.Speak(
                     $"{name} is {recipe}{extra}. The sentence is strung.",
                     "The join is strung."));
                 return;
             }
 
-            Log(GlyphView.Speak(
-                $"{name} is {recipe}{extra}, but those runes are not all in this view. Walk until they speak.",
-                "The join is strung, but those marks are not all in this view."));
+            ShowCastNotice(
+                GlyphView.Speak(
+                    $"{name} is {recipe}{extra}, but those runes are not all in this view. Walk until they speak.",
+                    "The join is strung, but those marks are not all in this view."),
+                MissingFromField(sources));
         }
 
         public void LoadCodex(int number)
@@ -1068,9 +1095,11 @@ namespace RuneMagic
 
             var gate = entry.FreeOnly ? " Free only — Charter will fizzle." : string.Empty;
             var call = CallWorking(entry.RecipeRunes);
-            Log(GlyphView.Speak(
-                $"{call} is strung, but those runes are not all in this view. Walk until they speak, then Charter Cast.{gate}",
-                "A sentence is strung, but those marks are not all in this view."));
+            ShowCastNotice(
+                GlyphView.Speak(
+                    $"{call} is strung, but those runes are not all in this view. Walk until they speak, then Charter Cast.{gate}",
+                    "A sentence is strung, but those marks are not all in this view."),
+                MissingFromField(entry.RecipeRunes));
         }
 
         public void CastRecent(int index)
@@ -1128,9 +1157,12 @@ namespace RuneMagic
                 return;
             }
 
-            Log(GlyphView.Speak(
-                "Those runes are not in this view. Walk until they speak, then send it again.",
-                "Those marks are not in this view."));
+            var missing = MissingFromField(runes);
+            ShowCastNotice(
+                GlyphView.Speak(
+                    MissingSpeak(missing) + " Walk until they speak, then send it again.",
+                    "Those marks are not around. Find them in the weave, then send it again."),
+                missing);
         }
 
         bool TryCastPrepared(IReadOnlyList<RuneId> runes, IReadOnlyList<RuneId> via, CastingStance stance)
@@ -1160,43 +1192,14 @@ namespace RuneMagic
                 CloseGrimoire();
             }
 
+            ClearCastNotice();
             BeginAim(Composition.FromSequence(chosen), stance, fromHeld: false);
             return true;
         }
 
         public bool FieldOffers(IReadOnlyList<RuneId> runes)
         {
-            if (runes == null || runes.Count == 0)
-            {
-                return false;
-            }
-
-            var seen = new HashSet<RuneId>();
-            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
-            for (var i = 0; i < perceived.Count; i++)
-            {
-                RememberField(seen, perceived[i]);
-            }
-
-            if (Tapestry != null)
-            {
-                Tapestry.Resample();
-                var vicinity = Tapestry.Vicinity;
-                for (var i = 0; i < vicinity.Count; i++)
-                {
-                    RememberField(seen, vicinity[i]);
-                }
-            }
-
-            for (var i = 0; i < runes.Count; i++)
-            {
-                if (!FieldHas(seen, runes[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return runes != null && runes.Count > 0 && MissingFromField(runes).Count == 0;
         }
 
         static void RememberField(HashSet<RuneId> seen, RuneId rune)
@@ -1273,7 +1276,7 @@ namespace RuneMagic
             RefreshVisibleRunes();
             Log(GlyphView.IsDevelop
                 ? "Develop sight. Names, letters, colours, and the written book are shown."
-                : "Play sight. Only marks. The wall holds what you keep.");
+                : "Play sight. Only marks. Draw them from the weave.");
         }
 
         public void RememberRune(RuneId rune)
@@ -1300,7 +1303,7 @@ namespace RuneMagic
         {
             return GlyphView.Speak(
                 $"{RuneCatalog.NameOf(rune)} is not on the screen. Walk until it is in view. Marks already in the string stay.",
-                "That mark is not on the screen. Walk until it is in view. Marks already in the string stay.");
+                "That mark is not around. Find it in the weave. Marks already in the string stay.");
         }
 
         static string AimPreview(string name, SpellShape shape)
@@ -1317,13 +1320,19 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// The eleven roots always sit on the wall so a sentence can
-        /// be written. Develop also lists every wrought elemental.
-        /// Play adds kept marks and joins the room is already speaking.
+        /// Play hides the wall — draw from the weave, or send a kept
+        /// working from the Grimoire if those marks are around.
+        /// Remembered marks will sit here later. Develop still lists
+        /// the eleven and every wrought elemental.
         /// </summary>
         List<RuneId> BuildWallRunes()
         {
             var list = new List<RuneId>(16);
+            if (GlyphView.IsPlay)
+            {
+                return list;
+            }
+
             var seen = new HashSet<RuneId>();
             void Offer(RuneId rune)
             {
@@ -1338,37 +1347,99 @@ namespace RuneMagic
                 Offer(RuneCatalog.BasicRunes[i]);
             }
 
-            if (GlyphView.IsDevelop)
+            for (var i = 0; i < RuneCatalog.ElementalJoins.Length; i++)
             {
-                for (var i = 0; i < RuneCatalog.ElementalJoins.Length; i++)
-                {
-                    Offer(RuneCatalog.ElementalJoins[i]);
-                }
-            }
-            else
-            {
-                var kept = Memory.Kept;
-                for (var i = 0; i < kept.Count; i++)
-                {
-                    Offer(kept[i]);
-                }
-            }
-
-            var vicinity = Tapestry != null ? Tapestry.Vicinity : null;
-            if (vicinity == null)
-            {
-                return list;
-            }
-
-            for (var i = 0; i < vicinity.Count; i++)
-            {
-                if (RuneCatalog.OffersOnWall(vicinity[i]))
-                {
-                    Offer(vicinity[i]);
-                }
+                Offer(RuneCatalog.ElementalJoins[i]);
             }
 
             return list;
+        }
+
+        List<RuneId> MissingFromField(IReadOnlyList<RuneId> runes)
+        {
+            var missing = new List<RuneId>();
+            if (runes == null || runes.Count == 0)
+            {
+                return missing;
+            }
+
+            var seen = new HashSet<RuneId>();
+            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
+            for (var i = 0; i < perceived.Count; i++)
+            {
+                RememberField(seen, perceived[i]);
+            }
+
+            if (Tapestry != null)
+            {
+                Tapestry.Resample();
+                var vicinity = Tapestry.Vicinity;
+                for (var i = 0; i < vicinity.Count; i++)
+                {
+                    RememberField(seen, vicinity[i]);
+                }
+            }
+
+            var listed = new HashSet<RuneId>();
+            for (var i = 0; i < runes.Count; i++)
+            {
+                if (!FieldHas(seen, runes[i]) && listed.Add(runes[i]))
+                {
+                    missing.Add(runes[i]);
+                }
+            }
+
+            return missing;
+        }
+
+        static string MissingSpeak(IReadOnlyList<RuneId> missing)
+        {
+            if (missing == null || missing.Count == 0)
+            {
+                return "Those runes are not in this view.";
+            }
+
+            if (missing.Count == 1)
+            {
+                return $"{RuneCatalog.NameOf(missing[0])} is not in this view.";
+            }
+
+            var names = new string[missing.Count];
+            for (var i = 0; i < missing.Count; i++)
+            {
+                names[i] = RuneCatalog.NameOf(missing[i]);
+            }
+
+            return string.Join(", ", names) + " are not in this view.";
+        }
+
+        void ShowCastNotice(string message, IReadOnlyList<RuneId> missing)
+        {
+            CastNotice = message ?? string.Empty;
+            if (missing == null || missing.Count == 0)
+            {
+                CastNoticeRunes = System.Array.Empty<RuneId>();
+            }
+            else
+            {
+                var copy = new RuneId[missing.Count];
+                for (var i = 0; i < missing.Count; i++)
+                {
+                    copy[i] = missing[i];
+                }
+
+                CastNoticeRunes = copy;
+            }
+
+            _castNoticeUntil = Time.unscaledTime + 5.5f;
+            Log(CastNotice);
+        }
+
+        void ClearCastNotice()
+        {
+            CastNotice = string.Empty;
+            CastNoticeRunes = System.Array.Empty<RuneId>();
+            _castNoticeUntil = 0f;
         }
 
         void HandleWorldClick()
