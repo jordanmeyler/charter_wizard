@@ -502,14 +502,27 @@ To fix a `tiles.json` rect instead (only needed when Sprite is left blank):
 4. `floor-stone` is the stone floor, `wall` is the stone wall, `door`
    is the leaf. Save. Play again.
 
+## Spell-made walls, bridges, leftovers
+
+Floor / Wall stamps never overwrite the tileset. A **spell** that
+stands a wall, bridge, pillar, leftover dirt, or leftover glow uses
+the same Look ids as everything else. Assign sprites in Unity:
+
+`Window → Rune Magic → Looks` → create `wall-ice`, `bridge`,
+`floor-dirt`, `tile-wet`… → drag sliced sprites onto **Frames**.
+
+See [`ART.md`](ART.md) for the id list. Pack slices in `tiles.json`
+stay the fallback when Frames is empty.
+
 ## Adding a tile later
 
-1. Open the sheet in any image tool. Note the pixel rect. Remember
+1. Prefer a Look: `Create → Rune Magic → Look`, set the id, drag sprites.
+2. Or open the sheet in any image tool. Note the pixel rect. Remember
    Unity `y` is measured from the **bottom**.
-2. Add a row to `tiles.json`:
+3. Add a row to `tiles.json`:
 
 ```json
 { "id": "my-tile", "source": "Sprites/Rogue/RA_Crypt", "x": 32, "y": 240, "width": 16, "height": 16 }
 ```
 
-3. Use `"sprite": "my-tile"` on a decor stamp, or `TileAtlas.Get("my-tile")`.
+4. Use `"sprite": "my-tile"` on a decor stamp, or `TileAtlas.Get("my-tile")`.

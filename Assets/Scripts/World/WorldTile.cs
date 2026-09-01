@@ -1789,6 +1789,7 @@ namespace RuneMagic
             {
                 if (_authoredLook != null && _telegraph == MaterialId.None && !IsConjured)
                 {
+                    StopLook(_renderer);
                     _renderer.sprite = _authoredLook;
                     _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
                     ApplyDetail();
@@ -1820,9 +1821,9 @@ namespace RuneMagic
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Bridge:
-                        _renderer.sprite = _telegraph != MaterialId.None || (IsConjured && Material != MaterialId.Stone)
+                        _renderer.sprite = _telegraph != MaterialId.None
                             ? SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, _animFrame < 0 ? 0 : _animFrame)
-                            : SpriteFactory.Bridge();
+                            : SpriteFactory.Bridge(Material, Coord.x, Coord.y);
                         _renderer.sortingOrder = 1;
                         break;
                     case TileKind.Door:
@@ -1833,6 +1834,8 @@ namespace RuneMagic
                         _renderer.sortingOrder = 0;
                         break;
                 }
+
+                PlayConjuredLook();
             }
             catch (System.Exception exception)
             {
@@ -1843,6 +1846,62 @@ namespace RuneMagic
 
             ApplyDetail();
             ApplyUnderlay();
+        }
+
+        void PlayConjuredLook()
+        {
+            if (_renderer == null)
+            {
+                return;
+            }
+
+            string[] ids;
+            switch (Kind)
+            {
+                case TileKind.Wall:
+                    ids = RaisedAs == RaisedForm.Pillar
+                        ? LookIds.Column(Material)
+                        : LookIds.Wall(Material);
+                    break;
+                case TileKind.Bridge:
+                    ids = LookIds.Bridge(Material);
+                    break;
+                case TileKind.Door:
+                    ids = LookIds.Door(false, true);
+                    break;
+                case TileKind.Pit:
+                    ids = Material == MaterialId.Water ? LookIds.Floor(MaterialId.Water) : LookIds.Pit();
+                    break;
+                default:
+                    ids = LookIds.Floor(ShownMaterial);
+                    break;
+            }
+
+            if (LookLibrary.TryAuthoredClip(ids, out var frames, out var id) && frames != null && frames.Length > 1)
+            {
+                SpriteAnim.On(gameObject, _renderer).Play(frames, LookLibrary.FpsOf(id), true, id);
+                return;
+            }
+
+            StopLook(_renderer);
+        }
+
+        static void StopLook(SpriteRenderer renderer)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            var anim = renderer.GetComponent<SpriteAnim>();
+            anim?.Stop();
+        }
+
+        void PlayFxLook(SpriteRenderer fx, string id, Color color)
+        {
+            fx.sprite = SpriteFactory.Named(id);
+            fx.color = color;
+            SpriteAnim.On(fx.gameObject, fx).Play(id, LookLibrary.FpsOf(id));
         }
 
         void ApplyUnderlay()
@@ -1976,6 +2035,15 @@ namespace RuneMagic
                 view.color = new Color(1f, 1f, 1f, CoverDrawAlpha());
                 view.sortingOrder = _renderer.sortingOrder + 1;
                 view.enabled = true;
+                var sheenId = CoverCatalog.SheenId(Cover);
+                if (LookLibrary.HasAuthoredClip(sheenId))
+                {
+                    SpriteAnim.On(view.gameObject, view).Play(sheenId, LookLibrary.FpsOf(sheenId));
+                }
+                else
+                {
+                    StopLook(view);
+                }
             }
             else
             {
@@ -2006,6 +2074,7 @@ namespace RuneMagic
         {
             if (_cover != null)
             {
+                StopLook(_cover);
                 _cover.enabled = false;
             }
         }
@@ -2091,6 +2160,16 @@ namespace RuneMagic
                             _coverId.StartsWith("fx-", System.StringComparison.OrdinalIgnoreCase)
                     ? _coverId
                     : "cover-" + _coverId;
+                if (LookLibrary.TryAuthored(named, out var authored) && authored != null)
+                {
+                    return authored;
+                }
+
+                if (LookLibrary.TryAuthored(_coverId, out authored) && authored != null)
+                {
+                    return authored;
+                }
+
                 if (TileAtlas.TryGet(named, out var painted) && painted != null)
                 {
                     return painted;
@@ -2238,6 +2317,7 @@ namespace RuneMagic
             {
                 if (_fx != null)
                 {
+                    StopLook(_fx);
                     _fx.enabled = false;
                 }
 
@@ -2249,45 +2329,37 @@ namespace RuneMagic
             fx.sortingOrder = _renderer.sortingOrder + 3;
             if (Fire > 0.12f)
             {
-                fx.sprite = SpriteFactory.Named("tile-fire");
-                fx.color = new Color(1f, 0.55f, 0.12f, 0.35f + Fire * 0.5f);
+                PlayFxLook(fx, "tile-fire", new Color(1f, 0.55f, 0.12f, 0.35f + Fire * 0.5f));
             }
             else if (Miasma > 0.18f)
             {
-                fx.sprite = SpriteFactory.Named("tile-poison");
-                fx.color = new Color(0.42f, 0.88f, 0.2f, 0.28f + Miasma * 0.45f);
+                PlayFxLook(fx, "tile-poison", new Color(0.42f, 0.88f, 0.2f, 0.28f + Miasma * 0.45f));
             }
             else if (HasPoisonCover)
             {
-                fx.sprite = SpriteFactory.Named("tile-wet");
-                fx.color = new Color(0.28f, 0.62f, 0.12f, 0.42f);
+                PlayFxLook(fx, "tile-wet", new Color(0.28f, 0.62f, 0.12f, 0.42f));
             }
             else if (Fog > 0.18f)
             {
-                fx.sprite = SpriteFactory.Named("tile-fog");
-                fx.color = new Color(0.62f, 0.66f, 0.7f, 0.24f + Fog * 0.4f);
+                PlayFxLook(fx, "tile-fog", new Color(0.62f, 0.66f, 0.7f, 0.24f + Fog * 0.4f));
             }
             else if (Charge > 0.18f)
             {
-                fx.sprite = SpriteFactory.Named("tile-charge");
-                fx.color = new Color(0.75f, 0.9f, 1f, 0.35f + Charge * 0.45f);
+                PlayFxLook(fx, "tile-charge", new Color(0.75f, 0.9f, 1f, 0.35f + Charge * 0.45f));
             }
             else if (Wet > 0.18f)
             {
-                fx.sprite = SpriteFactory.Named("tile-wet");
-                fx.color = new Color(0.35f, 0.65f, 1f, 0.22f + Wet * 0.35f);
+                PlayFxLook(fx, "tile-wet", new Color(0.35f, 0.65f, 1f, 0.22f + Wet * 0.35f));
             }
             else if (Oil > 0.18f || IsGeyser)
             {
-                fx.sprite = SpriteFactory.Named("tile-wet");
-                fx.color = IsGeyser
+                PlayFxLook(fx, "tile-wet", IsGeyser
                     ? new Color(0.32f, 0.2f, 0.06f, 0.4f + Oil * 0.35f)
-                    : new Color(0.18f, 0.12f, 0.05f, 0.28f + Oil * 0.4f);
+                    : new Color(0.18f, 0.12f, 0.05f, 0.28f + Oil * 0.4f));
             }
             else
             {
-                fx.sprite = SpriteFactory.Named("tile-grow");
-                fx.color = new Color(0.35f, 0.72f, 0.28f, 0.2f + _growth * 0.12f);
+                PlayFxLook(fx, "tile-grow", new Color(0.35f, 0.72f, 0.28f, 0.2f + _growth * 0.12f));
             }
         }
 
@@ -2420,43 +2492,14 @@ namespace RuneMagic
 
             _animFrame = frame;
             var keepAuthored = _authoredLook != null && _telegraph == MaterialId.None && !IsConjured;
+            var lookAnim = GetComponent<SpriteAnim>();
+            var authoredClip = lookAnim != null && LookLibrary.HasAuthoredClip(lookAnim.Clip);
             if (!keepAuthored &&
+                !authoredClip &&
                 SpriteFactory.Animates(ShownMaterial) &&
                 (Kind == TileKind.Floor || (Kind == TileKind.Bridge && (_telegraph != MaterialId.None || IsConjured)) || (Kind == TileKind.Pit && Material == MaterialId.Water)))
             {
                 _renderer.sprite = SpriteFactory.Floor(ShownMaterial, Coord.x, Coord.y, frame);
-            }
-
-            if (_fx != null && _fx.enabled)
-            {
-                if (Fire > 0.12f)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-fire")[frame % 3];
-                }
-                else if (Miasma > 0.18f)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-poison")[frame % 2];
-                }
-                else if (HasPoisonCover)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-wet")[frame % 2];
-                }
-                else if (Fog > 0.18f)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-fog")[frame % 2];
-                }
-                else if (Charge > 0.18f)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-charge")[frame % 2];
-                }
-                else if (Wet > 0.18f)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-wet")[frame % 2];
-                }
-                else if (_growth >= 1)
-                {
-                    _fx.sprite = SpriteFactory.Clip("tile-grow")[frame % 2];
-                }
             }
         }
 

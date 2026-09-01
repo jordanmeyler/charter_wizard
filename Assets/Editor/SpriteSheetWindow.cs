@@ -27,7 +27,8 @@ namespace RuneMagic
         void OnGUI()
         {
             EditorGUILayout.HelpBox(
-                "Drop a sheet, set cell size, list clips as name,start,count,fps. Saves under Assets/Resources/SpriteSheets so Play can find adept-walk or ice-melt.",
+                "Drop a sheet, set cell size, list clips as name,start,count,fps. Saves under Assets/Resources/SpriteSheets so Play can find adept-walk or fireball-shot.\n\n" +
+                "Preferred: Create → Rune Magic → Look (or Window → Rune Magic → Looks) and drag Unity-sliced sprites onto Frames. You can also drag sprites onto a clip's Sprites array on this asset.",
                 MessageType.Info);
             _texture = (Texture2D)EditorGUILayout.ObjectField("Sheet", _texture, typeof(Texture2D), false);
             _id = EditorGUILayout.TextField("Id", _id);

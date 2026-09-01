@@ -100,16 +100,17 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Unity `Window → Rune Magic → Inscriptions` | Place any catalog rune as a floating mark; click tiles in the Scene view |
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
+| Unity `Window → Rune Magic → Looks` | Assign sprites or a looping clip to a spell wall, bridge, leftover, or shot |
 
-Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. The adept uses a Unity Animator on Hero_22; generated painters stay as a fallback. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
+Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. The adept uses a Unity Animator on Hero_22. Spell-made walls, bridges, leftovers, and shots use a **Look** (`Create → Rune Magic → Look`) — drag Unity sprites onto Frames. Generated painters stay as a fallback. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
 
 ## Catalog — recipes, sprites, items
 
 **Yes: one master file controls the recipes.** The game loads [`Assets/Resources/Catalog/spells.json`](Assets/Resources/Catalog/spells.json) at boot. That file is the written story-chains plus the joins (Fire · Air → Spark). [`SPELLS.md`](SPELLS.md) is the prose companion; if they disagree, the JSON wins in play. `SpellCodex.cs` is only a fallback if the JSON is missing.
 
-[`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. A custom sprite can reuse a built-in id (`adept`, `ash-mite`, `charm`, `torch`, `rod`) to replace it, or a new id you assign on an item or a map prop. A PNG in [`Assets/Resources/Sprites/`](Assets/Resources/Sprites/) with that same id also replaces the painter — that is the path off the generated look. `python3 Tools/import-sprite.py file.png --id adept` copies and registers it.
+[`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) is sprites and items. Prefer a Look asset: `Create → Rune Magic → Look`, set the id (`wall-ice`, `bridge`, `fireball-shot`), drag sliced sprites onto Frames. A PNG in [`Assets/Resources/Sprites/`](Assets/Resources/Sprites/) with that same id also replaces the painter. `python3 Tools/import-sprite.py file.png --id adept` copies and registers it.
 
-On a **Gate** or **Door**, drag a Unity sprite onto **Portrait** — that is the normal Inspector path and skips the generated lock. Spell bodies look up clip ids (`fireball-shot`, `fx-fire`). Particle prefabs go in `Assets/Resources/Fx/{Family}`. See [`ART.md`](ART.md).
+On a **Gate** or **Door**, drag a Unity sprite onto **Portrait** — that is the normal Inspector path and skips the generated lock. Particle prefabs go in `Assets/Resources/Fx/{Family}`. See [`ART.md`](ART.md).
 
 | Tool | Use it for |
 | --- | --- |
