@@ -20,6 +20,7 @@ namespace RuneMagic
         string _coverId;
         Sprite _coverLook;
         float _coverAlpha = 1f;
+        MaterialId _coverMaterial;
         bool _openVoid;
 
         /// <summary>
@@ -31,7 +32,9 @@ namespace RuneMagic
 
         public bool IsEmitting =>
             !Def.TearsTapestry
-            && (Emission.Count > 0 || CoverCatalog.RuneOf(Cover) != RuneId.None);
+            && (Emission.Count > 0
+                || CoverCatalog.RuneOf(Cover) != RuneId.None
+                || CoverMaterial != MaterialId.None);
         public Vector3 WorldOrigin => transform.position;
         public float VoiceRadius => 2.4f;
         public float VoiceWeight => Kind == TileKind.Wall ? 0.55f : 1f;
@@ -149,6 +152,21 @@ namespace RuneMagic
 
         public TileCover Cover { get; private set; }
 
+        /// <summary>
+        /// Overlay matter a stamp left. Inert until a spell or a live
+        /// reaction finds it — then ice melts, oil fuels, metal conducts.
+        /// </summary>
+        public MaterialId CoverMaterial =>
+            _coverMaterial != MaterialId.None
+                ? _coverMaterial
+                : CoverCatalog.MaterialOf(Cover);
+
+        public bool HasFireCover =>
+            Cover == TileCover.Fire
+            || CoverMaterial == MaterialId.Ember
+            || CoverMaterial == MaterialId.Hearth
+            || CoverMaterial == MaterialId.Lava;
+
         public void PaintCover(TileCover cover)
         {
             PaintCover(cover == TileCover.None ? null : cover.ToString().ToLowerInvariant());
@@ -158,12 +176,28 @@ namespace RuneMagic
         {
             _coverId = string.IsNullOrWhiteSpace(id) ? null : id.Trim();
             Cover = ParseCover(_coverId);
+            _coverMaterial = CoverCatalog.MaterialOf(Cover);
             if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
             {
                 _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
             }
 
             ApplyCover();
+        }
+
+        /// <summary>
+        /// A material on the Cover layer that is not a spoken TileCover
+        /// (oil, metal, timber). Look stays; live fire / charge / wet
+        /// do not start until work finds the cell.
+        /// </summary>
+        public void AuthorCoverMaterial(MaterialId material)
+        {
+            if (!CoverCatalog.IsOverlayMaterial(material))
+            {
+                return;
+            }
+
+            _coverMaterial = material;
         }
 
         static TileCover ParseCover(string id)
@@ -223,7 +257,11 @@ namespace RuneMagic
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
         public bool HasMiasma => Miasma > 0.2f;
-        public bool HasOil => Oil > 0.2f || Material == MaterialId.Oil || IsGeyser;
+        public bool HasOil =>
+            Oil > 0.2f
+            || Material == MaterialId.Oil
+            || IsGeyser
+            || CoverMaterial == MaterialId.Oil;
         public bool HasVine =>
             Cover == TileCover.Vine
             || string.Equals(_coverId, "vine", System.StringComparison.OrdinalIgnoreCase)
@@ -235,7 +273,8 @@ namespace RuneMagic
                 ? -1.6f
                 : Def.WorldMaterial.Flammability + DetailFlammability
                     + (HasOil ? 1.6f : 0f)
-                    + (HasVine ? 1.4f : 0f);
+                    + (HasVine ? 1.4f : 0f)
+                    + CoverFlammability;
         public float Conductivity
         {
             get
@@ -257,6 +296,11 @@ namespace RuneMagic
                 }
 
                 value = ChargeLaw.Combine(value, ChargeLaw.OfCover(Cover));
+                if (Cover == TileCover.None && CoverMaterial != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(CoverMaterial));
+                }
+
                 value = ChargeLaw.Combine(value, ChargeLaw.OfWetness(Wet));
                 if (HasOil)
                 {
@@ -287,6 +331,25 @@ namespace RuneMagic
             _detailMaterial == MaterialId.None
                 ? 0f
                 : MaterialCatalog.Of(_detailMaterial).Flammability;
+
+        float CoverFlammability
+        {
+            get
+            {
+                var material = CoverMaterial;
+                if (material == MaterialId.None || material == Material || material == MaterialId.Oil)
+                {
+                    return 0f;
+                }
+
+                if (Cover == TileCover.Vine || Cover == TileCover.Water)
+                {
+                    return 0f;
+                }
+
+                return MaterialCatalog.Of(material).Flammability;
+            }
+        }
         public bool CanTakePlant =>
             (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             Material != MaterialId.Water && Material != MaterialId.Lava &&
@@ -553,6 +616,12 @@ namespace RuneMagic
                 return;
             }
 
+            if (amount > 0f && HasIceCover)
+            {
+                MeltIceCover();
+                return;
+            }
+
             if (amount > 0f && (HasWaterCover || Wet > 0.35f))
             {
                 Fire = 0f;
@@ -806,6 +875,12 @@ namespace RuneMagic
                 return Annihilate();
             }
 
+            if (HasIceCover && MatterLaw.Melts(spell, MaterialId.Ice))
+            {
+                MeltIceCover();
+                return true;
+            }
+
             if (!MatterLaw.Melts(spell, Material))
             {
                 return false;
@@ -883,6 +958,17 @@ namespace RuneMagic
             PaintCover(TileCover.Water);
             Drench(1f);
             SmotherGroundFire();
+        }
+
+        bool MeltIceCover()
+        {
+            if (!HasIceCover)
+            {
+                return false;
+            }
+
+            LeaveMeltWater();
+            return true;
         }
 
         public bool Annihilate()
@@ -1036,6 +1122,10 @@ namespace RuneMagic
             }
 
             CoverCatalog.Speak(Cover, buffer);
+            if (Cover == TileCover.None && CoverMaterial != MaterialId.None)
+            {
+                CoverCatalog.SpeakMaterial(CoverMaterial, buffer);
+            }
         }
 
         void ApplyVisual()

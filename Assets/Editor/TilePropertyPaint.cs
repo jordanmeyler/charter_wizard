@@ -122,7 +122,7 @@ namespace RuneMagic
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
+                "Select the layer first. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Looks on any layer — including extra Floor / Tiles children — are not walkable until stamped. Environment Details is its own stamp — check only Blocks and drag across a cluster of tables or statues to give that group collision. Timber on a table burns to an ash pile. Cover is the overlay: look, work, and the same catalog mark as an inscription. Ice is Water · Earth. Fire cover only marks hunger — the weave speaks Fire, and you can click the mark. It does not kindle a hall. A later fireball, spreading burn, or oil a spell left will still find that cover. Ice cover melts when hunger crosses it. Oil or metal stamped on the Cover layer is fuel or a path for the spark — the stamp does not start the reaction. Vine is Plant · Mercury. Miasma is Cloud · Acid. Fog is Cloud. A Water material stamp keeps the tile you painted. Cover-Water may generate the Water mark. Write onto Cover layer (or select Cover) so a stamp does not change Kind. Play shows the generated mark; click it to draw that rune. Material = Miasma on Cover is the same as Cover = Miasma. Miasma and fog are see-through unless you stamp Opacity. Blank Tiles cells are pits at Play.",
                 MessageType.None);
         }
 
@@ -277,7 +277,11 @@ namespace RuneMagic
             if (_coverLayer)
             {
                 kind = current != null ? current.kind : TileKind.None;
-                material = current != null ? current.material : MaterialId.Stone;
+                if (!_applyMaterial)
+                {
+                    material = current != null ? current.material : MaterialId.Stone;
+                }
+
                 blocks = false;
                 if (cover == TileCover.None)
                 {

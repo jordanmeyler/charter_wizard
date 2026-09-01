@@ -108,7 +108,12 @@ The player needs a **Fire** mark in reach so they can write
 Fireball. Stamp **Cover = Fire** (Tile Properties, Write onto
 Cover layer) on any walk cell — that is the fire stamp. It only
 marks hunger. The weave speaks Fire, and clicking the cover draws
-the rune. It does not kindle a hall and will not kill you.
+the rune. It does not kindle a hall and will not kill you. A
+fireball, a spreading burn, or oil that a spell left will still
+find that cover — the stamp is inert until work or a live
+reaction touches it. Ice cover melts when hunger crosses it.
+Oil or metal stamped on the Cover layer is the same: fuel or a
+path for the spark, not a reaction that starts itself.
 `GameObject → Rune Magic → Inscription` or **Pillar** still works
 if you want a floating mark instead. Do not stamp fire on
 Environment Details and do not expect a painted torch tile
@@ -185,7 +190,9 @@ Same pattern. Stones already have their id and sprite on the prefab. For a custo
 These are tiles, not objects. A cover is the look, the work, and
 the same catalog mark as an inscription — Ice is Water · Earth,
 **Fire cover only marks hunger** so the Charter can speak Fire
-(click the mark to draw it; the floor stays safe). Vine cover
+(click the mark to draw it; the floor stays safe). Spells and
+live reactions still find that cover — ice melts, oil fuels,
+metal conducts — the stamp does not start those itself. Vine cover
 speaks Plant — Vine is a climbing shot (`Plant · Mercury`), not a
 rune, and hunger can run it as a wick. Miasma is Cloud · Acid,
 Fog is Cloud. A kindled hall is the **Aura-Fire** brush, not

@@ -310,7 +310,7 @@ namespace RuneMagic
                             tile.AuthorCoverLook(look, alpha);
                         }
 
-                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint);
+                        ApplyCoverWork(tile, ResolveCover(paint, raw, overlay: true), paint, raw, overlay: true);
                         continue;
                     }
 
@@ -611,6 +611,24 @@ namespace RuneMagic
                 return MaterialId.Ice;
             }
 
+            if (name.IndexOf("oil", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Oil;
+            }
+
+            if (name.IndexOf("metal", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("iron", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("steel", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Metal;
+            }
+
+            if (name.IndexOf("plant", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("vine", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return MaterialId.Plant;
+            }
+
             return MaterialId.Stone;
         }
 
@@ -775,7 +793,12 @@ namespace RuneMagic
             }
         }
 
-        static void ApplyCoverWork(WorldTile tile, TileCover cover, WorldPaintTile paint = null)
+        static void ApplyCoverWork(
+            WorldTile tile,
+            TileCover cover,
+            WorldPaintTile paint = null,
+            TileBase raw = null,
+            bool overlay = false)
         {
             if (tile == null)
             {
@@ -793,6 +816,14 @@ namespace RuneMagic
                     case TileCover.Fog:
                         tile.Cloak(1f);
                         break;
+                }
+            }
+            else if (overlay)
+            {
+                var material = paint != null ? paint.material : GuessMaterial(raw);
+                if (CoverCatalog.IsOverlayMaterial(material))
+                {
+                    tile.AuthorCoverMaterial(material);
                 }
             }
 

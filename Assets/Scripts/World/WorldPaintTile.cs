@@ -138,6 +138,8 @@ namespace RuneMagic
                 case MaterialId.Plant:
                 case MaterialId.Grove:
                     return TileCover.Vine;
+                case MaterialId.Vein:
+                    return TileCover.Lightning;
                 default:
                     return TileCover.None;
             }

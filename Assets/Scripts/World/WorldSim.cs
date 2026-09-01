@@ -145,7 +145,7 @@ namespace RuneMagic
                     {
                         var oilWick = tile.HasOil || other.HasOil;
                         var vineWick = tile.HasVine || other.HasVine;
-                        var catchable = flam > 0f || other.HasVine || other.HasOil;
+                        var catchable = flam > 0f || other.HasVine || other.HasOil || other.HasFireCover;
                         if (catchable)
                         {
                             var run = oilWick ? OilFireRun : vineWick ? 0.9f : DryFireRun;
