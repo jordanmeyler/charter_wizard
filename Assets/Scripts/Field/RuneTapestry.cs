@@ -5,9 +5,10 @@ namespace RuneMagic
 {
     /// <summary>
     /// The on-screen weave, read only in the Charter. Exploring shows tiles,
-    /// not glyphs. The sentence is everything in the camera view, laid
-    /// boustrophedon and scrolled sideways. Only tiles on screen speak —
-    /// plus ambient Air and the adept (mind · body · soul).
+    /// not glyphs. The sentence is what the camera can see, filled so each
+    /// available rune appears at least once and extras follow material
+    /// frequency, then scrolled as a clipped belt. Only tiles on screen
+    /// speak — plus ambient Air and the adept (mind · body · soul).
     /// </summary>
     public sealed class RuneTapestry : MonoBehaviour
     {

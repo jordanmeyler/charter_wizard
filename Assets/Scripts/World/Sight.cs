@@ -67,6 +67,13 @@ namespace RuneMagic
                 return "empty air.";
             }
 
+            if (tile.Kind == TileKind.Pit || tile.Material == MaterialId.Void)
+            {
+                return GlyphView.Speak(
+                    "a tear where rest should stand. Dark — withheld.",
+                    "a tear where rest should stand. The veil is drawn.");
+            }
+
             if (tile.Kindled && tile.Fire > 0.1f)
             {
                 return GlyphView.Speak(

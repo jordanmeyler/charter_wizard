@@ -19,6 +19,11 @@ namespace RuneMagic
         {
         }
 
+        public WeaveGlyph(RuneId rune, MaterialId material, WeaveKind kind, string origin)
+            : this(rune, rune, material, kind, 0, 0, 1, null, false, origin)
+        {
+        }
+
         public WeaveGlyph(
             RuneId shown,
             RuneId join,
@@ -28,7 +33,8 @@ namespace RuneMagic
             int groupIndex,
             int groupSize,
             string title = null,
-            bool living = false)
+            bool living = false,
+            string origin = null)
         {
             Shown = shown;
             Rune = join;
@@ -39,6 +45,7 @@ namespace RuneMagic
             GroupSize = groupSize < 1 ? 1 : groupSize;
             Title = title ?? string.Empty;
             Living = living;
+            Origin = origin ?? string.Empty;
         }
 
         public RuneId Shown { get; }
@@ -50,21 +57,26 @@ namespace RuneMagic
         public int GroupSize { get; }
         public string Title { get; }
         public bool Living { get; }
+        public string Origin { get; }
         public bool IsGroup => GroupId != 0 && GroupSize > 1;
         public bool IsTear => Kind == WeaveKind.Tear || (Shown == RuneId.None && Rune == RuneId.None);
         public string GroupTitle => !string.IsNullOrEmpty(Title) ? Title : string.Empty;
     }
 
     /// <summary>
-    /// Walks what is on screen as a weave. A wrought join that already
-    /// stands (Spark, Plant, Ice) appears as itself so it can be drawn.
-    /// The basics that compose it are strewn through the grid. Creature
-    /// recipes stay as written — Life marks a living formula and is not
-    /// unfolded. Off-screen tiles do not speak. The adept is mind, body,
-    /// and soul. Air is ambient wherever the room can be breathed.
+    /// The weave is what the camera can see. A rune is available when
+    /// something on screen speaks it; that mark is valid to string.
+    /// Generation puts at least one of each available rune in the
+    /// grid, then extra copies from how often that material appears.
+    /// Creature recipes stay as written. You are mind, body, and soul
+    /// when you are in view.
     /// </summary>
     public static class RoomSentence
     {
+        public const int GridCells = RuneTapestry.Rows * RuneTapestry.DefaultCols;
+        public const string PitOrigin = "the pit";
+        public const string AirOrigin = "the air";
+
         static int NextGroup = 1;
 
         public static List<WeaveGlyph> Read(
@@ -74,57 +86,20 @@ namespace RuneMagic
             Rect view,
             IRuneSource[] extras = null)
         {
-            var sequence = new List<WeaveGlyph>(64);
-            if (grid == null || view.width <= 0f || view.height <= 0f)
+            var tally = new Tally();
+            if (grid != null && view.width > 0f && view.height > 0f)
             {
-                return sequence;
+                ScanView(tally, grid, locks, strings, extras, view);
             }
 
-            var x0 = Mathf.FloorToInt(view.xMin);
-            var x1 = Mathf.FloorToInt(view.xMax);
-            var y0 = Mathf.FloorToInt(view.yMin);
-            var y1 = Mathf.FloorToInt(view.yMax);
-            var lastMaterial = MaterialId.None;
-            var lastWasTear = false;
-            var breathable = false;
-            var spokenLocks = new HashSet<int>();
-            var spokenStrings = new HashSet<int>();
-            var scatter = new List<WeaveGlyph>(16);
-            var live = new HashSet<RuneId>();
-
-            for (var row = 0; row <= y1 - y0; row++)
+            if (tally.Breathable)
             {
-                var y = y0 + row;
-                var even = (row & 1) == 0;
-                var width = x1 - x0 + 1;
-                for (var step = 0; step < width; step++)
-                {
-                    var x = even ? x0 + step : x1 - step;
-                    if (!FieldView.ContainsTile(view, x, y))
-                    {
-                        continue;
-                    }
-
-                    var tile = grid.Get(x, y);
-                    if (tile != null && !tile.Def.TearsTapestry)
-                    {
-                        breathable = true;
-                    }
-
-                    AppendTile(sequence, tile, scatter, live, ref lastMaterial, ref lastWasTear);
-                    AppendHere(sequence, scatter, locks, strings, extras, x, y, spokenLocks, spokenStrings);
-                }
+                tally.Add(
+                    RuneId.Air,
+                    new WeaveGlyph(RuneId.Air, MaterialId.None, WeaveKind.Ambient, AirOrigin));
             }
 
-            EnsureLiveRunes(scatter, live);
-            ScatterComposing(sequence, scatter);
-
-            if (breathable)
-            {
-                AddAmbient(sequence, RuneId.Air);
-            }
-
-            // You are always in the field: mind, body, and soul.
+            var sequence = Compose(tally, FieldView.Key(view), GridCells);
             AppendCreature(
                 sequence,
                 AdeptAvatar.DisplayTitle,
@@ -132,21 +107,445 @@ namespace RuneMagic
                 AdeptAvatar.Formula,
                 WeaveKind.Ambient,
                 atHead: true);
-
             return sequence;
         }
 
-        static void AddAmbient(List<WeaveGlyph> sequence, RuneId rune)
+        /// <summary>
+        /// Hover text: where this mark is from. Only what the
+        /// camera can see speaks. Dark is the pit. Air is breath.
+        /// </summary>
+        public static string OriginOf(WeaveGlyph glyph)
         {
-            for (var i = 0; i < sequence.Count; i++)
+            if (!string.IsNullOrEmpty(glyph.Origin))
             {
-                if (sequence[i].Shown == rune || sequence[i].Rune == rune)
+                return glyph.Origin;
+            }
+
+            if (!string.IsNullOrEmpty(glyph.Title))
+            {
+                return glyph.Title == AdeptAvatar.DisplayTitle ? "you" : glyph.Title;
+            }
+
+            if (glyph.IsTear || glyph.Material == MaterialId.Void)
+            {
+                return PitOrigin;
+            }
+
+            if (glyph.Kind == WeaveKind.Ambient)
+            {
+                return glyph.Shown == RuneId.Air || glyph.Rune == RuneId.Air
+                    ? AirOrigin
+                    : "the room";
+            }
+
+            if (glyph.Material != MaterialId.None)
+            {
+                return MaterialCatalog.Of(glyph.Material).Name;
+            }
+
+            if (glyph.Kind == WeaveKind.String)
+            {
+                return "an inscription";
+            }
+
+            if (glyph.Kind == WeaveKind.Lock)
+            {
+                return "a lock";
+            }
+
+            return "the room";
+        }
+
+        /// <summary>
+        /// Build a weave grid from camera tallies. Every available
+        /// rune appears at least once; leftover cells follow material
+        /// frequency. Used by play and by the audit.
+        /// </summary>
+        public static List<WeaveGlyph> Compose(Tally tally, int seed, int cells)
+        {
+            var sequence = new List<WeaveGlyph>(Mathf.Max(16, cells));
+            if (tally == null)
+            {
+                return sequence;
+            }
+
+            for (var i = 0; i < tally.Groups.Count; i++)
+            {
+                var group = tally.Groups[i];
+                if (group != null && group.Count > 0)
                 {
-                    return;
+                    sequence.AddRange(group);
                 }
             }
 
-            sequence.Insert(0, new WeaveGlyph(rune, MaterialId.None, WeaveKind.Ambient));
+            var already = new HashSet<RuneId>();
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                already.Add(sequence[i].Shown);
+            }
+
+            var marks = new List<WeaveGlyph>(cells);
+            foreach (var pair in tally.Count)
+            {
+                if (pair.Key == RuneId.None || already.Contains(pair.Key))
+                {
+                    continue;
+                }
+
+                marks.Add(tally.GlyphOf(pair.Key));
+                already.Add(pair.Key);
+            }
+
+            if (tally.Pits > 0)
+            {
+                marks.Add(new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear, PitOrigin));
+            }
+
+            var used = sequence.Count + marks.Count;
+            var extras = Mathf.Max(0, cells - used);
+            FillByFrequency(marks, tally, extras, seed);
+            Shuffle(marks, seed == int.MinValue ? 1 : seed);
+            sequence.AddRange(marks);
+            return sequence;
+        }
+
+        public sealed class Tally
+        {
+            public readonly Dictionary<RuneId, int> Count = new();
+            public readonly Dictionary<RuneId, WeaveGlyph> Template = new();
+            public readonly List<List<WeaveGlyph>> Groups = new();
+            public int Pits;
+            public bool Breathable;
+
+            public void Add(RuneId rune, WeaveGlyph glyph, int n = 1)
+            {
+                if (rune == RuneId.None || n <= 0)
+                {
+                    return;
+                }
+
+                if (!Count.TryGetValue(rune, out var have))
+                {
+                    have = 0;
+                }
+
+                Count[rune] = have + n;
+                if (!Template.ContainsKey(rune))
+                {
+                    Template[rune] = glyph;
+                }
+            }
+
+            public WeaveGlyph GlyphOf(RuneId rune)
+            {
+                return Template.TryGetValue(rune, out var glyph)
+                    ? glyph
+                    : new WeaveGlyph(rune, MaterialId.None, WeaveKind.Material);
+            }
+        }
+
+        static void FillByFrequency(List<WeaveGlyph> marks, Tally tally, int extras, int seed)
+        {
+            if (marks == null || tally == null || extras <= 0 || tally.Count.Count == 0)
+            {
+                return;
+            }
+
+            var runes = new List<RuneId>(tally.Count.Count);
+            var weights = new List<int>(tally.Count.Count);
+            var total = 0;
+            foreach (var pair in tally.Count)
+            {
+                if (pair.Key == RuneId.None || pair.Value <= 0)
+                {
+                    continue;
+                }
+
+                runes.Add(pair.Key);
+                weights.Add(pair.Value);
+                total += pair.Value;
+            }
+
+            if (total <= 0 || runes.Count == 0)
+            {
+                return;
+            }
+
+            var rng = new System.Random(seed == int.MinValue ? 2 : seed ^ 0x5bd1e995);
+            for (var i = 0; i < extras; i++)
+            {
+                var pick = rng.Next(0, total);
+                var walk = 0;
+                var rune = runes[0];
+                for (var r = 0; r < runes.Count; r++)
+                {
+                    walk += weights[r];
+                    if (pick < walk)
+                    {
+                        rune = runes[r];
+                        break;
+                    }
+                }
+
+                marks.Add(tally.GlyphOf(rune));
+            }
+        }
+
+        static void Shuffle(List<WeaveGlyph> marks, int seed)
+        {
+            if (marks == null || marks.Count < 2)
+            {
+                return;
+            }
+
+            var rng = new System.Random(seed);
+            for (var i = marks.Count - 1; i > 0; i--)
+            {
+                var j = rng.Next(0, i + 1);
+                var swap = marks[i];
+                marks[i] = marks[j];
+                marks[j] = swap;
+            }
+        }
+
+        static void ScanView(
+            Tally tally,
+            WorldGrid grid,
+            ISpellLock[] locks,
+            RuneStringSource[] strings,
+            IRuneSource[] extras,
+            Rect view)
+        {
+            var x0 = Mathf.FloorToInt(view.xMin);
+            var x1 = Mathf.FloorToInt(view.xMax);
+            var y0 = Mathf.FloorToInt(view.yMin);
+            var y1 = Mathf.FloorToInt(view.yMax);
+            var spoken = new HashSet<RuneId>();
+            var seenActors = new HashSet<int>();
+
+            for (var y = y0; y <= y1; y++)
+            {
+                for (var x = x0; x <= x1; x++)
+                {
+                    if (!FieldView.ContainsTile(view, x, y))
+                    {
+                        continue;
+                    }
+
+                    CountTile(tally, grid.Get(x, y), spoken);
+                }
+            }
+
+            CountActors(tally, locks, strings, extras, view, seenActors);
+        }
+
+        static void CountTile(Tally tally, WorldTile tile, HashSet<RuneId> spoken)
+        {
+            if (tally == null || tile == null)
+            {
+                return;
+            }
+
+            if (tile.Def.TearsTapestry)
+            {
+                tally.Pits++;
+                tally.Add(
+                    RuneId.Umbra,
+                    new WeaveGlyph(RuneId.Umbra, MaterialId.Void, WeaveKind.Material, PitOrigin));
+                return;
+            }
+
+            tally.Breathable = true;
+            spoken.Clear();
+            CollectSpoken(tile, spoken);
+            var material = tile.Material;
+            var origin = material != MaterialId.None
+                ? MaterialCatalog.Of(material).Name
+                : "the room";
+            foreach (var rune in spoken)
+            {
+                tally.Add(rune, new WeaveGlyph(rune, material, WeaveKind.Material, origin));
+                ExpandComposing(tally, rune, material, WeaveKind.Material, origin);
+            }
+        }
+
+        static void CollectSpoken(WorldTile tile, HashSet<RuneId> dest)
+        {
+            CollectLive(tile, dest);
+            if (tile == null || dest == null)
+            {
+                return;
+            }
+
+            var material = tile.Material;
+            if (material == MaterialId.None)
+            {
+                return;
+            }
+
+            var manifestation = MaterialCatalog.Of(material).Manifestation;
+            if (manifestation != RuneId.None)
+            {
+                dest.Add(manifestation);
+            }
+        }
+
+        static void CountActors(
+            Tally tally,
+            ISpellLock[] locks,
+            RuneStringSource[] strings,
+            IRuneSource[] extras,
+            Rect view,
+            HashSet<int> seen)
+        {
+            if (locks != null)
+            {
+                for (var i = 0; i < locks.Length; i++)
+                {
+                    if (locks[i] is not MonoBehaviour body || body == null)
+                    {
+                        continue;
+                    }
+
+                    if (locks[i] is not IRuneSource source || !source.IsEmitting || !VisibleIn(source, view))
+                    {
+                        continue;
+                    }
+
+                    var id = body.GetInstanceID();
+                    if (!seen.Add(id))
+                    {
+                        continue;
+                    }
+
+                    if (locks[i] is EncounterLock creature && creature.Formula != null && creature.Formula.Length > 0)
+                    {
+                        var group = new List<WeaveGlyph>(8);
+                        AppendCreature(
+                            group,
+                            creature.DisplayName,
+                            CreatureWash(creature),
+                            EncounterLock.WithLife(creature.Formula),
+                            WeaveKind.Lock,
+                            markLiving: true);
+                        if (group.Count > 0)
+                        {
+                            tally.Groups.Add(group);
+                        }
+                    }
+                    else
+                    {
+                        CountSource(tally, source, WeaveKind.Lock, "a lock");
+                    }
+                }
+            }
+
+            if (strings != null)
+            {
+                for (var i = 0; i < strings.Length; i++)
+                {
+                    var sentence = strings[i];
+                    if (sentence == null || !sentence.IsEmitting || !VisibleIn(sentence, view))
+                    {
+                        continue;
+                    }
+
+                    if (!seen.Add(sentence.StringId))
+                    {
+                        continue;
+                    }
+
+                    var runes = sentence.Sequence;
+                    for (var r = 0; r < runes.Length; r++)
+                    {
+                        if (runes[r] != RuneId.None)
+                        {
+                            tally.Add(
+                                runes[r],
+                                new WeaveGlyph(runes[r], MaterialId.None, WeaveKind.String, "an inscription"));
+                            ExpandComposing(
+                                tally,
+                                runes[r],
+                                MaterialId.None,
+                                WeaveKind.String,
+                                "an inscription");
+                        }
+                    }
+                }
+            }
+
+            if (extras == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < extras.Length; i++)
+            {
+                var extra = extras[i];
+                if (extra == null || !extra.IsEmitting || extra is not MonoBehaviour body || body == null)
+                {
+                    continue;
+                }
+
+                if (!VisibleIn(extra, view) || !seen.Add(body.GetInstanceID()))
+                {
+                    continue;
+                }
+
+                CountSource(tally, extra, WeaveKind.String, "an inscription");
+            }
+        }
+
+        static void CountSource(Tally tally, IRuneSource source, WeaveKind kind, string origin)
+        {
+            if (tally == null || source == null)
+            {
+                return;
+            }
+
+            var buffer = new List<RuneId>(6);
+            source.Collect(buffer);
+            for (var i = 0; i < buffer.Count; i++)
+            {
+                if (buffer[i] != RuneId.None)
+                {
+                    tally.Add(buffer[i], new WeaveGlyph(buffer[i], MaterialId.None, kind, origin));
+                    ExpandComposing(tally, buffer[i], MaterialId.None, kind, origin);
+                }
+            }
+        }
+
+        /// <summary>
+        /// A wrought join that already stands (Spark, Plant, Ice) is
+        /// itself in the weave. The basics that compose it are still
+        /// there, strewn by frequency — not glued to the join.
+        /// </summary>
+        static void ExpandComposing(
+            Tally tally,
+            RuneId wrought,
+            MaterialId material,
+            WeaveKind kind,
+            string origin)
+        {
+            if (tally == null || wrought == RuneId.None || !ChainBook.IsWrought(wrought))
+            {
+                return;
+            }
+
+            var recipe = new List<RuneId>(8);
+            ChainBook.ExpandRecipe(wrought, recipe);
+            for (var i = 0; i < recipe.Count; i++)
+            {
+                if (recipe[i] != RuneId.None && recipe[i] != wrought)
+                {
+                    tally.Add(recipe[i], new WeaveGlyph(recipe[i], material, kind, origin));
+                }
+            }
+        }
+
+        static bool VisibleIn(IRuneSource source, Rect view)
+        {
+            return source != null && FieldView.ContainsWorld(view, source.WorldOrigin);
         }
 
         static void CollectLive(WorldTile tile, HashSet<RuneId> live)
@@ -271,267 +670,6 @@ namespace RuneMagic
             }
         }
 
-        static void EnsureLiveRunes(List<WeaveGlyph> scatter, HashSet<RuneId> live)
-        {
-            if (scatter == null || live == null || live.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var rune in live)
-            {
-                if (rune == RuneId.None)
-                {
-                    continue;
-                }
-
-                scatter.Add(new WeaveGlyph(rune, MaterialId.None, WeaveKind.Material));
-                if (ChainBook.IsWrought(rune))
-                {
-                    CollectComposing(scatter, rune, MaterialId.None);
-                }
-            }
-        }
-
-        static void AppendTile(
-            List<WeaveGlyph> sequence,
-            WorldTile tile,
-            List<WeaveGlyph> scatter,
-            HashSet<RuneId> live,
-            ref MaterialId lastMaterial,
-            ref bool lastWasTear)
-        {
-            if (tile == null)
-            {
-                return;
-            }
-
-            if (tile.Def.TearsTapestry)
-            {
-                if (!lastWasTear)
-                {
-                    sequence.Add(new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear));
-                    lastWasTear = true;
-                }
-
-                lastMaterial = MaterialId.Void;
-                return;
-            }
-
-            lastWasTear = false;
-            CollectLive(tile, live);
-            var material = tile.Material;
-            if (material == MaterialId.None || material == lastMaterial)
-            {
-                return;
-            }
-
-            lastMaterial = material;
-            var def = MaterialCatalog.Of(material);
-            if (def.Manifestation != RuneId.None && ChainBook.IsWrought(def.Manifestation))
-            {
-                sequence.Add(new WeaveGlyph(
-                    def.Manifestation, def.Manifestation, material, WeaveKind.Material, 0, 0, 1));
-                CollectComposing(scatter, def.Manifestation, material);
-                return;
-            }
-
-            var signature = def.Signature;
-            for (var i = 0; i < signature.Count; i++)
-            {
-                if (signature[i] != RuneId.None)
-                {
-                    AppendRune(sequence, scatter, signature[i], material, WeaveKind.Material);
-                }
-            }
-        }
-
-        static void CollectComposing(List<WeaveGlyph> scatter, RuneId wrought, MaterialId material)
-        {
-            if (scatter == null)
-            {
-                return;
-            }
-
-            var recipe = new List<RuneId>(8);
-            ChainBook.ExpandRecipe(wrought, recipe);
-            for (var i = 0; i < recipe.Count; i++)
-            {
-                if (recipe[i] != RuneId.None && recipe[i] != wrought)
-                {
-                    scatter.Add(new WeaveGlyph(recipe[i], material, WeaveKind.Material));
-                }
-            }
-        }
-
-        static void ScatterComposing(List<WeaveGlyph> sequence, List<WeaveGlyph> extras)
-        {
-            if (sequence == null || extras == null || extras.Count == 0)
-            {
-                return;
-            }
-
-            extras.Sort(CompareGlyphs);
-            var span = sequence.Count;
-            for (var i = 0; i < extras.Count; i++)
-            {
-                var at = span <= 0
-                    ? sequence.Count
-                    : StableSlot(extras[i], i, span + 1);
-                sequence.Insert(at, extras[i]);
-                span++;
-            }
-        }
-
-        static int CompareGlyphs(WeaveGlyph a, WeaveGlyph b)
-        {
-            var shown = a.Shown.CompareTo(b.Shown);
-            if (shown != 0)
-            {
-                return shown;
-            }
-
-            var join = a.Rune.CompareTo(b.Rune);
-            return join != 0 ? join : a.Material.CompareTo(b.Material);
-        }
-
-        static int StableSlot(WeaveGlyph glyph, int order, int modulus)
-        {
-            if (modulus <= 1)
-            {
-                return 0;
-            }
-
-            unchecked
-            {
-                var hash = (int)glyph.Shown * 73856093
-                    ^ (int)glyph.Rune * 19349663
-                    ^ (int)glyph.Material * 83492791
-                    ^ order * 39916801;
-                var wrapped = hash % modulus;
-                return wrapped < 0 ? wrapped + modulus : wrapped;
-            }
-        }
-
-        static void AppendHere(
-            List<WeaveGlyph> sequence,
-            List<WeaveGlyph> scatter,
-            ISpellLock[] locks,
-            RuneStringSource[] strings,
-            IRuneSource[] extras,
-            int x,
-            int y,
-            HashSet<int> spokenLocks,
-            HashSet<int> spokenStrings)
-        {
-            if (locks != null)
-            {
-                for (var i = 0; i < locks.Length; i++)
-                {
-                    if (locks[i] is not MonoBehaviour body || body == null)
-                    {
-                        continue;
-                    }
-
-                    if (locks[i] is not IRuneSource source || !source.IsEmitting)
-                    {
-                        continue;
-                    }
-
-                    var id = body.GetInstanceID();
-                    if (spokenLocks.Contains(id) || !AtCell(source.WorldOrigin, x, y))
-                    {
-                        continue;
-                    }
-
-                    spokenLocks.Add(id);
-                    if (locks[i] is EncounterLock creature && creature.Formula != null && creature.Formula.Length > 0)
-                    {
-                        AppendCreature(
-                            sequence,
-                            creature.DisplayName,
-                            CreatureWash(creature),
-                            EncounterLock.WithLife(creature.Formula),
-                            WeaveKind.Lock,
-                            markLiving: true);
-                    }
-                    else
-                    {
-                        AppendSource(sequence, scatter, source, MaterialId.None, WeaveKind.Lock);
-                    }
-                }
-            }
-
-            if (strings != null)
-            {
-                for (var i = 0; i < strings.Length; i++)
-                {
-                    var sentence = strings[i];
-                    if (sentence == null || !sentence.IsEmitting)
-                    {
-                        continue;
-                    }
-
-                    var id = sentence.StringId;
-                    if (spokenStrings.Contains(id) || !AtCell(sentence.WorldOrigin, x, y))
-                    {
-                        continue;
-                    }
-
-                    spokenStrings.Add(id);
-                    var runes = sentence.Sequence;
-                    for (var r = 0; r < runes.Length; r++)
-                    {
-                        if (runes[r] != RuneId.None)
-                        {
-                            AppendRune(sequence, scatter, runes[r], MaterialId.None, WeaveKind.String);
-                        }
-                    }
-                }
-            }
-
-            if (extras == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < extras.Length; i++)
-            {
-                var extra = extras[i];
-                if (extra == null || !extra.IsEmitting || extra is not MonoBehaviour body || body == null)
-                {
-                    continue;
-                }
-
-                var id = body.GetInstanceID();
-                if (spokenStrings.Contains(id) || !AtCell(extra.WorldOrigin, x, y))
-                {
-                    continue;
-                }
-
-                spokenStrings.Add(id);
-                AppendSource(sequence, scatter, extra, MaterialId.None, WeaveKind.String);
-            }
-        }
-
-        static void AppendSource(
-            List<WeaveGlyph> sequence,
-            List<WeaveGlyph> scatter,
-            IRuneSource source,
-            MaterialId material,
-            WeaveKind kind)
-        {
-            var buffer = new List<RuneId>(6);
-            source.Collect(buffer);
-            for (var i = 0; i < buffer.Count; i++)
-            {
-                if (buffer[i] != RuneId.None)
-                {
-                    AppendRune(sequence, scatter, buffer[i], material, kind);
-                }
-            }
-        }
-
         static void AppendCreature(
             List<WeaveGlyph> sequence,
             string title,
@@ -617,33 +755,6 @@ namespace RuneMagic
                 : RuneId.Salt);
         }
 
-        static void AppendRune(
-            List<WeaveGlyph> sequence,
-            List<WeaveGlyph> scatter,
-            RuneId rune,
-            MaterialId material,
-            WeaveKind kind)
-        {
-            if (rune == RuneId.None)
-            {
-                return;
-            }
-
-            if (ChainBook.IsWrought(rune))
-            {
-                sequence.Add(new WeaveGlyph(rune, rune, material, kind, 0, 0, 1));
-                CollectComposing(scatter, rune, material);
-                return;
-            }
-
-            sequence.Add(new WeaveGlyph(rune, material, kind));
-        }
-
-        static bool AtCell(Vector3 world, int x, int y)
-        {
-            return Mathf.FloorToInt(world.x) == x && Mathf.FloorToInt(world.y) == y;
-        }
-
         public static void Audit(System.Collections.Generic.List<string> broken)
         {
             if (broken == null)
@@ -658,6 +769,83 @@ namespace RuneMagic
             {
                 broken.Add("Spark, Ice, Lightning, and Plant must stand as themselves in the weave");
             }
+
+            var pitDark = new WeaveGlyph(RuneId.Umbra, MaterialId.Void, WeaveKind.Material, PitOrigin);
+            if (OriginOf(pitDark) != PitOrigin)
+            {
+                broken.Add("Dark must read as from the pit");
+            }
+
+            var tear = new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear);
+            if (OriginOf(tear) != PitOrigin)
+            {
+                broken.Add("A tear must read as from the pit");
+            }
+
+            var tally = new Tally();
+            var stone = new WeaveGlyph(RuneId.Earth, MaterialId.Stone, WeaveKind.Material, "stone");
+            tally.Add(RuneId.Earth, stone, 20);
+            tally.Add(RuneId.Salt, new WeaveGlyph(RuneId.Salt, MaterialId.Stone, WeaveKind.Material, "stone"), 20);
+            tally.Add(RuneId.Stone, new WeaveGlyph(RuneId.Stone, MaterialId.Stone, WeaveKind.Material, "stone"), 20);
+            tally.Add(RuneId.Water, new WeaveGlyph(RuneId.Water, MaterialId.Water, WeaveKind.Material, "water"), 2);
+            var grid = Compose(tally, 7, GridCells);
+            if (CountShown(grid, RuneId.Lumen) > 0 || CountShown(grid, RuneId.Umbra) > 0)
+            {
+                broken.Add("The weave must not invent Light or Dark the camera did not speak");
+            }
+
+            if (CountShown(grid, RuneId.Earth) < 1
+                || CountShown(grid, RuneId.Salt) < 1
+                || CountShown(grid, RuneId.Stone) < 1
+                || CountShown(grid, RuneId.Water) < 1)
+            {
+                broken.Add("Each available rune must appear at least once in the generated grid");
+            }
+
+            if (CountShown(grid, RuneId.Earth) <= CountShown(grid, RuneId.Water))
+            {
+                broken.Add("A frequent material must speak more often than a rare one");
+            }
+
+            var pits = new Tally();
+            pits.Pits = 6;
+            pits.Add(RuneId.Umbra, pitDark, 6);
+            var pitGrid = Compose(pits, 3, GridCells);
+            if (CountShown(pitGrid, RuneId.Umbra) < 1 || CountShown(pitGrid, RuneId.Lumen) > 0)
+            {
+                broken.Add("Pits must speak Dark and must not invent Light");
+            }
+
+            var spark = new Tally();
+            spark.Add(RuneId.Spark, new WeaveGlyph(RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal"));
+            ExpandComposing(spark, RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal");
+            var sparkGrid = Compose(spark, 5, GridCells);
+            if (CountShown(sparkGrid, RuneId.Spark) < 1
+                || CountShown(sparkGrid, RuneId.Fire) < 1
+                || CountShown(sparkGrid, RuneId.Air) < 1
+                || CountShown(sparkGrid, RuneId.Lumen) > 0)
+            {
+                broken.Add("A stood Spark must stand as itself with Fire and Air, and must not invent Light");
+            }
+        }
+
+        static int CountShown(List<WeaveGlyph> sequence, RuneId rune)
+        {
+            var n = 0;
+            if (sequence == null)
+            {
+                return 0;
+            }
+
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                if (sequence[i].Shown == rune)
+                {
+                    n++;
+                }
+            }
+
+            return n;
         }
     }
 }

@@ -884,8 +884,8 @@ namespace RuneMagic
             GUI.Label(new Rect(28, 16, 800, 32), "The Charter", title);
             GUI.Label(new Rect(28, 50, 980, 22),
                 GlyphView.Speak(
-                    "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover it to still the belt. Grey on the wall means that join is not in view. Spark, Ice, and Plant stand as themselves in the weave. What you have strung stays until you cast or close. You are mind · body · soul.",
-                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Hover the weave to still it. Right-click a mark to remember it. What you have strung stays until you cast or close."),
+                    "Walk while the wall is open. Every root mark is on the wall. The weave is only what the screen is speaking — hover a mark to still the belt and see where it is from. Each available rune appears at least once; more copies follow how often that material is on screen. Grey on the wall means that join is not in view. What you have strung stays until you cast or close. You are mind · body · soul.",
+                    "Walk while the wall is open. Draw from the wall or the weave, or click a mark the room is speaking. Hover the weave to still it and see where a mark is from. Right-click a mark to remember it. What you have strung stays until you cast or close."),
                 body);
             GUI.Label(new Rect(28, 74, 980, 20),
                 GlyphView.Speak(
@@ -939,11 +939,11 @@ namespace RuneMagic
 
             var heading = Label(15, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             var hint = Label(13, FontStyle.Normal, new Color(0.72f, 0.76f, 0.84f));
-            GUI.Label(new Rect(28, top + 8, 720, 20), "The room’s weave", heading);
+            GUI.Label(new Rect(28, top + 8, 160, 20), "The room’s weave", heading);
             var reading = tapestry != null && !string.IsNullOrEmpty(tapestry.Reading)
                 ? tapestry.Reading
                 : "the field is quiet";
-            GUI.Label(new Rect(220, top + 8, Screen.width - 260, 20), reading, hint);
+            GUI.Label(new Rect(196, top + 8, Screen.width - 480, 20), reading, hint);
 
             const float pad = 12f;
             const float header = 36f;
@@ -989,8 +989,10 @@ namespace RuneMagic
 
             var slide = tapestry != null ? tapestry.Scroll - Mathf.Floor(tapestry.Scroll) : 0f;
             var shift = slide * cellW;
+            WeaveGlyph? hovered = null;
 
             GUI.BeginGroup(inner);
+            var local = Event.current != null ? Event.current.mousePosition : Vector2.zero;
             for (var row = 0; row < rows; row++)
             {
                 var right = RuneTapestry.GoesRight(row);
@@ -1016,6 +1018,11 @@ namespace RuneMagic
                 {
                     var glyph = placed[i].Glyph;
                     var rect = placed[i].Rect;
+                    if (rect.Contains(local))
+                    {
+                        hovered = glyph;
+                    }
+
                     if (glyph.IsTear)
                     {
                         DrawEmptySlot(rect, "tear");
@@ -1032,6 +1039,25 @@ namespace RuneMagic
             }
 
             GUI.EndGroup();
+
+            if (hovered.HasValue)
+            {
+                DrawWeaveOrigin(new Rect(Screen.width - 292, top + 8, 260, 20), hovered.Value);
+            }
+        }
+
+        static void DrawWeaveOrigin(Rect rect, WeaveGlyph glyph)
+        {
+            var origin = RoomSentence.OriginOf(glyph);
+            var mark = glyph.IsTear
+                ? "tear"
+                : RuneCatalog.NameOf(glyph.Shown);
+            var line = GlyphView.Speak(
+                mark + " · from " + origin,
+                "from " + origin);
+            var hint = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
+            hint.alignment = TextAnchor.MiddleRight;
+            GUI.Label(rect, line, hint);
         }
 
         static void DrawWeaveWell(Rect well)
