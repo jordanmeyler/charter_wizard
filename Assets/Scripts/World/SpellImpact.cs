@@ -163,9 +163,9 @@ namespace RuneMagic
                                 tile.Grow(growBy);
                             }
 
-                            if (spreadLeft > 0)
+                            if (spreadLeft > 0 && PlantLaw.CanGrowFrom(tile, spell))
                             {
-                                var took = grid.SpreadPlant(tile, spreadLeft);
+                                var took = grid.GrowPlant(tile, spreadLeft);
                                 spreadLeft -= took;
                                 if (took > 0)
                                 {
@@ -177,6 +177,11 @@ namespace RuneMagic
                         changed++;
                         break;
                     case TileVerb.Grow:
+                        if (tile.PlacePlantCover())
+                        {
+                            changed++;
+                        }
+
                         if (PlantLaw.PlantsNewBodies(spell) && tile.CanTakePlant)
                         {
                             tile.PlantHere();
@@ -194,9 +199,9 @@ namespace RuneMagic
 
                         if (spreadLeft > 0
                             && !PlantLaw.FillsVisibleWater(spell)
-                            && (tile.HasWaterSource || tile.IsPlantish || tile.HasPlantCover))
+                            && PlantLaw.CanGrowFrom(tile, spell))
                         {
-                            var took = grid.SpreadPlant(tile, spreadLeft);
+                            var took = grid.GrowPlant(tile, spreadLeft);
                             spreadLeft -= took;
                             if (took > 0)
                             {
@@ -273,7 +278,7 @@ namespace RuneMagic
                 var seed = grid.TileAtWorld(center) ?? (cells.Count > 0 ? cells[0] : null);
                 if (seed != null)
                 {
-                    var took = grid.SpreadPlant(seed, spreadLeft, visibleOnly: true);
+                    var took = grid.GrowPlant(seed, spreadLeft, acrossWater: true);
                     if (took > 0)
                     {
                         changed++;
@@ -308,7 +313,7 @@ namespace RuneMagic
                 notes.Add(verb.Tiles == TileVerb.Grow
                     ? spell == SpellId.Forest
                         ? "A living plant opens to every water you can see."
-                        : "The vegetable body drinks."
+                        : "Plant cover stands from your feet.")
                     : verb.Tiles == TileVerb.Ignite
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge

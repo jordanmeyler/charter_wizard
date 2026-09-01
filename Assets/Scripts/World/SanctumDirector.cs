@@ -53,7 +53,7 @@ namespace RuneMagic
         public StoredSpell Held { get; private set; } = StoredSpell.Empty;
         public RuneTapestry Tapestry { get; private set; }
         public string FieldReading { get; private set; } = string.Empty;
-        public IReadOnlyList<RuneId> VisibleRunes { get; private set; } = System.Array.Empty<RuneId>();
+        public IReadOnlyList<RuneId> VisibleRunes => BuildWallRunes();
         public IReadOnlyList<SpellShape> AvailableShapes { get; private set; } = System.Array.Empty<SpellShape>();
         public SpellShape ChosenShape { get; private set; }
         public string PendingPreview { get; private set; } = string.Empty;
@@ -484,8 +484,8 @@ namespace RuneMagic
             Mode = PlayMode.Charter;
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
-                "The screen unrolls. You can walk. Draw only what is in view; what you have already strung stays until you cast or close.",
-                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
+                "The screen unrolls. You can walk. Every root mark is ready. What you have already strung stays until you cast or close.",
+                "The screen unrolls. You can walk. Draw marks from the wall or the weave. What you have already strung stays until you cast or close."));
         }
 
         public void CloseCharter(bool releaseString = true)
@@ -570,8 +570,8 @@ namespace RuneMagic
 
             Mode = PlayMode.Grimoire;
             Log(GlyphView.Speak(
-                "The Grimoire. Every written chain and join. Click a name to string it if those runes are in view. Kept workings are marked.",
-                "Your book. Workings you have kept. Click a page to send it if those marks are in view."));
+                "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
+                "Your book. Workings you have kept. Click a page to send it. The eleven roots are always ready."));
         }
 
         public void CloseGrimoire()
@@ -663,6 +663,11 @@ namespace RuneMagic
 
         public bool InVicinity(RuneId rune)
         {
+            if (RuneCatalog.IsBasic(rune))
+            {
+                return true;
+            }
+
             return Tapestry != null && Tapestry.InVicinity(rune);
         }
 
@@ -1305,13 +1310,65 @@ namespace RuneMagic
 
         void RefreshVisibleRunes()
         {
-            VisibleRunes = GlyphView.IsDevelop
-                ? RuneCatalog.BasicRunes
-                : Memory.Wall(RuneCatalog.BasicRunes);
             if (Tapestry != null)
             {
                 Tapestry.Resample();
             }
+        }
+
+        /// <summary>
+        /// The eleven roots always sit on the wall so a sentence can
+        /// be written. Develop also lists every wrought elemental.
+        /// Play adds kept marks and joins the room is already speaking.
+        /// </summary>
+        List<RuneId> BuildWallRunes()
+        {
+            var list = new List<RuneId>(16);
+            var seen = new HashSet<RuneId>();
+            void Offer(RuneId rune)
+            {
+                if (rune != RuneId.None && seen.Add(rune))
+                {
+                    list.Add(rune);
+                }
+            }
+
+            for (var i = 0; i < RuneCatalog.BasicRunes.Length; i++)
+            {
+                Offer(RuneCatalog.BasicRunes[i]);
+            }
+
+            if (GlyphView.IsDevelop)
+            {
+                for (var i = 0; i < RuneCatalog.ElementalJoins.Length; i++)
+                {
+                    Offer(RuneCatalog.ElementalJoins[i]);
+                }
+            }
+            else
+            {
+                var kept = Memory.Kept;
+                for (var i = 0; i < kept.Count; i++)
+                {
+                    Offer(kept[i]);
+                }
+            }
+
+            var vicinity = Tapestry != null ? Tapestry.Vicinity : null;
+            if (vicinity == null)
+            {
+                return list;
+            }
+
+            for (var i = 0; i < vicinity.Count; i++)
+            {
+                if (RuneCatalog.OffersOnWall(vicinity[i]))
+                {
+                    Offer(vicinity[i]);
+                }
+            }
+
+            return list;
         }
 
         void HandleWorldClick()

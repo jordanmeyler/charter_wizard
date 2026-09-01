@@ -130,7 +130,7 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.Soaked, 6f, TileVerb.Wet);
                 case SpellId.Sprout:
                 case SpellId.Grove:
-                    return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.None, 0f, TileVerb.Grow);
+                    return new SpellVerb(SpellTarget.Area, PlantLaw.GrowRadius, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.CallGrowth:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.Forest:

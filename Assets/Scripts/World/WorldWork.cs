@@ -941,7 +941,7 @@ namespace RuneMagic
                     changed++;
                 }
 
-                var took = grid.SpreadPlant(tile, left, visibleOnly: true);
+                var took = grid.GrowPlant(tile, left, acrossWater: true);
                 left -= took;
                 if (took > 0)
                 {
@@ -1034,6 +1034,11 @@ namespace RuneMagic
             return (maxX - minX + 1) < SmallPitSpan && (maxY - minY + 1) < SmallPitSpan;
         }
 
+        public static bool IsPlantGrowWork(SpellId spell)
+        {
+            return spell == SpellId.Sprout || spell == SpellId.Grove;
+        }
+
         public static bool IsSpreadWork(SpellId spell)
         {
             switch (spell)
@@ -1065,6 +1070,11 @@ namespace RuneMagic
             if (NeedsSpan(spell))
             {
                 return Span(CoordOf(from), CoordOf(to));
+            }
+
+            if (IsPlantGrowWork(spell))
+            {
+                return Disk(CoordOf(origin), PlantLaw.GrowRadius);
             }
 
             if (IsSpreadWork(spell))

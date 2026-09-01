@@ -205,6 +205,28 @@ namespace RuneMagic
 
         public static bool IsElemental(RuneId id) => IsMaterial(id);
 
+        public static bool IsBasic(RuneId id)
+        {
+            for (var i = 0; i < BasicRunes.Length; i++)
+            {
+                if (BasicRunes[i] == id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// A mark that can sit on the Charter wall and be strung into
+        /// a recipe — the eleven, or a wrought join (Spark, Ice, Plant).
+        /// </summary>
+        public static bool OffersOnWall(RuneId id)
+        {
+            return IsBasic(id) || ChainBook.IsWrought(id);
+        }
+
         /// <summary>
         /// Player-facing role for a non-root rune in a join. Salt is Body;
         /// Mercury is Spirit. Empty for elemental / material runes.
@@ -449,6 +471,14 @@ namespace RuneMagic
                     broken.Add($"{def.Name} is named but missing from the developer ledger");
                 }
             }
+
+            if (!IsBasic(RuneId.Fire) || !OffersOnWall(RuneId.Spark)
+                || !OffersOnWall(RuneId.Ice) || !OffersOnWall(RuneId.Lightning)
+                || !OffersOnWall(RuneId.Plant) || OffersOnWall(RuneId.Vine)
+                || ElementalJoins.Length < 8 || ElementalJoins[0] != RuneId.Spark)
+            {
+                broken.Add("Spark and other wrought elementals must sit on the Charter wall; Vine is a spell");
+            }
         }
 
         /// <summary>
@@ -460,6 +490,19 @@ namespace RuneMagic
             RuneId.Salt, RuneId.Mercury, RuneId.Sulphur,
             RuneId.Vita, RuneId.Mors,
             RuneId.Lumen, RuneId.Umbra
+        };
+
+        /// <summary>
+        /// Wrought elementals that sit on the Develop Charter wall so
+        /// Spark, Ice, Plant and the rest can be strung like the eleven.
+        /// Play offers them when the room is already speaking them.
+        /// </summary>
+        public static readonly RuneId[] ElementalJoins =
+        {
+            RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Ember,
+            RuneId.Steam, RuneId.Cloud, RuneId.Ice, RuneId.Mud,
+            RuneId.Lava, RuneId.Dust, RuneId.Stone, RuneId.Plant,
+            RuneId.Ash, RuneId.Oil, RuneId.Metal
         };
 
         static readonly RuneId[] PlaceableLead =

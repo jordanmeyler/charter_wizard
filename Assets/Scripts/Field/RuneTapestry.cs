@@ -6,7 +6,8 @@ namespace RuneMagic
     /// <summary>
     /// The on-screen weave, read only in the Charter. Exploring shows tiles,
     /// not glyphs. The sentence is everything in the camera view, laid
-    /// boustrophedon and scrolled sideways. Off-screen runes cannot be used.
+    /// boustrophedon and scrolled sideways. The eleven roots always sit
+    /// in the grid so a sentence can be written.
     /// </summary>
     public sealed class RuneTapestry : MonoBehaviour
     {
@@ -22,6 +23,7 @@ namespace RuneMagic
         readonly HashSet<RuneId> _vicinity = new();
         readonly List<RuneId> _vicinityList = new();
         int _viewKey = int.MinValue;
+        int _spoken;
         string _readingText = string.Empty;
 
         public string Reading => _readingText;
@@ -98,7 +100,8 @@ namespace RuneMagic
 
             var view = FieldView.OnScreen();
             var key = FieldView.Key(view);
-            if (key != _viewKey || _sequence.Count == 0)
+            var spoken = _grid != null ? _grid.SpokenRevision : 0;
+            if (key != _viewKey || spoken != _spoken || _sequence.Count == 0)
             {
                 Rebuild(view, key);
             }
@@ -124,6 +127,7 @@ namespace RuneMagic
         void Rebuild(Rect view, int key)
         {
             _viewKey = key;
+            _spoken = _grid != null ? _grid.SpokenRevision : 0;
             _sequence.Clear();
             _vicinity.Clear();
             _vicinityList.Clear();
