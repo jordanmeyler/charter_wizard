@@ -72,7 +72,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |
 | **Snow** | Air · Water · Cloud · Ice | Ice | Weather left on the stone, not a rune |
-| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
+| **Oil** | Plant · Fire · Earth · Oil | Oil | Fuel. Surfaces hold flame. It floats: a film on water still burns. A lit slick flashes across connected oil. A geyser, once lit, keeps burning until water finds it. |
 | **Miasma** | Cloud · Acid · Miasma | Miasma | Foul breath on the floor |
 | **Wardstone** | Earth · Salt · Sulphur · Stone | Stone | Mind-bound masonry. Mostly spell-proof. |
 | **Aegis** | Metal · Light | Metal | Shown steel. Mostly spell-proof. |
@@ -91,29 +91,32 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus two tweakable numbers set in `MaterialCatalog.Flag`.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus three tweakable numbers set in `MaterialCatalog.Flag`.
 
 | Flag | Meaning |
 | --- | --- |
-| **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not burn. Positive = how readily it catches and how far the burn runs. |
+| **Flammability** | Negative = fire-retardant (puts nearby fire out). Zero = will not catch. Positive = how readily hunger takes it. |
 | **Conductivity** | Zero = insulator. Positive = how freely a spark travels the body. |
+| **BurnRate** | How fast a standing fire travels from this tile, and how fast the tile burns out. High is a short, running blaze (oil 2.4). Zero does not carry the flame. |
 
 Tiles keep live **Fire / Wet / Charge / Growth**. Water a plant and it climbs toward Grove, then **across adjacent pits and along water floors and water coverings**. Fire spreads onto flammable neighbors and burns vegetable bodies to Ash. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, and vein. `WorldSim` ticks the neighbors.
 
-| Material | Flam | Cond | Note |
-| --- | --- | --- | --- |
-| Oil | 2.2 | 0.05 | Fuel. Flame flashes across connected oil, much faster than timber. |
-| Plant | 1.5 | 0.05 | Catches fast. Burns to Ash. |
-| Grove | 1.35 | 0.1 | Living mass. |
-| Timber | 1.2 | 0 | Wood. |
-| Moss | 1.05 | 0.1 | Soft green. |
-| Ember | 0.35 | 0.15 | Already hot. |
-| Dust | 0.55 | 0 | Rest that lost its weight. |
-| Water | −1.6 | 1.25 | Puts fire out. Carries charge. |
-| Rain | −1.1 | 0.7 | The veil drawn down. |
-| Ice | −0.85 | 0.15 | Hard water. |
-| Damp | −0.7 | 0.35 | Wet rest. |
-| Metal | 0 | 1.6 | The spark’s favourite road. |
-| Vein | 0 | 0.85 | Spark in the stone. |
+**Oil floats.** A film on water still catches, flashes, and runs at oil’s burn rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but its burn rate is zero** — the flame stays on that cell. Land plants keep their ordinary catch and run.
+
+| Material | Flam | Cond | Burn | Note |
+| --- | --- | --- | --- | --- |
+| Oil | 2.2 | 0.05 | 2.4 | Fuel. Floats. Flame flashes across connected oil, much faster than timber. |
+| Plant | 1.5 | 0.05 | 0.85 | Catches fast. Burns to Ash. On water it lights and does not run. |
+| Grove | 1.35 | 0.1 | 0.7 | Living mass. |
+| Timber | 1.2 | 0 | 0.45 | Wood. |
+| Moss | 1.05 | 0.1 | 0.75 | Soft green. |
+| Dust | 0.55 | 0 | 1.1 | Rest that lost its weight. Brief flare. |
+| Ember | 0.35 | 0.15 | 0.25 | Already hot. Slow coals. |
+| Water | −1.6 | 1.25 | 0 | Puts fire out. Carries charge. Oil on it still burns. |
+| Rain | −1.1 | 0.7 | 0 | The veil drawn down. |
+| Ice | −0.85 | 0.15 | 0 | Hard water. |
+| Damp | −0.7 | 0.35 | 0 | Wet rest. |
+| Metal | 0 | 1.6 | 0 | The spark’s favourite road. |
+| Vein | 0 | 0.85 | 0 | Spark in the stone. |
 
 The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).

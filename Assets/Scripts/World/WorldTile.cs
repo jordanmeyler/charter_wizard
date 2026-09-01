@@ -228,12 +228,88 @@ namespace RuneMagic
             || string.Equals(_coverId, "cover-vine", System.StringComparison.OrdinalIgnoreCase);
         public bool IsPoisonWater =>
             Material == MaterialId.Acid || (Wet > 0.3f && Miasma > 0.15f);
-        public float Flammability =>
+        /// <summary>
+        /// Standing yield under this cell — a water floor, a water
+        /// covering, or a vegetable body grown over a water foundation.
+        /// </summary>
+        public bool IsOverWater =>
             HasWaterCover
-                ? -1.6f
-                : Def.WorldMaterial.Flammability + DetailFlammability
-                    + (HasOil ? 1.6f : 0f)
+            || IsDeepWater
+            || (_hasFoundation && Foundation.Material == MaterialId.Water && !HasIceCover);
+
+        /// <summary>
+        /// A plant standing on water. It can light, but it does not
+        /// carry the flame. Oil on the same cell still runs.
+        /// </summary>
+        public bool IsPlantOnWater =>
+            !HasOil
+            && IsOverWater
+            && (IsPlantish || HasPlantCover || HasPlantishDetail || HasVine);
+
+        /// <summary>
+        /// Oil floats. A plant on water can still catch. Standing
+        /// yield does not put those fires out by itself.
+        /// </summary>
+        public bool FireIgnoresWater => HasOil || IsPlantOnWater;
+
+        public float Flammability
+        {
+            get
+            {
+                if (HasOil)
+                {
+                    return Mathf.Max(0.5f, MaterialCatalog.Of(MaterialId.Oil).Flammability);
+                }
+
+                var body = Def.WorldMaterial.Flammability + DetailFlammability
                     + (HasVine ? 1.4f : 0f);
+                if (IsPlantOnWater)
+                {
+                    return Mathf.Max(0.4f, body);
+                }
+
+                if (HasWaterCover || IsDeepWater)
+                {
+                    return -1.6f;
+                }
+
+                return body;
+            }
+        }
+
+        /// <summary>
+        /// How fast hunger leaves this cell. Oil runs hard. A plant
+        /// on water lights and stays put.
+        /// </summary>
+        public float BurnRate
+        {
+            get
+            {
+                if (IsPlantOnWater)
+                {
+                    return 0f;
+                }
+
+                var rate = Def.WorldMaterial.BurnRate;
+                if (_detailMaterial != MaterialId.None)
+                {
+                    rate = Mathf.Max(rate, MaterialCatalog.Of(_detailMaterial).BurnRate);
+                }
+
+                if (HasOil)
+                {
+                    rate = Mathf.Max(rate, MaterialCatalog.Of(MaterialId.Oil).BurnRate);
+                }
+
+                if (HasVine)
+                {
+                    rate = Mathf.Max(rate, WorldSim.VineFireRun);
+                }
+
+                return rate;
+            }
+        }
+
         public float Conductivity => Def.WorldMaterial.Conductivity;
         public bool IsPlantish => IsPlantMaterial(Material);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial);
@@ -400,7 +476,8 @@ namespace RuneMagic
         /// <summary>
         /// A vegetable body over yield. Green covers the water
         /// and holds you, the way ice does, and the way a watered
-        /// plant already climbs a hollow.
+        /// plant already climbs a hollow. Hunger can light that
+        /// cover; it will not run from it.
         /// </summary>
         public bool GrowOverWater(MaterialId material = MaterialId.Plant)
         {
@@ -509,7 +586,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (amount > 0f && (HasWaterCover || Wet > 0.35f))
+            if (amount > 0f && !FireIgnoresWater && (HasWaterCover || IsDeepWater || Wet > 0.35f))
             {
                 Fire = 0f;
                 Kindled = false;

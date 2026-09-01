@@ -124,8 +124,8 @@ namespace RuneMagic
         public IReadOnlyList<RuneId> Signature { get; }
 
         /// <summary>
-        /// Negative puts nearby fire out. Zero will not burn. Positive
-        /// is how readily hunger takes it, and how far it runs.
+        /// Negative puts nearby fire out. Zero will not catch. Positive
+        /// is how readily hunger takes it.
         /// </summary>
         public float Flammability { get; internal set; }
 
@@ -133,6 +133,13 @@ namespace RuneMagic
         /// How freely a spark may travel this body. Zero is an insulator.
         /// </summary>
         public float Conductivity { get; internal set; }
+
+        /// <summary>
+        /// How fast a standing fire travels from this body, and how
+        /// fast the tile burns out. High is a short, running blaze.
+        /// Zero does not carry the flame.
+        /// </summary>
+        public float BurnRate { get; internal set; }
 
         public RuneId Primary
         {
@@ -370,7 +377,7 @@ namespace RuneMagic
                     RuneId.Earth),
 
                 new WorldMaterial(MaterialId.Oil, "oil",
-                    "A vegetable body pressed with hunger and rest. It holds flame. Connected oil flashes; a geyser, once lit, keeps burning.",
+                    "A vegetable body pressed with hunger and rest. It holds flame. It floats: a film on water still burns and flashes. Connected oil flashes; a geyser, once lit, keeps burning.",
                     RuneId.Oil, MaterialPaint.Oil,
                     new Color(0.18f, 0.14f, 0.08f), new Color(0.14f, 0.1f, 0.06f), false,
                     RuneId.Plant, RuneId.Fire, RuneId.Earth, RuneId.Oil),
@@ -401,47 +408,48 @@ namespace RuneMagic
             }
 
             Flag(MaterialId.Stone, 0f, 0f);
-            Flag(MaterialId.Ash, 0.05f, 0f);
-            Flag(MaterialId.Timber, 1.2f, 0f);
+            Flag(MaterialId.Ash, 0.05f, 0f, 0.05f);
+            Flag(MaterialId.Timber, 1.2f, 0f, 0.45f);
             Flag(MaterialId.Hearth, 0f, 0.1f);
-            Flag(MaterialId.Ember, 0.35f, 0.15f);
+            Flag(MaterialId.Ember, 0.35f, 0.15f, 0.25f);
             Flag(MaterialId.Damp, -0.7f, 0.35f);
             Flag(MaterialId.Vein, 0f, 0.85f);
             Flag(MaterialId.Scoured, 0f, 0f);
-            Flag(MaterialId.Moss, 1.05f, 0.1f);
+            Flag(MaterialId.Moss, 1.05f, 0.1f, 0.75f);
             Flag(MaterialId.Metal, 0f, 1.6f);
             Flag(MaterialId.SaltCrust, -0.15f, 0.2f);
             Flag(MaterialId.Void, 0f, 0f);
             Flag(MaterialId.Ice, -0.85f, 0.15f);
             Flag(MaterialId.Sand, 0f, 0f);
             Flag(MaterialId.Mud, -0.35f, 0.25f);
-            Flag(MaterialId.Lava, 0.2f, 0.3f);
+            Flag(MaterialId.Lava, 0.2f, 0.3f, 0.15f);
             Flag(MaterialId.Steam, 0f, 0.1f);
-            Flag(MaterialId.Dust, 0.55f, 0f);
+            Flag(MaterialId.Dust, 0.55f, 0f, 1.1f);
             Flag(MaterialId.Glass, 0f, 0.05f);
             Flag(MaterialId.Crystal, 0f, 0.35f);
             Flag(MaterialId.Obsidian, 0f, 0.1f);
-            Flag(MaterialId.Grove, 1.35f, 0.1f);
+            Flag(MaterialId.Grove, 1.35f, 0.1f, 0.7f);
             Flag(MaterialId.Cloud, 0f, 0.2f);
             Flag(MaterialId.Rain, -1.1f, 0.7f);
             Flag(MaterialId.Snow, -0.65f, 0.1f);
             Flag(MaterialId.Glacier, -0.9f, 0.12f);
-            Flag(MaterialId.Acid, 0.15f, 0.45f);
+            Flag(MaterialId.Acid, 0.15f, 0.45f, 0.2f);
             Flag(MaterialId.Water, -1.6f, 1.25f);
-            Flag(MaterialId.Plant, 1.5f, 0.05f);
+            Flag(MaterialId.Plant, 1.5f, 0.05f, 0.85f);
             Flag(MaterialId.Dirt, 0f, 0f);
-            Flag(MaterialId.Oil, 2.2f, 0.05f);
-            Flag(MaterialId.Miasma, 0.1f, 0.2f);
+            Flag(MaterialId.Oil, 2.2f, 0.05f, 2.4f);
+            Flag(MaterialId.Miasma, 0.1f, 0.2f, 0.1f);
             Flag(MaterialId.Wardstone, 0f, 0.15f);
             Flag(MaterialId.Aegis, 0f, 1.1f);
         }
 
-        static void Flag(MaterialId id, float flammability, float conductivity)
+        static void Flag(MaterialId id, float flammability, float conductivity, float burnRate = 0f)
         {
             if (ById.TryGetValue(id, out var material))
             {
                 material.Flammability = flammability;
                 material.Conductivity = conductivity;
+                material.BurnRate = burnRate;
             }
         }
 
