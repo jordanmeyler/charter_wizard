@@ -76,6 +76,7 @@ namespace RuneMagic
             StepOilWaves();
             StepFire();
             StepHungerPillars();
+            StepPoisonWells();
             StepWet();
             StepCharge();
         }
@@ -105,6 +106,32 @@ namespace RuneMagic
                 else
                 {
                     _slicks[i] = wave;
+                }
+            }
+        }
+
+        void StepPoisonWells()
+        {
+            var wells = new List<Vector2Int>();
+            foreach (var tile in _grid.All)
+            {
+                if (tile != null && tile.IsPoisonWell)
+                {
+                    wells.Add(tile.Coord);
+                }
+            }
+
+            for (var i = 0; i < wells.Count; i++)
+            {
+                var around = WorldWork.Disk(wells[i], 1);
+                for (var n = 0; n < around.Count; n++)
+                {
+                    if (around[n] == wells[i])
+                    {
+                        continue;
+                    }
+
+                    _grid.Get(around[n])?.SlickPoison();
                 }
             }
         }

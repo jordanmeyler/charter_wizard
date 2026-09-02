@@ -39,7 +39,20 @@ namespace RuneMagic
         bool _casting;
         bool _usesAnimator;
 
-        public bool IsAirborne => Time.time < _airborneUntil;
+        public bool IsHopping => Time.time < _airborneUntil;
+        public bool Flies
+        {
+            get
+            {
+                if (_status == null)
+                {
+                    _status = GetComponent<StatusHost>();
+                }
+
+                return _status != null && _status.Flies;
+            }
+        }
+        public bool IsAirborne => IsHopping || Flies;
         public static bool WorldHeld { get; private set; }
 
         public static AdeptAvatar Find()
@@ -240,7 +253,7 @@ namespace RuneMagic
                 _animator.speed = GameHud.EditingName ? 0f : 1f;
                 _animator.SetBool(MovingParam, moving);
                 _animator.SetBool(CastingParam, WorldHeld || aiming);
-                _animator.SetBool(AirborneParam, IsAirborne);
+                _animator.SetBool(AirborneParam, IsHopping);
             }
             else
             {
@@ -251,7 +264,7 @@ namespace RuneMagic
                     clip = "adept-cast";
                     fps = 4f;
                 }
-                else if (IsAirborne)
+                else if (IsHopping)
                 {
                     clip = "adept-hop";
                     fps = 7f;
@@ -263,7 +276,7 @@ namespace RuneMagic
                 }
 
                 _anim?.Play(clip, fps);
-                var bob = moving || IsAirborne || aiming
+                var bob = moving || IsHopping || aiming
                     ? 1f
                     : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
                 transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
@@ -272,15 +285,31 @@ namespace RuneMagic
 
         void LateUpdate()
         {
+            var hidden = _status != null && _status.IsHidden;
             if (_glow != null)
             {
-                var pulse = 0.72f + Mathf.Sin(Time.time * 3.2f) * 0.16f;
-                _glow.color = new Color(0.78f, 0.55f, 1f, pulse);
-                _glow.transform.localScale = Vector3.one * (0.95f + Mathf.Sin(Time.time * 2.1f) * 0.08f);
+                if (hidden)
+                {
+                    _glow.color = new Color(0.78f, 0.55f, 1f, 0f);
+                }
+                else
+                {
+                    var pulse = 0.72f + Mathf.Sin(Time.time * 3.2f) * 0.16f;
+                    _glow.color = new Color(0.78f, 0.55f, 1f, pulse);
+                    _glow.transform.localScale = Vector3.one * (0.95f + Mathf.Sin(Time.time * 2.1f) * 0.08f);
+                }
             }
 
             if (_sprite == null)
             {
+                return;
+            }
+
+            if (hidden)
+            {
+                var fade = _baseColor;
+                fade.a = 0.18f;
+                _sprite.color = fade;
                 return;
             }
 
@@ -295,7 +324,7 @@ namespace RuneMagic
                 return;
             }
 
-            _sprite.color = IsAirborne
+            _sprite.color = IsHopping
                 ? Color.Lerp(_baseColor, new Color(0.75f, 0.92f, 1f, 0.92f), 0.55f)
                 : _baseColor;
         }

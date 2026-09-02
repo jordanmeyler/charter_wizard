@@ -18,6 +18,13 @@ namespace RuneMagic
         Watershield,
         Flameward,
         Windward,
+        Plantward,
+        FlameForm,
+        TideForm,
+        StoneForm,
+        GaleForm,
+        GroveForm,
+        CloudForm,
         Raging,
         Charmed,
         Confused,
@@ -28,7 +35,8 @@ namespace RuneMagic
     {
         Debuff,
         Buff,
-        Ward
+        Ward,
+        Form
     }
 
     public enum CreatureNature
@@ -74,6 +82,8 @@ namespace RuneMagic
         public bool BlocksMove { get; }
         public bool BlocksPhysical { get; }
         public bool IsWard => Kind == StatusKind.Ward;
+        public bool IsForm => Kind == StatusKind.Form;
+        public bool IsStance => IsWard || IsForm;
         /// <summary>
         /// Focus holds mind work — ailments and wards. Wards use
         /// Sulphur; they are mind spells. A later sentence that
@@ -82,7 +92,7 @@ namespace RuneMagic
         /// still stands in that fire or foul, then empty is ash or death.
         /// Leave the cover and the condition resets.
         /// </summary>
-        public bool NeedsConcentration => IsWard || IsMindAilment(Id);
+        public bool NeedsConcentration => IsStance || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;
         public bool IsMeter => VitalLaw.IsMeter(Id);
         public StatusClock Clock => VitalLaw.ClockOf(Id);
@@ -90,14 +100,21 @@ namespace RuneMagic
         {
             get
             {
-                if (IsWard)
+                if (IsStance)
                 {
                     switch (Id)
                     {
-                        case StatusId.Stoneskin: return RuneId.Earth;
-                        case StatusId.Watershield: return RuneId.Water;
-                        case StatusId.Flameward: return RuneId.Fire;
-                        case StatusId.Windward: return RuneId.Air;
+                        case StatusId.Stoneskin:
+                        case StatusId.StoneForm: return RuneId.Earth;
+                        case StatusId.Watershield:
+                        case StatusId.TideForm: return RuneId.Water;
+                        case StatusId.Flameward:
+                        case StatusId.FlameForm: return RuneId.Fire;
+                        case StatusId.Windward:
+                        case StatusId.GaleForm:
+                        case StatusId.CloudForm: return RuneId.Air;
+                        case StatusId.Plantward:
+                        case StatusId.GroveForm: return RuneId.Plant;
                     }
                 }
 
@@ -122,7 +139,7 @@ namespace RuneMagic
                 case StatusId.Sleeping:
                     return new StatusSpec(id, "sleeping", StatusKind.Debuff, new Color(0.62f, 0.72f, 1f), Essence.Mind, true, true, false);
                 case StatusId.Rooted:
-                    return new StatusSpec(id, "rooted", StatusKind.Debuff, new Color(0.42f, 0.62f, 0.28f), Essence.Earth, false, true, false);
+                    return new StatusSpec(id, "rooted", StatusKind.Debuff, new Color(0.42f, 0.62f, 0.28f), Essence.Plant, false, true, false);
                 case StatusId.Frightened:
                     return new StatusSpec(id, "frightened", StatusKind.Debuff, new Color(0.42f, 0.18f, 0.55f), Essence.Mind, false, false, false);
                 case StatusId.Raging:
@@ -143,6 +160,20 @@ namespace RuneMagic
                     return new StatusSpec(id, "flame ward", StatusKind.Ward, new Color(1f, 0.42f, 0.12f), Essence.Fire, false, false, false);
                 case StatusId.Windward:
                     return new StatusSpec(id, "wind ward", StatusKind.Ward, new Color(0.72f, 0.86f, 0.95f), Essence.Air, false, false, false);
+                case StatusId.Plantward:
+                    return new StatusSpec(id, "plant ward", StatusKind.Ward, new Color(0.28f, 0.62f, 0.24f), Essence.Plant, false, false, false);
+                case StatusId.FlameForm:
+                    return new StatusSpec(id, "flame-form", StatusKind.Form, new Color(1f, 0.32f, 0.06f), Essence.Fire, false, false, false);
+                case StatusId.TideForm:
+                    return new StatusSpec(id, "tide-form", StatusKind.Form, new Color(0.18f, 0.52f, 0.95f), Essence.Water, false, false, false);
+                case StatusId.StoneForm:
+                    return new StatusSpec(id, "stone-form", StatusKind.Form, new Color(0.52f, 0.48f, 0.42f), Essence.Earth, false, false, true);
+                case StatusId.GaleForm:
+                    return new StatusSpec(id, "gale-form", StatusKind.Form, new Color(0.82f, 0.9f, 1f), Essence.Air, false, false, false);
+                case StatusId.GroveForm:
+                    return new StatusSpec(id, "grove-form", StatusKind.Form, new Color(0.16f, 0.48f, 0.2f), Essence.Plant, false, false, false);
+                case StatusId.CloudForm:
+                    return new StatusSpec(id, "cloud-form", StatusKind.Form, new Color(0.78f, 0.86f, 0.95f), Essence.Air, false, false, false);
                 default:
                     return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, Essence.None, false, false, false);
             }

@@ -314,7 +314,7 @@ namespace RuneMagic
 
             if (GradeOf(SpellId.ObsidianPath, MaterialId.Obsidian) != SpanGrade.Advanced
                 || GradeOf(SpellId.ObsidianWall, MaterialId.Obsidian) != SpanGrade.Advanced
-                || GradeOf(SpellId.VineRise, MaterialId.Grove) != SpanGrade.Advanced)
+                || GradeOf(SpellId.TaintedTree, MaterialId.Grove) != SpanGrade.Advanced)
             {
                 broken.Add("Later spans must work in water unless the square forbids it");
             }

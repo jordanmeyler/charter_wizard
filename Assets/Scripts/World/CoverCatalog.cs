@@ -13,6 +13,7 @@ namespace RuneMagic
     /// When fuel is spent, fire cover wears off and a plant or
     /// timber walk swaps to leftover dirt (look and stamp). Vine
     /// cover speaks Plant — Vine is a spell, not a rune.
+    /// Wither cover is what withholding leaves; it speaks Death.
     /// Miasma is Cloud · Acid, a hanging fog wind must take.
     /// Poison is a liquid slick yield washes. Fog is the Cloud veil.
     /// </summary>
@@ -30,7 +31,8 @@ namespace RuneMagic
             TileCover.Fog,
             TileCover.Mud,
             TileCover.Ash,
-            TileCover.Ember
+            TileCover.Ember,
+            TileCover.Wither
         };
 
         public static RuneId RuneOf(TileCover cover)
@@ -48,6 +50,7 @@ namespace RuneMagic
                 case TileCover.Mud: return RuneId.Mud;
                 case TileCover.Ash: return RuneId.Ash;
                 case TileCover.Ember: return RuneId.Ember;
+                case TileCover.Wither: return RuneId.Mors;
                 default: return RuneId.None;
             }
         }
@@ -81,6 +84,8 @@ namespace RuneMagic
                     return TileCover.Mud;
                 case RuneId.Ash:
                     return TileCover.Ash;
+                case RuneId.Mors:
+                    return TileCover.Wither;
                 default:
                     return TileCover.None;
             }
@@ -101,6 +106,7 @@ namespace RuneMagic
                 case TileCover.Mud: return MaterialId.Mud;
                 case TileCover.Ash: return MaterialId.Ash;
                 case TileCover.Ember: return MaterialId.Ember;
+                case TileCover.Wither: return MaterialId.None;
                 default: return MaterialId.None;
             }
         }
@@ -123,6 +129,7 @@ namespace RuneMagic
                 case TileCover.Mud: return "floor-mud";
                 case TileCover.Ash: return "floor-ash";
                 case TileCover.Ember: return "fx-ember";
+                case TileCover.Wither: return "floor-ash";
                 default: return null;
             }
         }
@@ -320,7 +327,8 @@ namespace RuneMagic
                 || !Speaks(TileCover.Ash, RuneId.Ash)
                 || !Speaks(TileCover.Vine, RuneId.Plant)
                 || !Speaks(TileCover.Ember, RuneId.Ember)
-                || !Speaks(TileCover.Ember, RuneId.Fire))
+                || !Speaks(TileCover.Ember, RuneId.Fire)
+                || !Speaks(TileCover.Wither, RuneId.Mors))
             {
                 broken.Add("A spoken cover must put its own rune in the weave so it can be drawn");
             }

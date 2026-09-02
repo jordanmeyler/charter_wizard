@@ -126,10 +126,16 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.Grove
-                || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.VineRise
-                || spell == SpellId.Forest || spell == SpellId.CallGrowth)
+                || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.Grow
+                || spell == SpellId.Forest || spell == SpellId.Wither
+                || spell == SpellId.Plantward || spell == SpellId.GroveForm || spell == SpellId.TaintedTree)
             {
                 return ElementFamily.Plant;
+            }
+
+            if (spell == SpellId.CloudForm)
+            {
+                return ElementFamily.Fog;
             }
 
             switch (material)

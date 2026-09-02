@@ -42,6 +42,7 @@ namespace RuneMagic
                 case SpellId.Grove:
                     return 2;
                 case SpellId.Sprout:
+                case SpellId.Grow:
                 case SpellId.CallGrowth:
                 case SpellId.Tree:
                 case SpellId.Rain:
@@ -60,9 +61,12 @@ namespace RuneMagic
         public static bool PlantsNewBodies(SpellId spell)
         {
             return spell == SpellId.Sprout
+                || spell == SpellId.Grow
                 || spell == SpellId.CallGrowth
                 || spell == SpellId.Grove
-                || spell == SpellId.Forest;
+                || spell == SpellId.Forest
+                || spell == SpellId.Plantward
+                || spell == SpellId.GroveForm;
         }
 
         public static bool PlacesCoverFromCaster(SpellId spell)
@@ -129,6 +133,7 @@ namespace RuneMagic
             if (MaxSpread(SpellId.Douse) != 0
                 || MaxSpread(SpellId.WaterJet) != 0
                 || MaxSpread(SpellId.Sprout) != 0
+                || MaxSpread(SpellId.Grow) != 0
                 || MaxSpread(SpellId.CallGrowth) != 0
                 || MaxSpread(SpellId.Rain) != 1
                 || MaxSpread(SpellId.Monsoon) != 2
@@ -152,14 +157,16 @@ namespace RuneMagic
                 broken.Add("Only Forest may grow plant cover from water tiles");
             }
 
-            if (!PlacesCoverFromCaster(SpellId.Sprout) || PlacesCoverFromCaster(SpellId.Forest))
+            if (!PlacesCoverFromCaster(SpellId.Sprout)
+                || PlacesCoverFromCaster(SpellId.Forest)
+                || PlacesCoverFromCaster(SpellId.Grow))
             {
-                broken.Add("Sprout grows a cover disk from the caster; Forest drinks the screen");
+                broken.Add("Sprout grows a cover disk from the caster; Grow and Forest are sent");
             }
 
-            if (PlantsNewBodies(SpellId.Douse) || !PlantsNewBodies(SpellId.Sprout))
+            if (PlantsNewBodies(SpellId.Douse) || !PlantsNewBodies(SpellId.Sprout) || !PlantsNewBodies(SpellId.Grow))
             {
-                broken.Add("Yield wets a standing plant; Sprout is what plants a new body");
+                broken.Add("Yield wets a standing plant; Sprout and Grow plant a new body");
             }
         }
     }

@@ -37,10 +37,11 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 53 | **Command** | Salt · Sulphur · Mercury | A standing body given a mind and sent. They obey. |
 | 54 | **Wind** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 | 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
-| 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Arrows and slams break. Hunger sent still finds you. |
-| 57 | **Water ward** | Water · Salt · Sulphur | Hunger breaks. Wear it against the wizard and a burning floor. |
-| 58 | **Flame ward** | Fire · Salt · Sulphur | Rest thrown breaks. |
-| 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
+| 31 | **Grow** | Water · Salt · Earth · Life · Mercury | Sprout sent. Plant cover at the mark. `Plant · Life · Mercury`. |
+| 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Earth and crushing — boulders, slams — break. |
+| 57 | **Water ward** | Water · Salt · Sulphur | Water breaks. You walk on yield. |
+| 58 | **Flame ward** | Fire · Salt · Sulphur | Fire breaks. Wear it against the wizard and a burning floor. |
+| 59 | **Wind ward** | Air · Salt · Sulphur | Air breaks. Fog and foul breath leave as you walk. |
 | 60 | **Lava-pillar** | Fire · Earth · Salt | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 | 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
@@ -52,7 +53,10 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
 | 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
 | 70 | **Witchfire** | Fire · Animus · Fire · Mercury | Fire given logos and its own perpetuity, then sent. |
-| 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
+| 71 | **Wither** | Water · Salt · Earth · Dark | Plants around your feet die. Remains speak Death. `Plant · Dark`. |
+| 79 | **Poison spray** | Water · Salt · Earth · Death · Mercury | A stream of the grave of a plant. `Poison · Mercury`. |
+| 97 | **Tainted-tree** | Water · Salt · Earth · Death · Salt · Earth | A poison column. It weeps onto adjacent tiles. `Poison · Salt · Earth`. |
+| 98 | **Plant ward** | Water · Salt · Earth · Life · Salt · Sulphur | Plant, yield, and rest break. Green springs as you walk. `Plant · Life · Salt · Sulphur`. |
 | 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
 | 82 | **Fire-pillar** | Fire · Salt | Hunger stood. Without a source it goes out in a few seconds. |
 | 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
@@ -120,7 +124,7 @@ Four sockets on the hub’s north wall. Walk up holding the four element stones 
 The elements taught *substance*. This stage teaches the three ways to **apply** it. The foyer labels **Salt**, **Mercury**, and **Sulphur** before the sanctums. The Silent Court labels those three again, plus Fire and Water, so Rage, Lull, and Command can all be written without leaving the room. You are always Salt · Sulphur · Mercury; Command is the sentence that was already on you.
 
 ### Flaming hall · foyer → spirit
-The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the floor until yield is thrown. There is **no water nearby** — Douse still works if you fetch yield, but the intended first ward is written at the mouth: columns show **Water · Salt · Sulphur**, and a Water mark sits beside them so the sentence can be cast here. Wear the ward and walk through. Hop cannot clear the span. The same ward later turns the warden’s fireball.
+The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the floor until yield is thrown. There is **no water nearby** — Douse still works if you fetch yield, but the intended first ward is written at the mouth: columns show **Fire · Salt · Sulphur**, and a Fire mark sits beside them so the sentence can be cast here. Wear the flame ward and walk through. Hop cannot clear the span. The same ward later turns the warden’s fireball.
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
@@ -129,7 +133,7 @@ The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the f
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Fire-pillar, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A fire-pillar or flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **flame ward** (`Fire · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Fire-pillar, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A fire-pillar or flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — hunger still finds rest. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
@@ -178,7 +182,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 - **The pack holds the stones.** I opens it. Click a stone to look — each one hints at how the rune works (hunger, yield, rest, breath; salt of the earth; the spirit is motion; fire from the sky). They are artifacts, not metal keys. The info box says `You see` that same look when you mouse over the stone in the world.
 - **Columns teach the sentence.** A row of pillars shows the intended spell. Ice, spark, and plant rooms all work this way.
 - **Things look like what they are.** Ice is a block, flame is a curtain, arrows sit on a rack, miasma hangs on the floor, each stone has its own colour, and the creatures are no longer all the same mite.
-- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the four wards, veiled. **Burning and poison are meters** — they run while you still stand in that fire or foul, and the HUD shows the clock. Leave the tile and the clock waits. A later fire or blight does not refill it. Yield puts hunger out. **A charged floor stuns** for a second, even on stone — wood refuses the cell. **Poison** is a liquid slick; yield washes it. **Miasma** is airborne poison fog — wider than a slick, and wind must take it. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off the element they beat. **Focus holds mind spells**, including wards — they stay until you write another sentence that shares a mark. A fizzle shows the hold breaking. Frost, stun, and root lift on their own. Ice-spear does not freeze the living. Fire, ice, and earth do not take poison. Timber and plant become ash. **Vine** is a climbing shot that hunger can run as a wick.
+- **Statuses are visible.** A chip over a body names burning, frozen, soaked, stunned, sleeping, rooted, frightened, raging, charmed, confused, poisoned, the wards, the forms, veiled. **Burning and poison are meters** — they run while you still stand in that fire or foul, and the HUD shows the clock. Leave the tile and the clock waits. A later fire or blight does not refill it. Yield puts hunger out. **A charged floor stuns** for a second, even on stone — wood refuses the cell. **Poison** is a liquid slick; yield washes it. **Miasma** is airborne poison fog — wider than a slick, and wind must take it. Fire-nature will not burn; earth shrugs off heat and wet; mind takes stun and fear harder. Wards fend off their own element (and the roots that constructed it). A water ward also lets you walk on yield. A plant ward sprouts as you walk. **Focus holds mind spells**, including wards and forms — they stay until you write another sentence that shares a mark. A fizzle shows the hold breaking. Frost, stun, and root lift on their own. Ice-spear does not freeze the living. Fire, ice, and earth do not take poison. Timber and plant become ash. **Vine** is a climbing shot that hunger can run as a wick. **Wither** kills plants at the feet; remains speak Death.
 - **Death is the crystal.** A slam, a fireball, an arrow, a standing flame, or a kindled hall sends you to spawn and **names what found you**. Stand in hunger or foul and a **meter** runs — empty is ash or death. Step off and it waits. If a spell unmade you, the crystal shows the **marks that wrote it**. Pits and drowning water use the last safe floor.
 - **Pits earn their keep.** A hollow is a sequenced crossing — block, then hop, grow across, freeze water — not a random hole beside a stone.
 
@@ -193,7 +197,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `water-wing` | The Ember Vault | Water against fire |
 | `earth-wing` | The Arrow Gauntlet | Earth as cover — wall the shots; side pits keep the stone on the lane |
 | `air-wing` | The Sundered Heights | Air as gust. Miasma, not a wall. |
-| `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled. North mouth writes Water ward before the flaming hall. |
+| `aspect-foyer` | Aspect Antechamber | Salt, Mercury, Sulphur labelled. North mouth writes Flame ward before the flaming hall. |
 | `body-sanctum` | The Standing Stone | Salt stands a body |
 | `spirit-sanctum` | The Gallery of Force | Mercury sends |
 | `mind-sanctum` | The Silent Court | Sulphur reaches a mind |

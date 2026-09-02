@@ -212,12 +212,7 @@ namespace RuneMagic
                     return;
                 }
 
-                if (player == null)
-                {
-                    return;
-                }
-
-                DriveToward(player.transform, player, false);
+                Wander();
                 return;
             }
 
@@ -349,6 +344,22 @@ namespace RuneMagic
             }
         }
 
+        static bool CanSeeAdept(AdeptAvatar player)
+        {
+            if (player == null)
+            {
+                return false;
+            }
+
+            var host = StatusHost.On(player);
+            return host == null || !host.IsHidden;
+        }
+
+        static Transform SeenAdept(AdeptAvatar player)
+        {
+            return CanSeeAdept(player) ? player.transform : null;
+        }
+
         Transform PickMark(StatusId mind, AdeptAvatar player)
         {
             switch (mind)
@@ -360,7 +371,7 @@ namespace RuneMagic
                 case StatusId.Confused:
                     return ConfusedMark(player);
                 default:
-                    return player != null ? player.transform : null;
+                    return SeenAdept(player);
             }
         }
 
@@ -388,7 +399,7 @@ namespace RuneMagic
                 return null;
             }
 
-            if (roll < 0.6f && player != null)
+            if (roll < 0.6f && CanSeeAdept(player))
             {
                 return player.transform;
             }
@@ -399,31 +410,32 @@ namespace RuneMagic
         Transform NearestCreature(AdeptAvatar player, bool preferLocks)
         {
             var other = NearestLock(includeCharmed: true);
+            var seen = SeenAdept(player);
             if (preferLocks && other != null)
             {
-                if (player == null)
+                if (seen == null)
                 {
                     return other;
                 }
 
                 var toLock = Vector2.Distance(transform.position, other.position);
-                var toPlayer = Vector2.Distance(transform.position, player.transform.position);
-                return toLock <= toPlayer + 0.85f ? other : player.transform;
+                var toPlayer = Vector2.Distance(transform.position, seen.position);
+                return toLock <= toPlayer + 0.85f ? other : seen;
             }
 
             if (other == null)
             {
-                return player != null ? player.transform : null;
+                return seen;
             }
 
-            if (player == null)
+            if (seen == null)
             {
                 return other;
             }
 
             var lockDistance = Vector2.Distance(transform.position, other.position);
-            var playerDistance = Vector2.Distance(transform.position, player.transform.position);
-            return lockDistance < playerDistance ? other : player.transform;
+            var playerDistance = Vector2.Distance(transform.position, seen.position);
+            return lockDistance < playerDistance ? other : seen;
         }
 
         Transform NearestLock(bool includeCharmed)

@@ -5,7 +5,7 @@ namespace RuneMagic
 {
     /// <summary>
     /// Focus holds mind spells. Charm, command, lull, rage, terror,
-    /// confuse, and the four wards (they all write Sulphur) stay
+    /// confuse, and the wards (they all write Sulphur) stay
     /// until another sentence reuses a mark from the held working.
     /// Burning and poison are meters — they run while the body
     /// still stands in that fire or foul, then empty is ash or death.
@@ -21,7 +21,7 @@ namespace RuneMagic
             }
 
             var status = SpellVerb.Of(spell).Status;
-            if (StatusSpec.IsMindAilment(status) || StatusSpec.Of(status).IsWard)
+            if (StatusSpec.IsMindAilment(status) || StatusSpec.Of(status).IsStance)
             {
                 return true;
             }
@@ -134,6 +134,13 @@ namespace RuneMagic
                 case StatusId.Watershield: return SpellId.Watershield;
                 case StatusId.Flameward: return SpellId.Flameward;
                 case StatusId.Windward: return SpellId.Windward;
+                case StatusId.Plantward: return SpellId.Plantward;
+                case StatusId.FlameForm: return SpellId.FlameForm;
+                case StatusId.TideForm: return SpellId.TideForm;
+                case StatusId.StoneForm: return SpellId.StoneForm;
+                case StatusId.GaleForm: return SpellId.GaleForm;
+                case StatusId.GroveForm: return SpellId.GroveForm;
+                case StatusId.CloudForm: return SpellId.CloudForm;
                 default: return SpellId.None;
             }
         }
@@ -194,10 +201,14 @@ namespace RuneMagic
                 || !IsMindSpell(SpellId.Watershield)
                 || !IsMindSpell(SpellId.Flameward)
                 || !IsMindSpell(SpellId.Windward)
+                || !IsMindSpell(SpellId.Plantward)
+                || !IsMindSpell(SpellId.FlameForm)
+                || !IsMindSpell(SpellId.GaleForm)
+                || !IsMindSpell(SpellId.CloudForm)
                 || IsMindSpell(SpellId.Wall)
                 || IsMindSpell(SpellId.Fireball))
             {
-                broken.Add("Wards are mind spells; walls and fireballs are not");
+                broken.Add("Wards and forms are mind spells; walls and fireballs are not");
             }
 
             if (!Holds(StatusId.Stoneskin)

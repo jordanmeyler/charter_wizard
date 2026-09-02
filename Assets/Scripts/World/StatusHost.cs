@@ -147,6 +147,27 @@ namespace RuneMagic
             }
         }
 
+        public bool WalksOnWater =>
+            Has(StatusId.Watershield) || Has(StatusId.TideForm) || Has(StatusId.CloudForm);
+
+        public bool IsHidden =>
+            Has(StatusId.GaleForm) || Has(StatusId.Veiled);
+
+        public bool Flies =>
+            Has(StatusId.CloudForm);
+
+        public bool SproutsWhileWalking =>
+            Has(StatusId.Plantward) || Has(StatusId.GroveForm);
+
+        public bool ClearsVeilsWhileWalking =>
+            Has(StatusId.Windward) || Has(StatusId.GaleForm);
+
+        public bool KindlesWhileWalking =>
+            Has(StatusId.FlameForm);
+
+        public bool DousesWhileWalking =>
+            Has(StatusId.TideForm);
+
         public bool Fends(Essence incoming)
         {
             return !string.IsNullOrEmpty(FendingName(incoming));
@@ -172,12 +193,18 @@ namespace RuneMagic
                     return spec.Name;
                 }
 
-                if (incoming == Essence.Poison && spec.Id == StatusId.Windward)
+                if (incoming == Essence.Poison
+                    && (spec.Id == StatusId.Windward || spec.Id == StatusId.GaleForm))
                 {
                     return spec.Name;
                 }
 
-                if (spec.IsWard && ElementalLaw.Beats(spec.Element, incoming))
+                if (spec.Id == StatusId.CloudForm && incoming == Essence.Water)
+                {
+                    return spec.Name;
+                }
+
+                if (spec.IsStance && ElementalLaw.WardsAgainst(spec.Element, incoming))
                 {
                     return spec.Name;
                 }
@@ -268,9 +295,9 @@ namespace RuneMagic
                 Drop(StatusId.Soaked, false);
             }
 
-            if (spec.IsWard)
+            if (spec.IsStance)
             {
-                DropWhere(effect => effect.Spec.IsWard && effect.Id != id, true);
+                DropWhere(effect => effect.Spec.IsStance && effect.Id != id, true);
             }
 
             if (StatusSpec.IsMindAilment(id))
@@ -625,7 +652,8 @@ namespace RuneMagic
 
         void RefreshChip()
         {
-            var text = Summary();
+            var hidden = IsHidden;
+            var text = hidden ? string.Empty : Summary();
             if (_chip != null)
             {
                 _chip.text = text;
@@ -634,6 +662,14 @@ namespace RuneMagic
 
             if (_sprite == null)
             {
+                return;
+            }
+
+            if (hidden)
+            {
+                var fade = _baseColor;
+                fade.a = 0.18f;
+                _sprite.color = fade;
                 return;
             }
 

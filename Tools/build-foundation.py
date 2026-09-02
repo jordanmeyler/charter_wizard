@@ -556,8 +556,8 @@ def main():
                 {"type": "runes", "x": 5, "y": 6, "runes": ["Salt"], "dir": "right"},
                 {"type": "runes", "x": 14, "y": 6, "runes": ["Mercury"], "dir": "right"},
                 {"type": "runes", "x": 23, "y": 6, "runes": ["Sulphur"], "dir": "right"},
-                {"type": "runes", "x": 14, "y": 9, "runes": ["Water"], "dir": "up"},
-                lesson(10, 9, ["Water", "Salt", "Sulphur"], "right"),
+                {"type": "runes", "x": 14, "y": 9, "runes": ["Fire"], "dir": "up"},
+                lesson(10, 9, ["Fire", "Salt", "Sulphur"], "right"),
             ],
         ),
         room(

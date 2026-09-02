@@ -28,7 +28,11 @@ namespace RuneMagic
         /// Liquid poison on the walk. Contact only; yield washes it.
         /// Foul is the airborne miasma cloud.
         /// </summary>
-        Poison
+        Poison,
+        /// <summary>
+        /// Withhold a vegetable body. Plants die. Remains speak Death.
+        /// </summary>
+        Wither
     }
 
     /// <summary>
@@ -133,8 +137,11 @@ namespace RuneMagic
                 case SpellId.Sprout:
                 case SpellId.Grove:
                     return new SpellVerb(SpellTarget.Area, PlantLaw.GrowRadius, StatusId.None, 0f, TileVerb.Grow);
+                case SpellId.Grow:
                 case SpellId.CallGrowth:
-                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Grow);
+                    return new SpellVerb(SpellTarget.Area, PlantLaw.GrowRadius, StatusId.None, 0f, TileVerb.Grow);
+                case SpellId.Wither:
+                    return new SpellVerb(SpellTarget.Area, PlantLaw.GrowRadius, StatusId.None, 0f, TileVerb.Wither);
                 case SpellId.Forest:
                     return new SpellVerb(SpellTarget.Area, 1.2f, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.Balm:
@@ -171,6 +178,20 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Flameward, 14f, TileVerb.None);
                 case SpellId.Windward:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Windward, 14f, TileVerb.None);
+                case SpellId.Plantward:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Plantward, 14f, TileVerb.Grow);
+                case SpellId.FlameForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.FlameForm, 14f, TileVerb.None);
+                case SpellId.TideForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.TideForm, 14f, TileVerb.None);
+                case SpellId.StoneForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.StoneForm, 14f, TileVerb.None);
+                case SpellId.GaleForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.GaleForm, 14f, TileVerb.None);
+                case SpellId.GroveForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.GroveForm, 14f, TileVerb.Grow);
+                case SpellId.CloudForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.CloudForm, 14f, TileVerb.None);
                 case SpellId.Veil:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
                 case SpellId.StormCall:
@@ -198,6 +219,8 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 4.2f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.OilPillar:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.TaintedTree:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);
                 case SpellId.Plasma:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.Burning, 3f, TileVerb.Ignite);
                 case SpellId.Tree:

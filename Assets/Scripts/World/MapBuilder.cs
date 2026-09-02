@@ -32,7 +32,7 @@ namespace RuneMagic
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.EarthPillar, SpellId.RaisedEarth,
             SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall,
-            SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise,
+            SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree,
             SpellId.Tree, SpellId.WoodWall,
             SpellId.Hop, SpellId.Flight
         };
@@ -53,7 +53,7 @@ namespace RuneMagic
         public static readonly SpellId[] ArrowKeys =
         {
             SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar, SpellId.FirePillar,
-            SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise, SpellId.Tree, SpellId.WoodWall,
+            SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree, SpellId.Tree, SpellId.WoodWall,
             SpellId.Menhir, SpellId.Bridge
         };
 
