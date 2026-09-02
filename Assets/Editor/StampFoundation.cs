@@ -384,6 +384,16 @@ namespace RuneMagic
                     SetString(interact, "spell", string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
                     SetString(interact, "look", prop.note);
                     break;
+                case "speech":
+                case "approach":
+                    host = StampSpeech(prop, SpeechCue.Approach, "Read", "Speech");
+                    break;
+                case "sign":
+                    host = StampSpeech(prop, SpeechCue.Interact, "Read", "Sign");
+                    break;
+                case "talk":
+                    host = StampSpeech(prop, SpeechCue.Interact, "Talk", "Talk");
+                    break;
                 case "torch":
                     host = new GameObject("Torch");
                     host.AddComponent<TorchFixture>();
@@ -420,6 +430,27 @@ namespace RuneMagic
             }
 
             Undo.RegisterCreatedObjectUndo(host, "Stamp " + type);
+        }
+
+        static GameObject StampSpeech(MapProp prop, SpeechCue cue, string verb, string name)
+        {
+            var host = new GameObject(name);
+            var speech = host.AddComponent<WorldSpeech>();
+            var sprite = !string.IsNullOrEmpty(prop.sprite)
+                ? prop.sprite
+                : cue == SpeechCue.Interact && name == "Sign" ? "plaque" : string.Empty;
+            speech.Author(
+                cue,
+                string.IsNullOrEmpty(prop.verb) ? verb : prop.verb,
+                string.IsNullOrEmpty(prop.text) ? "The way is shut." : prop.text,
+                cue == SpeechCue.Approach,
+                false,
+                string.IsNullOrEmpty(sprite),
+                sprite);
+            SetString(speech, "title", prop.displayName);
+            SetString(speech, "speaker", prop.note);
+            SetString(speech, "look", prop.note);
+            return host;
         }
 
         static PackEnemies.Spec MatchEnemy(MapProp prop)
@@ -475,7 +506,8 @@ namespace RuneMagic
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or WorldInteract or
-                    TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or SpawnCrystal or BarrierLock)
+                    WorldSpeech or TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or
+                    SpawnCrystal or BarrierLock)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

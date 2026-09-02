@@ -2,7 +2,7 @@ namespace RuneMagic
 {
     /// <summary>
     /// The world clock holds only while a menu is up (the Charter,
-    /// pause, naming, or a prayer reveal). Going to aim closes that
+    /// pause, naming, a prayer reveal, or a speech window). Going to aim closes that
     /// menu: time runs again and the adept stands until the click
     /// lands, unless an item or condition later grants motion during
     /// a cast.

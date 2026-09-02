@@ -4,10 +4,11 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Something the adept can use in the world — pray, later read,
-    /// pull a lever. Lookables only fill the info box; this is the
-    /// Interact button. Drop <see cref="WorldInteract"/> on an empty
-    /// object so tiles or child sprites can carry the look.
+    /// Something the adept can use in the world — pray, read a sign,
+    /// talk, pull a lever. Lookables only fill the info box; this is
+    /// the Interact button. Drop <see cref="WorldInteract"/> or
+    /// <see cref="WorldSpeech"/> on an empty object so tiles or child
+    /// sprites can carry the look.
     /// </summary>
     public interface IInteractable
     {

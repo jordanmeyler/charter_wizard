@@ -45,10 +45,16 @@ namespace RuneMagic
         bool _revealing;
         CodexEntry _revealed;
         readonly HashSet<string> _namedOffers = new();
+        bool _speaking;
+        string _speechTitle = string.Empty;
+        string _speechSpeaker = string.Empty;
+        string[] _speechPages = System.Array.Empty<string>();
+        int _speechPage;
 
         public static bool EditingName { get; private set; }
         public static bool RevealingSpell { get; private set; }
-        public static bool HoldsPlay => EditingName || RevealingSpell;
+        public static bool ShowingSpeech { get; private set; }
+        public static bool HoldsPlay => EditingName || RevealingSpell || ShowingSpeech;
 
         public void Bind(SanctumDirector director)
         {
@@ -77,6 +83,11 @@ namespace RuneMagic
             {
                 CloseReveal();
             }
+
+            if (ShowingSpeech)
+            {
+                CloseSpeech();
+            }
         }
 
         public static void CancelNaming()
@@ -91,6 +102,12 @@ namespace RuneMagic
                 return;
             }
 
+            if (ShowingSpeech)
+            {
+                _instance.CloseSpeech();
+                return;
+            }
+
             if (RevealingSpell)
             {
                 _instance.CloseReveal();
@@ -98,6 +115,16 @@ namespace RuneMagic
             }
 
             _instance.CloseNaming();
+        }
+
+        public static void ShowSpeech(string title, string speaker, IReadOnlyList<string> pages)
+        {
+            _instance?.OpenSpeech(title, speaker, pages);
+        }
+
+        public static void AdvanceHeldSpeech()
+        {
+            _instance?.AdvanceSpeech();
         }
 
         public static void RevealWorking(CodexEntry entry)
@@ -165,6 +192,7 @@ namespace RuneMagic
             _interactGui = default;
             EditingName = _nameTarget != NameTarget.None && _namingIndex >= 0;
             RevealingSpell = _revealing;
+            ShowingSpeech = _speaking;
             if (_director == null)
             {
                 return;
@@ -224,6 +252,10 @@ namespace RuneMagic
             else if (EditingName)
             {
                 DrawKeepModal();
+            }
+            else if (ShowingSpeech)
+            {
+                DrawSpeechModal();
             }
 
             DrawDeathNotice();
@@ -907,6 +939,60 @@ namespace RuneMagic
             _director?.ResumeFromNaming();
         }
 
+        void OpenSpeech(string title, string speaker, IReadOnlyList<string> pages)
+        {
+            var lines = WorldSpeech.CollectPages(null, pages);
+            if (lines.Count == 0)
+            {
+                return;
+            }
+
+            if (EditingName)
+            {
+                CloseNaming();
+            }
+
+            if (RevealingSpell)
+            {
+                CloseReveal();
+            }
+
+            _speechTitle = title ?? string.Empty;
+            _speechSpeaker = speaker ?? string.Empty;
+            _speechPages = lines.ToArray();
+            _speechPage = 0;
+            _speaking = true;
+            ShowingSpeech = true;
+            _director?.PauseForNaming();
+        }
+
+        void CloseSpeech()
+        {
+            _speaking = false;
+            ShowingSpeech = false;
+            _speechTitle = string.Empty;
+            _speechSpeaker = string.Empty;
+            _speechPages = System.Array.Empty<string>();
+            _speechPage = 0;
+            _director?.ResumeFromNaming();
+        }
+
+        void AdvanceSpeech()
+        {
+            if (!_speaking)
+            {
+                return;
+            }
+
+            if (_speechPage + 1 < _speechPages.Length)
+            {
+                _speechPage++;
+                return;
+            }
+
+            CloseSpeech();
+        }
+
         bool TryNamingAttempt(out CastAttempt attempt)
         {
             if (_nameTarget == NameTarget.Recent)
@@ -1058,6 +1144,75 @@ namespace RuneMagic
                 var shown = _revealed;
                 CloseReveal();
                 _director.CastRevealed(shown);
+            }
+        }
+
+        void DrawSpeechModal()
+        {
+            if (_speechPages == null || _speechPages.Length == 0)
+            {
+                CloseSpeech();
+                return;
+            }
+
+            _speechPage = Mathf.Clamp(_speechPage, 0, _speechPages.Length - 1);
+            var page = _speechPages[_speechPage];
+            var hasMore = _speechPage + 1 < _speechPages.Length;
+
+            DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
+            const float width = 560f;
+            var bodyHeight = Mathf.Clamp(48f + page.Length * 0.28f, 72f, 220f);
+            var speakerRow = !string.IsNullOrWhiteSpace(_speechSpeaker) ? 26f : 0f;
+            var titleRow = !string.IsNullOrWhiteSpace(_speechTitle) ? 32f : 0f;
+            var height = 118f + titleRow + speakerRow + bodyHeight;
+            var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
+            var ev = Event.current;
+            if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
+            {
+                ev.Use();
+            }
+
+            DrawPanel(modal.x, modal.y, modal.width, modal.height);
+
+            var y = modal.y + 16f;
+            if (titleRow > 0f)
+            {
+                var heading = Label(22, FontStyle.Bold, Color.white);
+                GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, 28), _speechTitle, heading);
+                y += titleRow;
+            }
+
+            if (speakerRow > 0f)
+            {
+                var who = Label(15, FontStyle.Italic, new Color(0.92f, 0.82f, 0.5f));
+                GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, 22), _speechSpeaker, who);
+                y += speakerRow;
+            }
+
+            var body = Label(16, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
+            GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, bodyHeight), page, body);
+
+            var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
+            if (cancel)
+            {
+                ev.Use();
+                CloseSpeech();
+                return;
+            }
+
+            var action = hasMore ? "Next" : "Continue";
+            if (DrawAction(new Rect(modal.xMax - 172, modal.yMax - 58, 148, 42), action, true,
+                    new Color(0.42f, 0.32f, 0.14f)))
+            {
+                AdvanceSpeech();
+            }
+
+            if (_speechPages.Length > 1)
+            {
+                var mark = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
+                mark.alignment = TextAnchor.MiddleLeft;
+                GUI.Label(new Rect(modal.x + 24, modal.yMax - 50, 200, 28),
+                    $"{_speechPage + 1} / {_speechPages.Length}", mark);
             }
         }
 
