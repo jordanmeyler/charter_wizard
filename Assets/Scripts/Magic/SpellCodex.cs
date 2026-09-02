@@ -828,6 +828,7 @@ namespace RuneMagic
             FocusLaw.Audit(broken);
             VitalLaw.Audit(broken);
             StrikeLaw.Audit(broken);
+            SpellGrammar.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
             if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _) || !TryGet(SpellId.ObsidianWall, out _))

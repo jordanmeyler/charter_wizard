@@ -142,7 +142,6 @@ namespace RuneMagic
         Animate,
         DeathHost,
         Exorcism,
-        DarkCrystal = GraveIce,
         Wolfsbane,
         GroveCure,
         SunOrb,
@@ -151,6 +150,9 @@ namespace RuneMagic
         Hemlock,
         Nightshade,
         Briar,
+        // Aliases of earlier ids. Keep these last so they do not
+        // reset the next unique values.
+        DarkCrystal = GraveIce,
         Wort = Wolfsbane
     }
 
@@ -359,6 +361,43 @@ namespace RuneMagic
             }
 
             return FormulaText(recipe.Material, recipe.Aspect, recipe.Shape);
+        }
+
+        /// <summary>
+        /// Grow / VineRise and the other leftover names may share a
+        /// number. Two different spells must not.
+        /// </summary>
+        public static void Audit(List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            var allowed = new HashSet<string>
+            {
+                "Grow=VineRise", "VineRise=Grow",
+                "Wither=Grotto", "Grotto=Wither",
+                "DarkCrystal=GraveIce", "GraveIce=DarkCrystal",
+                "Wort=Wolfsbane", "Wolfsbane=Wort"
+            };
+
+            var byValue = new Dictionary<int, string>();
+            foreach (var name in System.Enum.GetNames(typeof(SpellId)))
+            {
+                var n = (int)System.Enum.Parse(typeof(SpellId), name);
+                if (byValue.TryGetValue(n, out var other))
+                {
+                    if (!allowed.Contains(name + "=" + other))
+                    {
+                        broken.Add(other + " and " + name + " must not share a SpellId number");
+                    }
+                }
+                else
+                {
+                    byValue[n] = name;
+                }
+            }
         }
     }
 }
