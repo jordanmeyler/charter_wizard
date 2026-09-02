@@ -12,6 +12,7 @@ namespace RuneMagic
         Rigidbody2D _body;
         SpriteRenderer _sprite;
         SanctumDirector _director;
+        AdeptAvatar _adept;
 
         void Awake()
         {
@@ -22,23 +23,39 @@ namespace RuneMagic
             _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
-        void FixedUpdate()
+        void Update()
         {
-            if (_director == null)
-            {
-                _director = FindFirstObjectByType<SanctumDirector>();
-            }
-
+            BindDirector();
             if (_director != null && !_director.CanMove)
             {
-                Moving = false;
+                Halt();
+            }
+        }
+
+        void FixedUpdate()
+        {
+            BindDirector();
+            if (_director != null && !_director.CanMove)
+            {
+                Halt();
+                return;
+            }
+
+            if (_adept == null)
+            {
+                _adept = GetComponent<AdeptAvatar>();
+            }
+
+            if (_adept != null && _adept.IsAirborne)
+            {
+                Halt();
                 return;
             }
 
             var host = StatusHost.On(this);
             if (host != null && host.BlocksMove)
             {
-                Moving = false;
+                Halt();
                 return;
             }
 
@@ -104,6 +121,23 @@ namespace RuneMagic
             }
 
             return analog.sqrMagnitude > 1f ? analog.normalized : analog;
+        }
+
+        void BindDirector()
+        {
+            if (_director == null)
+            {
+                _director = FindFirstObjectByType<SanctumDirector>();
+            }
+        }
+
+        void Halt()
+        {
+            Moving = false;
+            if (_body != null)
+            {
+                _body.linearVelocity = Vector2.zero;
+            }
         }
     }
 }
