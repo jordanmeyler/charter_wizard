@@ -859,12 +859,14 @@ namespace RuneMagic
             if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
                 || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
                 || CoverCatalog.LeftoverFloor(MaterialId.Ember) != MaterialId.Ember
+                || CoverCatalog.CoverOf(RuneId.Ember) != TileCover.Ember
+                || CoverCatalog.MaterialOf(TileCover.Ember) != MaterialId.Ember
                 || VitalLaw.CanBurn(MaterialId.Fire)
                 || VitalLaw.CanBurn(MaterialId.Lava)
                 || VitalLaw.CanBurn(MaterialId.Ember)
                 || VitalLaw.IsRestFire(MaterialId.Ember))
             {
-                broken.Add("Rest fire stays; ember is a Fire mark, not fuel, and does not leftover to dirt");
+                broken.Add("Rest fire stays; ember hosts fire, is not fuel, and does not leftover to dirt");
             }
 
             if (ember.BurnRate != 0f
@@ -911,7 +913,7 @@ namespace RuneMagic
                 || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
-                broken.Add("Hunger must not run onto empty or neutral ground; ember is a path, not fuel");
+                broken.Add("Hunger must not run onto empty or neutral ground; ember hosts fire but is not fuel");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

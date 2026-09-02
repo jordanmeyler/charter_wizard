@@ -212,9 +212,21 @@ namespace RuneMagic
             || CoverMaterial == MaterialId.Fire;
 
         /// <summary>
+        /// Coals on this cell — the walk, a cover, or a detail. They
+        /// provide fire and let hunger cross. The tile underneath
+        /// stays; ember does not leftover to dirt.
+        /// </summary>
+        public bool HasEmber =>
+            !HasAshCover
+            && (Material == MaterialId.Ember
+                || Cover == TileCover.Ember
+                || CoverMaterial == MaterialId.Ember
+                || _detailMaterial == MaterialId.Ember);
+
+        /// <summary>
         /// Hunger seated in the walk itself — Floor-Fire, a hearth, lava.
         /// Rest matter. It does not burn out. Coverings and spells
-        /// are what react. Ember is a Fire mark, not this.
+        /// are what react. Ember is a Fire mark that hosts fire, not this.
         /// </summary>
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
@@ -236,14 +248,14 @@ namespace RuneMagic
             IsConjured && Material == MaterialId.Fire;
 
         /// <summary>
-        /// Kindled halls, geysers, oil, overlay fuel, or rest fire
-        /// already in the walk. Those keep a fire-pillar standing.
+        /// Kindled halls, geysers, oil, overlay fuel, ember, or rest
+        /// fire already in the walk. Those keep a fire-pillar standing.
         /// </summary>
         public bool FeedsHunger
         {
             get
             {
-                if (Kindled || IsGeyser || HasOil || HasOverlayFuel)
+                if (Kindled || IsGeyser || HasOil || HasOverlayFuel || HasEmber)
                 {
                     return true;
                 }
@@ -553,13 +565,15 @@ namespace RuneMagic
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
-        /// Fuel hunger can finish. Kindled halls and rest fire floors
+        /// Fuel hunger can finish. Kindled halls, rest fire, and ember
         /// stay. Fire cover, timber walls, and plant / timber floors
-        /// catch once, then leftover dirt.
+        /// catch once, then leftover dirt. An embered tile keeps
+        /// whatever walk was already there.
         /// </summary>
         public bool HoldsBurnFuel =>
             !HasAshCover
             && !IsFireFloor
+            && !HasEmber
             && (IsPlantish
                 || HasPlantishDetail
                 || HasVine
@@ -579,11 +593,13 @@ namespace RuneMagic
 
         /// <summary>
         /// Ember is a Fire path, not fuel. Hunger can walk across it
-        /// toward the source; the mark itself does not catch.
+        /// toward the source and sit on it. The mark itself does not
+        /// leftover.
         /// </summary>
         public bool ConductsFire =>
             !HasAshCover
-            && (VitalLaw.ConductsFire(Material)
+            && (HasEmber
+                || VitalLaw.ConductsFire(Material)
                 || VitalLaw.ConductsFire(_detailMaterial)
                 || VitalLaw.ConductsFire(CoverMaterial));
 
@@ -638,7 +654,7 @@ namespace RuneMagic
         {
             get
             {
-                if (Kindled || IsGeyser || (IsFireFloor && LiveFire))
+                if (Kindled || IsGeyser || (IsFireFloor && LiveFire) || (HasEmber && LiveFire))
                 {
                     return VitalLaw.HungerOil;
                 }
@@ -1713,11 +1729,31 @@ namespace RuneMagic
                 return;
             }
 
-            if (IsFireFloor)
+            if (IsFireFloor || HasEmber)
             {
                 Fire = 0f;
                 RefreshFx();
             }
+        }
+
+        /// <summary>
+        /// Ember is coals, not leftover dirt. Restore the ember mark
+        /// if overlay fuel or a passing flame cleared the sheen.
+        /// The walk underneath stays whatever it already was.
+        /// </summary>
+        void KeepEmber()
+        {
+            if (Material == MaterialId.Ember || _detailMaterial == MaterialId.Ember)
+            {
+                return;
+            }
+
+            if (Cover == TileCover.Ember || CoverMaterial == MaterialId.Ember)
+            {
+                return;
+            }
+
+            PaintCover(TileCover.Ember);
         }
 
         void SpendOverlayFuel()
@@ -1744,15 +1780,21 @@ namespace RuneMagic
         /// timber floor swaps stamp and look to leftover dirt — it
         /// does not draw ash over the tile you placed. A timber or
         /// plant wall burns for its clock, then falls to that leftover
-        /// dirt so a key behind it can be reached. Floor-Fire stays.
+        /// dirt so a key behind it can be reached. Floor-Fire and
+        /// ember stay. Ember keeps the walk that was already there.
         /// It only spends what sat on it. Covers and spells may still
         /// sit on the leftover.
         /// </summary>
         public void BurnOut()
         {
-            if (IsFireFloor)
+            if (IsFireFloor || HasEmber)
             {
                 SpendOverlayFuel();
+                if (HasEmber)
+                {
+                    KeepEmber();
+                }
+
                 if (Kindled)
                 {
                     KeepKindled();
@@ -2290,6 +2332,12 @@ namespace RuneMagic
                     return SpriteFactory.Named("tile-fire");
                 }
 
+                if (string.Equals(_coverId, "ember", System.StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(_coverId, "cover-ember", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return SpriteFactory.Named("fx-ember");
+                }
+
                 if (string.Equals(_coverId, "lightning", System.StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(_coverId, "cover-lightning", System.StringComparison.OrdinalIgnoreCase))
                 {
@@ -2484,7 +2532,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && !IsGeyser && !HasPoisonCover && _growth < 1)
+            if (Fire < 0.08f && Miasma < 0.18f && Fog < 0.18f && Wet < 0.18f && Charge < 0.18f && Oil < 0.18f && !IsGeyser && !HasPoisonCover && !HasEmber && _growth < 1)
             {
                 if (_fx != null)
                 {
@@ -2501,6 +2549,10 @@ namespace RuneMagic
             if (Fire > 0.12f)
             {
                 PlayFxLook(fx, "tile-fire", new Color(1f, 0.55f, 0.12f, 0.35f + Fire * 0.5f));
+            }
+            else if (HasEmber)
+            {
+                PlayFxLook(fx, "fx-ember", new Color(0.95f, 0.42f, 0.1f, 0.28f));
             }
             else if (Miasma > 0.18f)
             {
@@ -2605,6 +2657,7 @@ namespace RuneMagic
                 case TileCover.Ice:
                     return ElementLook.Of(ElementFamily.Ice);
                 case TileCover.Fire:
+                case TileCover.Ember:
                     return ElementLook.Of(ElementFamily.Fire);
                 case TileCover.Lightning:
                     return ElementLook.Of(ElementFamily.Lightning);

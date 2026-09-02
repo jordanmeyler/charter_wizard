@@ -273,7 +273,7 @@ namespace RuneMagic
             if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 var host = StatusHost.On(player);
-                var inFire = Underfoot.IsBurning;
+                var inFire = Underfoot.IsBurning || Underfoot.HasEmber;
                 if (inFire)
                 {
                     host?.Apply(StatusId.Burning, VitalLaw.AdeptBurnSeconds);
@@ -2301,7 +2301,7 @@ namespace RuneMagic
 
                 var tile = Grid.TileAtWorld(encounter.WorldPosition);
                 var host = StatusHost.On(body);
-                if (tile != null && tile.IsBurning)
+                if (tile != null && (tile.IsBurning || tile.HasEmber))
                 {
                     host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
                 }

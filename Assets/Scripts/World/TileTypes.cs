@@ -50,6 +50,11 @@ namespace RuneMagic
         /// </summary>
         Poison,
         /// <summary>
+        /// Coals on the walk. They provide fire and let hunger cross,
+        /// but they do not consume the tile underneath.
+        /// </summary>
+        Ember,
+        /// <summary>
         /// What withholding leaves of a vegetable body. Speaks Death.
         /// </summary>
         Wither
