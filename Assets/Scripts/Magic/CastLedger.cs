@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace RuneMagic
 {
     /// <summary>
-    /// The last twenty-five attempted casts. Charter keeps the marks.
-    /// Free blocks them — wild work is not written down.
-    /// Workings the adept Keep also live in the Grimoire, past this strip.
+    /// The last twenty-five attempted casts. Charter and Free both
+    /// keep the marks that were strung. Workings the adept Keep also
+    /// live in the Grimoire, past this strip.
     /// </summary>
     public sealed class CastLedger
     {
@@ -21,12 +21,24 @@ namespace RuneMagic
             bool worked,
             SpellId spell,
             string givenName = "",
-            bool saved = false)
+            bool saved = false,
+            bool hideBadRecipes = false)
         {
             var source = composition.Sequence;
             var runes = source != null && source.Length > 0
                 ? (RuneId[])source.Clone()
                 : System.Array.Empty<RuneId>();
+            if (hideBadRecipes && !worked)
+            {
+                for (var i = _entries.Count - 1; i >= 0; i--)
+                {
+                    if (!_entries[i].Worked)
+                    {
+                        _entries.RemoveAt(i);
+                    }
+                }
+            }
+
             _entries.Insert(0, new CastAttempt(stance, runes, worked, spell, givenName ?? string.Empty, saved));
             while (_entries.Count > Cap)
             {
@@ -42,7 +54,7 @@ namespace RuneMagic
             }
 
             var old = _entries[index];
-            if (!old.Worked || old.Spell == SpellId.None)
+            if (!old.Worked || old.Runes == null || old.Runes.Length == 0)
             {
                 return false;
             }
@@ -82,6 +94,6 @@ namespace RuneMagic
         public SpellId Spell { get; }
         public string GivenName { get; }
         public bool Saved { get; }
-        public bool HideRunes => Stance == CastingStance.Free;
+        public bool HideRunes => false;
     }
 }

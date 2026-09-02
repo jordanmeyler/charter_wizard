@@ -222,8 +222,12 @@ namespace RuneMagic
             public readonly Dictionary<RuneId, int> Count = new();
             public readonly Dictionary<RuneId, WeaveGlyph> Template = new();
             public readonly List<List<WeaveGlyph>> Groups = new();
+            readonly HashSet<RuneId> _joinGroups = new();
             public int Pits;
             public bool Breathable;
+
+            public bool TryBeginJoinGroup(RuneId wrought) =>
+                wrought != RuneId.None && _joinGroups.Add(wrought);
 
             public void Add(RuneId rune, WeaveGlyph glyph, int n = 1)
             {
@@ -590,7 +594,8 @@ namespace RuneMagic
         /// <summary>
         /// A wrought join that already stands (Spark, Plant, Ice) is
         /// itself in the weave. The basics that compose it are still
-        /// there, strewn by frequency — not glued to the join.
+        /// there, strewn by frequency, and also boxed as a group so
+        /// the breakdown can be read at a glance.
         /// </summary>
         static void ExpandComposing(
             Tally tally,
@@ -599,7 +604,7 @@ namespace RuneMagic
             WeaveKind kind,
             string origin)
         {
-            if (tally == null || wrought == RuneId.None || !ChainBook.IsWrought(wrought))
+            if (tally == null || wrought == RuneId.None || !ChainBook.TryBirth(wrought, out var sources))
             {
                 return;
             }
@@ -613,6 +618,31 @@ namespace RuneMagic
                     tally.Add(recipe[i], new WeaveGlyph(recipe[i], material, kind, origin));
                 }
             }
+
+            if (sources.Count < 2 || !tally.TryBeginJoinGroup(wrought))
+            {
+                return;
+            }
+
+            var id = NextGroup++;
+            var title = RuneCatalog.NameOf(wrought);
+            var group = new List<WeaveGlyph>(sources.Count);
+            for (var i = 0; i < sources.Count; i++)
+            {
+                group.Add(new WeaveGlyph(
+                    sources[i],
+                    wrought,
+                    material,
+                    kind,
+                    id,
+                    i,
+                    sources.Count,
+                    title,
+                    false,
+                    origin));
+            }
+
+            tally.Groups.Add(group);
         }
 
         static bool VisibleIn(IRuneSource source, Rect view)
@@ -917,6 +947,63 @@ namespace RuneMagic
             {
                 broken.Add("A stood Spark must stand as itself with Fire and Air, and must not invent Light");
             }
+
+            if (!HasJoinGroup(sparkGrid, RuneId.Spark, RuneId.Fire, RuneId.Air))
+            {
+                broken.Add("Spark must box Fire · Air as its breakdown");
+            }
+
+            var plant = new Tally();
+            plant.Add(RuneId.Plant, new WeaveGlyph(RuneId.Plant, MaterialId.Timber, WeaveKind.Material, "timber"));
+            ExpandComposing(plant, RuneId.Plant, MaterialId.Timber, WeaveKind.Material, "timber");
+            var plantGrid = Compose(plant, 9, GridCells);
+            if (!HasJoinGroup(plantGrid, RuneId.Plant, RuneId.Water, RuneId.Salt, RuneId.Earth)
+                || CountShown(plantGrid, RuneId.Plant) < MinCopiesPerRune)
+            {
+                broken.Add("Plant must stand as itself and box Water · Salt · Earth as its breakdown");
+            }
+        }
+
+        static bool HasJoinGroup(List<WeaveGlyph> sequence, RuneId join, params RuneId[] sources)
+        {
+            if (sequence == null || sources == null || sources.Length == 0)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < sequence.Count; i++)
+            {
+                var glyph = sequence[i];
+                if (!glyph.IsGroup || glyph.Rune != join || glyph.GroupIndex != 0)
+                {
+                    continue;
+                }
+
+                if (glyph.GroupSize != sources.Length)
+                {
+                    continue;
+                }
+
+                var matched = true;
+                for (var n = 0; n < sources.Length; n++)
+                {
+                    var slot = i + n;
+                    if (slot >= sequence.Count
+                        || sequence[slot].GroupId != glyph.GroupId
+                        || sequence[slot].Shown != sources[n])
+                    {
+                        matched = false;
+                        break;
+                    }
+                }
+
+                if (matched)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static int CountShown(List<WeaveGlyph> sequence, RuneId rune)

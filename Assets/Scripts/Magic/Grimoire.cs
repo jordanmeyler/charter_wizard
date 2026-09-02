@@ -59,7 +59,7 @@ namespace RuneMagic
 
         public void KeepWorking(CastingStance stance, IReadOnlyList<RuneId> runes, SpellId spell, string givenName)
         {
-            if (spell == SpellId.None || runes == null || runes.Count == 0)
+            if (runes == null || runes.Count == 0)
             {
                 return;
             }
