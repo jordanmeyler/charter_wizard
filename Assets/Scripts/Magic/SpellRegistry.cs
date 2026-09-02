@@ -74,6 +74,35 @@ namespace RuneMagic
                 return SpellId.AirWall;
             }
 
+            if (key.Equals("wort", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Wort);
+                return SpellId.Wort;
+            }
+
+            if (key.Equals("grovecure", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("grove-cure", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.GroveCure);
+                return SpellId.GroveCure;
+            }
+
+            if (key.Equals("sunorb", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("sun-orb", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.SunOrb);
+                return SpellId.SunOrb;
+            }
+
+            if (key.Equals("nightshade", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("venombloom", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("venom-bloom", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Nightshade);
+                return SpellId.Nightshade;
+            }
+
             if (System.Enum.TryParse(key, true, out SpellId enumerated) && enumerated != SpellId.None)
             {
                 Remember(key, enumerated);

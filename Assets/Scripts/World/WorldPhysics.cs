@@ -184,7 +184,8 @@ namespace RuneMagic
                 || WorldWork.IsBoulderWork(spell)
                 || WorldWork.IsLightWork(spell)
                 || WorldWork.IsVineWork(spell)
-                || WorldWork.IsPoisonLiquid(spell);
+                || WorldWork.IsPoisonLiquid(spell)
+                || WorldWork.IsPoisonBreath(spell);
         }
 
         public static ISpellVolume VolumeOf(ISpellLock encounter)
@@ -930,9 +931,12 @@ namespace RuneMagic
 
             if (!WorldWork.IsPoisonLiquid(SpellId.Poison)
                 || !SweepsPath(SpellId.Poison, SpellShape.Shot)
-                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison)
+                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
+                || !WorldWork.IsPoisonLiquid(SpellId.Wolfsbane)
+                || !WorldWork.IsPoisonBreath(SpellId.Spore)
+                || !SweepsPath(SpellId.Spore, SpellShape.Shot))
             {
-                broken.Add("Poison spray must send a stream that poisons what it crosses");
+                broken.Add("Poison spray and wolfsbane must stream; spore must travel as breath");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness

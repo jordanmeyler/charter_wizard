@@ -363,6 +363,8 @@ namespace RuneMagic
         /// </summary>
         public bool IsGeyser { get; private set; }
         public bool IsPoisonWell { get; private set; }
+        public bool IsLightWell { get; private set; }
+        public int LightWellRadius { get; private set; }
         /// <summary>
         /// Fire a spell or NPC working started. Authored torches, kindled
         /// halls, and painted cover stay still until work finds them.
@@ -1148,6 +1150,8 @@ namespace RuneMagic
             _hasFoundation = false;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsLightWell = false;
+            LightWellRadius = 0;
             _hungerLife = 0f;
             ClearLinger();
             Reshape(restored);
@@ -1271,6 +1275,18 @@ namespace RuneMagic
 
             IsPoisonWell = true;
             SlickPoison();
+            return true;
+        }
+
+        public bool MarkLightWell(int radius = 2)
+        {
+            if (Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            IsLightWell = true;
+            LightWellRadius = radius < 1 ? 1 : radius;
             return true;
         }
 
@@ -1483,6 +1499,67 @@ namespace RuneMagic
             return changed;
         }
 
+        /// <summary>
+        /// Shown or living plant-work remembers a blighted body.
+        /// Wither, poison slick, and foul breath lift. A weeping
+        /// poison tree wakes as a living plant again.
+        /// </summary>
+        public bool RestoreNature()
+        {
+            var changed = false;
+            if (IsPoisonWell)
+            {
+                IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (Miasma > 0.05f)
+            {
+                Miasma = 0f;
+                if (Cover == TileCover.Miasma)
+                {
+                    PaintCover(TileCover.None);
+                }
+
+                changed = true;
+            }
+
+            if (HasPoisonCover)
+            {
+                PaintCover(TileCover.None);
+                Wet = Mathf.Max(0f, Wet - 0.35f);
+                changed = true;
+            }
+
+            if (HasWitherCover)
+            {
+                PaintCover(TileCover.None);
+                PlacePlantCover();
+                RefreshFx();
+                return true;
+            }
+
+            if (changed
+                && (IsPlantish || HasPlantCover || HasPlantishDetail || Material == MaterialId.Grove || Material == MaterialId.Timber)
+                && !HasPlantCover
+                && !HasVine)
+            {
+                PlacePlantCover();
+            }
+
+            if (changed && IsPlantish)
+            {
+                Grow(1);
+            }
+
+            if (changed)
+            {
+                RefreshFx();
+            }
+
+            return changed;
+        }
+
         public void Dry(float amount)
         {
             Wet = Mathf.Max(0f, Wet - amount);
@@ -1689,6 +1766,8 @@ namespace RuneMagic
             Oil = 0f;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsLightWell = false;
+            LightWellRadius = 0;
             Fire = 0f;
             if (IsConjured)
             {

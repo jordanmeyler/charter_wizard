@@ -32,7 +32,12 @@ namespace RuneMagic
         /// <summary>
         /// Withhold a vegetable body. Plants die. Remains speak Death.
         /// </summary>
-        Wither
+        Wither,
+        /// <summary>
+        /// Shown or living plant-work remembers blighted green.
+        /// Wither, poison slick, and foul breath lift.
+        /// </summary>
+        Restore
     }
 
     /// <summary>
@@ -227,7 +232,23 @@ namespace RuneMagic
                 case SpellId.Glacier:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.Cleanse:
-                    return new SpellVerb(SpellTarget.Self, 1.6f, StatusId.None, 0f, TileVerb.None);
+                    return new SpellVerb(SpellTarget.Self, 1.6f, StatusId.None, 0f, TileVerb.Restore);
+                case SpellId.Wort:
+                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Restore);
+                case SpellId.GroveCure:
+                    return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Restore);
+                case SpellId.SunOrb:
+                    return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.Restore);
+                case SpellId.Sanctuary:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.None, 0f, TileVerb.Restore);
+                case SpellId.Spore:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
+                case SpellId.Wolfsbane:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Poison);
+                case SpellId.Nightshade:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);
+                case SpellId.Briar:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Rooted, 5f, TileVerb.Vine);
                 case SpellId.Turn:
                 case SpellId.CorpseCall:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Charmed, 12f, TileVerb.None);

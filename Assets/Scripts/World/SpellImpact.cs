@@ -295,6 +295,13 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Restore:
+                        if (tile.RestoreNature())
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -359,7 +366,9 @@ namespace RuneMagic
                                                     ? "The vegetable body climbs. Hunger can run this line as a wick."
                                                     : verb.Tiles == TileVerb.Wither
                                                         ? "The vegetable body is withheld. What remains speaks Death."
-                                                        : "Yield finds the floor.");
+                                                        : verb.Tiles == TileVerb.Restore
+                                                            ? "Blighted green remembers itself. The foul lifts."
+                                                            : "Yield finds the floor.");
             }
         }
 

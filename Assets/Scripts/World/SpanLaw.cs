@@ -76,7 +76,7 @@ namespace RuneMagic
                 return SpanGrade.BasicEarth;
             }
 
-            if (spell == SpellId.Tree || spell == SpellId.WoodWall)
+            if (spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.Nightshade)
             {
                 return SpanGrade.Plant;
             }

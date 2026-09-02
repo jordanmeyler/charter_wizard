@@ -33,17 +33,18 @@ namespace RuneMagic
 
     /// <summary>
     /// Binary kill: power × affinity must beat defense.
-    /// Affinity is 0–5. Defense is 1–8. Power is 0–10.
+    /// Affinity is 0–5. Defense is 0–10. Power is 0–10.
     /// Witchfire always reads as 1. Chaos (Unmake) has no element
-    /// and always reads as 1. Power 0 never kills.
+    /// and always reads as 1. Power 0 never kills. Air is 1–2
+    /// unless a later tempest is written.
     /// </summary>
     public static class StrikeLaw
     {
         public const int AffinityImmune = 0;
         public const int AffinityNormal = 1;
         public const int AffinityMax = 5;
-        public const int DefenseMin = 1;
-        public const int DefenseMax = 8;
+        public const int DefenseMin = 0;
+        public const int DefenseMax = 10;
         public const int PowerMax = 10;
         public const int WitchfirePower = 7;
         public const int GlacierPower = 6;
@@ -108,23 +109,29 @@ namespace RuneMagic
                 case SpellId.Monsoon: return new Strike(2, StrikeKind.Water);
                 case SpellId.AcidRain: return new Strike(3, StrikeKind.Acid);
                 case SpellId.Poison: return new Strike(2, StrikeKind.Poison);
+                case SpellId.Wolfsbane: return new Strike(3, StrikeKind.Poison);
+                case SpellId.Spore: return new Strike(2, StrikeKind.Poison);
                 case SpellId.Blight: return new Strike(3, StrikeKind.Poison);
                 case SpellId.Miasma: return new Strike(2, StrikeKind.Poison);
                 case SpellId.TaintedTree: return new Strike(2, StrikeKind.Poison);
+                case SpellId.Nightshade: return new Strike(3, StrikeKind.Poison);
                 case SpellId.Glacier: return new Strike(GlacierPower, StrikeKind.Ice);
                 case SpellId.IceSpear: return new Strike(1, StrikeKind.Ice);
                 case SpellId.Wither: return new Strike(3, StrikeKind.Plant);
                 case SpellId.Vine: return new Strike(1, StrikeKind.Plant);
+                case SpellId.Briar: return new Strike(2, StrikeKind.Plant);
                 case SpellId.DeathCloud: return new Strike(6, StrikeKind.Dark);
                 case SpellId.LastBreath: return new Strike(8, StrikeKind.Death);
                 case SpellId.GraveDust: return new Strike(4, StrikeKind.Death);
                 case SpellId.Unmake: return new Strike(UnmakePower, StrikeKind.Chaos);
                 case SpellId.Exorcism: return new Strike(4, StrikeKind.Light);
-                case SpellId.Gust: return new Strike(0, StrikeKind.Air, 2);
-                case SpellId.Gale: return new Strike(0, StrikeKind.Air, 3);
-                case SpellId.Push: return new Strike(0, StrikeKind.Air, 3);
-                case SpellId.AirWall: return new Strike(0, StrikeKind.Air, 3);
-                case SpellId.Sandstorm: return new Strike(0, StrikeKind.Air, 2);
+                case SpellId.SunOrb: return new Strike(3, StrikeKind.Light);
+                case SpellId.Sanctuary: return new Strike(4, StrikeKind.Light);
+                case SpellId.Gust: return new Strike(1, StrikeKind.Air, 2);
+                case SpellId.Gale: return new Strike(2, StrikeKind.Air, 3);
+                case SpellId.Push: return new Strike(2, StrikeKind.Air, 3);
+                case SpellId.AirWall: return new Strike(2, StrikeKind.Air, 3);
+                case SpellId.Sandstorm: return new Strike(2, StrikeKind.Air, 2);
                 default: return new Strike(0, StrikeKind.None);
             }
         }
@@ -157,12 +164,12 @@ namespace RuneMagic
 
         /// <summary>
         /// Strict greater-than so a 4-power bolt does not drop a
-        /// defense-4 stone golem. Power 1 cannot beat defense 7–8
+        /// defense-4 stone golem. Power 1 cannot beat defense 9–10
         /// even at affinity 5.
         /// </summary>
         public static bool Kills(SpellId spell, AffinityProfile profile)
         {
-            if (spell == SpellId.Exorcism && !profile.Undead)
+            if (PurgesUndead(spell) && !profile.Undead)
             {
                 return false;
             }
@@ -231,8 +238,20 @@ namespace RuneMagic
             || spell == SpellId.Animate
             || spell == SpellId.DeathHost;
 
+        public static bool PurgesUndead(SpellId spell) =>
+            spell == SpellId.Exorcism
+            || spell == SpellId.SunOrb
+            || spell == SpellId.Sanctuary;
+
         public static bool Cleanses(SpellId spell) =>
-            spell == SpellId.Cleanse;
+            spell == SpellId.Cleanse
+            || spell == SpellId.Wort
+            || spell == SpellId.GroveCure
+            || spell == SpellId.SunOrb
+            || spell == SpellId.Sanctuary;
+
+        public static bool HealsNature(SpellId spell) =>
+            Cleanses(spell);
 
         public static Essence EssenceOf(StrikeKind kind)
         {
@@ -338,15 +357,59 @@ namespace RuneMagic
                 broken.Add("A zombie doubles its fire weakness and is ruin-weak to Light and Life");
             }
 
-            if (1 * AffinityMax > 7)
+            if (1 * AffinityMax > 9)
             {
                 broken.Add("Power 1 must not beat a top defense even at affinity 5");
+            }
+
+            if (DefenseMin != 0 || DefenseMax != PowerMax)
+            {
+                broken.Add("Defense and power must share the 0–10 scale");
+            }
+
+            if (Of(SpellId.Gust).Power != 1
+                || Of(SpellId.Gale).Power != 2
+                || Of(SpellId.Push).Power != 2
+                || Of(SpellId.AirWall).Power != 2
+                || Of(SpellId.Sandstorm).Power != 2
+                || Of(SpellId.Gust).Kind != StrikeKind.Air)
+            {
+                broken.Add("Ordinary air is force 1–2; it still pushes");
+            }
+
+            if (Kills(SpellId.Gust, flesh)
+                || Kills(SpellId.Gale, flesh)
+                || Kills(SpellId.Push, flesh)
+                || Kills(SpellId.Gust, stone))
+            {
+                broken.Add("Ordinary air must not drop flesh or stone; a later tempest can");
             }
 
             if (Kills(SpellId.Douse, AffinityProfile.Of(CreatureNature.Earth))
                 || Effective(SpellId.Fireball, stone) > stone.Defense)
             {
                 broken.Add("Power times affinity must be strictly greater than defense");
+            }
+
+            if (!Cleanses(SpellId.Wort)
+                || !Cleanses(SpellId.GroveCure)
+                || !Cleanses(SpellId.SunOrb)
+                || !Cleanses(SpellId.Sanctuary)
+                || !PurgesUndead(SpellId.SunOrb)
+                || Kills(SpellId.SunOrb, flesh)
+                || !Kills(SpellId.SunOrb, zombie)
+                || !Kills(SpellId.Sanctuary, zombie))
+            {
+                broken.Add("Wort and the light orbs cleanse; the orbs kill only the dead");
+            }
+
+            if (Of(SpellId.Wolfsbane).Power != 3
+                || Of(SpellId.Nightshade).Power != 3
+                || Of(SpellId.Spore).Power != 2
+                || Of(SpellId.Briar).Power != 2
+                || Of(SpellId.Briar).Kind != StrikeKind.Plant)
+            {
+                broken.Add("Living venom is stronger than the dead spray; briar is plant force 2");
             }
         }
     }
@@ -541,6 +604,7 @@ namespace RuneMagic
                 Fill(m, 1);
                 Set(m, StatusId.Rooted, 0);
                 Set(m, StatusId.Burning, 2);
+                Set(m, StatusId.Poisoned, 2);
                 Set(m, StatusId.Charmed, 1);
             });
         }

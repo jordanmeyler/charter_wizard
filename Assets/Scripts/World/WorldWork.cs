@@ -67,6 +67,8 @@ namespace RuneMagic
                 case SpellId.ScatterDust:
                 case SpellId.OilShot:
                 case SpellId.Poison:
+                case SpellId.Spore:
+                case SpellId.Wolfsbane:
                 case SpellId.Plasma:
                 case SpellId.Vine:
                 case SpellId.Glacier:
@@ -106,6 +108,9 @@ namespace RuneMagic
                 case SpellId.ObsidianWall:
                 case SpellId.WoodWall:
                 case SpellId.TaintedTree:
+                case SpellId.Nightshade:
+                case SpellId.SunOrb:
+                case SpellId.Sanctuary:
                 case SpellId.StonePillar:
                 case SpellId.EarthPillar:
                 case SpellId.MetalPillar:
@@ -174,6 +179,7 @@ namespace RuneMagic
                 case SpellId.Blight:
                 case SpellId.GraveDust:
                 case SpellId.Miasma:
+                case SpellId.Spore:
                     return true;
                 default:
                     return false;
@@ -184,7 +190,10 @@ namespace RuneMagic
         /// The grave of a plant, sent as a liquid. Not a cloud.
         /// </summary>
         public static bool IsPoisonLiquid(SpellId spell) =>
-            spell == SpellId.Poison;
+            spell == SpellId.Poison || spell == SpellId.Wolfsbane;
+
+        public static bool IsPoisonBreath(SpellId spell) =>
+            spell == SpellId.Spore;
 
         public static bool LaysVeil(SpellId spell) =>
             IsSightVeil(spell) || IsPoisonVeil(spell);
@@ -271,7 +280,7 @@ namespace RuneMagic
             spell == SpellId.OilPuddle || spell == SpellId.OilGeyser || spell == SpellId.OilSlick;
 
         public static bool IsVineWork(SpellId spell) =>
-            spell == SpellId.Vine;
+            spell == SpellId.Vine || spell == SpellId.Briar;
 
         public static bool IsPlasmaWork(SpellId spell) =>
             MatterLaw.IsPlasmaWork(spell);
@@ -283,6 +292,8 @@ namespace RuneMagic
                 case SpellId.Gale:
                 case SpellId.Gust:
                 case SpellId.Push:
+                case SpellId.AirWall:
+                case SpellId.Sandstorm:
                 case SpellId.StormCall:
                     return true;
                 default:
@@ -297,6 +308,10 @@ namespace RuneMagic
                 case SpellId.SunLance:
                 case SpellId.DayWake:
                 case SpellId.BrilliantArc:
+                case SpellId.Exorcism:
+                case SpellId.SunOrb:
+                case SpellId.Sanctuary:
+                case SpellId.Cleanse:
                     return true;
                 default:
                     return false;
@@ -315,7 +330,7 @@ namespace RuneMagic
 
             if (kind == VeilKind.Poison)
             {
-                return IsAirWork(spell);
+                return IsAirWork(spell) || IsLightWork(spell) || StrikeLaw.HealsNature(spell);
             }
 
             if (IsAirWork(spell) || IsFireWork(spell))
@@ -552,6 +567,16 @@ namespace RuneMagic
                 return MaterialId.Grove;
             }
 
+            if (spell == SpellId.Nightshade)
+            {
+                return MaterialId.Grove;
+            }
+
+            if (spell == SpellId.SunOrb || spell == SpellId.Sanctuary)
+            {
+                return MaterialId.Crystal;
+            }
+
             if (spell == SpellId.Tree || spell == SpellId.WoodWall)
             {
                 return MaterialId.Timber;
@@ -777,7 +802,9 @@ namespace RuneMagic
                 var slicked = SlickPoison(grid, cells);
                 if (slicked > 0)
                 {
-                    notes.Add("A stream of the grave of a plant finds the walk. It poisons what it crosses.");
+                    notes.Add(spell == SpellId.Wolfsbane
+                        ? "A living venom finds the walk. It poisons what it crosses."
+                        : "A stream of the grave of a plant finds the walk. It poisons what it crosses.");
                 }
             }
 
@@ -786,7 +813,20 @@ namespace RuneMagic
                 var mouth = grid.Get(CoordOf(to));
                 if (mouth != null && mouth.MarkPoisonWell())
                 {
-                    notes.Add("A tainted tree stands. Poison weeps onto the tiles beside it.");
+                    notes.Add(spell == SpellId.Nightshade
+                        ? "A nightshade stands. Living venom weeps onto the tiles beside it."
+                        : "A tainted tree stands. Poison weeps onto the tiles beside it.");
+                }
+            }
+
+            if (IsLightWell(spell))
+            {
+                var mouth = grid.Get(CoordOf(to));
+                if (mouth != null && mouth.MarkLightWell(LightWellRadius(spell)))
+                {
+                    notes.Add(spell == SpellId.Sanctuary
+                        ? "Shown waking, opened to many, given a body. A sanctuary stands."
+                        : "Shown waking, given a body. A sun-orb stands.");
                 }
             }
 
@@ -1102,6 +1142,11 @@ namespace RuneMagic
                 case SpellId.Plantward:
                 case SpellId.GroveForm:
                 case SpellId.Wither:
+                case SpellId.Wort:
+                case SpellId.GroveCure:
+                case SpellId.Briar:
+                case SpellId.Wolfsbane:
+                case SpellId.Nightshade:
                     return true;
                 default:
                     return false;
@@ -1109,7 +1154,13 @@ namespace RuneMagic
         }
 
         public static bool IsPoisonWell(SpellId spell) =>
-            spell == SpellId.TaintedTree;
+            spell == SpellId.TaintedTree || spell == SpellId.Nightshade;
+
+        public static bool IsLightWell(SpellId spell) =>
+            spell == SpellId.SunOrb || spell == SpellId.Sanctuary;
+
+        public static int LightWellRadius(SpellId spell) =>
+            spell == SpellId.Sanctuary ? 3 : 2;
 
         public static bool IsPlantGrowWork(SpellId spell)
         {
