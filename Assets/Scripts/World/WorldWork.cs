@@ -68,7 +68,7 @@ namespace RuneMagic
                 case SpellId.OilShot:
                 case SpellId.Poison:
                 case SpellId.Spore:
-                case SpellId.Wolfsbane:
+                case SpellId.Hemlock:
                 case SpellId.Plasma:
                 case SpellId.Vine:
                 case SpellId.Glacier:
@@ -190,7 +190,7 @@ namespace RuneMagic
         /// The grave of a plant, sent as a liquid. Not a cloud.
         /// </summary>
         public static bool IsPoisonLiquid(SpellId spell) =>
-            spell == SpellId.Poison || spell == SpellId.Wolfsbane;
+            spell == SpellId.Poison || spell == SpellId.Hemlock;
 
         public static bool IsPoisonBreath(SpellId spell) =>
             spell == SpellId.Spore;
@@ -802,7 +802,7 @@ namespace RuneMagic
                 var slicked = SlickPoison(grid, cells);
                 if (slicked > 0)
                 {
-                    notes.Add(spell == SpellId.Wolfsbane
+                    notes.Add(spell == SpellId.Hemlock
                         ? "A living venom finds the walk. It poisons what it crosses."
                         : "A stream of the grave of a plant finds the walk. It poisons what it crosses.");
                 }
@@ -1142,10 +1142,10 @@ namespace RuneMagic
                 case SpellId.Plantward:
                 case SpellId.GroveForm:
                 case SpellId.Wither:
-                case SpellId.Wort:
+                case SpellId.Wolfsbane:
                 case SpellId.GroveCure:
                 case SpellId.Briar:
-                case SpellId.Wolfsbane:
+                case SpellId.Hemlock:
                 case SpellId.Nightshade:
                     return true;
                 default:

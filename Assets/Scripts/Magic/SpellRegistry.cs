@@ -75,10 +75,17 @@ namespace RuneMagic
             }
 
             if (key.Equals("wort", System.StringComparison.OrdinalIgnoreCase)
-                || key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase))
+                || key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("wolfsbane", System.StringComparison.OrdinalIgnoreCase))
             {
-                Remember(key, SpellId.Wort);
-                return SpellId.Wort;
+                Remember(key, SpellId.Wolfsbane);
+                return SpellId.Wolfsbane;
+            }
+
+            if (key.Equals("hemlock", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Hemlock);
+                return SpellId.Hemlock;
             }
 
             if (key.Equals("grovecure", System.StringComparison.OrdinalIgnoreCase)

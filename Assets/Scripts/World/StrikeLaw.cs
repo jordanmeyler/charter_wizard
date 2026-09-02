@@ -109,7 +109,7 @@ namespace RuneMagic
                 case SpellId.Monsoon: return new Strike(2, StrikeKind.Water);
                 case SpellId.AcidRain: return new Strike(3, StrikeKind.Acid);
                 case SpellId.Poison: return new Strike(2, StrikeKind.Poison);
-                case SpellId.Wolfsbane: return new Strike(3, StrikeKind.Poison);
+                case SpellId.Hemlock: return new Strike(3, StrikeKind.Poison);
                 case SpellId.Spore: return new Strike(2, StrikeKind.Poison);
                 case SpellId.Blight: return new Strike(3, StrikeKind.Poison);
                 case SpellId.Miasma: return new Strike(2, StrikeKind.Poison);
@@ -245,7 +245,7 @@ namespace RuneMagic
 
         public static bool Cleanses(SpellId spell) =>
             spell == SpellId.Cleanse
-            || spell == SpellId.Wort
+            || spell == SpellId.Wolfsbane
             || spell == SpellId.GroveCure
             || spell == SpellId.SunOrb
             || spell == SpellId.Sanctuary;
@@ -391,7 +391,7 @@ namespace RuneMagic
                 broken.Add("Power times affinity must be strictly greater than defense");
             }
 
-            if (!Cleanses(SpellId.Wort)
+            if (!Cleanses(SpellId.Wolfsbane)
                 || !Cleanses(SpellId.GroveCure)
                 || !Cleanses(SpellId.SunOrb)
                 || !Cleanses(SpellId.Sanctuary)
@@ -400,10 +400,10 @@ namespace RuneMagic
                 || !Kills(SpellId.SunOrb, zombie)
                 || !Kills(SpellId.Sanctuary, zombie))
             {
-                broken.Add("Wort and the light orbs cleanse; the orbs kill only the dead");
+                broken.Add("Wolfsbane and the light orbs cleanse; the orbs kill only the dead");
             }
 
-            if (Of(SpellId.Wolfsbane).Power != 3
+            if (Of(SpellId.Hemlock).Power != 3
                 || Of(SpellId.Nightshade).Power != 3
                 || Of(SpellId.Spore).Power != 2
                 || Of(SpellId.Briar).Power != 2

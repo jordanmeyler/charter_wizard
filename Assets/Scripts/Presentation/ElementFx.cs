@@ -129,8 +129,8 @@ namespace RuneMagic
                 || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.Grow
                 || spell == SpellId.Forest || spell == SpellId.Wither
                 || spell == SpellId.Plantward || spell == SpellId.GroveForm || spell == SpellId.TaintedTree
-                || spell == SpellId.Wort || spell == SpellId.GroveCure
-                || spell == SpellId.Briar || spell == SpellId.Wolfsbane || spell == SpellId.Nightshade)
+                || spell == SpellId.Wolfsbane || spell == SpellId.GroveCure
+                || spell == SpellId.Briar || spell == SpellId.Hemlock || spell == SpellId.Nightshade)
             {
                 return ElementFamily.Plant;
             }

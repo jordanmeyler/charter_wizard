@@ -233,7 +233,7 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.Cleanse:
                     return new SpellVerb(SpellTarget.Self, 1.6f, StatusId.None, 0f, TileVerb.Restore);
-                case SpellId.Wort:
+                case SpellId.Wolfsbane:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Restore);
                 case SpellId.GroveCure:
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Restore);
@@ -243,7 +243,7 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.None, 0f, TileVerb.Restore);
                 case SpellId.Spore:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
-                case SpellId.Wolfsbane:
+                case SpellId.Hemlock:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Poison);
                 case SpellId.Nightshade:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);

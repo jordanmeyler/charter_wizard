@@ -203,12 +203,12 @@ namespace RuneMagic
             E(118, SpellBook.Grave, SpellId.Animate, "Many graves are opened and opened to many. They rise together.", "Animate", "Salt · Water · Earth · Fire · Death · Anima · Mercury", "", "Grow", SpellOutcome.Restrain, "Free"),
             E(119, SpellBook.Grave, SpellId.DeathHost, "The four as a grave-body, opened to many, the mind holds. The host does not end until focus breaks.", "Death-host", "Salt · Water · Earth · Fire · Death · Anima · Sulphur", "", "Grow", SpellOutcome.Restrain, "Free"),
             E(120, SpellBook.End, SpellId.Exorcism, "Shown waking, sent. The dead cannot hold.", "Exorcism", "Light · Life · Mercury", "", "Remote", SpellOutcome.Kill),
-            E(121, SpellBook.GrowHeal, SpellId.Wort, "A living plant given yield and sent. Poison lifts. Blighted green remembers itself.", "Wort", "Water · Salt · Earth · Life · Water · Mercury", "Plant · Life · Water · Mercury", "Remote", SpellOutcome.Neither),
+            E(121, SpellBook.GrowHeal, SpellId.Wolfsbane, "A living plant given yield and sent. Wolfsbane. Poison lifts. Blighted green remembers itself.", "Wolfsbane", "Water · Salt · Earth · Life · Water · Mercury", "Plant · Life · Water · Mercury", "Remote", SpellOutcome.Neither),
             E(122, SpellBook.GrowHeal, SpellId.GroveCure, "A living plant opened to many and sent. Poison lifts around the mark. Blighted green remembers itself.", "Grove-cure", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Mercury", "Plant · Life · Anima · Mercury", "Remote", SpellOutcome.Neither),
             E(123, SpellBook.GrowHeal, SpellId.SunOrb, "Shown waking, given a body. A sun-orb. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sun-orb", "Light · Life · Salt", "", "Pillar", SpellOutcome.Kill),
             E(124, SpellBook.GrowHeal, SpellId.Sanctuary, "Shown waking, opened to many, given a body. A sanctuary. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sanctuary", "Light · Life · Water · Sulphur · Earth · Salt", "Light · Life · Anima · Salt", "Pillar", SpellOutcome.Kill),
             E(125, SpellBook.Grave, SpellId.Spore, "The grave of a plant given breath and sent. A spore. Foul breath that poisons what it crosses.", "Spore", "Water · Salt · Earth · Death · Air · Mercury", "Poison · Air · Mercury", "Shot", SpellOutcome.Kill, "Either"),
-            E(126, SpellBook.Grave, SpellId.Wolfsbane, "A living plant, then the grave, sent. Wolfsbane. Living venom, stronger than the dead spray.", "Wolfsbane", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
+            E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain)
         };
@@ -963,7 +963,7 @@ namespace RuneMagic
 
             if (Entries.Length < 128)
             {
-                broken.Add("The written book must keep every catalog spell, including wort, the light orbs, and living venom");
+                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, and living venom");
             }
 
             var flight = Composition.FromSequence(new[]
@@ -1042,11 +1042,11 @@ namespace RuneMagic
                 broken.Add("Poison · Mercury must be a poison spray that streams along its path");
             }
 
-            var wort = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Water, RuneId.Mercury });
-            var wortExact = ChainBook.CollectExact(wort, SpellShape.None);
-            if (wortExact.Count == 0 || wortExact[0].Spell != SpellId.Wort)
+            var wolfsbane = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Water, RuneId.Mercury });
+            var wolfsbaneExact = ChainBook.CollectExact(wolfsbane, SpellShape.None);
+            if (wolfsbaneExact.Count == 0 || wolfsbaneExact[0].Spell != SpellId.Wolfsbane)
             {
-                broken.Add("Plant · Life · Water · Mercury should be Wort");
+                broken.Add("Plant · Life · Water · Mercury should be Wolfsbane");
             }
 
             var groveCure = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Anima, RuneId.Mercury });
@@ -1077,11 +1077,11 @@ namespace RuneMagic
                 broken.Add("Poison · Air · Mercury should be Spore");
             }
 
-            var wolfsbane = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mors, RuneId.Mercury });
-            var wolfsbaneExact = ChainBook.CollectExact(wolfsbane, SpellShape.None);
-            if (wolfsbaneExact.Count == 0 || wolfsbaneExact[0].Spell != SpellId.Wolfsbane)
+            var hemlock = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mors, RuneId.Mercury });
+            var hemlockExact = ChainBook.CollectExact(hemlock, SpellShape.None);
+            if (hemlockExact.Count == 0 || hemlockExact[0].Spell != SpellId.Hemlock)
             {
-                broken.Add("Plant · Life · Death · Mercury should be Wolfsbane");
+                broken.Add("Plant · Life · Death · Mercury should be Hemlock");
             }
 
             var nightshade = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mors, RuneId.Salt });
@@ -1098,16 +1098,16 @@ namespace RuneMagic
                 broken.Add("Plant · Life · Salt · Mercury should be Briar");
             }
 
-            if (SpellVerb.Of(SpellId.Wort).Tiles != TileVerb.Restore
+            if (SpellVerb.Of(SpellId.Wolfsbane).Tiles != TileVerb.Restore
                 || SpellVerb.Of(SpellId.SunOrb).Tiles != TileVerb.Restore
-                || !StrikeLaw.Cleanses(SpellId.Wort)
+                || !StrikeLaw.Cleanses(SpellId.Wolfsbane)
                 || !WorldWork.IsPoisonBreath(SpellId.Spore)
-                || !WorldWork.IsPoisonLiquid(SpellId.Wolfsbane)
+                || !WorldWork.IsPoisonLiquid(SpellId.Hemlock)
                 || !WorldWork.IsPoisonWell(SpellId.Nightshade)
                 || !WorldWork.IsVineWork(SpellId.Briar)
                 || !WorldWork.IsLightWell(SpellId.SunOrb))
             {
-                broken.Add("Wort restores; spore is breath; wolfsbane is liquid; nightshade weeps; briar climbs; the orb stands");
+                broken.Add("Wolfsbane restores; spore is breath; hemlock is liquid; nightshade weeps; briar climbs; the orb stands");
             }
 
             var cloudForm = Composition.FromSequence(new[]

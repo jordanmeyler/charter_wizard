@@ -47,7 +47,7 @@ namespace RuneMagic
         {
             SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight,
             SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.Ignite, SpellId.Melt, SpellId.Witchfire, SpellId.SunLance,
-            SpellId.DayWake, SpellId.BrilliantArc, SpellId.SunOrb, SpellId.Sanctuary, SpellId.Wort, SpellId.GroveCure
+            SpellId.DayWake, SpellId.BrilliantArc, SpellId.SunOrb, SpellId.Sanctuary, SpellId.Wolfsbane, SpellId.GroveCure
         };
 
         public static readonly SpellId[] ArrowKeys =

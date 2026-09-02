@@ -932,11 +932,11 @@ namespace RuneMagic
             if (!WorldWork.IsPoisonLiquid(SpellId.Poison)
                 || !SweepsPath(SpellId.Poison, SpellShape.Shot)
                 || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
-                || !WorldWork.IsPoisonLiquid(SpellId.Wolfsbane)
+                || !WorldWork.IsPoisonLiquid(SpellId.Hemlock)
                 || !WorldWork.IsPoisonBreath(SpellId.Spore)
                 || !SweepsPath(SpellId.Spore, SpellShape.Shot))
             {
-                broken.Add("Poison spray and wolfsbane must stream; spore must travel as breath");
+                broken.Add("Poison spray and hemlock must stream; spore must travel as breath");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
