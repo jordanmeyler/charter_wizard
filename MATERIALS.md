@@ -39,7 +39,7 @@ Odd rows (1, 3, 5…) travel right. Even rows (2, 4, 6…) travel left. A join u
 | --- | --- | --- | --- |
 | **Stone** | Earth · Salt · Stone | Stone | Walls, The Drop floor, halls |
 | **Ash** | Fire · Plant · Ash | Ash | Ash Court floor |
-| **Ember** | Fire | Fire | Ash Court bed. Weak fire mark. Speaks Fire. Fire may walk across it; it does not catch. |
+| **Ember** | Fire | Fire | Ash Court bed. Coals. Speaks Fire. Provides fire and lets hunger sit and walk across. The tile underneath stays embered; it does not leftover. |
 | **Salt crust** | Salt · Earth | Salt | Ash Court / The Drop patches |
 | **Timber** | Water · Salt · Earth · Plant | Plant | Wick Chapel, chapel hall. Tree and Wood-wall stand this wood. |
 | **Hearthstone** | Fire · Salt · Earth | Fire | Chapel / Storm Cell hearths |
@@ -100,7 +100,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | **Quench** | One 0–10 grade. The wet counterpart. Dry stone is 0. Mud suppresses. Water puts fire out. |
 | **Flammability** | Positive = how readily hunger takes it once it is allowed to catch. Zero = will not catch. Negative tracks Quench (about `−grade × 0.16`; water 10 → −1.6). |
 | **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
-| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember is a Fire mark, not fuel. |
+| **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember hosts fire and is a path, not fuel — the tile stays embered. |
 | **BurnRate** | Clock leftover `5 − seconds`. Not what walks fire to a neighbor. |
 
 **Hunger 0–10**
@@ -108,7 +108,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 | Grade | Band | Catch from neighbors | Spreads | Typical seconds | Now / later |
 | --- | --- | --- | --- | --- | --- |
 | **0** | Neutral | No — only a spell that hits the cell | No | 0 | Stone, dirt, metal |
-| **1** | Tinder | From a strong source, inside that source's reach, touching fuel toward it | No | — | Open — spent fire / coals |
+| **1** | Tinder | From a strong source, inside that source's reach, touching fuel toward it | No | — | Open — ember hosts fire without this grade |
 | **2** | Tinder | Same | No | 2 | Dust, fire cover |
 | **3** | Soft | Same | No | 3 | Moss |
 | **4** | Soft | Same | No | 2 | Grove |
@@ -121,7 +121,7 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 **One spread rule:** a **strong source** is Hunger **7+**. Reach is the grade itself: **hunger − 6** (timber 2, oil / a hall 4). It may walk fire to equal-or-weaker fuel inside that reach if the cell **touches fuel toward the source**. A timber hall burns along the wood. Fire does not leap a stone or empty gap. Weaker fuel does not walk fire. A spell can still light whatever it hits.
 
-A **kindled hall** is the **Aura-Fire** brush (or a Flame Hall plaque): painted walk that stays lit until yield is thrown. It is not a material — it is a source. Live Aura-Fire, a geyser, or lit Floor-Fire counts as Hunger **10**. Vine is a wick: any adjacent live flame can run that line. Neutral stone / dirt never catch from a neighbor.
+A **kindled hall** is the **Aura-Fire** brush (or a Flame Hall plaque): painted walk that stays lit until yield is thrown. It is not a material — it is a source. Live Aura-Fire, a geyser, or lit Floor-Fire counts as Hunger **10**. Vine is a wick: any adjacent live flame can run that line. **Ember** is coals: it provides fire, accepts a flame from another source, and lets hunger walk across. The tile underneath stays embered even after everything around it burns. Neutral stone / dirt never catch from a neighbor.
 
 **Quench 0–10**
 
@@ -141,7 +141,7 @@ Dry stone next to timber leaves that fire alone — full clock, full vigor, it m
 | **9** | Water | Puts fire out | Open — flood edge |
 | **10** | Water | Puts fire out on the cell and neighbors | Standing water |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, equal-or-weaker fuel, out to that source's reach, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, and Floor-Fire stay; fire cover wears off. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
+Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, equal-or-weaker fuel, out to that source's reach, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, Floor-Fire, and ember stay; fire cover wears off. An embered tile keeps the walk that was already there even if everything around it burns. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
 
 **Oil floats.** A film on water still catches, flashes, and runs at oil’s rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but it does not run.** Land plants keep their three-second clock. A spell may still walk them onto neighboring water, weaker than wood.
 
@@ -155,7 +155,7 @@ Stood timber, plant, and oil props use the same 1–5 second clocks.
 | Grove | 4 | 0 | 0.85 | −1.2 | 2 | Living mass. Catch-only. Burns out sooner. |
 | Moss | 3 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. |
 | Dust | 2 | 0 | 0.55 | 0 | 2 | Loose grit. Tinder. |
-| Ember | 0 | 0 | 0 | 0 | 0 | Weak fire mark. Speaks Fire. Does not catch or burn what stands on it. Fire may walk across it — that is a path, not a leap. |
+| Ember | 0 | 0 | 0 | 0 | 0 | Coals. Speaks Fire. Provides fire. Hunger may sit on it and walk across from another source. The tile stays embered; it does not leftover. |
 | Stone / Dirt | 0 | 0 | 0 | 0 | 0 | Neutral and dry. Spell volume only. Leaves neighbor fire alone. |
 | Salt crust | 0 | 1 | −0.15 | 0.2 | 0 | Trace moisture. Below suppress. |
 | Mud | 0 | 3 | −0.35 | 0.25 | 0 | Suppresses neighbor fire. Does not put it out. |

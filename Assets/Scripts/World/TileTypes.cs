@@ -48,7 +48,12 @@ namespace RuneMagic
         /// Liquid poison on the walk. Contact only; yield washes it.
         /// Miasma is the airborne cloud.
         /// </summary>
-        Poison
+        Poison,
+        /// <summary>
+        /// Coals on the walk. They provide fire and let hunger cross,
+        /// but they do not consume the tile underneath.
+        /// </summary>
+        Ember
     }
 
     /// <summary>

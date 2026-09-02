@@ -793,6 +793,11 @@ namespace RuneMagic
                 return TileCover.Water;
             }
 
+            if (NameHas(name, "ember", "coal"))
+            {
+                return TileCover.Ember;
+            }
+
             if (NameHas(name, "fire", "flame", "burn"))
             {
                 return TileCover.Fire;
