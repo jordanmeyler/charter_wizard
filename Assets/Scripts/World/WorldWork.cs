@@ -980,6 +980,12 @@ namespace RuneMagic
                     continue;
                 }
 
+                if (tile.IsPoisonedPlant || tile.HasPoisonCover)
+                {
+                    changed += grid.SpreadPoison(tile, 1);
+                    continue;
+                }
+
                 tile.SlickPoison();
                 changed++;
             }

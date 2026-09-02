@@ -250,7 +250,7 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Soft ground given a body.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Shot, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A climbing line, and a wick. A spell, not a rune.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Grow, "Grow", "Compressed. Catalog: Plant · Life · Mercury. The living plant sent. Sprout at a distance.");
-            Register(RuneId.Plant, RuneId.Water, SpellShape.Remote, SpellId.Wolfsbane, "Wolfsbane", "Compressed. Catalog: Plant · Life · Water · Mercury. A living plant given yield and sent. It lifts poison.");
+            Register(RuneId.Plant, RuneId.Water, SpellShape.Remote, SpellId.Wolfsbane, "Wolfsbane", "Compressed. Catalog: Plant · Life · Water · Mercury. A living plant given yield and sent. A patch. Yield walks it. Poison turns it.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.GroveCure, "Grove-cure", "Compressed. Catalog: Plant · Life · Anima · Mercury. A living plant opened to many and sent. Poison lifts.");
             Register(RuneId.Plant, RuneId.Salt, SpellShape.Remote, SpellId.Briar, "Briar", "Compressed. Catalog: Plant · Life · Salt · Mercury. A stood living plant sent. It holds them.");
             Register(RuneId.Plant, RuneId.Mors, SpellShape.Shot, SpellId.Hemlock, "Hemlock", "Compressed. Catalog: Plant · Life · Death · Mercury. A living plant, then the grave, sent.");

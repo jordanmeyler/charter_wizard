@@ -363,6 +363,12 @@ namespace RuneMagic
         /// </summary>
         public bool IsGeyser { get; private set; }
         public bool IsPoisonWell { get; private set; }
+        /// <summary>
+        /// A vegetable body the grave has taken. Water remembers
+        /// the green. More poison walks to a neighbour, the way
+        /// yield walks a living plant.
+        /// </summary>
+        public bool IsPoisonPlant { get; private set; }
         public bool IsLightWell { get; private set; }
         public int LightWellRadius { get; private set; }
         /// <summary>
@@ -625,6 +631,11 @@ namespace RuneMagic
         public bool Insulates => ChargeLaw.Insulates(Conduct);
         public bool IsCharged => Charge > ChargeLaw.LiveMin;
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
+        public bool HoldsPlant =>
+            !HasAshCover
+            && (IsPlantish || HasPlantCover || HasPlantishDetail || HasVine || IsPoisonPlant);
+        public bool IsPoisonedPlant =>
+            HoldsPlant && (IsPoisonPlant || IsPoisonWell);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
         /// Fuel hunger can finish. Kindled halls, rest fire, and ember
@@ -1150,6 +1161,7 @@ namespace RuneMagic
             _hasFoundation = false;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsPoisonPlant = false;
             IsLightWell = false;
             LightWellRadius = 0;
             _hungerLife = 0f;
@@ -1274,7 +1286,9 @@ namespace RuneMagic
             }
 
             IsPoisonWell = true;
-            SlickPoison();
+            IsPoisonPlant = true;
+            PaintCover(TileCover.Poison);
+            RefreshFx();
             return true;
         }
 
@@ -1412,12 +1426,20 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Liquid poison on the walk. Contact only; yield washes it.
+        /// Liquid poison on the walk. A living plant becomes its
+        /// poison variant. Yield washes a slick; a poisoned plant
+        /// needs yield on the body, or shown work, to remember itself.
         /// </summary>
         public void SlickPoison(float amount = 1f)
         {
             if (Kind == TileKind.Wall || Kind == TileKind.Door)
             {
+                return;
+            }
+
+            if (HoldsPlant && !IsPoisonedPlant)
+            {
+                PoisonPlant();
                 return;
             }
 
@@ -1431,6 +1453,23 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// The grave takes a standing plant. It stays a plant, but
+        /// it speaks poison until yield or shown work wakes it.
+        /// </summary>
+        public bool PoisonPlant()
+        {
+            if (!HoldsPlant || IsPoisonedPlant)
+            {
+                return false;
+            }
+
+            IsPoisonPlant = true;
+            PaintCover(TileCover.Poison);
+            RefreshFx();
+            return true;
+        }
+
+        /// <summary>
         /// Withhold a vegetable body. Living green dies. Leftover
         /// dirt (or the old walk) keeps a wither covering that
         /// speaks Death, so the grave can be drawn.
@@ -1441,6 +1480,12 @@ namespace RuneMagic
             if (IsPoisonWell)
             {
                 IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (IsPoisonPlant)
+            {
+                IsPoisonPlant = false;
                 changed = true;
             }
 
@@ -1506,10 +1551,17 @@ namespace RuneMagic
         /// </summary>
         public bool RestoreNature()
         {
+            var wasPlant = HoldsPlant || IsPoisonWell || IsPoisonPlant;
             var changed = false;
             if (IsPoisonWell)
             {
                 IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (IsPoisonPlant)
+            {
+                IsPoisonPlant = false;
                 changed = true;
             }
 
@@ -1539,10 +1591,7 @@ namespace RuneMagic
                 return true;
             }
 
-            if (changed
-                && (IsPlantish || HasPlantCover || HasPlantishDetail || Material == MaterialId.Grove || Material == MaterialId.Timber)
-                && !HasPlantCover
-                && !HasVine)
+            if (changed && wasPlant && !HasPlantCover && !HasVine)
             {
                 PlacePlantCover();
             }
@@ -1766,6 +1815,7 @@ namespace RuneMagic
             Oil = 0f;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsPoisonPlant = false;
             IsLightWell = false;
             LightWellRadius = 0;
             Fire = 0f;

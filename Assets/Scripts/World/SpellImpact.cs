@@ -174,11 +174,26 @@ namespace RuneMagic
                     case TileVerb.Douse:
                     case TileVerb.Wet:
                         tile.Drench(1f);
-                        if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
+                        if (tile.IsPoisonedPlant || tile.HasPoisonCover)
+                        {
+                            tile.RestoreNature();
+                            tile.WashPoison();
+                            changed++;
+                            break;
+                        }
+
+                        if (tile.HoldsPlant)
                         {
                             if (tile.IsPlantish && growBy > 0)
                             {
                                 tile.Grow(growBy);
+                            }
+
+                            var walked = grid.SpreadPlant(tile, Mathf.Max(1, spreadLeft > 0 ? spreadLeft : 1));
+                            if (walked > 0)
+                            {
+                                spreadLeft = Mathf.Max(0, spreadLeft - walked);
+                                changed++;
                             }
 
                             if (spreadLeft > 0 && PlantLaw.CanGrowFrom(tile, spell))
@@ -195,6 +210,11 @@ namespace RuneMagic
                         changed++;
                         break;
                     case TileVerb.Grow:
+                        if (StrikeLaw.HealsNature(spell) && tile.RestoreNature())
+                        {
+                            changed++;
+                        }
+
                         if (tile.PlacePlantCover())
                         {
                             changed++;
@@ -205,7 +225,7 @@ namespace RuneMagic
                             tile.PlantHere();
                             changed++;
                         }
-                        else if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
+                        else if (tile.HoldsPlant)
                         {
                             if (tile.IsPlantish && growBy > 0)
                             {
@@ -254,10 +274,38 @@ namespace RuneMagic
                         break;
                     case TileVerb.Foul:
                         tile.Foul(1f);
-                        changed++;
+                        if (tile.IsPoisonedPlant)
+                        {
+                            var walked = grid.SpreadPoison(tile, Mathf.Max(1, PlantLaw.PoisonSpread(spell)));
+                            if (walked > 0)
+                            {
+                                changed++;
+                            }
+                        }
+                        else if (tile.HoldsPlant && tile.PoisonPlant())
+                        {
+                            changed++;
+                        }
+                        else
+                        {
+                            changed++;
+                        }
+
                         break;
                     case TileVerb.Poison:
-                        tile.SlickPoison();
+                        if (tile.IsPoisonedPlant || tile.HasPoisonCover)
+                        {
+                            var walked = grid.SpreadPoison(tile, Mathf.Max(1, PlantLaw.PoisonSpread(spell)));
+                            if (walked > 0)
+                            {
+                                changed++;
+                            }
+                        }
+                        else
+                        {
+                            tile.SlickPoison();
+                        }
+
                         changed++;
                         break;
                     case TileVerb.Vent:
@@ -345,9 +393,11 @@ namespace RuneMagic
                 notes.Add(verb.Tiles == TileVerb.Grow
                     ? (spell == SpellId.Forest
                         ? "A living plant opens to every water you can see."
-                        : spell == SpellId.Grow
-                            ? "The living plant is sent. Green stands at the mark."
-                            : "Plant cover stands from your feet.")
+                        : spell == SpellId.Wolfsbane
+                            ? "Wolfsbane stands as a patch. Yield will walk it. Poison will turn it."
+                            : spell == SpellId.Grow
+                                ? "The living plant is sent. Green stands at the mark."
+                                : "Plant cover stands from your feet.")
                     : verb.Tiles == TileVerb.Ignite
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge
@@ -358,8 +408,8 @@ namespace RuneMagic
                                     ? "The hanging veil is given a body."
                                     : verb.Tiles == TileVerb.Foul
                                         ? "A sick mist stands on the floor."
-                                        : verb.Tiles == TileVerb.Poison
-                                            ? "A poison slick finds the walk. Yield will wash it."
+                                            : verb.Tiles == TileVerb.Poison
+                                            ? "Poison finds the walk. A living plant turns. More poison walks."
                                             : verb.Tiles == TileVerb.Dirt
                                                 ? "Loose rest lands. Ground-fire dies. Earth speaks here."
                                                 : verb.Tiles == TileVerb.Vine

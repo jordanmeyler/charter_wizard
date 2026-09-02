@@ -962,9 +962,11 @@ namespace RuneMagic
                 || !WorldWork.IsPlantGrowWork(SpellId.Sprout)
                 || WorldWork.IsPlantGrowWork(SpellId.Forest)
                 || WorldWork.IsPlantGrowWork(SpellId.Grow)
-                || SpellVerb.Of(SpellId.Grow).Radius != PlantLaw.GrowRadius)
+                || SpellVerb.Of(SpellId.Grow).Radius != PlantLaw.GrowRadius
+                || SpellVerb.Of(SpellId.Wolfsbane).Radius != PlantLaw.GrowRadius
+                || WorldWork.IsPlantGrowWork(SpellId.Wolfsbane))
             {
-                broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow does the same at range");
+                broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow and Wolfsbane do the same at range");
             }
 
             MatterLaw.Audit(broken);

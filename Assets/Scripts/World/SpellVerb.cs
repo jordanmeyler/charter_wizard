@@ -234,7 +234,7 @@ namespace RuneMagic
                 case SpellId.Cleanse:
                     return new SpellVerb(SpellTarget.Self, 1.6f, StatusId.None, 0f, TileVerb.Restore);
                 case SpellId.Wolfsbane:
-                    return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.None, 0f, TileVerb.Restore);
+                    return new SpellVerb(SpellTarget.Area, PlantLaw.GrowRadius, StatusId.None, 0f, TileVerb.Grow);
                 case SpellId.GroveCure:
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Restore);
                 case SpellId.SunOrb:

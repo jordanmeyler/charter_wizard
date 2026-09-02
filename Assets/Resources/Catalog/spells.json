@@ -1947,15 +1947,15 @@
       "id": "Wolfsbane",
       "book": "GrowHeal",
       "name": "Wolfsbane",
-      "want": "A living plant given yield and sent. Wolfsbane. Poison lifts. Blighted green remembers itself.",
+      "want": "A living plant given yield and sent. Wolfsbane. A patch grows from the mark. Yield walks it. Poison turns it.",
       "recipe": "Water · Salt · Earth · Life · Water · Mercury",
       "via": "Plant · Life · Water · Mercury",
       "form": "Remote",
       "outcome": "Neither",
       "gate": "",
       "work": "Wolfsbane",
-      "target": "Single",
-      "radius": 1.2
+      "target": "Area",
+      "radius": 3
     },
     {
       "number": 122,

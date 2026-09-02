@@ -68,7 +68,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 | **Glass** | Dust · Flame · Earth · Glass | Glass | Grains, witchfire, rest |
 | **Crystal** | Earth · Salt · Stone · Water · Crystal | Crystal | Stone grown with yield |
 | **Obsidian** | Fire · Earth · Lava · Salt · Water · Obsidian | Obsidian | Hungry earth quenched. Lava · Salt · Water. Melt, Shatter, and hunger's thaw will not take it |
-| **Grove** | Water · Salt · Earth · Plant · Life | Plant | Living plant as a mass. Tree is the stood spell, not a rune. Wither leaves Death-speaking cover; Wolfsbane, Grove-cure, and the light orbs remember the green. A tainted tree or nightshade weeps until shown or living plant-work wakes it. |
+| **Grove** | Water · Salt · Earth · Plant · Life | Plant | Living plant as a mass. Tree is the stood spell, not a rune. Wither leaves Death-speaking cover; Wolfsbane, Grove-cure, and the light orbs remember the green. Yield walks a living plant one ring. Poison turns a plant; more poison walks like yield. A tainted tree or nightshade weeps until shown or living plant-work wakes it. |
 | **Plant** | Water · Salt · Earth · Plant | Plant | Green cover, not yet Life |
 | **Cloud** | Air · Water · Cloud | Cloud | A hanging veil |
 | **Rain** | Air · Water · Cloud | Cloud | Weather left on the stone, not a rune |

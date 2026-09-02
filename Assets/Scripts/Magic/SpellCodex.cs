@@ -203,7 +203,7 @@ namespace RuneMagic
             E(118, SpellBook.Grave, SpellId.Animate, "Many graves are opened and opened to many. They rise together.", "Animate", "Salt · Water · Earth · Fire · Death · Anima · Mercury", "", "Grow", SpellOutcome.Restrain, "Free"),
             E(119, SpellBook.Grave, SpellId.DeathHost, "The four as a grave-body, opened to many, the mind holds. The host does not end until focus breaks.", "Death-host", "Salt · Water · Earth · Fire · Death · Anima · Sulphur", "", "Grow", SpellOutcome.Restrain, "Free"),
             E(120, SpellBook.End, SpellId.Exorcism, "Shown waking, sent. The dead cannot hold.", "Exorcism", "Light · Life · Mercury", "", "Remote", SpellOutcome.Kill),
-            E(121, SpellBook.GrowHeal, SpellId.Wolfsbane, "A living plant given yield and sent. Wolfsbane. Poison lifts. Blighted green remembers itself.", "Wolfsbane", "Water · Salt · Earth · Life · Water · Mercury", "Plant · Life · Water · Mercury", "Remote", SpellOutcome.Neither),
+            E(121, SpellBook.GrowHeal, SpellId.Wolfsbane, "A living plant given yield and sent. Wolfsbane. A patch grows from the mark. Yield walks it. Poison turns it. Poison already on a plant walks, the way yield walks green.", "Wolfsbane", "Water · Salt · Earth · Life · Water · Mercury", "Plant · Life · Water · Mercury", "Remote", SpellOutcome.Neither),
             E(122, SpellBook.GrowHeal, SpellId.GroveCure, "A living plant opened to many and sent. Poison lifts around the mark. Blighted green remembers itself.", "Grove-cure", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Mercury", "Plant · Life · Anima · Mercury", "Remote", SpellOutcome.Neither),
             E(123, SpellBook.GrowHeal, SpellId.SunOrb, "Shown waking, given a body. A sun-orb. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sun-orb", "Light · Life · Salt", "", "Pillar", SpellOutcome.Kill),
             E(124, SpellBook.GrowHeal, SpellId.Sanctuary, "Shown waking, opened to many, given a body. A sanctuary. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sanctuary", "Light · Life · Water · Sulphur · Earth · Salt", "Light · Life · Anima · Salt", "Pillar", SpellOutcome.Kill),
@@ -1098,16 +1098,18 @@ namespace RuneMagic
                 broken.Add("Plant · Life · Salt · Mercury should be Briar");
             }
 
-            if (SpellVerb.Of(SpellId.Wolfsbane).Tiles != TileVerb.Restore
+            if (SpellVerb.Of(SpellId.Wolfsbane).Tiles != TileVerb.Grow
+                || SpellVerb.Of(SpellId.Wolfsbane).Radius != PlantLaw.GrowRadius
                 || SpellVerb.Of(SpellId.SunOrb).Tiles != TileVerb.Restore
                 || !StrikeLaw.Cleanses(SpellId.Wolfsbane)
+                || !PlantLaw.PlantsNewBodies(SpellId.Wolfsbane)
                 || !WorldWork.IsPoisonBreath(SpellId.Spore)
                 || !WorldWork.IsPoisonLiquid(SpellId.Hemlock)
                 || !WorldWork.IsPoisonWell(SpellId.Nightshade)
                 || !WorldWork.IsVineWork(SpellId.Briar)
                 || !WorldWork.IsLightWell(SpellId.SunOrb))
             {
-                broken.Add("Wolfsbane restores; spore is breath; hemlock is liquid; nightshade weeps; briar climbs; the orb stands");
+                broken.Add("Wolfsbane is a sent living patch; spore is breath; hemlock is liquid; nightshade weeps; briar climbs; the orb stands");
             }
 
             var cloudForm = Composition.FromSequence(new[]

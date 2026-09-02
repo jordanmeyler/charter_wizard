@@ -6,9 +6,10 @@ namespace RuneMagic
     /// <summary>
     /// How a vegetable sentence grows. Grow from the feet lays
     /// plant cover in a disk, the way ice covers water — it does
-    /// not walk the pool. A watered land plant may take a neighbouring
-    /// water tile. Forest, opened by Anima, drinks every water still
-    /// on the screen.
+    /// not walk the pool. Yield on a living plant walks one ring
+    /// of green. Poison on a living plant turns it; more poison
+    /// walks venom the same way. Forest, opened by Anima, drinks
+    /// every water still on the screen.
     /// </summary>
     public static class PlantLaw
     {
@@ -22,6 +23,9 @@ namespace RuneMagic
                 case SpellId.Rain:
                 case SpellId.Flood:
                 case SpellId.StormCall:
+                case SpellId.Douse:
+                case SpellId.WaterJet:
+                case SpellId.Wolfsbane:
                     return 1;
                 case SpellId.Monsoon:
                 case SpellId.Swamp:
@@ -52,10 +56,24 @@ namespace RuneMagic
                 case SpellId.StormCall:
                 case SpellId.Douse:
                 case SpellId.WaterJet:
+                case SpellId.Wolfsbane:
                     return 1;
                 default:
                     return 0;
             }
+        }
+
+        public static int PoisonSpread(SpellId spell)
+        {
+            if (WorldWork.IsPoisonLiquid(spell)
+                || WorldWork.IsPoisonVeil(spell)
+                || WorldWork.IsPoisonWell(spell)
+                || WorldWork.IsPoisonBreath(spell))
+            {
+                return 1;
+            }
+
+            return 0;
         }
 
         public static bool PlantsNewBodies(SpellId spell)
@@ -66,7 +84,8 @@ namespace RuneMagic
                 || spell == SpellId.Grove
                 || spell == SpellId.Forest
                 || spell == SpellId.Plantward
-                || spell == SpellId.GroveForm;
+                || spell == SpellId.GroveForm
+                || spell == SpellId.Wolfsbane;
         }
 
         public static bool PlacesCoverFromCaster(SpellId spell)
@@ -130,8 +149,9 @@ namespace RuneMagic
                 broken.Add("Grow from the feet lays plant cover three tiles out");
             }
 
-            if (MaxSpread(SpellId.Douse) != 0
-                || MaxSpread(SpellId.WaterJet) != 0
+            if (MaxSpread(SpellId.Douse) != 1
+                || MaxSpread(SpellId.WaterJet) != 1
+                || MaxSpread(SpellId.Wolfsbane) != 1
                 || MaxSpread(SpellId.Sprout) != 0
                 || MaxSpread(SpellId.Grow) != 0
                 || MaxSpread(SpellId.CallGrowth) != 0
@@ -139,7 +159,14 @@ namespace RuneMagic
                 || MaxSpread(SpellId.Monsoon) != 2
                 || MaxSpread(SpellId.Forest) < ScreenSpread)
             {
-                broken.Add("Grow lays cover in its disk; a watered land plant may take a neighbour; Forest drinks the visible water");
+                broken.Add("Yield walks a living plant one ring; Wolfsbane is a sent patch; Forest drinks the visible water");
+            }
+
+            if (PoisonSpread(SpellId.Hemlock) != 1
+                || PoisonSpread(SpellId.Poison) != 1
+                || PoisonSpread(SpellId.Douse) != 0)
+            {
+                broken.Add("Poison on a poisoned plant walks one ring, the way yield walks green");
             }
 
             if (MaxSpread(SpellId.Rain) >= MaxSpread(SpellId.Monsoon)
