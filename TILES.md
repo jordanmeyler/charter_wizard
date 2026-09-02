@@ -6,8 +6,9 @@ each `WorldPaintTile` into a live `WorldTile`.
 ## Authoring
 
 1. Open `Assets/Scenes/Main.unity`. The scene already has **Map** (a
-   Grid), **Tiles**, **Environment Details**, **Cover**, and **Spawn**,
-   plus a 13×11 stone room at the origin so you can see tiles immediately.
+   Grid), **Tiles**, **Environment Details**, **Environment Details
+   lvl 2**, **Cover**, and **Spawn**, plus a 13×11 stone room at the
+   origin so you can see tiles immediately.
 2. In the Scene view, turn on **2D**. Select **Map** and press **F** to
    frame the room. The camera and spawn sit inside that room.
 3. `Window → 2D → Tile Palette` → Open Palette → **Rune Palette**.
@@ -21,9 +22,10 @@ each `WorldPaintTile` into a live `WorldTile`.
    pack art on the brush is only a palette chip. Raise a pillar or
    wall to cross a drop.
 5. Assign gameplay after: `Window → Rune Magic → Tile Properties`.
-   Select the layer you just painted (Tiles, Walls, or Environment
-   Details), turn on **Paint in Scene view**, pick Kind / Material /
-   Cover / Blocks, and click those cells. The sprite stays.
+   Select the layer you just painted (Tiles, Walls, Environment
+   Details, or Environment Details lvl 2), turn on **Paint in Scene
+   view**, pick Kind / Material / Cover / Blocks, and click those
+   cells. The sprite stays.
    Uncheck a layer (or **Solo** the one you want) when Cover or
    Environment Details is in the way — hidden layers still bake at
    Play. The **Rune Layers** panel in the Scene view does the same.
@@ -44,7 +46,9 @@ each `WorldPaintTile` into a live `WorldTile`.
    Miasma and fog are see-through (about 40%). Check **Opacity** in
    Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
-   the floor. Check **Blocks** and drag across a cluster to give that
+   the floor. Select **Environment Details lvl 2** for a second stack
+   on those same cells — rugs under a vase, a table under a candle.
+   Check **Blocks** and drag across a cluster to give that
    group collision.
 7. Click a tile asset in `Assets/Tiles` to set **material**, **kind**,
    and **cover** on a shared brush. Duplicate an asset to make
@@ -84,9 +88,10 @@ that burns out swaps that stamp and that tile to dirt.
 
 Keep extra Tilemaps as **children of Map**. Play merges them by name.
 A cell is **floor only** when a Floor brush or **Kind = Floor** stamp
-says so. Looks on any layer — Tiles, Floor 2, Environment Details —
-are not walkable. Extra **Floor** / **Tiles** children are more
-levels of the same grid: stamp Floor on the cells you can walk.
+says so. Looks on any layer — Tiles, Floor 2, Environment Details,
+Environment Details lvl 2 — are not walkable. Extra **Floor** /
+**Tiles** children are more levels of the same grid: stamp Floor
+on the cells you can walk.
 
 | Child name | What to paint | Play |
 |---|---|---|
@@ -94,6 +99,7 @@ levels of the same grid: stamp Floor on the cells you can walk.
 | **Walls** | Solid walls | Unstamped cells on this layer stay walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, miasma, fog | Overlay: look, work, and weave. Hidden, then baked. |
 | **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here still makes that cell walkable. Hidden, then baked. |
+| **Environment Details lvl 2** | Same, drawn on top of Environment Details | Same bake. Overlapping cells keep both looks. Hidden, then baked. Cover still sits above. |
 
 Hide a layer while you work on the ones under it. Uncheck it in
 **Window → Rune Magic → Tile Properties**, the **Rune Layers** panel
@@ -355,11 +361,11 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 | **Flame Hall** | water-ward lesson at a kindled hall | — |
 | **Decor** | look-only prop (not a lock) | sprite |
 
-A layer named **Enviroment Details** (the typo) still counts as Environment Details.
+A layer named **Enviroment Details** or **Enviromental Details lvl 2** (the typos) still counts as Environment Details. **Environment Details lvl 2** / **Enviromental Details lvl 2** stacks on top of the first Details layer. Sorting order 3 sits above Details (2) and below Cover (10) on Main.
 
 Materials work if you stamp them after painting: select the layer, open `Window → Rune Magic → Tile Properties`, set Kind + Material, click the cells. **Kind = Floor** (or a Floor-Stone brush) is the only way a cell becomes walkable floor. Floor and wall stamps keep the tileset sprite they sit on — they do not swap in Floor-Stone / Floor-Plant / Floor-Fire pack art, and they do not draw a second graphic on top. **Cover-*** / **Aura-*** and spell leftovers may sit on that same tile. **Floor-Fire** and **Wall-Fire** are rest matter, like stone: a fire source that will not spread until a player or NPC spell starts work. **Cover-Fire** is the live layer and can catch. Walls you never stamp are treated as **Wall / Stone** when they sit on a layer named Walls. Extra Floor / Tiles layers merge into the same walk grid — stamp Floor on each level you want to stand on. The walk tile you already painted stays; a later Floor layer does not draw over it.
 
-**Environment Details** has its own stamp. Select that layer, stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, and a plant or timber floor swaps stamp and tile to leftover dirt (look and Earth). Stone floors do not catch; a burned table on stone is gone and the cobble stays. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
+**Environment Details** has its own stamp. Select that layer (or **Environment Details lvl 2**), stamp **Timber** on a table or **Plant** on a bush. A standing torch or painted fire does not catch those bushes — the room is at rest. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent the fire cover wears off, and a plant or timber floor swaps stamp and tile to leftover dirt (look and Earth). Stone floors do not catch; a burned table on stone is gone and the cobble stays. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
 Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns, the walk becomes dirt if it was plant or timber, and you can walk over it. Cover still applies to that cell (ice, fire, vine, miasma) — only covers and spells draw over the leftover tile.
 

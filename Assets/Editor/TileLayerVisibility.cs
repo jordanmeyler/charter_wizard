@@ -237,7 +237,9 @@ namespace RuneMagic
 
             if (name.IndexOf("detail", System.StringComparison.Ordinal) >= 0 ||
                 name.IndexOf("decor", System.StringComparison.Ordinal) >= 0 ||
-                name.IndexOf("environment", System.StringComparison.Ordinal) >= 0)
+                name.IndexOf("environment", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("enviroment", System.StringComparison.Ordinal) >= 0 ||
+                name.IndexOf("enviromental", System.StringComparison.Ordinal) >= 0)
             {
                 return 2;
             }
