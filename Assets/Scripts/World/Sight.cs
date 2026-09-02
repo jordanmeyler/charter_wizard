@@ -134,6 +134,22 @@ namespace RuneMagic
             return string.IsNullOrWhiteSpace(text) ? "carved words." : text.Trim();
         }
 
+        public static string OfSpeech(string look, string title, string verb)
+        {
+            if (!string.IsNullOrWhiteSpace(look))
+            {
+                return look.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                return title.Trim();
+            }
+
+            var use = string.IsNullOrWhiteSpace(verb) ? "read" : verb.Trim().ToLowerInvariant();
+            return "words you may " + use + ".";
+        }
+
         public static string OfInteract(string look, string verb)
         {
             if (!string.IsNullOrWhiteSpace(look))

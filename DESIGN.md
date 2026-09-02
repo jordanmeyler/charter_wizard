@@ -235,6 +235,8 @@ A **recent-cast strip** (last twenty-five) sits on the Charter and the world, wi
 
 A **WorldInteract** is an empty use volume. Place it on a GameObject and dress the statue with tiles. **E** or the Interact button prays: the game shows a written spell with elemental / catalyst labels. Cast aims that working (it counts in Recent); Continue leaves it.
 
+A **WorldSpeech** is a written window. **Approach** pops it when the adept walks in — drop it on a Gate for a greeting that plays once. **Interact** uses the same E / verb button: **Read** a sign, **Talk** to a figure. Extra pages click through; a conversation tree can replace that later. Time holds while the window is up. Esc closes it; E / Space / Enter / Continue advances.
+
 **Two sights, toggled in play (F1 or the bar):**
 
 | | **Play** | **Develop** |

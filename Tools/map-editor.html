@@ -88,6 +88,9 @@
       <h2>Props</h2>
       <div class="row">
         <button class="tool" data-prop="plaque">Plaque</button>
+        <button class="tool" data-prop="speech">Speech</button>
+        <button class="tool" data-prop="sign">Sign</button>
+        <button class="tool" data-prop="talk">Talk</button>
         <button class="tool" data-prop="runes">Runes</button>
         <button class="tool" data-prop="inscription">Inscription</button>
         <button class="tool" data-prop="pillar">Pillar</button>
@@ -104,7 +107,7 @@
         <button class="tool" data-prop="crystal">Crystal</button>
         <button class="tool" data-prop="spawn">Spawn</button>
       </div>
-      <label class="field">Plaque / rune text
+      <label class="field">Plaque / speech / rune text
         <textarea id="propText">Hunger sleeps in the wood.</textarea>
       </label>
       <h2>Inscription rune</h2>
@@ -163,7 +166,7 @@
       ["Dirt", "#6b5233"]
     ];
     const KIND_MARK = { Wall: "", Floor: "", Pit: "○", Door: "D", Bridge: "=" };
-    const PROP_MARK = { plaque: "P", runes: "R", inscription: "n", pillar: "Λ", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
+    const PROP_MARK = { plaque: "P", speech: "§", sign: "S", talk: "t", runes: "R", inscription: "n", pillar: "Λ", charm: "C", mite: "M", torch: "T", rod: "⚡", chasm: "X", barrier: "B", gate: "G", item: "I", arrows: "A", fog: "F", crystal: "◆", spawn: "S" };
     const RUNES = [
       "Fire","Air","Earth","Water","Salt","Mercury","Sulphur","Life","Death","Light","Dark",
       "Spark","Lightning","Flame","Ember","Cloud","Steam","Ice","Glacier",
@@ -281,7 +284,9 @@
         room.props = room.props || [];
         room.props = room.props.filter(p => !(p.x === x && p.y === y));
         const prop = { type: propTool, x, y };
-        if (propTool === "plaque") prop.text = document.getElementById("propText").value;
+        if (propTool === "plaque" || propTool === "speech" || propTool === "sign" || propTool === "talk") {
+          prop.text = document.getElementById("propText").value;
+        }
         if (propTool === "runes" || propTool === "inscription" || propTool === "pillar") {
           if (propTool === "inscription" || propTool === "pillar") {
             prop.runes = [selectedRune || "Fire"];

@@ -61,6 +61,9 @@ namespace RuneMagic
         public string clearMaterial;
         public string note;
         public string spell;
+        public string verb;
+        public string trigger;
+        public bool once;
         public bool blocking;
         public bool finishes;
         public bool ensouled;
