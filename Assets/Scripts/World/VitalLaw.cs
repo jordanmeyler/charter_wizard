@@ -539,10 +539,14 @@ namespace RuneMagic
                 broken.Add("Burning and poison must be meters that run to death");
             }
 
+            // Compile-time constants on purpose — they fail if poison
+            // is later shortened to a short burn.
+#pragma warning disable CS0162
             if (AdeptPoisonSeconds < 12f || FleshPoisonSeconds < 12f)
             {
                 broken.Add("Poison must take longer than a short burn to finish its work");
             }
+#pragma warning restore CS0162
 
             if (ClockOf(StatusId.Charmed) != StatusClock.Focus
                 || ClockOf(StatusId.Sleeping) != StatusClock.Focus

@@ -357,6 +357,9 @@ namespace RuneMagic
                 broken.Add("A zombie doubles its fire weakness and is ruin-weak to Light and Life");
             }
 
+            // These are compile-time constants on purpose — they fail
+            // if someone later widens affinity or splits the 0–10 scale.
+#pragma warning disable CS0162
             if (1 * AffinityMax > 9)
             {
                 broken.Add("Power 1 must not beat a top defense even at affinity 5");
@@ -366,6 +369,7 @@ namespace RuneMagic
             {
                 broken.Add("Defense and power must share the 0–10 scale");
             }
+#pragma warning restore CS0162
 
             if (Of(SpellId.Gust).Power != 1
                 || Of(SpellId.Gale).Power != 2
