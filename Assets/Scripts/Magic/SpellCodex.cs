@@ -183,8 +183,9 @@ namespace RuneMagic
             E(99, SpellBook.Mind, SpellId.FlameForm, "Witchfire given a body, then the mind holds you as that body. Hunger cannot take you. The walk kindles.", "Flame-form", "Fire · Animus · Fire · Salt · Sulphur", "Flame · Salt · Sulphur", "Self", SpellOutcome.Neither),
             E(100, SpellBook.Mind, SpellId.TideForm, "Yield given eros and yield again, stood, held. Water cannot take you. You walk it, and the walk is wet.", "Tide-form", "Water · Anima · Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(101, SpellBook.Mind, SpellId.StoneForm, "Rest given eros and rest again, stood, held. Earth and crushing cannot take you.", "Stone-form", "Earth · Anima · Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(102, SpellBook.Mind, SpellId.GaleForm, "Breath given logos and breath again, stood, held. Air cannot take you. Fog and foul breath leave as you walk.", "Gale-form", "Air · Animus · Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant given eros and the living plant again, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Anima · Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither)
+            E(102, SpellBook.Mind, SpellId.GaleForm, "Breath given logos and breath again, stood, held. You become invisible. Enemies lose your trail. Air cannot take you. Fog and foul breath leave as you walk.", "Gale-form", "Air · Animus · Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant given eros and the living plant again, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Anima · Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither),
+            E(104, SpellBook.Mind, SpellId.CloudForm, "The hanging veil given logos and eros and the veil again, stood, held. You become mist and fly. Pits and water cannot hold you.", "Cloud-form", "Air · Water · Fire · Sulphur · Air · Water · Sulphur · Earth · Air · Water · Salt · Sulphur", "Cloud · Animus · Anima · Cloud · Salt · Sulphur", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -920,9 +921,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 103)
+            if (Entries.Length < 104)
             {
-                broken.Add("The written book must keep every catalog spell, including Grow, Wither, Tainted-tree, Plant ward, and the five elemental forms");
+                broken.Add("The written book must keep every catalog spell, including Grow, Wither, Tainted-tree, Plant ward, the five elemental forms, and Cloud-form");
             }
 
             var grow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mercury });
@@ -975,6 +976,16 @@ namespace RuneMagic
                 || !WorldPhysics.SweepsPath(SpellId.Poison, SpellShape.Shot))
             {
                 broken.Add("Poison · Mercury must be a poison spray that streams along its path");
+            }
+
+            var cloudForm = Composition.FromSequence(new[]
+            {
+                RuneId.Cloud, RuneId.Animus, RuneId.Anima, RuneId.Cloud, RuneId.Salt, RuneId.Sulphur
+            });
+            var cloudFormExact = ChainBook.CollectExact(cloudForm, SpellShape.None);
+            if (cloudFormExact.Count == 0 || cloudFormExact[0].Spell != SpellId.CloudForm)
+            {
+                broken.Add("Cloud · Animus · Anima · Cloud · Salt · Sulphur should be Cloud-form");
             }
 
             FormLaw.Audit(broken);

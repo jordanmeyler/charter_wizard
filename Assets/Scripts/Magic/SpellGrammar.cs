@@ -124,7 +124,8 @@ namespace RuneMagic
         TideForm,
         StoneForm,
         GaleForm,
-        GroveForm
+        GroveForm,
+        CloudForm
     }
 
     public readonly struct SpellRecipe
@@ -236,7 +237,9 @@ namespace RuneMagic
             Register(RuneId.Poison, RuneId.Salt, SpellShape.Pillar, SpellId.TaintedTree, "Tainted-tree", "Compressed. Catalog: Poison · Salt · Earth. A poison column. It weeps onto adjacent tiles until it is destroyed.");
             Register(RuneId.Flame, RuneId.Sulphur, SpellShape.Self, SpellId.FlameForm, "Flame-form", "Compressed. Catalog: Flame · Salt · Sulphur. You become hunger's body. Hunger cannot take you.");
             Register(RuneId.Earth, RuneId.Anima, SpellShape.Self, SpellId.StoneForm, "Stone-form", "Compressed. Catalog: Earth · Anima · Earth · Salt · Sulphur. Rest given eros and itself again. You become rest.");
-            Register(RuneId.Air, RuneId.Animus, SpellShape.Self, SpellId.GaleForm, "Gale-form", "Compressed. Catalog: Air · Animus · Air · Salt · Sulphur. You become breath. Air and foul veils cannot take you.");
+            Register(RuneId.Air, RuneId.Animus, SpellShape.Self, SpellId.GaleForm, "Gale-form", "Compressed. Catalog: Air · Animus · Air · Salt · Sulphur. You become invisible. Enemies lose your trail.");
+            Register(RuneId.Cloud, RuneId.Animus, SpellShape.Self, SpellId.CloudForm, "Cloud-form", "Compressed. Catalog: Cloud · Animus · Anima · Cloud · Salt · Sulphur. You become mist and fly.");
+            Register(RuneId.Cloud, RuneId.Anima, SpellShape.Self, SpellId.CloudForm, "Cloud-form", "Compressed. Catalog: Cloud · Animus · Anima · Cloud · Salt · Sulphur. You become mist and fly.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Self, SpellId.GroveForm, "Grove-form", "Compressed. Catalog: Plant · Life · Anima · Plant · Life · Salt · Sulphur. You become the living plant. Green springs as you walk.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");

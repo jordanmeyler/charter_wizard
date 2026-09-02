@@ -140,6 +140,7 @@ namespace RuneMagic
                 case StatusId.StoneForm: return SpellId.StoneForm;
                 case StatusId.GaleForm: return SpellId.GaleForm;
                 case StatusId.GroveForm: return SpellId.GroveForm;
+                case StatusId.CloudForm: return SpellId.CloudForm;
                 default: return SpellId.None;
             }
         }
@@ -202,6 +203,8 @@ namespace RuneMagic
                 || !IsMindSpell(SpellId.Windward)
                 || !IsMindSpell(SpellId.Plantward)
                 || !IsMindSpell(SpellId.FlameForm)
+                || !IsMindSpell(SpellId.GaleForm)
+                || !IsMindSpell(SpellId.CloudForm)
                 || IsMindSpell(SpellId.Wall)
                 || IsMindSpell(SpellId.Fireball))
             {

@@ -46,7 +46,7 @@ namespace RuneMagic
                 _adept = GetComponent<AdeptAvatar>();
             }
 
-            if (_adept != null && _adept.IsAirborne)
+            if (_adept != null && _adept.IsHopping)
             {
                 Halt();
                 return;

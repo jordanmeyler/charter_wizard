@@ -153,7 +153,8 @@ namespace RuneMagic
                 || !Matches(SpellId.TideForm, RuneId.Water)
                 || !Matches(SpellId.StoneForm, RuneId.Earth)
                 || !Matches(SpellId.GaleForm, RuneId.Air)
-                || !Matches(SpellId.GroveForm, RuneId.Plant))
+                || !Matches(SpellId.GroveForm, RuneId.Plant)
+                || !Matches(SpellId.CloudForm, RuneId.Cloud))
             {
                 broken.Add("Each written form must be Element · matching stance · Element · Salt · Sulphur");
             }

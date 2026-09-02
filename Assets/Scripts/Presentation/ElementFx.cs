@@ -133,6 +133,11 @@ namespace RuneMagic
                 return ElementFamily.Plant;
             }
 
+            if (spell == SpellId.CloudForm)
+            {
+                return ElementFamily.Fog;
+            }
+
             switch (material)
             {
                 case RuneId.Flame:

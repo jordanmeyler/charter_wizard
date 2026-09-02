@@ -1644,7 +1644,7 @@
       "id": "GaleForm",
       "book": "Mind",
       "name": "Gale-form",
-      "want": "Breath given logos and breath again, stood, held. Air cannot take you. Fog and foul breath leave as you walk.",
+      "want": "Breath given logos and breath again, stood, held. You become invisible. Enemies lose your trail. Air cannot take you. Fog and foul breath leave as you walk.",
       "recipe": "Air · Animus · Air · Salt · Sulphur",
       "via": "",
       "form": "Self",
@@ -1669,6 +1669,22 @@
       "work": "GroveForm",
       "target": "Self",
       "status": "GroveForm",
+      "statusSeconds": 14
+    },
+    {
+      "number": 104,
+      "id": "CloudForm",
+      "book": "Mind",
+      "name": "Cloud-form",
+      "want": "The hanging veil given logos and eros and the veil again, stood, held. You become mist and fly. Pits and water cannot hold you.",
+      "recipe": "Air · Water · Fire · Sulphur · Air · Water · Sulphur · Earth · Air · Water · Salt · Sulphur",
+      "via": "Cloud · Animus · Anima · Cloud · Salt · Sulphur",
+      "form": "Self",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "CloudForm",
+      "target": "Self",
+      "status": "CloudForm",
       "statusSeconds": 14
     }
   ]

@@ -148,7 +148,13 @@ namespace RuneMagic
         }
 
         public bool WalksOnWater =>
-            Has(StatusId.Watershield) || Has(StatusId.TideForm);
+            Has(StatusId.Watershield) || Has(StatusId.TideForm) || Has(StatusId.CloudForm);
+
+        public bool IsHidden =>
+            Has(StatusId.GaleForm) || Has(StatusId.Veiled);
+
+        public bool Flies =>
+            Has(StatusId.CloudForm);
 
         public bool SproutsWhileWalking =>
             Has(StatusId.Plantward) || Has(StatusId.GroveForm);
@@ -189,6 +195,11 @@ namespace RuneMagic
 
                 if (incoming == Essence.Poison
                     && (spec.Id == StatusId.Windward || spec.Id == StatusId.GaleForm))
+                {
+                    return spec.Name;
+                }
+
+                if (spec.Id == StatusId.CloudForm && incoming == Essence.Water)
                 {
                     return spec.Name;
                 }
@@ -641,7 +652,8 @@ namespace RuneMagic
 
         void RefreshChip()
         {
-            var text = Summary();
+            var hidden = IsHidden;
+            var text = hidden ? string.Empty : Summary();
             if (_chip != null)
             {
                 _chip.text = text;
@@ -650,6 +662,14 @@ namespace RuneMagic
 
             if (_sprite == null)
             {
+                return;
+            }
+
+            if (hidden)
+            {
+                var fade = _baseColor;
+                fade.a = 0.18f;
+                _sprite.color = fade;
                 return;
             }
 

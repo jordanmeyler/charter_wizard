@@ -24,6 +24,7 @@ namespace RuneMagic
         StoneForm,
         GaleForm,
         GroveForm,
+        CloudForm,
         Raging,
         Charmed,
         Confused,
@@ -110,7 +111,8 @@ namespace RuneMagic
                         case StatusId.Flameward:
                         case StatusId.FlameForm: return RuneId.Fire;
                         case StatusId.Windward:
-                        case StatusId.GaleForm: return RuneId.Air;
+                        case StatusId.GaleForm:
+                        case StatusId.CloudForm: return RuneId.Air;
                         case StatusId.Plantward:
                         case StatusId.GroveForm: return RuneId.Plant;
                     }
@@ -170,6 +172,8 @@ namespace RuneMagic
                     return new StatusSpec(id, "gale-form", StatusKind.Form, new Color(0.82f, 0.9f, 1f), Essence.Air, false, false, false);
                 case StatusId.GroveForm:
                     return new StatusSpec(id, "grove-form", StatusKind.Form, new Color(0.16f, 0.48f, 0.2f), Essence.Plant, false, false, false);
+                case StatusId.CloudForm:
+                    return new StatusSpec(id, "cloud-form", StatusKind.Form, new Color(0.78f, 0.86f, 0.95f), Essence.Air, false, false, false);
                 default:
                     return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, Essence.None, false, false, false);
             }

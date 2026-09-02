@@ -189,6 +189,8 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.GaleForm, 14f, TileVerb.None);
                 case SpellId.GroveForm:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.GroveForm, 14f, TileVerb.Grow);
+                case SpellId.CloudForm:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.CloudForm, 14f, TileVerb.None);
                 case SpellId.Veil:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
                 case SpellId.StormCall:
