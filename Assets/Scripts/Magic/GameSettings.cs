@@ -3,8 +3,8 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Player-facing play options. Both naming and hiding stacked
-    /// failures start on. The last choice is kept.
+    /// Player-facing play options. Hiding stacked failures starts on;
+    /// naming new spells starts off. The last choice is kept.
     /// </summary>
     public static class GameSettings
     {
@@ -12,12 +12,12 @@ namespace RuneMagic
         const string PromptNamesKey = "RuneMagic.PromptNewSpells";
 
         public static bool HideBadRecipes { get; private set; } = true;
-        public static bool PromptNewSpells { get; private set; } = true;
+        public static bool PromptNewSpells { get; private set; } = false;
 
         static GameSettings()
         {
             HideBadRecipes = PlayerPrefs.GetInt(HideBadKey, 1) != 0;
-            PromptNewSpells = PlayerPrefs.GetInt(PromptNamesKey, 1) != 0;
+            PromptNewSpells = PlayerPrefs.GetInt(PromptNamesKey, 0) != 0;
         }
 
         public static void SetHideBadRecipes(bool value)
