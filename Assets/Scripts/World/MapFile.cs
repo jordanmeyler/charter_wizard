@@ -60,6 +60,7 @@ namespace RuneMagic
         public string[] requires;
         public string clearMaterial;
         public string note;
+        public string spell;
         public bool blocking;
         public bool finishes;
         public bool ensouled;

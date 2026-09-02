@@ -225,6 +225,13 @@ namespace RuneMagic
                     }
 
                     break;
+                case "altar":
+                case "pray":
+                case "interact":
+                    WorldInteract.Spawn(world,
+                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell,
+                        string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
+                    break;
                 case "runes":
                     RuneStringSource.Spawn(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));
                     break;

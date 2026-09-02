@@ -82,6 +82,15 @@ namespace RuneMagic
             _saved[key] = name.Trim();
         }
 
+        public void Forget(IReadOnlyList<RuneId> runes)
+        {
+            var key = Key(runes);
+            if (!string.IsNullOrEmpty(key))
+            {
+                _saved.Remove(key);
+            }
+        }
+
         public bool TryGet(IReadOnlyList<RuneId> runes, out string name)
         {
             var key = Key(runes);

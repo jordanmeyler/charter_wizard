@@ -28,15 +28,27 @@ namespace RuneMagic
         Vector2 _bookScroll;
         LedgerPage _ledgerPage;
         static Rect _ledgerGui;
+        static Rect _interactGui;
         static GameHud _instance;
-        int _namingLedger = -1;
+        enum NameTarget
+        {
+            None,
+            Recent,
+            Kept
+        }
+
+        int _namingIndex = -1;
+        NameTarget _nameTarget;
         string _namingText = string.Empty;
         bool _focusName;
         bool _ledgerCollapsed;
-        bool _autoNaming;
+        bool _revealing;
+        CodexEntry _revealed;
         readonly HashSet<string> _namedOffers = new();
 
         public static bool EditingName { get; private set; }
+        public static bool RevealingSpell { get; private set; }
+        public static bool HoldsPlay => EditingName || RevealingSpell;
 
         public void Bind(SanctumDirector director)
         {
@@ -60,11 +72,37 @@ namespace RuneMagic
             {
                 CloseNaming();
             }
+
+            if (RevealingSpell)
+            {
+                CloseReveal();
+            }
         }
 
         public static void CancelNaming()
         {
             _instance?.CloseNaming();
+        }
+
+        public static void CancelHeldMenu()
+        {
+            if (_instance == null)
+            {
+                return;
+            }
+
+            if (RevealingSpell)
+            {
+                _instance.CloseReveal();
+                return;
+            }
+
+            _instance.CloseNaming();
+        }
+
+        public static void RevealWorking(CodexEntry entry)
+        {
+            _instance?.OpenReveal(entry);
         }
 
         public static void OfferKeepLatest(Composition composition)
@@ -76,7 +114,7 @@ namespace RuneMagic
 
         public static bool BlocksWorldPick(PlayMode mode)
         {
-            if (EditingName)
+            if (HoldsPlay)
             {
                 return true;
             }
@@ -107,13 +145,15 @@ namespace RuneMagic
                 return true;
             }
 
-            if (_ledgerGui.width > 1f)
+            var gui = new Vector2(mouse.x, Screen.height - mouse.y);
+            if (_ledgerGui.width > 1f && _ledgerGui.Contains(gui))
             {
-                var gui = new Vector2(mouse.x, Screen.height - mouse.y);
-                if (_ledgerGui.Contains(gui))
-                {
-                    return true;
-                }
+                return true;
+            }
+
+            if (_interactGui.width > 1f && _interactGui.Contains(gui))
+            {
+                return true;
             }
 
             return false;
@@ -122,14 +162,16 @@ namespace RuneMagic
         void OnGUI()
         {
             _ledgerGui = default;
-            EditingName = _namingLedger >= 0;
+            _interactGui = default;
+            EditingName = _nameTarget != NameTarget.None && _namingIndex >= 0;
+            RevealingSpell = _revealing;
             if (_director == null)
             {
                 return;
             }
 
             var previousEnabled = GUI.enabled;
-            if (EditingName)
+            if (HoldsPlay)
             {
                 GUI.enabled = false;
             }
@@ -170,12 +212,16 @@ namespace RuneMagic
             }
 
             GUI.enabled = previousEnabled;
-            if (!EditingName)
+            if (!HoldsPlay)
             {
                 DrawCastNotice();
             }
 
-            if (EditingName)
+            if (RevealingSpell)
+            {
+                DrawPrayerModal();
+            }
+            else if (EditingName)
             {
                 DrawKeepModal();
             }
@@ -300,6 +346,17 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, 18, 400, 26), "Rune Magic", title);
             GUI.Label(new Rect(28, 44, 400, 22), RoomLine(), body);
+            if (_director.NearbyInteract != null)
+            {
+                var verb = string.IsNullOrWhiteSpace(_director.NearbyInteract.InteractVerb)
+                    ? "Use"
+                    : _director.NearbyInteract.InteractVerb;
+                if (DrawAction(new Rect(348, 40, 74, 26), verb, true, new Color(0.42f, 0.32f, 0.14f)))
+                {
+                    _director.UseNearbyInteract();
+                }
+            }
+
             if (DrawAction(new Rect(430, 40, 58, 26), "Look", true, new Color(0.32f, 0.28f, 0.18f)))
             {
                 _director.OpenInventory();
@@ -331,6 +388,26 @@ namespace RuneMagic
 
             GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
             GUI.Label(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
+            DrawInteractPrompt();
+        }
+
+        void DrawInteractPrompt()
+        {
+            var nearby = _director.NearbyInteract;
+            if (nearby == null || _director.Mode != PlayMode.Exploring || HoldsPlay)
+            {
+                return;
+            }
+
+            var verb = string.IsNullOrWhiteSpace(nearby.InteractVerb) ? "Interact" : nearby.InteractVerb;
+            var width = 176f;
+            var height = 48f;
+            var rect = new Rect(28, Screen.height - BarHeight - height - 16f, width, height);
+            _interactGui = rect;
+            if (DrawAction(rect, "E · " + verb, true, new Color(0.42f, 0.32f, 0.14f)))
+            {
+                _director.UseNearbyInteract();
+            }
         }
 
         float DrawVitalMeters(float y)
@@ -492,7 +569,7 @@ namespace RuneMagic
             {
                 var muted = Label(13, FontStyle.Italic, new Color(0.68f, 0.7f, 0.78f));
                 GUI.Label(new Rect(view.x + 4, view.y + 2, view.width - 8, 44),
-                    "Nothing kept yet. Name a working from Recent to write it here.", muted);
+                    "Nothing kept yet. With Add new spells on, a working that holds is written here without a name. Or Keep one from Recent.", muted);
                 return;
             }
 
@@ -501,7 +578,8 @@ namespace RuneMagic
             {
                 var index = i;
                 DrawCastRow(new Rect(0, i * row, view.width - 18, row - 2), FromKept(kept[i]),
-                    () => _director.CastKept(index), null, showRunes: true);
+                    () => _director.CastKept(index),
+                    () => BeginRenameKept(index, FromKept(kept[index])), showRunes: true);
             }
 
             GUI.EndScrollView();
@@ -711,10 +789,20 @@ namespace RuneMagic
             return GlyphView.Speak(WorkingNames.RunePhrase(attempt.Runes), "working");
         }
 
-        void BeginNaming(int index, CastAttempt attempt, bool autoPrompt = false)
+        void BeginNaming(int index, CastAttempt attempt)
         {
-            _namingLedger = index;
-            _autoNaming = autoPrompt;
+            BeginNaming(NameTarget.Recent, index, attempt);
+        }
+
+        void BeginRenameKept(int index, CastAttempt attempt)
+        {
+            BeginNaming(NameTarget.Kept, index, attempt);
+        }
+
+        void BeginNaming(NameTarget target, int index, CastAttempt attempt)
+        {
+            _nameTarget = target;
+            _namingIndex = index;
             if (!string.IsNullOrEmpty(attempt.GivenName))
             {
                 _namingText = attempt.GivenName;
@@ -736,9 +824,9 @@ namespace RuneMagic
 
         void CloseNaming()
         {
-            _namingLedger = -1;
+            _nameTarget = NameTarget.None;
+            _namingIndex = -1;
             _namingText = string.Empty;
-            _autoNaming = false;
             EditingName = false;
             GUI.FocusControl(null);
             _director?.ResumeFromNaming();
@@ -746,12 +834,20 @@ namespace RuneMagic
 
         void ConfirmNaming()
         {
-            if (_namingLedger < 0)
+            if (_namingIndex < 0)
             {
                 return;
             }
 
-            _director.KeepRecent(_namingLedger, _namingText);
+            if (_nameTarget == NameTarget.Kept)
+            {
+                _director.RenameKept(_namingIndex, _namingText);
+            }
+            else
+            {
+                _director.KeepRecent(_namingIndex, _namingText);
+            }
+
             CloseNaming();
         }
 
@@ -769,18 +865,9 @@ namespace RuneMagic
                 return;
             }
 
-            if (_director.Grimoire.Names.TryGet(runes, out _))
+            if (_director.Grimoire.KeepsComposition(runes) || _director.Grimoire.Names.TryGet(runes, out _))
             {
                 return;
-            }
-
-            var kept = _director.Grimoire.KeptWorkings;
-            for (var i = 0; i < kept.Count; i++)
-            {
-                if (WorkingNames.SameComposition(kept[i].Runes, runes))
-                {
-                    return;
-                }
             }
 
             var entries = _director.Ledger.Recent;
@@ -791,19 +878,65 @@ namespace RuneMagic
             }
 
             _namedOffers.Add(key);
-            BeginNaming(0, entries[0], autoPrompt: true);
+            _director.KeepRecent(0, string.Empty);
+        }
+
+        void OpenReveal(CodexEntry entry)
+        {
+            if (entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            {
+                return;
+            }
+
+            if (EditingName)
+            {
+                CloseNaming();
+            }
+
+            _revealed = entry;
+            _revealing = true;
+            RevealingSpell = true;
+            _director.PauseForNaming();
+        }
+
+        void CloseReveal()
+        {
+            _revealing = false;
+            RevealingSpell = false;
+            _revealed = default;
+            _director?.ResumeFromNaming();
+        }
+
+        bool TryNamingAttempt(out CastAttempt attempt)
+        {
+            if (_nameTarget == NameTarget.Recent)
+            {
+                var entries = _director.Ledger.Recent;
+                if (_namingIndex >= 0 && _namingIndex < entries.Count)
+                {
+                    attempt = entries[_namingIndex];
+                    return true;
+                }
+            }
+            else if (_nameTarget == NameTarget.Kept
+                && _director.Grimoire.TryGetKept(_namingIndex, out var kept))
+            {
+                attempt = FromKept(kept);
+                return true;
+            }
+
+            attempt = default;
+            return false;
         }
 
         void DrawKeepModal()
         {
-            var entries = _director.Ledger.Recent;
-            if (_namingLedger < 0 || _namingLedger >= entries.Count)
+            if (!TryNamingAttempt(out var attempt))
             {
                 CloseNaming();
                 return;
             }
 
-            var attempt = entries[_namingLedger];
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
 
             const float width = 520f;
@@ -821,10 +954,10 @@ namespace RuneMagic
             var body = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
             var hint = Label(13, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
             GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28),
-                _autoNaming ? "Name this spell" : "Keep this working", title);
+                _nameTarget == NameTarget.Kept ? "Name this spell" : "Keep this working", title);
             GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 20),
-                _autoNaming
-                    ? "A new working. Name it for the Grimoire. The runes you used stay on the page."
+                _nameTarget == NameTarget.Kept
+                    ? "Rename the page. Leave it blank to keep the marks without a name."
                     : "Name the spell. The runes you used stay on the page.", body);
 
             var stanceColor = attempt.Stance == CastingStance.Free ? FreeSuccess : CharterSuccess;
@@ -864,10 +997,100 @@ namespace RuneMagic
                 return;
             }
 
-            if (DrawAction(new Rect(modal.xMax - 144, modal.y + 236, 120, 38), "Keep", true,
+            if (DrawAction(new Rect(modal.xMax - 144, modal.y + 236, 120, 38),
+                    _nameTarget == NameTarget.Kept ? "Save" : "Keep", true,
                     new Color(0.42f, 0.32f, 0.14f)) || submit)
             {
                 ConfirmNaming();
+            }
+        }
+
+        void DrawPrayerModal()
+        {
+            if (_revealed.RecipeRunes == null || _revealed.RecipeRunes.Count == 0)
+            {
+                CloseReveal();
+                return;
+            }
+
+            DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
+            const float width = 560f;
+            const float height = 348f;
+            var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
+            var ev = Event.current;
+            if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
+            {
+                ev.Use();
+            }
+
+            DrawPanel(modal.x, modal.y, modal.width, modal.height);
+            var title = Label(22, FontStyle.Bold, Color.white);
+            var body = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
+            var legend = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
+            GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28),
+                GlyphView.Speak("A working is shown", "A working is shown"), title);
+            GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 40),
+                GlyphView.IsDevelop
+                    ? $"{_revealed.Name} — {_revealed.Want}"
+                    : "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
+                body);
+            GUI.Label(new Rect(modal.x + 24, modal.y + 88, modal.width - 48, 18),
+                "Each mark is labelled elemental, catalyst, or special.", legend);
+
+            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, 132), _revealed.RecipeRunes);
+
+            var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
+            if (cancel)
+            {
+                ev.Use();
+            }
+
+            if (DrawAction(new Rect(modal.x + 24, modal.y + 268, 148, 42), "Continue", true,
+                    new Color(0.22f, 0.22f, 0.26f)) || cancel)
+            {
+                CloseReveal();
+                return;
+            }
+
+            if (DrawAction(new Rect(modal.xMax - 172, modal.y + 268, 148, 42), "Cast", true,
+                    new Color(0.72f, 0.28f, 0.22f)))
+            {
+                var shown = _revealed;
+                CloseReveal();
+                _director.CastRevealed(shown);
+            }
+        }
+
+        void DrawRevealedRunes(Rect rect, IReadOnlyList<RuneId> runes)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.08f, 0.08f, 0.1f, 0.7f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = previous;
+            if (runes == null || runes.Count == 0)
+            {
+                return;
+            }
+
+            const float gap = 10f;
+            var mark = Mathf.Min(56f, (rect.width - 24f - (runes.Count - 1) * gap) / runes.Count);
+            var start = rect.x + (rect.width - (mark * runes.Count + gap * (runes.Count - 1))) * 0.5f;
+            var y = rect.y + 16f;
+            var role = Label(11, FontStyle.Bold, new Color(0.86f, 0.8f, 0.58f));
+            role.alignment = TextAnchor.UpperCenter;
+            var caption = Label(11, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            caption.alignment = TextAnchor.UpperCenter;
+            for (var i = 0; i < runes.Count; i++)
+            {
+                var slot = new Rect(start + i * (mark + gap), y, mark, mark);
+                DrawMiniMark(slot, runes[i]);
+                GUI.Label(new Rect(slot.x - 8, slot.yMax + 2, slot.width + 16, 16),
+                    RuneCatalog.StringRole(runes[i]), role);
+                if (GlyphView.IsDevelop)
+                {
+                    GUI.Label(new Rect(slot.x - 8, slot.yMax + 16, slot.width + 16, 16),
+                        RuneCatalog.NameOf(runes[i]), caption);
+                }
             }
         }
 
@@ -1458,7 +1681,7 @@ namespace RuneMagic
             }
 
             GUI.Label(new Rect(620, y + 16, Mathf.Max(120f, Screen.width - 1320f), 64),
-                "WASD · Space Charter · F Cast · X Free · R Store · I Pack · Esc Pause · F1 " +
+                "WASD · Space Charter · E Interact · F Cast · X Free · R Store · I Pack · Esc Pause · F1 " +
                 (GlyphView.IsDevelop ? "Play" : "Develop"),
                 hint);
 
@@ -1632,8 +1855,8 @@ namespace RuneMagic
             y += 26f;
             if (kept.Count == 0)
             {
-                GUI.Label(new Rect(0, y, 900, 22),
-                    "Nothing kept yet. Name a working from Recent casts to write it here.", muted);
+                GUI.Label(new Rect(0, y, 900, 40),
+                    "Nothing kept yet. With Add new spells on, a working that holds is written here without a name. Or Keep one from Recent.", muted);
                 GUI.EndScrollView();
                 return;
             }
@@ -1643,7 +1866,8 @@ namespace RuneMagic
             {
                 var index = i;
                 DrawCastRow(new Rect(0, y, Mathf.Min(720f, view.width - 40f), rowH - 2), FromKept(kept[i]),
-                    () => _director.CastKept(index), null, showRunes: true);
+                    () => _director.CastKept(index),
+                    () => BeginRenameKept(index, FromKept(kept[index])), showRunes: true);
                 y += rowH;
             }
 
@@ -1681,7 +1905,7 @@ namespace RuneMagic
                 new Rect(panel.x + 24, panel.y + 132, panel.width - 48, 72),
                 GameSettings.PromptNewSpells,
                 "Add new spells",
-                "After a working first holds, the game pauses and asks you to name the runes.");
+                "After a working first holds, it is written in the Grimoire without a name. Rename it from the book. Off: Keep a recipe yourself from Recent.");
             if (prompt != GameSettings.PromptNewSpells)
             {
                 GameSettings.SetPromptNewSpells(prompt);
@@ -1960,7 +2184,7 @@ namespace RuneMagic
             }
 
             var ev = Event.current;
-            if (!EditingName && ev != null && rect.Contains(ev.mousePosition) && ev.type == EventType.MouseDown)
+            if (!HoldsPlay && ev != null && rect.Contains(ev.mousePosition) && ev.type == EventType.MouseDown)
             {
                 if (ev.button == 1 || (ev.button == 0 && ev.shift))
                 {

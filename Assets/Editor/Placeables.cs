@@ -109,6 +109,12 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Plaque", false, 27)]
         static void Plaque() => Spawn("Plaque", typeof(HintPlaque));
 
+        [MenuItem("GameObject/Rune Magic/Interact", false, 27)]
+        static void Interact() => SpawnInteract();
+
+        [MenuItem("GameObject/Rune Magic/Altar", false, 27)]
+        static void Altar() => SpawnInteract();
+
         [MenuItem("GameObject/Rune Magic/Crystal", false, 28)]
         static void Crystal() => Spawn("Crystal", typeof(SpawnCrystal));
 
@@ -174,6 +180,22 @@ namespace RuneMagic
             }
         }
 
+        static void SpawnInteract()
+        {
+            if (AuthoringWindow.TryPlace("Interact"))
+            {
+                return;
+            }
+
+            var host = new GameObject("Interact");
+            host.AddComponent<WorldInteract>();
+            host.transform.position = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                ? SceneView.lastActiveSceneView.pivot
+                : Vector3.zero);
+            Undo.RegisterCreatedObjectUndo(host, "Create Interact");
+            Selection.activeGameObject = host;
+        }
+
         static void Spawn(string name, System.Type type)
         {
             if (AuthoringWindow.TryPlace(name))
@@ -183,7 +205,7 @@ namespace RuneMagic
 
             var host = new GameObject(name);
             host.AddComponent(type);
-            if (host.GetComponent<SpriteRenderer>() == null)
+            if (type != typeof(WorldInteract) && host.GetComponent<SpriteRenderer>() == null)
             {
                 host.AddComponent<SpriteRenderer>();
             }
