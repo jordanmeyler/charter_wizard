@@ -928,9 +928,12 @@ namespace RuneMagic
                 || !WorldWork.IsChargeWork(SpellId.LightningStrike)
                 || !WorldWork.IsChargeWork(SpellId.LiveFloor)
                 || WorldWork.IsChargeWork(SpellId.Fireball)
-                || WorldWork.IsChargeWork(SpellId.Douse))
+                || WorldWork.IsChargeWork(SpellId.Douse)
+                || SpellVerb.Of(SpellId.LiveFloor).Tiles != TileVerb.Charge
+                || SpellVerb.Of(SpellId.LiveFloor).Status != StatusId.Stunned
+                || WorldWork.IsFireWork(SpellId.LiveFloor))
             {
-                broken.Add("A bolt, strike, and live-floor must be charge work; hunger and yield must not");
+                broken.Add("A bolt, strike, and live-floor must be charge work; live-floor must stun, not ignite");
             }
 
             if (SpellVerb.Of(SpellId.Sprout).Radius != PlantLaw.GrowRadius

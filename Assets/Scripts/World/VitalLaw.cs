@@ -121,6 +121,38 @@ namespace RuneMagic
         /// </summary>
         public const float QuenchDrainPerGrade = 0.06f;
 
+        /// <summary>
+        /// One 0–10 conduct grade. Hold and spread use this range,
+        /// the same shape as Hunger.
+        /// 0       Insulator — wood, plants, oil. Refuse the spark.
+        ///         Break a neighbor's path.
+        /// 1–3     Poor hold — stone, dirt, sand, ash, ice. A bolt
+        ///         or live-floor still charges the cell for one
+        ///         second. It will not walk.
+        /// 4–6     Weak — salt, mud, damp, crystal, lava, acid.
+        ///         Hold a breath longer. Still no neighbor walk.
+        /// 7–10    Conductor — rain (7), vein / aegis (8), water (9),
+        ///         metal (10). Hold and spread onto other conductors.
+        /// </summary>
+        public const int ConductInsulator = 0;
+        public const int ConductPoor = 2;
+        public const int ConductSalt = 4;
+        public const int ConductDamp = 5;
+        public const int ConductAcid = 6;
+        public const int ConductRain = 7;
+        public const int ConductVein = 8;
+        public const int ConductWater = 9;
+        public const int ConductMetal = 10;
+        public const int ConductMax = 10;
+        public const int ConductSpreadMin = 7;
+        /// <summary>
+        /// How long a poor floor (stone) keeps a spark after a
+        /// bolt or live-floor. Occupants stay stunned while the
+        /// cell is live, then one more second after they step off.
+        /// </summary>
+        public const float ChargeHoldSeconds = 1f;
+        public const float ChargeContactSeconds = 1f;
+
         public static StatusClock ClockOf(StatusId id)
         {
             if (id == StatusId.Burning || id == StatusId.Poisoned)
@@ -189,6 +221,9 @@ namespace RuneMagic
                 || tile.HasEmber
                 || WorldWork.BurnsOccupants(tile);
         }
+
+        public static bool IsChargeContact(WorldTile tile) =>
+            tile != null && tile.IsCharged;
 
         public static bool IsPoisonLiquidContact(WorldTile tile) =>
             tile != null && tile.IsPoisonWater;
@@ -312,6 +347,50 @@ namespace RuneMagic
             }
 
             return Mathf.Clamp(MaterialCatalog.Of(material).Quench, QuenchDry, QuenchMax);
+        }
+
+        /// <summary>
+        /// Catalog conduct for a material. Set it on
+        /// <c>MaterialCatalog.Flag(..., hunger, quench, conduct)</c>
+        /// when you add a body. Omit it and the leftover
+        /// conductivity number is read into a grade.
+        /// </summary>
+        public static int ConductOf(MaterialId material)
+        {
+            if (material == MaterialId.None)
+            {
+                return ConductPoor;
+            }
+
+            return Mathf.Clamp(MaterialCatalog.Of(material).Conduct, ConductInsulator, ConductMax);
+        }
+
+        public static bool Insulates(int conduct) =>
+            conduct <= ConductInsulator;
+
+        public static bool HoldsCharge(int conduct) =>
+            conduct > ConductInsulator;
+
+        public static bool SpreadsCharge(int conduct) =>
+            conduct >= ConductSpreadMin;
+
+        /// <summary>
+        /// How long a full spark lasts on this grade. Poor stone
+        /// is one second. Metal holds three. Insulators refuse.
+        /// </summary>
+        public static float ChargeHold(int conduct)
+        {
+            if (Insulates(conduct))
+            {
+                return 0f;
+            }
+
+            if (!SpreadsCharge(conduct))
+            {
+                return ChargeHoldSeconds;
+            }
+
+            return ChargeHoldSeconds + (conduct - (ConductSpreadMin - 1)) * 0.5f;
         }
 
         /// <summary>
@@ -488,9 +567,9 @@ namespace RuneMagic
                 broken.Add("Burning and poison must reset once the body leaves that fire or foul");
             }
 
-            if (IsFireContact(null) || IsPoisonLiquidContact(null))
+            if (IsFireContact(null) || IsPoisonLiquidContact(null) || IsChargeContact(null))
             {
-                broken.Add("Empty ground cannot feed a burn or poison meter");
+                broken.Add("Empty ground cannot feed a burn, poison, or charge contact");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
@@ -595,6 +674,27 @@ namespace RuneMagic
                 || FlamFromQuench(QuenchWater) > -1.55f)
             {
                 broken.Add("Quench 0–10: dry stone leaves fire alone; mud suppresses; water puts it out");
+            }
+
+            if (ConductOf(MaterialId.Timber) != ConductInsulator
+                || ConductOf(MaterialId.Plant) != ConductInsulator
+                || ConductOf(MaterialId.Stone) != ConductPoor
+                || ConductOf(MaterialId.Dirt) != ConductPoor
+                || ConductOf(MaterialId.Damp) != ConductDamp
+                || ConductOf(MaterialId.Rain) != ConductRain
+                || ConductOf(MaterialId.Vein) != ConductVein
+                || ConductOf(MaterialId.Water) != ConductWater
+                || ConductOf(MaterialId.Metal) != ConductMetal
+                || HoldsCharge(ConductInsulator)
+                || !HoldsCharge(ConductPoor)
+                || SpreadsCharge(ConductPoor)
+                || SpreadsCharge(ConductDamp)
+                || !SpreadsCharge(ConductRain)
+                || ChargeHold(ConductInsulator) != 0f
+                || ChargeHold(ConductPoor) != ChargeHoldSeconds
+                || ChargeHold(ConductMetal) < ChargeHoldSeconds * 2f)
+            {
+                broken.Add("Conduct 0–10: wood refuses, stone holds one second, metal and water walk the spark");
             }
 
             if (OilBurnSeconds != SlowBurnSeconds

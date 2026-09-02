@@ -19,7 +19,7 @@ namespace RuneMagic
     {
         public static Heat HeatOf(SpellId spell)
         {
-            if (spell == SpellId.None)
+            if (spell == SpellId.None || spell == SpellId.LiveFloor)
             {
                 return Heat.None;
             }
@@ -417,9 +417,10 @@ namespace RuneMagic
                 || HeatOf(SpellId.OilPillar) != Heat.None
                 || HeatOf(SpellId.OilPuddle) != Heat.None
                 || HeatOf(SpellId.OilGeyser) != Heat.None
-                || HeatOf(SpellId.OilSlick) != Heat.None)
+                || HeatOf(SpellId.OilSlick) != Heat.None
+                || HeatOf(SpellId.LiveFloor) != Heat.None)
             {
-                broken.Add("Mind-fire, breath, and oil fuel must not count as heat");
+                broken.Add("Mind-fire, breath, oil fuel, and live-floor must not count as heat");
             }
 
             if (!Melts(SpellId.Fireball, MaterialId.Ice)

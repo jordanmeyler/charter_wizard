@@ -14,8 +14,9 @@ namespace RuneMagic
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover is tinder and
-    /// then ashes. Charge runs through what conducts. Wood and
-    /// plants break that path. Plants do not grow on their own.
+    /// then ashes. Charge uses a 0–10 Conduct grade. Wood refuses.
+    /// Stone holds a spark for a second. Metal and water walk it.
+    /// Plants do not grow on their own.
     /// Cover on water stays put, like ice, unless a spell-watered
     /// land plant or Forest asked for more.
     /// </summary>
@@ -445,7 +446,7 @@ namespace RuneMagic
             var charged = new List<WorldTile>();
             foreach (var tile in _grid.All)
             {
-                if (tile != null && tile.Charge > 0.2f)
+                if (tile != null && tile.Charge > ChargeLaw.LiveMin)
                 {
                     charged.Add(tile);
                 }
@@ -456,7 +457,7 @@ namespace RuneMagic
                 var tile = charged[i];
                 if (tile.Insulates)
                 {
-                    tile.ChargeAt(-0.55f);
+                    tile.ChargeAt(-1f);
                     continue;
                 }
 
@@ -471,14 +472,15 @@ namespace RuneMagic
                         continue;
                     }
 
-                    if (ChargeLaw.AcceptsSpread(other.Conductivity)
+                    if (ChargeLaw.AcceptsSpread(tile.Conduct)
+                        && ChargeLaw.AcceptsSpread(other.Conduct)
                         && other.Charge < tile.Charge * 0.7f)
                     {
-                        other.ChargeAt(tile.Charge * 0.55f * other.Conductivity);
+                        other.ChargeAt(tile.Charge * 0.55f * (other.Conduct / (float)VitalLaw.ConductMax));
                     }
                 }
 
-                tile.ChargeAt(-0.22f - quench);
+                tile.ChargeAt(-ChargeLaw.DrainPerStep(tile.Conduct, Step) - quench);
             }
         }
     }

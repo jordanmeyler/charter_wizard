@@ -76,7 +76,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                var value = ChargeLaw.Of(material);
+                var value = ChargeLaw.LeftoverOf(material);
                 if (!found)
                 {
                     conductivity = value;
@@ -85,6 +85,56 @@ namespace RuneMagic
                 else
                 {
                     conductivity = ChargeLaw.Combine(conductivity, value);
+                }
+            }
+
+            return found;
+        }
+
+        public static bool TryOverlayConduct(Vector3 world, out int conduct)
+        {
+            conduct = VitalLaw.ConductPoor;
+            var found = false;
+            const float reach = 0.55f * 0.55f;
+            for (var i = Live.Count - 1; i >= 0; i--)
+            {
+                var body = Live[i];
+                if (body == null || body is Object vanished && vanished == null)
+                {
+                    Live.RemoveAt(i);
+                    continue;
+                }
+
+                if (!body.Available)
+                {
+                    continue;
+                }
+
+                if ((body.WorldPosition - world).sqrMagnitude > reach)
+                {
+                    continue;
+                }
+
+                if (body is not WorldItem item)
+                {
+                    continue;
+                }
+
+                var material = item.BoundMaterial;
+                if (material == MaterialId.None)
+                {
+                    continue;
+                }
+
+                var value = ChargeLaw.Of(material);
+                if (!found)
+                {
+                    conduct = value;
+                    found = true;
+                }
+                else
+                {
+                    conduct = ChargeLaw.Combine(conduct, value);
                 }
             }
 

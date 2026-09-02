@@ -166,6 +166,13 @@ namespace RuneMagic
         /// </summary>
         public int Quench { get; internal set; }
 
+        /// <summary>
+        /// 0–10 conduct grade. 0 is an insulator (wood, plants).
+        /// 1–6 hold a spark from a bolt or live-floor but will not
+        /// pass it. 7–10 are conductors and walk the spark.
+        /// </summary>
+        public int Conduct { get; internal set; }
+
         public RuneId Primary
         {
             get
@@ -438,48 +445,49 @@ namespace RuneMagic
                 ById[material.Id] = material;
             }
 
-            Flag(MaterialId.Stone, 0f, 0f);
-            Flag(MaterialId.Ash, 0.05f, 0f, VitalLaw.TinderBurnSeconds);
-            Flag(MaterialId.Timber, 1.6f, -0.9f, VitalLaw.TimberBurnSeconds, VitalLaw.HungerTimber);
-            Flag(MaterialId.Hearth, 0f, 0f);
-            Flag(MaterialId.Ember, 0f, 0f);
-            Flag(MaterialId.Damp, -0.7f, 0.35f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDamp);
-            Flag(MaterialId.Vein, 0f, 0.85f);
-            Flag(MaterialId.Scoured, 0f, 0f);
-            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerMoss);
-            Flag(MaterialId.Metal, 0f, 1.6f);
-            Flag(MaterialId.SaltCrust, -0.15f, 0.2f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchSalt);
-            Flag(MaterialId.Void, 0f, 0f);
-            Flag(MaterialId.Ice, -0.85f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce);
-            Flag(MaterialId.Sand, 0f, 0f);
-            Flag(MaterialId.Mud, -0.35f, 0.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchMud);
-            Flag(MaterialId.Lava, 0.2f, 0.3f);
-            Flag(MaterialId.Steam, 0f, 0f);
-            Flag(MaterialId.Dust, 0.55f, 0f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerTinder);
-            Flag(MaterialId.Glass, 0f, 0f);
-            Flag(MaterialId.Crystal, 0f, 0.35f);
-            Flag(MaterialId.Obsidian, 0f, 0f);
-            Flag(MaterialId.Grove, 0.85f, -1.2f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerSoft);
-            Flag(MaterialId.Cloud, 0f, 0f);
-            Flag(MaterialId.Rain, -1.1f, 0.7f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchRain);
-            Flag(MaterialId.Snow, -0.65f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce);
-            Flag(MaterialId.Glacier, -0.9f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchGlacier);
-            Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.TinderBurnSeconds);
-            Flag(MaterialId.Water, -1.6f, 1.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchWater);
-            Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerPlant);
-            Flag(MaterialId.Dirt, 0f, 0f);
-            Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds, VitalLaw.HungerOil);
-            Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.TinderBurnSeconds);
-            Flag(MaterialId.Wardstone, 0f, 0f);
-            Flag(MaterialId.Aegis, 0f, 1.1f);
-            Flag(MaterialId.Fire, 0f, 0f);
+            Flag(MaterialId.Stone, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Ash, 0.05f, 0f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Timber, 1.6f, -0.9f, VitalLaw.TimberBurnSeconds, VitalLaw.HungerTimber, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Hearth, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Ember, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Damp, -0.7f, 0.35f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDamp, VitalLaw.ConductDamp);
+            Flag(MaterialId.Vein, 0f, 0.85f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductVein);
+            Flag(MaterialId.Scoured, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Moss, 1.05f, -0.7f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerMoss, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Metal, 0f, 1.6f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductMetal);
+            Flag(MaterialId.SaltCrust, -0.15f, 0.2f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchSalt, VitalLaw.ConductSalt);
+            Flag(MaterialId.Void, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Ice, -0.85f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce, VitalLaw.ConductPoor);
+            Flag(MaterialId.Sand, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Mud, -0.35f, 0.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchMud, VitalLaw.ConductSalt);
+            Flag(MaterialId.Lava, 0.2f, 0.3f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductDamp);
+            Flag(MaterialId.Steam, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Dust, 0.55f, 0f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerTinder, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Glass, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Crystal, 0f, 0.35f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductDamp);
+            Flag(MaterialId.Obsidian, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Grove, 0.85f, -1.2f, VitalLaw.GroveBurnSeconds, VitalLaw.HungerSoft, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Cloud, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Rain, -1.1f, 0.7f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchRain, VitalLaw.ConductRain);
+            Flag(MaterialId.Snow, -0.65f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce, VitalLaw.ConductPoor);
+            Flag(MaterialId.Glacier, -0.9f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchGlacier, VitalLaw.ConductPoor);
+            Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductAcid);
+            Flag(MaterialId.Water, -1.6f, 1.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchWater, VitalLaw.ConductWater);
+            Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerPlant, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Dirt, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds, VitalLaw.HungerOil, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
+            Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Wardstone, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Aegis, 0f, 1.1f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductVein);
+            Flag(MaterialId.Fire, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
         }
 
         /// <summary>
-        /// Stamp catch, conductivity, burn clock, the 0–10 Hunger
-        /// grade, and the 0–10 Quench grade. New fuel takes a hunger
-        /// here — omit it and it stays neutral (0). New wet bodies
-        /// take a quench — omit it and they stay dry (0).
+        /// Stamp catch, leftover conductivity, burn clock, the 0–10
+        /// Hunger grade, the 0–10 Quench grade, and the 0–10 Conduct
+        /// grade. Omit hunger and it stays 0. Omit quench and it
+        /// stays dry. Omit conduct and the leftover conductivity
+        /// number is read into a grade.
         /// </summary>
         static void Flag(
             MaterialId id,
@@ -487,7 +495,8 @@ namespace RuneMagic
             float conductivity,
             float burnSeconds = 0f,
             int hunger = VitalLaw.HungerNeutral,
-            int quench = VitalLaw.QuenchDry)
+            int quench = VitalLaw.QuenchDry,
+            int conduct = -1)
         {
             if (ById.TryGetValue(id, out var material))
             {
@@ -497,7 +506,60 @@ namespace RuneMagic
                 material.BurnRate = VitalLaw.FireRun(burnSeconds);
                 material.Hunger = Mathf.Clamp(hunger, VitalLaw.HungerNeutral, VitalLaw.HungerMax);
                 material.Quench = Mathf.Clamp(quench, VitalLaw.QuenchDry, VitalLaw.QuenchMax);
+                material.Conduct = conduct >= 0
+                    ? Mathf.Clamp(conduct, VitalLaw.ConductInsulator, VitalLaw.ConductMax)
+                    : InferConduct(conductivity);
             }
+        }
+
+        /// <summary>
+        /// Leftover conductivity → 0–10 when a new body omits the
+        /// grade. Negative is wood. Zero is stone. Strong leftover
+        /// is metal.
+        /// </summary>
+        public static int InferConduct(float leftover)
+        {
+            if (leftover < 0f)
+            {
+                return VitalLaw.ConductInsulator;
+            }
+
+            if (leftover < 0.2f)
+            {
+                return VitalLaw.ConductPoor;
+            }
+
+            if (leftover < 0.3f)
+            {
+                return VitalLaw.ConductSalt;
+            }
+
+            if (leftover < 0.5f)
+            {
+                return VitalLaw.ConductDamp;
+            }
+
+            if (leftover < 0.65f)
+            {
+                return VitalLaw.ConductAcid;
+            }
+
+            if (leftover < 0.8f)
+            {
+                return VitalLaw.ConductRain;
+            }
+
+            if (leftover < 1.05f)
+            {
+                return VitalLaw.ConductVein;
+            }
+
+            if (leftover < 1.4f)
+            {
+                return VitalLaw.ConductWater;
+            }
+
+            return VitalLaw.ConductMetal;
         }
 
         public static IReadOnlyList<WorldMaterial> All => AllMaterials;

@@ -92,14 +92,15 @@ Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Wat
 
 ## Painting a map
 
-`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, conductivity, a burn clock, a **0–10 Hunger grade**, and a **0–10 Quench grade**. Set them on `MaterialCatalog.Flag` when you add a body (`Flag(id, flam, cond, seconds, hunger, quench)`). Omit hunger and it stays **0** (neutral). Omit quench and it stays **0** (dry). `VitalLaw.HungerOf` / `QuenchOf` read those catalog numbers. `BurnRate` is still `5 − seconds` (the clock leftover). **Spread uses Hunger, not BurnRate.** Wet work uses **Quench**, not the leftover negative flam. A spell volume can still light whatever it hits.
+`WorldMaterial` is the hook: name, note, manifestation, signature, floor/wall tones, paint style, plus flammability, leftover conductivity, a burn clock, a **0–10 Hunger grade**, a **0–10 Quench grade**, and a **0–10 Conduct grade**. Set them on `MaterialCatalog.Flag` when you add a body (`Flag(id, flam, cond, seconds, hunger, quench, conduct)`). Omit hunger and it stays **0** (neutral). Omit quench and it stays **0** (dry). Omit conduct and the leftover conductivity number is read into a grade. `VitalLaw.HungerOf` / `QuenchOf` / `ConductOf` read those catalog numbers. `BurnRate` is still `5 − seconds` (the clock leftover). **Fire spread uses Hunger, not BurnRate.** Wet work uses **Quench**. Charge hold and spread use **Conduct**. A spell volume can still light or stun whatever it hits.
 
 | Flag | Meaning |
 | --- | --- |
 | **Hunger** | One 0–10 grade. Catch and spread. Room for later fuel in the open slots. |
 | **Quench** | One 0–10 grade. The wet counterpart. Dry stone is 0. Mud suppresses. Water puts fire out. |
 | **Flammability** | Positive = how readily hunger takes it once it is allowed to catch. Zero = will not catch. Negative tracks Quench (about `−grade × 0.16`; water 10 → −1.6). |
-| **Conductivity** | Negative = insulator (wood and plants break the path). Zero = neutral (may hold a spark but will not pass it). Positive = how freely a spark travels the body. |
+| **Conduct** | One 0–10 grade. Hold and spread for the spark. Room for later bodies in the open slots. |
+| **Conductivity** | Leftover signed number. Negative = how hard an insulator breaks a neighbor's clock. Zero = poor hold. Positive tracks Conduct (metal 10 → 1.6). |
 | **BurnSeconds** | How long a full fire lasts on this body. Fuel lives on a **1–5 second** clock (oil 5, wood 4, plant 3, grove 2). Independent of whether the body may *run*. Oil and wood last; plant and grove burn out sooner. Ember hosts fire and is a path, not fuel — the tile stays embered. |
 | **BurnRate** | Clock leftover `5 − seconds`. Not what walks fire to a neighbor. |
 
@@ -141,30 +142,48 @@ Dry stone next to timber leaves that fire alone — full clock, full vigor, it m
 | **9** | Water | Puts fire out | Open — flood edge |
 | **10** | Water | Puts fire out on the cell and neighbors | Standing water |
 
-Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, equal-or-weaker fuel, out to that source's reach, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, Floor-Fire, and ember stay; fire cover wears off. An embered tile keeps the walk that was already there even if everything around it burns. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge walks metal, water, wet stone, and vein. A bolt can land on neutral stone, but it will not spread unless a neighbor conducts. Wood, plants, and vine cover **insulate** — they disrupt the flow even on iron. `WorldSim` ticks the neighbors. `ChargeLaw` names the three bands.
+**Conduct 0–10**
+
+| Grade | Band | Direct charge (bolt / live-floor) | Holds | Spreads | Now / later |
+| --- | --- | --- | --- | --- | --- |
+| **0** | Insulator | No — the cell refuses. Occupants in the spell volume still stun. | No | No; breaks a neighbor's path | Timber, plant, grove, moss, oil |
+| **1** | Poor | Yes | ~1s | No | Open — packed earth |
+| **2** | Poor | Yes | 1s | No | Stone, dirt, sand, ash, ice |
+| **3** | Poor | Yes | 1s | No | Open — baked clay |
+| **4** | Weak | Yes | 1s | No | Salt crust, mud |
+| **5** | Weak | Yes | 1s | No | Damp stone, crystal, lava |
+| **6** | Weak | Yes | 1s | No | Acid |
+| **7** | Conductor | Yes | 1.5s | Yes — onto other conductors | Rain. Wet stone counts as 7. |
+| **8** | Conductor | Yes | 2s | Yes | Vein, aegis |
+| **9** | Conductor | Yes | 2.5s | Yes | Water |
+| **10** | Conductor | Yes | 3s | Yes | Metal |
+
+**One charge rule:** a **conductor** is Conduct **7+**. Live-floor and a bolt still charge poor stone for **one second** so a gate turns and bodies stun, the way a fire sentence still burns who stands in the volume. Charge only **walks** onto other conductors. Wood and plants **refuse the cell** and break a metal path. Wet stone runs.
+
+Tiles keep live **Fire / Wet / Charge / Growth**. A player or NPC spell that waters a land plant grows it toward Grove and may take a neighbouring water tile. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. Forest covers every water still on the screen. Stamps and covers sit on the tile you painted — they do not start a reaction. Fire a spell starts still lights the cells it hits; neighbor hunger then follows the 0–10 rule (a 7+ source, equal-or-weaker fuel, out to that source's reach, touching fuel — plant does not run a field, and fire does not leap a gap). When the burn clock is spent, the vegetable body **gains an ash covering** and a plant or timber floor becomes **dirt** (look and Earth). Stone, dirt, Floor-Fire, and ember stay; fire cover wears off. An embered tile keeps the walk that was already there even if everything around it burns. A burned crate or table ashes the cell under it the same way. **Vine cover** is a wick: hunger runs the climbing line into tiles that would not otherwise catch. Timber, plant, and oil props burn on a meter until they are ash. Charge follows the 0–10 Conduct grade. A bolt or live-floor charges stone for a second; metal and water walk it. Wood, plants, and vine cover **insulate**. `WorldSim` ticks the neighbors. `ChargeLaw` names the bands.
 
 **Oil floats.** A film on water still catches, flashes, and runs at oil’s rate. Standing yield does not put that fire out; a water sentence still can. **A plant on water can light, but it does not run.** Land plants keep their three-second clock. A spell may still walk them onto neighboring water, weaker than wood.
 
 Stood timber, plant, and oil props use the same 1–5 second clocks.
 
-| Material | Hunger | Quench | Flam | Cond | Sec | Note |
+| Material | Hunger | Quench | Conduct | Flam | Cond | Sec | Note |
 | --- | --- | --- | --- | --- | --- | --- |
-| Oil | 10 | 0 | 2.2 | −0.25 | 5 | Strongest fuel. Floats. Flashes a slick. Lasts. |
-| Timber | 8 | 0 | 1.6 | −0.9 | 4 | Wood. May run to adjacent wood / weaker fuel. Lasts. |
-| Plant | 6 | 0 | 1.1 | −1.1 | 3 | Catches within 2 of timber / oil / a hall. Does not run the field. |
-| Grove | 4 | 0 | 0.85 | −1.2 | 2 | Living mass. Catch-only. Burns out sooner. |
-| Moss | 3 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. |
-| Dust | 2 | 0 | 0.55 | 0 | 2 | Loose grit. Tinder. |
-| Ember | 0 | 0 | 0 | 0 | 0 | Coals. Speaks Fire. Provides fire. Hunger may sit on it and walk across from another source. The tile stays embered; it does not leftover. |
-| Stone / Dirt | 0 | 0 | 0 | 0 | 0 | Neutral and dry. Spell volume only. Leaves neighbor fire alone. |
-| Salt crust | 0 | 1 | −0.15 | 0.2 | 0 | Trace moisture. Below suppress. |
-| Mud | 0 | 3 | −0.35 | 0.25 | 0 | Suppresses neighbor fire. Does not put it out. |
-| Damp | 0 | 4 | −0.7 | 0.35 | 0 | Wet rest. Suppresses. |
-| Ice / Snow | 0 | 5 | −0.85 / −0.65 | 0 | 0 | Hard water. Suppresses, then melts. |
-| Glacier | 0 | 6 | −0.9 | 0 | 0 | Ordinary fire cannot take it. |
-| Rain | 0 | 7 | −1.1 | 0.7 | 0 | The veil drawn down. Strong suppress. |
-| Water | 0 | 10 | −1.6 | 1.25 | 0 | Puts fire out on the cell and neighbors. Oil on it still burns. |
-| Metal | 0 | 0 | 0 | 1.6 | 0 | The spark’s favourite road. |
-| Vein | 0 | 0 | 0 | 0.85 | 0 | Spark in the stone. |
+| Oil | 10 | 0 | 0 | 2.2 | −0.25 | 5 | Strongest fuel. Floats. Flashes a slick. Lasts. Refuses the spark. |
+| Timber | 8 | 0 | 0 | 1.6 | −0.9 | 4 | Wood. May run fire. Refuses the spark. |
+| Plant | 6 | 0 | 0 | 1.1 | −1.1 | 3 | Catches from timber / oil. Does not run fire. Refuses the spark. |
+| Grove | 4 | 0 | 0 | 0.85 | −1.2 | 2 | Living mass. Catch-only. Refuses the spark. |
+| Moss | 3 | 0 | 0 | 1.05 | −0.7 | 3 | Soft green. Catch-only. Refuses the spark. |
+| Dust | 2 | 0 | 2 | 0.55 | 0 | 2 | Loose grit. Tinder. Holds a spark one second. |
+| Ember | 0 | 0 | 2 | 0 | 0 | 0 | Coals. Speaks Fire. Holds a spark one second. The tile stays embered. |
+| Stone / Dirt | 0 | 0 | 2 | 0 | 0 | 0 | Neutral and dry. Holds a spark one second. Does not pass it. |
+| Salt crust | 0 | 1 | 4 | −0.15 | 0.2 | 0 | Trace moisture. Weak hold. |
+| Mud | 0 | 3 | 4 | −0.35 | 0.25 | 0 | Suppresses neighbor fire. Weak hold. |
+| Damp | 0 | 4 | 5 | −0.7 | 0.35 | 0 | Wet rest. Weak hold. Standing yield on stone runs (7). |
+| Ice / Snow | 0 | 5 | 2 | −0.85 / −0.65 | 0 | 0 | Hard water. Holds a spark one second. |
+| Glacier | 0 | 6 | 2 | −0.9 | 0 | 0 | Ordinary fire cannot take it. |
+| Rain | 0 | 7 | 7 | −1.1 | 0.7 | 0 | The veil drawn down. Conducts. |
+| Water | 0 | 10 | 9 | −1.6 | 1.25 | 0 | Puts fire out. The spark’s wet road. |
+| Metal | 0 | 0 | 10 | 0 | 1.6 | 0 | The spark’s favourite road. Holds and spreads. |
+| Vein | 0 | 0 | 8 | 0 | 0.85 | 0 | Spark in the stone. Conducts. |
 
 The Grimoire and pause ledger list this catalog next to the written spells, and list every wrought birth (Acid is Steam · Metal; Ice is Water · Earth; Mud is Earth · Water. Water · Earth · Salt is water-pillar. Water · Salt · Earth is Plant).

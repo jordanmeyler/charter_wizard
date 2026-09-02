@@ -12,7 +12,7 @@ namespace RuneMagic
     [SelectionBase]
     public sealed class ChargeGate : MonoBehaviour, ISpellLock, IRuneSource, ISpellVolume
     {
-        public const float ChargeThreshold = 0.2f;
+        public const float ChargeThreshold = ChargeLaw.LiveMin;
 
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }

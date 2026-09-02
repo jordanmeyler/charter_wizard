@@ -276,6 +276,11 @@ namespace RuneMagic
                     }
                 }
 
+                if (Underfoot.IsCharged && (adept == null || !adept.IsAirborne))
+                {
+                    host?.Apply(StatusId.Stunned, VitalLaw.ChargeContactSeconds);
+                }
+
                 if (Underfoot.Material == MaterialId.Lava && (host == null || !host.Fends(Essence.Fire)))
                 {
                     KillPlayer(DeathCause.Plain("Hungry earth finds you."));
@@ -2295,6 +2300,11 @@ namespace RuneMagic
                 if (tile != null && (tile.IsBurning || tile.HasEmber))
                 {
                     host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
+                }
+
+                if (tile != null && tile.IsCharged)
+                {
+                    host?.Apply(StatusId.Stunned, VitalLaw.ChargeContactSeconds);
                 }
 
                 if (!WorldWork.BurnsOccupants(tile))
