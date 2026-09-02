@@ -8,7 +8,8 @@ namespace RuneMagic
     /// Ice is Water · Earth. Fire cover is the live hunger layer:
     /// it can catch and interact once a spell starts work, and it
     /// always puts Fire in the weave so it can be drawn. It does
-    /// not kindle a hall. Floor-Fire / Wall-Fire are rest matter.
+    /// not kindle a hall. Ember cover is coals: it provides fire
+    /// and stays on the walk. Floor-Fire / Wall-Fire are rest matter.
     /// When fuel is spent, fire cover wears off and a plant or
     /// timber walk swaps to leftover dirt (look and stamp). Vine
     /// cover speaks Plant — Vine is a spell, not a rune.
@@ -28,7 +29,8 @@ namespace RuneMagic
             TileCover.Poison,
             TileCover.Fog,
             TileCover.Mud,
-            TileCover.Ash
+            TileCover.Ash,
+            TileCover.Ember
         };
 
         public static RuneId RuneOf(TileCover cover)
@@ -45,6 +47,7 @@ namespace RuneMagic
                 case TileCover.Fog: return RuneId.Cloud;
                 case TileCover.Mud: return RuneId.Mud;
                 case TileCover.Ash: return RuneId.Ash;
+                case TileCover.Ember: return RuneId.Ember;
                 default: return RuneId.None;
             }
         }
@@ -57,8 +60,9 @@ namespace RuneMagic
                     return TileCover.Ice;
                 case RuneId.Fire:
                 case RuneId.Flame:
-                case RuneId.Ember:
                     return TileCover.Fire;
+                case RuneId.Ember:
+                    return TileCover.Ember;
                 case RuneId.Lightning:
                 case RuneId.Spark:
                     return TileCover.Lightning;
@@ -96,6 +100,7 @@ namespace RuneMagic
                 case TileCover.Fog: return MaterialId.Cloud;
                 case TileCover.Mud: return MaterialId.Mud;
                 case TileCover.Ash: return MaterialId.Ash;
+                case TileCover.Ember: return MaterialId.Ember;
                 default: return MaterialId.None;
             }
         }
@@ -117,6 +122,7 @@ namespace RuneMagic
                 case TileCover.Fog: return "tile-fog";
                 case TileCover.Mud: return "floor-mud";
                 case TileCover.Ash: return "floor-ash";
+                case TileCover.Ember: return "fx-ember";
                 default: return null;
             }
         }
@@ -312,7 +318,9 @@ namespace RuneMagic
                 || !Speaks(TileCover.Fire, RuneId.Fire)
                 || !Speaks(TileCover.Ice, RuneId.Ice)
                 || !Speaks(TileCover.Ash, RuneId.Ash)
-                || !Speaks(TileCover.Vine, RuneId.Plant))
+                || !Speaks(TileCover.Vine, RuneId.Plant)
+                || !Speaks(TileCover.Ember, RuneId.Ember)
+                || !Speaks(TileCover.Ember, RuneId.Fire))
             {
                 broken.Add("A spoken cover must put its own rune in the weave so it can be drawn");
             }
@@ -348,7 +356,15 @@ namespace RuneMagic
             if (!emberSpeak.Contains(RuneId.Fire)
                 || MaterialCatalog.Of(MaterialId.Ember).Manifestation != RuneId.Fire)
             {
-                broken.Add("Ember must speak Fire and stay neutral to hunger");
+                broken.Add("Ember must speak Fire and stay embered — it is not leftover dirt");
+            }
+
+            if (CoverOf(RuneId.Ember) != TileCover.Ember
+                || RuneOf(TileCover.Ember) != RuneId.Ember
+                || MaterialOf(TileCover.Ember) != MaterialId.Ember
+                || SheenId(TileCover.Ember) != "fx-ember")
+            {
+                broken.Add("Ember cover is coals on the walk — not fire cover that wears off");
             }
 
             if (MaterialOf(TileCover.Fire) != MaterialId.Fire

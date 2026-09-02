@@ -8,7 +8,8 @@ namespace RuneMagic
     /// Fire follows a 0–10 Hunger grade. A strong source (7+)
     /// may spread to equal-or-weaker fuel out to its own reach
     /// (hunger − 6) if that cell touches fuel toward the source.
-    /// Fire does not leap a stone gap. Ember is a path, not a gap.
+    /// Fire does not leap a stone gap. Ember is a path, not a gap:
+    /// hunger may sit on it and walk across it. The tile stays embered.
     /// Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
@@ -142,7 +143,7 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.IsFireFloor)
+                if (tile.IsFireFloor || tile.HasEmber)
                 {
                     StepRestFire(tile);
                     continue;
@@ -189,10 +190,11 @@ namespace RuneMagic
             }
         }
 
-        // Rest fire (Floor-Fire, lava, a hearth) is inert walk. A spell
-        // lights it; then it burns overlays and can jump to flammable
-        // neighbors. When the overlay is gone it goes dark again —
-        // unless the hall is kindled, in which case it stays hungry.
+        // Rest fire (Floor-Fire, lava, a hearth) and ember are inert
+        // walk until a flame finds them. A spell or neighbor lights
+        // them; then they burn overlays and can jump to flammable
+        // neighbors. Ember stays embered. When the overlay is gone
+        // rest fire goes dark again — unless the hall is kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -337,7 +339,8 @@ namespace RuneMagic
                     return;
                 }
 
-                if (!VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
+                if (!other.ConductsFire
+                    && !VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
                 {
                     return;
                 }
@@ -355,8 +358,9 @@ namespace RuneMagic
         /// <summary>
         /// The target must sit next to fuel that leads back to the
         /// source — the burning cell, a flammable tile closer to it,
-        /// or ember (a Fire path). Isolated fuel two tiles away
-        /// across stone stays dark. Crossing ember is not a leap.
+        /// or ember (a Fire path that may also hold the flame).
+        /// Isolated fuel two tiles away across stone stays dark.
+        /// Crossing ember is not a leap.
         /// </summary>
         bool TouchesFuelToward(WorldTile source, WorldTile target)
         {
@@ -392,7 +396,9 @@ namespace RuneMagic
         /// <summary>
         /// Hunger runs once through fuel. A tile already alight, or
         /// already ash, does not catch again. Neutral stone and dirt
-        /// only light when a spell hits them. Weaker fuel still needs
+        /// only light when a spell hits them. Ember is not fuel —
+        /// it still accepts a flame from another source so hunger
+        /// can sit on it and keep walking. Weaker fuel still needs
         /// a strong source (7+) within that source's reach, an
         /// equal-or-weaker grade, and fuel toward the flame.
         /// </summary>
@@ -408,12 +414,12 @@ namespace RuneMagic
                 return false;
             }
 
-            if (!CanCatch(other) || !other.IsSpreadFuel)
+            if (!CanCatch(other))
             {
                 return false;
             }
 
-            return true;
+            return other.IsSpreadFuel || other.ConductsFire;
         }
 
         static bool CanCatch(WorldTile other)

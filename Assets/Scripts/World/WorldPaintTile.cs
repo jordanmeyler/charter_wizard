@@ -95,6 +95,7 @@ namespace RuneMagic
                 case TileCover.Miasma:
                 case TileCover.Fog:
                 case TileCover.Fire:
+                case TileCover.Ember:
                 case TileCover.Lightning:
                     return 0.42f;
                 case TileCover.Ice:
@@ -276,11 +277,12 @@ namespace RuneMagic
             }
 
             if (AutomaticOpacity(TileCover.Fire) >= 0.95f
+                || AutomaticOpacity(TileCover.Ember) >= 0.95f
                 || AutomaticOpacity(TileCover.Lightning) >= 0.95f
                 || AutomaticOpacity(TileCover.Miasma) >= 0.95f
                 || AutomaticOpacity(TileCover.None) < 0.99f)
             {
-                broken.Add("Fire and veil covers must be a sheen; they must not hide the walk tile");
+                broken.Add("Fire, ember, and veil covers must be a sheen; they must not hide the walk tile");
             }
 
             if (!IsOverlayBrushOf("Cover-Ice", TileCover.Ice, TileAura.None)

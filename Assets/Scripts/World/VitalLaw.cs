@@ -34,7 +34,7 @@ namespace RuneMagic
         /// Fuel clocks are one to five seconds, inverted: oil and
         /// wood last, plant and grove burn out sooner. Leftover is
         /// 5 − seconds, floored at 0. Spread uses Hunger, not this
-        /// leftover. Ember is a Fire mark, not fuel.
+        /// leftover. Ember hosts fire and is a path, not fuel.
         /// </summary>
         public const float OilBurnSeconds = 5f;
         public const float TimberBurnSeconds = 4f;
@@ -144,8 +144,8 @@ namespace RuneMagic
         /// <summary>
         /// Burning and poison only hold while the body still stands in
         /// that kind of walk or covering. Hunger needs live fire, a
-        /// kindled hall, or a stood flame — a painted fire mark at
-        /// rest is not enough. Poison needs a poison slick underfoot,
+        /// kindled hall, ember, or a stood flame — a painted fire mark
+        /// at rest is not enough. Poison needs a poison slick underfoot,
         /// or a miasma cloud (the tile, a neighbour, or a hanging
         /// veil). Leave the tile — or lift the feet — and the
         /// condition resets.
@@ -186,6 +186,7 @@ namespace RuneMagic
             return tile.IsBurning
                 || tile.LiveFire
                 || tile.Kindled
+                || tile.HasEmber
                 || WorldWork.BurnsOccupants(tile);
         }
 
@@ -255,9 +256,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Ember lets fire walk across without catching. Crossing it
-        /// is not a leap — the path is still touching toward the
-        /// source. Hunger stays 0; nothing on the mark burns.
+        /// Ember lets fire walk across and sit on the mark. Crossing
+        /// it is not a leap — the path is still touching toward the
+        /// source. Hunger stays 0; the tile underneath does not leftover.
         /// </summary>
         public static bool ConductsFire(MaterialId material) =>
             material == MaterialId.Ember;
@@ -373,7 +374,7 @@ namespace RuneMagic
         /// <summary>
         /// Floor-Fire, hearth, lava. Rest hunger in the walk.
         /// It does not burn out. Coverings and spells are what react.
-        /// Ember is a Fire-speaking mark, not rest fire.
+        /// Ember is a Fire-speaking mark that hosts fire, not rest fire.
         /// </summary>
         public static bool IsRestFire(MaterialId material)
         {
@@ -544,7 +545,7 @@ namespace RuneMagic
                 || !IsSpreadFuel(MaterialId.Dirt, MaterialId.None, true, false)
                 || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
             {
-                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember is a path, not fuel");
+                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember hosts fire but is not fuel");
             }
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral
