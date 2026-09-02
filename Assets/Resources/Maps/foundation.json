@@ -350,6 +350,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Melt",
             "Ignite",
             "SunLance",
@@ -372,6 +373,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Melt",
             "Ignite",
             "SunLance",
@@ -905,6 +907,7 @@
             "IceWall",
             "StonePillar",
             "FlamePillar",
+            "FirePillar",
             "IcePillar",
             "VineRise",
             "Tree",
@@ -1414,6 +1417,7 @@
             "IceWall",
             "Bridge",
             "FlamePillar",
+            "FirePillar",
             "IcePillar",
             "VineRise",
             "Tree",
@@ -1517,6 +1521,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -3018,6 +3023,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -3052,6 +3058,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Douse",
             "WaterJet",
             "HurledStone",
@@ -3095,6 +3102,7 @@
           "keys": [
             "Fireball",
             "FlamePillar",
+            "FirePillar",
             "Douse",
             "WaterJet",
             "HurledStone",

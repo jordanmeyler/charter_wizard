@@ -7,7 +7,7 @@ import json
 from collections import deque
 from pathlib import Path
 
-FIRE = ["Fireball", "FlamePillar", "Melt", "Ignite", "SunLance", "Scald", "Witchfire"]
+FIRE = ["Fireball", "FlamePillar", "FirePillar", "Melt", "Ignite", "SunLance", "Scald", "Witchfire"]
 ICE = FIRE + ["Thaw"]
 WATER = [
     "Douse",
@@ -42,6 +42,7 @@ PITS = [
     "IceWall",
     "Bridge",
     "FlamePillar",
+    "FirePillar",
     "IcePillar",
     "VineRise",
     "Tree",
@@ -50,7 +51,7 @@ PITS = [
     "Flight",
     "HurledStone",
 ]
-ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "IcePillar", "VineRise", "Tree", "WoodWall", "Menhir", "Bridge"]
+ARROWS = ["EarthPillar", "Wall", "IceWall", "StonePillar", "FlamePillar", "FirePillar", "IcePillar", "VineRise", "Tree", "WoodWall", "Menhir", "Bridge"]
 MIND = ["Charm", "Command", "Rage", "Lull", "Terror", "Jolt"]
 SPARK = [
     "LightningBolt",
@@ -66,6 +67,7 @@ SPARK = [
 ATTACK = [
     "Fireball",
     "FlamePillar",
+    "FirePillar",
     "Douse",
     "WaterJet",
     "HurledStone",

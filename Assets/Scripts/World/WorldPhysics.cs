@@ -834,6 +834,17 @@ namespace RuneMagic
                 broken.Add("A spent plant or timber floor must swap to dirt (look and stamp)");
             }
 
+            if (WorldWork.MaterialFor(RuneId.Fire, SpellId.FirePillar) != MaterialId.Fire
+                || WorldWork.MaterialFor(RuneId.Fire, SpellId.FlamePillar) != MaterialId.Hearth
+                || WorldWork.MaterialFor(RuneId.Fire, SpellId.LavaPillar) != MaterialId.Lava
+                || !WorldWork.IsPillar(SpellId.FirePillar)
+                || !WorldWork.IsFlameBody(MaterialId.Fire)
+                || VitalLaw.FirePillarSeconds < 2f
+                || VitalLaw.FirePillarSeconds > 5f)
+            {
+                broken.Add("Fire-pillar is temporary hunger; Flame-pillar is hearth; Lava-pillar is lava");
+            }
+
             if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
                 || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
                 || CoverCatalog.LeftoverFloor(MaterialId.Ember) != MaterialId.Ember

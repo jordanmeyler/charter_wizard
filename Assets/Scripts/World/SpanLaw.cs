@@ -59,6 +59,7 @@ namespace RuneMagic
             }
 
             if (spell == SpellId.FlamePillar
+                || spell == SpellId.FirePillar
                 || spell == SpellId.LavaPillar
                 || WorldWork.IsFlameBody(material)
                 || WorldWork.IsLavaBody(material))
@@ -305,7 +306,8 @@ namespace RuneMagic
             }
 
             if (GradeOf(SpellId.LavaPillar, MaterialId.Lava) != SpanGrade.Fire
-                || GradeOf(SpellId.FlamePillar, MaterialId.Hearth) != SpanGrade.Fire)
+                || GradeOf(SpellId.FlamePillar, MaterialId.Hearth) != SpanGrade.Fire
+                || GradeOf(SpellId.FirePillar, MaterialId.Fire) != SpanGrade.Fire)
             {
                 broken.Add("Stood hunger must lose to water");
             }

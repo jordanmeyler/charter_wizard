@@ -265,7 +265,12 @@ namespace RuneMagic
                 var host = StatusHost.On(player);
                 if (host == null || !host.Fends(Essence.Fire))
                 {
-                    KillPlayer(DeathCause.OfSpell(SpellId.FlamePillar, "A standing flame finds you."));
+                    var deathSpell = Underfoot.Material == MaterialId.Lava
+                        ? SpellId.LavaPillar
+                        : Underfoot.Material == MaterialId.Fire
+                            ? SpellId.FirePillar
+                            : SpellId.FlamePillar;
+                    KillPlayer(DeathCause.OfSpell(deathSpell, "A standing flame finds you."));
                 }
             }
 
@@ -2237,7 +2242,9 @@ namespace RuneMagic
                 }
 
                 host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
-                if (Accepts(encounter, SpellId.FlamePillar) || Accepts(encounter, SpellId.LavaPillar))
+                if (Accepts(encounter, SpellId.FlamePillar)
+                    || Accepts(encounter, SpellId.FirePillar)
+                    || Accepts(encounter, SpellId.LavaPillar))
                 {
                     UnmakeLock(encounter, $"{encounter.DisplayName} cannot stand in the flame. They fall.");
                     return;

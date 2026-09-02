@@ -62,6 +62,7 @@ namespace RuneMagic
         MaterialId _telegraph = MaterialId.None;
         int _telegraphCount;
         float _overlayBurn;
+        float _hungerLife;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -221,6 +222,30 @@ namespace RuneMagic
             || (HasOil && !IsGeyser)
             || HasPlantishDetail
             || (HasFireCover && !Kindled);
+
+        /// <summary>
+        /// A stood Fire · Salt column. Hunger without rest. It
+        /// falls unless a source still feeds it.
+        /// </summary>
+        public bool IsHungerPillar =>
+            IsConjured && Material == MaterialId.Fire;
+
+        /// <summary>
+        /// Kindled halls, geysers, oil, overlay fuel, or rest fire
+        /// already in the walk. Those keep a fire-pillar standing.
+        /// </summary>
+        public bool FeedsHunger
+        {
+            get
+            {
+                if (Kindled || IsGeyser || HasOil || HasOverlayFuel)
+                {
+                    return true;
+                }
+
+                return _hasFoundation && VitalLaw.IsRestFire(Foundation.Material);
+            }
+        }
 
         public bool HasPoisonCover =>
             !HasAshCover
@@ -976,6 +1001,10 @@ namespace RuneMagic
             IsConjured = conjured;
             RaisedAs = conjured ? RaisedForm.Span : RaisedForm.None;
             Reshape(new TileDef(TileKind.Bridge, material == MaterialId.None ? MaterialId.Stone : material));
+            if (conjured && material == MaterialId.Fire)
+            {
+                BeginHungerLife();
+            }
         }
 
         public void BecomeBarrier(MaterialId material, RaisedForm form = RaisedForm.Wall)
@@ -989,6 +1018,35 @@ namespace RuneMagic
             IsConjured = true;
             RaisedAs = form == RaisedForm.None ? RaisedForm.Wall : form;
             Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
+            if (material == MaterialId.Fire)
+            {
+                BeginHungerLife();
+            }
+        }
+
+        public void BeginHungerLife()
+        {
+            _hungerLife = VitalLaw.FirePillarSeconds;
+        }
+
+        /// <summary>
+        /// Tick a Fire · Salt column. Fed hunger stays. Unfed
+        /// hunger falls when the clock is spent.
+        /// </summary>
+        public bool TickHungerLife(float dt)
+        {
+            if (!IsHungerPillar)
+            {
+                return false;
+            }
+
+            if (FeedsHunger)
+            {
+                return false;
+            }
+
+            _hungerLife -= dt;
+            return _hungerLife <= 0f && RestoreFoundation();
         }
 
         public bool RestoreFoundation()
@@ -1007,6 +1065,7 @@ namespace RuneMagic
             Foundation = default;
             _hasFoundation = false;
             IsGeyser = false;
+            _hungerLife = 0f;
             ClearLinger();
             Reshape(restored);
             return true;

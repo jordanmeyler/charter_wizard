@@ -26,7 +26,7 @@ The aspects are Body, Spirit, and Mind. In the written book those are **Salt**, 
 | Lesson | What it means | First sentence that proves it |
 | --- | --- | --- |
 | An element sent | Hunger / yield / rest / breath *goes* | **Fire · Mercury** (Fireball), **Water · Mercury** (Douse), **Earth · Mercury** (Dirt toss). A body of rest sent is **Earth · Salt · Mercury** (Hurled stone). |
-| An element stood | Salt gives it a lasting body | **Fire · Salt · Earth** (Flame-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Water-pillar), **Water · Earth · Salt · Earth** (Ice-pillar), **Plant · Life · Salt** (Tree), **Plant · Life · Salt · Plant · Life** (Wood-wall) |
+| An element stood | Salt gives it a body | **Fire · Salt** (Fire-pillar — temporary without a source), **Fire · Salt · Earth** (Flame-pillar), **Fire · Earth · Salt** (Lava-pillar), **Earth · Salt** (Earth-pillar), **Water · Earth · Salt** (Water-pillar), **Water · Earth · Salt · Earth** (Ice-pillar), **Plant · Life · Salt** (Tree), **Plant · Life · Salt · Plant · Life** (Wood-wall) |
 | A mind reached | Sulphur turns the work toward a mind | **Life · Sulphur · Mercury** (Charm), **Salt · Sulphur · Mercury** (Command), **Fire · Sulphur · Mercury** (Rage) |
 
 Two new ordinary sentences were written so the floor has a clean water-send and a charm:
@@ -41,7 +41,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 57 | **Water ward** | Water · Salt · Sulphur | Hunger breaks. Wear it against the wizard and a burning floor. |
 | 58 | **Flame ward** | Fire · Salt · Sulphur | Rest thrown breaks. |
 | 59 | **Wind ward** | Air · Salt · Sulphur | Yield thrown breaks. Foul breath also breaks. |
-| 60 | **Lava-pillar** | Fire · Earth · Salt · Earth | Hungry earth stood. Water cools it to rock. |
+| 60 | **Lava-pillar** | Fire · Earth · Salt | Hungry earth stood. Water cools it to rock. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 | 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
 | 63 | **Ice-wall** | Water · Earth · Salt · Water · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |
@@ -54,6 +54,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 70 | **Witchfire** | Fire · Animus · Fire · Mercury | Fire given logos and its own perpetuity, then sent. |
 | 71 | **Grotto** | Water · Salt · Earth · Dark | The vegetable body withheld. A damp cave. |
 | 76 | **Water-pillar** | Water · Earth · Salt | Yield and rest given a standing body. |
+| 82 | **Fire-pillar** | Fire · Salt | Hunger stood. Without a source it goes out in a few seconds. |
 | 83 | **Monsoon** | Water · Salt · Mercury | A remote flood. Yield given a body and sent. |
 | 84 | **Dirt toss** | Earth · Mercury | Loose dirt. Smothers ground-fire. Earth speaks where it lands. |
 | 87 | **Tree** | Water · Salt · Earth · Life · Salt | A living vegetable body stood as a tree. `Plant · Life · Salt`. On water it grows a walkable cover. Hunger eats it. |
@@ -123,12 +124,12 @@ The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the f
 
 ### Body Sanctum (Salt) · "The Standing Stone"
 **Lesson:** element + Salt = a solid built thing. A raw send is fleeting; Salt makes it *stand.*
-- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-wall, Ice-pillar, Flame-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough. Ice-wall is Ice · Salt · Ice.
+- **Signature:** a gap that must be built against (Earth-pillar, Wall, Ice-wall, Ice-pillar, Flame-pillar, Fire-pillar, Bridge) — or leapt if you already know Air. **Earth · Salt** is enough. Ice-wall is Ice · Salt · Ice. A fire-pillar fills only for a few seconds unless a source feeds it.
 - **Stone:** on the far ledge.
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **water ward** (`Water · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Fire-pillar, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A fire-pillar or flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — Fire scorches Earth. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"

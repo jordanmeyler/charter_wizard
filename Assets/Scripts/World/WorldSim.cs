@@ -73,6 +73,7 @@ namespace RuneMagic
             _tick = 0f;
             StepOilWaves();
             StepFire();
+            StepHungerPillars();
             StepWet();
             StepCharge();
         }
@@ -102,6 +103,17 @@ namespace RuneMagic
                 else
                 {
                     _slicks[i] = wave;
+                }
+            }
+        }
+
+        void StepHungerPillars()
+        {
+            foreach (var tile in _grid.All)
+            {
+                if (tile != null && tile.IsHungerPillar)
+                {
+                    tile.TickHungerLife(Step);
                 }
             }
         }
