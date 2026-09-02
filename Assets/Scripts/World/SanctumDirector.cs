@@ -67,16 +67,16 @@ namespace RuneMagic
         public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
         public bool Started { get; private set; }
-        public bool IsCasting => CastLaw.IsCasting(Mode, Busy);
+        public bool IsCasting => CastLaw.IsCasting(Mode);
 
         /// <summary>
-        /// Default false: the adept stands while aiming or releasing.
+        /// Default false: the adept stands while aiming.
         /// Items and conditions later set this so a caster can walk.
         /// </summary>
         public bool AllowsMoveWhileCasting { get; set; }
 
         public bool CanMove =>
-            CastLaw.AllowsMove(Mode, Busy, GameHud.EditingName, AllowsMoveWhileCasting);
+            CastLaw.AllowsMove(Mode, GameHud.EditingName, AllowsMoveWhileCasting);
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -170,13 +170,19 @@ namespace RuneMagic
 
         void Update()
         {
-            SyncWorldClock();
             TrackPlayer();
             CurrentTarget = Mode == PlayMode.Aiming ? ResolveAimFocus() : ResolveFocus();
             UpdateSight();
             UpdateTargetRing();
             UpdateAimGhost();
             HandleInput();
+            SyncWorldClock();
+        }
+
+        void EnterMode(PlayMode next)
+        {
+            Mode = next;
+            SyncWorldClock();
         }
 
         void SyncWorldClock()
@@ -504,8 +510,7 @@ namespace RuneMagic
 
         public void OpenCharter()
         {
-            Mode = PlayMode.Charter;
-            SyncWorldClock();
+            EnterMode(PlayMode.Charter);
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
                 "The screen unrolls. Time holds. Every root mark is ready. What you have already strung stays until you cast or close.",
@@ -526,8 +531,7 @@ namespace RuneMagic
                 released = true;
             }
 
-            Mode = PlayMode.Exploring;
-            SyncWorldClock();
+            EnterMode(PlayMode.Exploring);
             if (released)
             {
                 Log(Held.Occupied
@@ -554,14 +558,12 @@ namespace RuneMagic
         {
             if (Mode == PlayMode.Paused)
             {
-                Mode = _modeBeforePause;
-                SyncWorldClock();
+                EnterMode(_modeBeforePause);
                 return;
             }
 
             _modeBeforePause = Mode;
-            Mode = PlayMode.Paused;
-            SyncWorldClock();
+            EnterMode(PlayMode.Paused);
         }
 
         public void PauseForNaming()
@@ -587,10 +589,10 @@ namespace RuneMagic
             }
             else if (Mode == PlayMode.Inventory)
             {
-                Mode = PlayMode.Exploring;
+                EnterMode(PlayMode.Exploring);
             }
 
-            Mode = PlayMode.Grimoire;
+            EnterMode(PlayMode.Grimoire);
             Log(GlyphView.Speak(
                 "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
                 "Your book. Workings you have kept. Click a page to send it — the marks must be in the weave."));
@@ -603,7 +605,7 @@ namespace RuneMagic
                 return;
             }
 
-            Mode = PlayMode.Exploring;
+            EnterMode(PlayMode.Exploring);
         }
 
         public void OpenInventory()
@@ -624,10 +626,10 @@ namespace RuneMagic
             }
             else if (Mode == PlayMode.Grimoire)
             {
-                Mode = PlayMode.Exploring;
+                EnterMode(PlayMode.Exploring);
             }
 
-            Mode = PlayMode.Inventory;
+            EnterMode(PlayMode.Inventory);
             if (Pack.Empty)
             {
                 Log("The pack is empty. Stones and other keys will sit here. Esc or I closes.");
@@ -649,7 +651,7 @@ namespace RuneMagic
                 return;
             }
 
-            Mode = PlayMode.Exploring;
+            EnterMode(PlayMode.Exploring);
         }
 
         public void SelectPack(int index)
@@ -853,7 +855,7 @@ namespace RuneMagic
                 return;
             }
 
-            Mode = PlayMode.Exploring;
+            EnterMode(PlayMode.Exploring);
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
             PendingSpell = SpellId.None;
@@ -901,7 +903,7 @@ namespace RuneMagic
                 Composer.Clear();
             }
 
-            Mode = PlayMode.Exploring;
+            EnterMode(PlayMode.Exploring);
             ChosenShape = SpellShape.None;
             AvailableShapes = System.Array.Empty<SpellShape>();
             var lockedFree = _pendingFree;
@@ -969,7 +971,7 @@ namespace RuneMagic
 
             PendingPreview = CallWorking(composition);
             AimHint = "The chain did not write a form. Click the world to fizzle, or Esc to keep the string.";
-            Mode = PlayMode.Aiming;
+            EnterMode(PlayMode.Aiming);
             Log("Those runes are not a written sentence. The form is in the chain, not a later choice. Click to fizzle, or Esc to keep the string.");
         }
 
@@ -983,7 +985,7 @@ namespace RuneMagic
             AvailableShapes = shape == SpellShape.None
                 ? System.Array.Empty<SpellShape>()
                 : new[] { shape };
-            Mode = PlayMode.Aiming;
+            EnterMode(PlayMode.Aiming);
         }
 
         static string HintFor(SpellId spell, SpellShape shape)

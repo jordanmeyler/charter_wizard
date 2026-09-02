@@ -12,6 +12,7 @@ namespace RuneMagic
         Rigidbody2D _body;
         SpriteRenderer _sprite;
         SanctumDirector _director;
+        AdeptAvatar _adept;
 
         void Awake()
         {
@@ -35,6 +36,17 @@ namespace RuneMagic
         {
             BindDirector();
             if (_director != null && !_director.CanMove)
+            {
+                Halt();
+                return;
+            }
+
+            if (_adept == null)
+            {
+                _adept = GetComponent<AdeptAvatar>();
+            }
+
+            if (_adept != null && _adept.IsAirborne)
             {
                 Halt();
                 return;

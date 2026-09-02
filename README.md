@@ -52,8 +52,8 @@ Douse, Command, Wind, and Earth-pillar are new ordinary sentences written for th
 
 You only move and cast. The adept is Rogue Adventure **Hero_22**, driven by a Unity Animator (`Idle` / `Walk` / `Cast` / `Hop`). A gold ring marks the nearest lock; it turns cyan while you aim.
 
-- **WASD** / arrows move. You stand while aiming or releasing a sentence. Items or conditions may later let you walk while casting.
-- **Space** opens the Charter — the room’s weave in a scrolling grid. Time holds while it is open: enemies, fire, and meters do not tick. Space again closes it and the clock runs. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
+- **WASD** / arrows move. Time holds only while the Charter menu is open. When you go to cast, the clock runs again and you stand until the click lands. Items or conditions may later let you walk while aiming.
+- **Space** opens the Charter — the room’s weave in a scrolling grid. Time holds while that menu is open: enemies, fire, and meters do not tick. Space again closes it and the clock runs. The weave is not visible while you walk. In the world, each altar shows the **mark beside a picture** (flame, water, rock, gale). Body, spirit, and mind are carved around the crystal.
 - **Click a cell in the weave** to draw that rune (only in the Charter). **Click a floating inscription** in the room to draw that same mark — the Charter opens if it was closed.
 - **Window → Rune Magic → Inscriptions** places any catalog rune as a floating mark (no slab). Click a tile in the Scene view; right-click removes.
 - **Right-click** (or Shift-click) a mark still **keeps** it for later. Remembered marks will sit on a Charter wall in a later pass; Play draws from the grid for now.
@@ -64,7 +64,7 @@ You only move and cast. The adept is Rogue Adventure **Hero_22**, driven by a Un
 - **Charter Cast** (F / Enter): the recipe must already be written, in order. Wrong or scrambled strings fizzle.
 - **Free Cast** (X): fills up to one missing rune (the budget can rise later), and can unscramble a valid bag of runes into a written sentence. Several matches → attunement-weighted pick. Free cannot be stored.
 - **Store** (R): holds one Charter sentence. Store is the benefit of using Charter.
-- After a cast: **click the world**. Time is running again; you stand unless something later grants motion during a cast. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
+- After you leave the Charter to cast: **click the world**. Time is already running; you stand until that click, then you can move. The chain already wrote the form (Earth stands as a pillar; a wall then asks for a second click; Fire · Mercury flies; hop and flight stay on you). Esc cancels and keeps the string.
 - The **bottom bar** shows the stored Charter spell. Click the slot or press **F** / **Enter** in the world to aim it.
 - **I** (or **Pack** on the bar) opens the pack. Stones, charms, and other key items sit there. Click one to look at it — each look is a hint at how that rune works. Arrows move the selection. Esc or I closes.
 - **Grimoire** (top-right tab, or the bottom-bar book / **Esc** / **G**) is the player's book in Play: only workings you **Keep** from Recent. Click one to send it if those marks are in the weave; otherwise a notice names the missing marks. **Develop** (F1) shows the full written catalog and every wrought join. The world still speaks the runes you wrote, or the name you gave that writing.

@@ -1,10 +1,10 @@
 namespace RuneMagic
 {
     /// <summary>
-    /// When the world clock holds, and when the adept may walk
-    /// while a sentence is aimed or released. Opening the Charter
-    /// stills the room. Casting roots the adept by default; items
-    /// and conditions later grant motion during a cast.
+    /// The world clock holds only while a menu is up (the Charter,
+    /// pause, or naming). Going to aim closes that menu: time runs
+    /// again and the adept stands until the click lands, unless an
+    /// item or condition later grants motion during a cast.
     /// </summary>
     public static class CastLaw
     {
@@ -13,29 +13,24 @@ namespace RuneMagic
             return naming || mode == PlayMode.Paused || mode == PlayMode.Charter;
         }
 
-        public static bool IsCasting(PlayMode mode, bool busy)
+        public static bool IsCasting(PlayMode mode)
         {
-            return busy || mode == PlayMode.Aiming;
+            return mode == PlayMode.Aiming;
         }
 
-        /// <summary>
-        /// The adept walks only while exploring, or while aiming /
-        /// releasing if something has granted motion during a cast.
-        /// The Charter holds the clock, so there is no walk there.
-        /// </summary>
-        public static bool AllowsMove(PlayMode mode, bool busy, bool naming, bool moveWhileCasting)
+        public static bool AllowsMove(PlayMode mode, bool naming, bool moveWhileCasting)
         {
-            if (HoldsWorld(mode, naming))
+            if (HoldsWorld(mode, naming) || mode == PlayMode.Grimoire || mode == PlayMode.Inventory)
             {
                 return false;
             }
 
-            if (mode != PlayMode.Exploring && mode != PlayMode.Aiming)
+            if (IsCasting(mode))
             {
-                return false;
+                return moveWhileCasting;
             }
 
-            return !IsCasting(mode, busy) || moveWhileCasting;
+            return mode == PlayMode.Exploring;
         }
     }
 }
