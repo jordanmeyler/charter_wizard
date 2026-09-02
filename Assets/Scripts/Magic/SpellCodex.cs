@@ -233,10 +233,42 @@ namespace RuneMagic
             }
 
             ValidateFills(broken);
+            ValidatePlaybook(broken);
 
             return broken.Count == 0
                 ? string.Empty
                 : string.Join("; ", broken);
+        }
+
+        static void ValidatePlaybook(List<string> broken)
+        {
+            if (RuneCatalog.StringRole(RuneId.Fire) != "elemental"
+                || RuneCatalog.StringRole(RuneId.Salt) != "catalyst"
+                || RuneCatalog.StringRole(RuneId.Mercury) != "catalyst"
+                || RuneCatalog.StringRole(RuneId.Sulphur) != "catalyst"
+                || RuneCatalog.StringRole(RuneId.Animus) != "special"
+                || RuneCatalog.StringRole(RuneId.Aether) != "special")
+            {
+                broken.Add("String roles must mark elemental, catalyst, and special runes");
+            }
+
+            var ledger = new CastLedger();
+            var miss = Composition.FromSequence(new[] { RuneId.Fire });
+            ledger.Record(miss, CastingStance.Charter, false, SpellId.None, hideBadRecipes: true);
+            ledger.Record(miss, CastingStance.Charter, false, SpellId.None, hideBadRecipes: true);
+            if (ledger.Recent.Count != 1 || ledger.Recent[0].Worked)
+            {
+                broken.Add("Hide bad recipes must keep only the last failed cast");
+            }
+
+            var book = new Grimoire();
+            book.KeepWorking(CastingStance.Free, new[] { RuneId.Fire, RuneId.Mercury }, SpellId.None, "wild");
+            if (book.KeptWorkings.Count != 1
+                || book.KeptWorkings[0].Stance != CastingStance.Free
+                || !WorkingNames.SameComposition(book.KeptWorkings[0].Runes, new[] { RuneId.Fire, RuneId.Mercury }))
+            {
+                broken.Add("Free workings must be keepable by the runes that were strung");
+            }
         }
 
         static void ValidateFills(List<string> broken)

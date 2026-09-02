@@ -203,7 +203,46 @@ namespace RuneMagic
             }
         }
 
-        public static bool IsElemental(RuneId id) => IsMaterial(id);
+        public static bool IsCatalyst(RuneId id) =>
+            id == RuneId.Salt || id == RuneId.Mercury || id == RuneId.Sulphur;
+
+        public static bool IsSpecial(RuneId id)
+        {
+            switch (id)
+            {
+                case RuneId.Animus:
+                case RuneId.Anima:
+                case RuneId.Aether:
+                case RuneId.Vita:
+                case RuneId.Mors:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsElemental(RuneId id) =>
+            IsMaterial(id) && !IsSpecial(id);
+
+        /// <summary>
+        /// Short role under a mark: elemental, catalyst, or special.
+        /// Catalyst is mind, body, and soul. Special is anima, animus,
+        /// aether, life, and death.
+        /// </summary>
+        public static string StringRole(RuneId id)
+        {
+            if (id == RuneId.None)
+            {
+                return string.Empty;
+            }
+
+            if (IsCatalyst(id))
+            {
+                return "catalyst";
+            }
+
+            return IsElemental(id) ? "elemental" : "special";
+        }
 
         public static bool IsBasic(RuneId id)
         {

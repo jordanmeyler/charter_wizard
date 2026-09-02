@@ -90,6 +90,8 @@ namespace RuneMagic
         bool _pendingFromHeld;
         Vector3? _spanStart;
         readonly HashSet<int> _hunted = new();
+        readonly HashSet<RuneId> _presentMarks = new();
+        int _presentFrame = -1;
 
         public void Begin(SanctumBuild build)
         {
@@ -322,13 +324,9 @@ namespace RuneMagic
                 {
                     CloseCharter();
                 }
-                else if (Mode == PlayMode.Paused)
-                {
-                    TogglePause();
-                }
                 else
                 {
-                    OpenGrimoire();
+                    TogglePause();
                 }
 
                 return;
@@ -340,7 +338,12 @@ namespace RuneMagic
                 {
                     CloseGrimoire();
                 }
-                else if (Mode != PlayMode.Paused)
+                else if (Mode == PlayMode.Paused)
+                {
+                    TogglePause();
+                    OpenGrimoire();
+                }
+                else
                 {
                     OpenGrimoire();
                 }
@@ -685,17 +688,54 @@ namespace RuneMagic
                 return true;
             }
 
-            if (Tapestry != null)
+            return RunePresent(rune);
+        }
+
+        public bool RunePresent(RuneId rune)
+        {
+            if (rune == RuneId.None)
             {
-                Tapestry.Resample();
-                if (Tapestry.InVicinity(rune))
+                return false;
+            }
+
+            RefreshPresentMarks();
+            return _presentMarks.Contains(rune);
+        }
+
+        void RefreshPresentMarks()
+        {
+            if (_presentFrame == Time.frameCount)
+            {
+                return;
+            }
+
+            _presentFrame = Time.frameCount;
+            _presentMarks.Clear();
+            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
+            if (perceived != null)
+            {
+                for (var i = 0; i < perceived.Count; i++)
                 {
-                    return true;
+                    if (perceived[i] != RuneId.None)
+                    {
+                        _presentMarks.Add(perceived[i]);
+                    }
                 }
             }
 
-            var perceived = RuneTapestry.Perceive(CasterPosition(), Grid, _locks);
-            return perceived != null && perceived.Contains(rune);
+            if (Tapestry == null)
+            {
+                return;
+            }
+
+            var vicinity = Tapestry.Vicinity;
+            for (var i = 0; i < vicinity.Count; i++)
+            {
+                if (vicinity[i] != RuneId.None)
+                {
+                    _presentMarks.Add(vicinity[i]);
+                }
+            }
         }
 
         public void AddRune(RuneId rune)
@@ -1144,8 +1184,11 @@ namespace RuneMagic
                 Held = new StoredSpell(Held.Composition, Held.Stance, label);
             }
 
+            var freeNote = attempt.Stance == CastingStance.Free
+                ? " Free is wild — sending it again writes from the same marks, and may not land the same way."
+                : string.Empty;
             Log(GlyphView.Speak(
-                $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.",
+                $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.{freeNote}",
                 "The working is kept in your book. The name holds for that same writing."));
         }
 
@@ -1735,6 +1778,10 @@ namespace RuneMagic
             }
 
             Busy = false;
+            if (!setupFailed && !outcome.Fizzled && outcome.Spell != SpellId.None)
+            {
+                GameHud.OfferKeepLatest(composition);
+            }
         }
 
         Vector3 CasterPosition()
@@ -2501,7 +2548,14 @@ namespace RuneMagic
         void RecordWorking(Composition composition, CastingStance stance, bool worked, SpellId spell)
         {
             var given = Grimoire.Names.SavedOrEmpty(composition.Sequence);
-            Ledger.Record(composition, stance, worked, spell, given, saved: !string.IsNullOrEmpty(given));
+            Ledger.Record(
+                composition,
+                stance,
+                worked,
+                spell,
+                given,
+                saved: !string.IsNullOrEmpty(given),
+                hideBadRecipes: GameSettings.HideBadRecipes);
         }
 
         void UpdateSight()
