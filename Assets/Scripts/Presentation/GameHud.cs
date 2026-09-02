@@ -1223,12 +1223,10 @@ namespace RuneMagic
                         continue;
                     }
 
+                    // Groups are a visual hint. The recipe always takes the mark you click.
                     var shown = glyph.Shown;
                     var chunk = glyph.IsGroup ? glyph.Rune : RuneId.None;
-                    var pick = glyph.IsGroup && ChainBook.IsWrought(glyph.Rune)
-                        ? glyph.Rune
-                        : shown;
-                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(pick), true, true, chunk);
+                    DrawRuneCard(rect, shown, () => _director.WeaveFromField(shown), true, true, chunk);
                 }
             }
 
