@@ -242,13 +242,13 @@ namespace RuneMagic
         static void ValidatePlaybook(List<string> broken)
         {
             if (RuneCatalog.StringRole(RuneId.Fire) != "elemental"
-                || RuneCatalog.StringRole(RuneId.Salt) != "body"
-                || RuneCatalog.StringRole(RuneId.Mercury) != "soul"
-                || RuneCatalog.StringRole(RuneId.Sulphur) != "mind"
+                || RuneCatalog.StringRole(RuneId.Salt) != "catalyst"
+                || RuneCatalog.StringRole(RuneId.Mercury) != "catalyst"
+                || RuneCatalog.StringRole(RuneId.Sulphur) != "catalyst"
                 || RuneCatalog.StringRole(RuneId.Animus) != "special"
                 || RuneCatalog.StringRole(RuneId.Aether) != "special")
             {
-                broken.Add("String roles must mark elemental, catalyst (body/soul/mind), and special runes");
+                broken.Add("String roles must mark elemental, catalyst, and special runes");
             }
 
             var ledger = new CastLedger();

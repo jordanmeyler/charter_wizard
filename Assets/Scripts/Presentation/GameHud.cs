@@ -1376,7 +1376,7 @@ namespace RuneMagic
             const float slot = 56f;
             const float gap = 8f;
             var startX = 24f;
-            var role = Label(10, FontStyle.Italic, new Color(0.76f, 0.72f, 0.58f));
+            var role = Label(11, FontStyle.Bold, new Color(0.86f, 0.8f, 0.58f));
             role.alignment = TextAnchor.MiddleCenter;
             for (var i = 0; i < SpellComposer.MaxSlots; i++)
             {

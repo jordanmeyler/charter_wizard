@@ -225,30 +225,23 @@ namespace RuneMagic
             IsMaterial(id) && !IsSpecial(id);
 
         /// <summary>
-        /// Short role under a strung mark: elemental, catalyst
-        /// (body / soul / mind), or special.
+        /// Short role under a mark: elemental, catalyst, or special.
+        /// Catalyst is mind, body, and soul. Special is anima, animus,
+        /// aether, life, and death.
         /// </summary>
         public static string StringRole(RuneId id)
         {
-            switch (id)
+            if (id == RuneId.None)
             {
-                case RuneId.None:
-                    return string.Empty;
-                case RuneId.Salt:
-                    return "body";
-                case RuneId.Mercury:
-                    return "soul";
-                case RuneId.Sulphur:
-                    return "mind";
-                case RuneId.Animus:
-                case RuneId.Anima:
-                case RuneId.Aether:
-                case RuneId.Vita:
-                case RuneId.Mors:
-                    return "special";
-                default:
-                    return IsElemental(id) ? "elemental" : "special";
+                return string.Empty;
             }
+
+            if (IsCatalyst(id))
+            {
+                return "catalyst";
+            }
+
+            return IsElemental(id) ? "elemental" : "special";
         }
 
         public static bool IsBasic(RuneId id)
