@@ -684,7 +684,7 @@ namespace RuneMagic
                 live.Add(RuneId.Water);
             }
 
-            if (tile.Charge > 0.2f)
+            if (tile.IsCharged)
             {
                 live.Add(RuneId.Spark);
                 live.Add(RuneId.Fire);

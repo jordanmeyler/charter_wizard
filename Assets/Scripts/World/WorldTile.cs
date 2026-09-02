@@ -521,6 +521,57 @@ namespace RuneMagic
                 var value = Def.WorldMaterial.Conductivity;
                 if (HasWaterCover)
                 {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(MaterialId.Water));
+                }
+
+                if (HasPlantCover || HasVine)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(MaterialId.Plant));
+                }
+
+                if (HasIceCover)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(MaterialId.Ice));
+                }
+
+                value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOfCover(Cover));
+                if (Cover == TileCover.None && CoverMaterial != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(CoverMaterial));
+                }
+
+                value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOfWetness(Wet));
+                if (HasOil)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(MaterialId.Oil));
+                }
+
+                if (_detailMaterial != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(_detailMaterial));
+                }
+
+                if (WorldMatter.TryOverlayConductivity(WorldOrigin, out var item))
+                {
+                    value = ChargeLaw.Combine(value, item);
+                }
+
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// 0–10 conduct on this cell. Walk, cover, wet, a detail,
+        /// and a stood item combine. An insulator wins — wood on
+        /// metal breaks the path. Water on stone runs the spark.
+        /// </summary>
+        public int Conduct
+        {
+            get
+            {
+                var value = ChargeLaw.Of(Material);
+                if (HasWaterCover)
+                {
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Water));
                 }
 
@@ -534,13 +585,21 @@ namespace RuneMagic
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Ice));
                 }
 
-                value = ChargeLaw.Combine(value, ChargeLaw.OfCover(Cover));
+                if (Cover != TileCover.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.OfCover(Cover));
+                }
+
                 if (Cover == TileCover.None && CoverMaterial != MaterialId.None)
                 {
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(CoverMaterial));
                 }
 
-                value = ChargeLaw.Combine(value, ChargeLaw.OfWetness(Wet));
+                if (Wet > 0.2f)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.OfWetness(Wet));
+                }
+
                 if (HasOil)
                 {
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(MaterialId.Oil));
@@ -551,7 +610,7 @@ namespace RuneMagic
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(_detailMaterial));
                 }
 
-                if (WorldMatter.TryOverlayConductivity(WorldOrigin, out var item))
+                if (WorldMatter.TryOverlayConduct(WorldOrigin, out var item))
                 {
                     value = ChargeLaw.Combine(value, item);
                 }
@@ -560,8 +619,9 @@ namespace RuneMagic
             }
         }
 
-        public bool Conducts => ChargeLaw.Conducts(Conductivity);
-        public bool Insulates => ChargeLaw.Insulates(Conductivity);
+        public bool Conducts => ChargeLaw.Conducts(Conduct);
+        public bool Insulates => ChargeLaw.Insulates(Conduct);
+        public bool IsCharged => Charge > ChargeLaw.LiveMin;
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
@@ -1431,7 +1491,7 @@ namespace RuneMagic
 
         public void ChargeAt(float amount)
         {
-            if (amount > 0f && ChargeLaw.Insulates(Conductivity))
+            if (amount > 0f && Insulates)
             {
                 return;
             }

@@ -94,6 +94,7 @@ namespace RuneMagic
                 case SpellId.Witchfire:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Burning, 5f, TileVerb.Ignite);
                 case SpellId.LiveFloor:
+                    return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Stunned, 1.2f, TileVerb.Charge);
                 case SpellId.LavaFlood:
                     return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Burning, 4f, TileVerb.Ignite);
                 case SpellId.LightningBolt:
