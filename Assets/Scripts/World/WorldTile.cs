@@ -62,6 +62,7 @@ namespace RuneMagic
         MaterialId _telegraph = MaterialId.None;
         int _telegraphCount;
         float _overlayBurn;
+        float _hungerLife;
 
         public void Bind(Vector2Int coord, TileDef def)
         {
@@ -80,7 +81,7 @@ namespace RuneMagic
 
         public void AuthorLook(Sprite sprite)
         {
-            _authoredLook = sprite;
+            _authoredLook = TileSprite.Solid(sprite);
             if (_renderer != null)
             {
                 ApplyVisual();
@@ -114,7 +115,7 @@ namespace RuneMagic
         /// </summary>
         public void AuthorUnderlay(Sprite sprite, MaterialId floor = MaterialId.Stone)
         {
-            _underlayLook = sprite;
+            _underlayLook = TileSprite.Solid(sprite);
             _underlayMaterial = floor == MaterialId.None ? MaterialId.Stone : floor;
             if (_renderer != null)
             {
@@ -160,7 +161,7 @@ namespace RuneMagic
         /// </summary>
         public void AuthorDetail(Sprite sprite, MaterialId material, bool blocks = false)
         {
-            _detailLook = sprite;
+            _detailLook = TileSprite.Solid(sprite);
             _detailMaterial = material;
             _detailBlocks = blocks;
             if (_renderer != null)
@@ -201,15 +202,14 @@ namespace RuneMagic
 
         public bool HasFireCover =>
             Cover == TileCover.Fire
-            || CoverMaterial == MaterialId.Ember
             || CoverMaterial == MaterialId.Hearth
             || CoverMaterial == MaterialId.Lava
             || CoverMaterial == MaterialId.Fire;
 
         /// <summary>
-        /// Hunger seated in the walk itself — Floor-Fire, ember, a hearth, lava.
+        /// Hunger seated in the walk itself — Floor-Fire, a hearth, lava.
         /// Rest matter. It does not burn out. Coverings and spells
-        /// are what react.
+        /// are what react. Ember is a Fire mark, not this.
         /// </summary>
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
@@ -222,6 +222,30 @@ namespace RuneMagic
             || (HasOil && !IsGeyser)
             || HasPlantishDetail
             || (HasFireCover && !Kindled);
+
+        /// <summary>
+        /// A stood Fire · Salt column. Hunger without rest. It
+        /// falls unless a source still feeds it.
+        /// </summary>
+        public bool IsHungerPillar =>
+            IsConjured && Material == MaterialId.Fire;
+
+        /// <summary>
+        /// Kindled halls, geysers, oil, overlay fuel, or rest fire
+        /// already in the walk. Those keep a fire-pillar standing.
+        /// </summary>
+        public bool FeedsHunger
+        {
+            get
+            {
+                if (Kindled || IsGeyser || HasOil || HasOverlayFuel)
+                {
+                    return true;
+                }
+
+                return _hasFoundation && VitalLaw.IsRestFire(Foundation.Material);
+            }
+        }
 
         public bool HasPoisonCover =>
             !HasAshCover
@@ -291,7 +315,7 @@ namespace RuneMagic
 
         public void AuthorCoverLook(Sprite sprite, float alpha = 1f)
         {
-            _coverLook = sprite;
+            _coverLook = TileSprite.Solid(sprite);
             _coverAlpha = Mathf.Clamp01(alpha <= 0f ? 1f : alpha);
             ApplyCover();
         }
@@ -401,8 +425,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How long a full fire lasts here. Oil is one second.
-        /// Wood is two. Plant is three.
+        /// How long a full fire lasts here. Oil is five seconds.
+        /// Wood is four. Plant is three. Grove is two. Oil on a
+        /// cell extends the clock; it does not cut a longer fuel
+        /// short. Fire cover is tinder — a short clock.
         /// </summary>
         public float BurnSeconds
         {
@@ -438,15 +464,15 @@ namespace RuneMagic
                 if (HasOil)
                 {
                     seconds = seconds > 0f
-                        ? Mathf.Min(seconds, VitalLaw.OilBurnSeconds)
+                        ? Mathf.Max(seconds, VitalLaw.OilBurnSeconds)
                         : VitalLaw.OilBurnSeconds;
                 }
 
                 if (HasFireCover && !Kindled)
                 {
                     seconds = seconds > 0f
-                        ? Mathf.Min(seconds, VitalLaw.EmberBurnSeconds)
-                        : VitalLaw.EmberBurnSeconds;
+                        ? Mathf.Min(seconds, VitalLaw.TinderBurnSeconds)
+                        : VitalLaw.TinderBurnSeconds;
                 }
 
                 return seconds;
@@ -454,7 +480,7 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// How fast hunger leaves this cell. Faster fuel runs.
+        /// Clock leftover on this cell. Spread uses Hunger.
         /// A plant on water lights and stays put.
         /// </summary>
         public float BurnRate
@@ -522,7 +548,7 @@ namespace RuneMagic
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
         /// Fuel hunger can finish. Kindled halls and rest fire floors
-        /// stay. Ember cover, timber walls, and plant / timber floors
+        /// stay. Fire cover, timber walls, and plant / timber floors
         /// catch once, then leftover dirt.
         /// </summary>
         public bool HoldsBurnFuel =>
@@ -546,8 +572,18 @@ namespace RuneMagic
         public bool IsSpreadFuel => !HasAshCover && Hunger > VitalLaw.HungerNeutral;
 
         /// <summary>
+        /// Ember is a Fire path, not fuel. Hunger can walk across it
+        /// toward the source; the mark itself does not catch.
+        /// </summary>
+        public bool ConductsFire =>
+            !HasAshCover
+            && (VitalLaw.ConductsFire(Material)
+                || VitalLaw.ConductsFire(_detailMaterial)
+                || VitalLaw.ConductsFire(CoverMaterial));
+
+        /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
-        /// oil, and ember cover raise the grade. Rest fire in the floor
+        /// oil, and fire cover raise the grade. Rest fire in the floor
         /// stays 0 — a spell starts that source.
         /// </summary>
         public int Hunger
@@ -719,7 +755,7 @@ namespace RuneMagic
 
             _telegraphCount++;
             _telegraph = material;
-            if (material == MaterialId.Hearth || material == MaterialId.Lava || material == MaterialId.Ember)
+            if (material == MaterialId.Hearth || material == MaterialId.Lava)
             {
                 Ignite(0.65f);
             }
@@ -965,6 +1001,10 @@ namespace RuneMagic
             IsConjured = conjured;
             RaisedAs = conjured ? RaisedForm.Span : RaisedForm.None;
             Reshape(new TileDef(TileKind.Bridge, material == MaterialId.None ? MaterialId.Stone : material));
+            if (conjured && material == MaterialId.Fire)
+            {
+                BeginHungerLife();
+            }
         }
 
         public void BecomeBarrier(MaterialId material, RaisedForm form = RaisedForm.Wall)
@@ -978,6 +1018,35 @@ namespace RuneMagic
             IsConjured = true;
             RaisedAs = form == RaisedForm.None ? RaisedForm.Wall : form;
             Reshape(new TileDef(TileKind.Wall, material == MaterialId.None ? MaterialId.Stone : material));
+            if (material == MaterialId.Fire)
+            {
+                BeginHungerLife();
+            }
+        }
+
+        public void BeginHungerLife()
+        {
+            _hungerLife = VitalLaw.FirePillarSeconds;
+        }
+
+        /// <summary>
+        /// Tick a Fire · Salt column. Fed hunger stays. Unfed
+        /// hunger falls when the clock is spent.
+        /// </summary>
+        public bool TickHungerLife(float dt)
+        {
+            if (!IsHungerPillar)
+            {
+                return false;
+            }
+
+            if (FeedsHunger)
+            {
+                return false;
+            }
+
+            _hungerLife -= dt;
+            return _hungerLife <= 0f && RestoreFoundation();
         }
 
         public bool RestoreFoundation()
@@ -996,6 +1065,7 @@ namespace RuneMagic
             Foundation = default;
             _hasFoundation = false;
             IsGeyser = false;
+            _hungerLife = 0f;
             ClearLinger();
             Reshape(restored);
             return true;
@@ -1790,7 +1860,7 @@ namespace RuneMagic
                 if (_authoredLook != null && _telegraph == MaterialId.None && !IsConjured)
                 {
                     StopLook(_renderer);
-                    _renderer.sprite = _authoredLook;
+                    _renderer.sprite = TileSprite.Solid(_authoredLook);
                     _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : Kind == TileKind.Door ? 4 : 0;
                     ApplyDetail();
                     ApplyUnderlay();
@@ -2268,6 +2338,18 @@ namespace RuneMagic
                     EnsureOverlay().sprite = SpriteFactory.WallShadow();
                     _overlay.sortingOrder = _renderer.sortingOrder + 2;
                     _overlay.enabled = true;
+                    return;
+                }
+
+                // Stamped / painted tilesets are the picture. The old
+                // brown pit bars sat on dirt and read as random lines.
+                if (_authoredLook != null)
+                {
+                    if (_overlay != null)
+                    {
+                        _overlay.enabled = false;
+                    }
+
                     return;
                 }
 

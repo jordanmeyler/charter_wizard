@@ -4,8 +4,9 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// What the camera can see. The Charter wall lists the eleven, but only
-    /// runes in this vicinity can be strung.
+    /// What the camera can see. Play draws from the weave; Develop still
+    /// lists the eleven on the wall. Only runes in this vicinity can be
+    /// strung in Play.
     /// </summary>
     public static class RuneField
     {

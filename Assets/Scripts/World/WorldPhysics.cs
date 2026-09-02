@@ -803,15 +803,17 @@ namespace RuneMagic
             var grove = MaterialCatalog.Of(MaterialId.Grove);
             var ember = MaterialCatalog.Of(MaterialId.Ember);
             var water = MaterialCatalog.Of(MaterialId.Water);
-            if (oil.BurnSeconds >= timber.BurnSeconds
-                || timber.BurnSeconds >= plant.BurnSeconds
-                || oil.BurnRate <= timber.BurnRate
-                || timber.BurnRate <= plant.BurnRate
+            if (oil.BurnSeconds <= timber.BurnSeconds
+                || timber.BurnSeconds <= plant.BurnSeconds
+                || plant.BurnSeconds <= grove.BurnSeconds
+                || oil.BurnRate >= timber.BurnRate
+                || timber.BurnRate >= plant.BurnRate
+                || plant.BurnRate >= grove.BurnRate
                 || oil.Flammability <= timber.Flammability
                 || timber.Flammability <= plant.Flammability
                 || plant.Flammability <= grove.Flammability)
             {
-                broken.Add("Wood must burn better than plant: oil, wood, plant, then grove");
+                broken.Add("Oil and wood last longer than plant; grove burns out sooner");
             }
 
             if (plant.BurnRate <= 0f || timber.BurnRate <= 0f)
@@ -832,17 +834,31 @@ namespace RuneMagic
                 broken.Add("A spent plant or timber floor must swap to dirt (look and stamp)");
             }
 
+            if (WorldWork.MaterialFor(RuneId.Fire, SpellId.FirePillar) != MaterialId.Fire
+                || WorldWork.MaterialFor(RuneId.Fire, SpellId.FlamePillar) != MaterialId.Hearth
+                || WorldWork.MaterialFor(RuneId.Fire, SpellId.LavaPillar) != MaterialId.Lava
+                || !WorldWork.IsPillar(SpellId.FirePillar)
+                || !WorldWork.IsFlameBody(MaterialId.Fire)
+                || VitalLaw.FirePillarSeconds < 2f
+                || VitalLaw.FirePillarSeconds > 5f)
+            {
+                broken.Add("Fire-pillar is temporary hunger; Flame-pillar is hearth; Lava-pillar is lava");
+            }
+
             if (CoverCatalog.LeftoverFloor(MaterialId.Fire) != MaterialId.Fire
                 || CoverCatalog.LeftoverFloor(MaterialId.Hearth) != MaterialId.Hearth
+                || CoverCatalog.LeftoverFloor(MaterialId.Ember) != MaterialId.Ember
                 || VitalLaw.CanBurn(MaterialId.Fire)
                 || VitalLaw.CanBurn(MaterialId.Lava)
-                || !VitalLaw.IsRestFire(MaterialId.Ember))
+                || VitalLaw.CanBurn(MaterialId.Ember)
+                || VitalLaw.IsRestFire(MaterialId.Ember))
             {
-                broken.Add("Rest fire in the walk stays; it is not fuel and does not leftover to dirt");
+                broken.Add("Rest fire stays; ember is a Fire mark, not fuel, and does not leftover to dirt");
             }
 
             if (ember.BurnRate != 0f
-                || ember.Hunger != VitalLaw.HungerEmber
+                || ember.BurnSeconds != 0f
+                || ember.Hunger != VitalLaw.HungerNeutral
                 || grove.Hunger != VitalLaw.HungerSoft
                 || plant.Hunger != VitalLaw.HungerPlant
                 || timber.Hunger != VitalLaw.HungerTimber
@@ -877,11 +893,14 @@ namespace RuneMagic
             if (WorldSim.AcceptsFireSpread(null)
                 || VitalLaw.IsSpreadFuel(MaterialId.Stone)
                 || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
+                || VitalLaw.IsSpreadFuel(MaterialId.Ember)
+                || VitalLaw.ConductsFire(MaterialId.Stone)
+                || !VitalLaw.ConductsFire(MaterialId.Ember)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
-                broken.Add("Hunger must not run onto empty or neutral ground; timber, oil, and plant still catch");
+                broken.Add("Hunger must not run onto empty or neutral ground; ember is a path, not fuel");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
@@ -925,6 +944,9 @@ namespace RuneMagic
             LookIds.Audit(broken);
             PlantLaw.Audit(broken);
             WorldPaintTile.Audit(broken);
+            TilemapLevel.Audit(broken);
+            TileAtlas.Audit(broken);
+            TileSprite.Audit(broken);
             RoomSentence.Audit(broken);
         }
 

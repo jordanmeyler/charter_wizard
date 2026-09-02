@@ -35,7 +35,7 @@ namespace RuneMagic
         public bool StampsFloor => StampsWalk && kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover can catch when hunger is live; ember stays put and then ashes. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
+        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover is tinder when hunger is live. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;
@@ -165,7 +165,6 @@ namespace RuneMagic
                     return TileCover.Water;
                 case MaterialId.Mud:
                     return TileCover.Mud;
-                case MaterialId.Ember:
                 case MaterialId.Hearth:
                 case MaterialId.Lava:
                     return TileCover.Fire;
@@ -305,9 +304,22 @@ namespace RuneMagic
             if (CoverFromMaterial(MaterialId.Ice) != TileCover.Ice
                 || CoverFromMaterial(MaterialId.Stone) != TileCover.None
                 || CoverFromMaterial(MaterialId.Fire) != TileCover.None
+                || CoverFromMaterial(MaterialId.Ember) != TileCover.None
                 || CoverFromMaterial(MaterialId.Plant) != TileCover.None)
             {
-                broken.Add("CoverFromMaterial is Cover-layer inference — Fire and Plant walk stamps are not covers");
+                broken.Add("CoverFromMaterial is Cover-layer inference — Fire, ember, and Plant walk stamps are not covers");
+            }
+
+            if (IsQualityStampOf(TileKind.Floor, MaterialId.Dirt)
+                && TileAtlas.FloorId(MaterialId.Dirt, 2, 5) != "floor-dirt")
+            {
+                broken.Add("A dirt stamp must not invent pebble or brown-line floor variants");
+            }
+
+            if (IsQualityStampOf(TileKind.Wall, MaterialId.Stone)
+                && TileAtlas.WallId(MaterialId.Stone, 3, 4) != "wall")
+            {
+                broken.Add("A stone wall stamp must not invent random wall-crack / wall-c tiles");
             }
         }
 

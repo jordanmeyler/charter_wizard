@@ -618,14 +618,31 @@ namespace RuneMagic
                 return Memo($"column:{material}:{timberSeed}", () => PaintTreeColumn(MaterialCatalog.Of(material), timberSeed));
             }
 
-            var atlas = TileAtlas.Column(material);
-            if (atlas != null)
+            if (!IsHungerColumn(material))
             {
-                return atlas;
+                var atlas = TileAtlas.Column(material);
+                if (atlas != null)
+                {
+                    return atlas;
+                }
             }
 
             var seed = Hash(x, y, (int)material + 41);
             return Memo($"column:{material}:{seed}", () => PaintColumn(MaterialCatalog.Of(material), seed));
+        }
+
+        static bool IsHungerColumn(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Fire:
+                case MaterialId.Hearth:
+                case MaterialId.Ember:
+                case MaterialId.Lava:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static Sprite TargetRing()

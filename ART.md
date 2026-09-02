@@ -37,6 +37,9 @@ Open it, drag sprites onto **Frames**, set **FPS** if it should loop.
 | `wall` / `wall-ice` / `wall-timber` / `wall-plant` | Spell wall |
 | `bridge` / `bridge-ice` | Spell span |
 | `pillar` / `pillar-ice` | Earth-pillar / ice column |
+| `fire-pillar` / `pillar-fire` | Fire-pillar (`Fire · Salt`) |
+| `flame-pillar` / `pillar-hearth` | Flame-pillar (lasting hearth) |
+| `lava-pillar` / `pillar-lava` | Lava-pillar |
 | `floor-dirt` / `floor-stone` / `floor-water` | Leftover dirt, conjured floor |
 | `pit` / `door` / `door-open` | Pit and baked door |
 | `cover-ice` / `cover-fire` / `cover-vine` | Cover sheen (ice-shot, freeze) |
@@ -109,6 +112,9 @@ Name the clip after the spell or the element:
 | Id | When it is used |
 |---|---|
 | `fireball-shot` | Fireball, and other Fire shots if no spell-specific clip exists |
+| `fire-pillar` / `fire-pillar-shot` | Fire-pillar body (cast + standing column) |
+| `flame-pillar` | Flame-pillar |
+| `lava-pillar` / `fx-lava` | Lava-pillar; Lava family particles |
 | `fireball` | same, second try |
 | `fire-shot` | any Fire-family shot |
 | `fx-fire` | last Fire fallback |

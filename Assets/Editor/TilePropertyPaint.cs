@@ -93,7 +93,7 @@ namespace RuneMagic
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Stamp", EditorStyles.boldLabel);
             DrawField("Kind", ref _applyKind, () => _kind = (TileKind)EditorGUILayout.EnumPopup(_kind));
-            DrawField("Material", ref _applyMaterial, () => _material = (MaterialId)EditorGUILayout.EnumPopup(_material));
+            DrawField("Material", ref _applyMaterial, () => _material = StampMaterialPopup(_material));
             EditorGUILayout.BeginHorizontal();
             _applyCover = EditorGUILayout.Toggle(_applyCover, GUILayout.Width(18));
             EditorGUILayout.PrefixLabel("Cover");
@@ -523,6 +523,38 @@ namespace RuneMagic
             var solid = blocks ? "block" : "open";
             var fade = Mathf.RoundToInt(Mathf.Clamp01(opacity) * 100f);
             return kind + "_" + material + "_" + cover + "_" + aura + "_" + solid + "_a" + fade + "_" + guid + "_" + sign + Mathf.Abs(local);
+        }
+
+        internal static MaterialId StampMaterialPopup(MaterialId current)
+        {
+            return StampMaterialPopup(null, current);
+        }
+
+        internal static MaterialId StampMaterialPopup(string label, MaterialId current)
+        {
+            var ids = new List<MaterialId>();
+            var names = new List<string>();
+            foreach (MaterialId id in System.Enum.GetValues(typeof(MaterialId)))
+            {
+                if (!MaterialCatalog.IsStampable(id))
+                {
+                    continue;
+                }
+
+                ids.Add(id);
+                names.Add(id.ToString());
+            }
+
+            var idx = ids.IndexOf(current);
+            if (idx < 0)
+            {
+                idx = 0;
+            }
+
+            idx = string.IsNullOrEmpty(label)
+                ? EditorGUILayout.Popup(idx, names.ToArray())
+                : EditorGUILayout.Popup(label, idx, names.ToArray());
+            return ids[idx];
         }
     }
 }

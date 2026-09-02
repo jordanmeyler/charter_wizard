@@ -80,6 +80,8 @@ namespace RuneMagic
                     return new[] { RuneId.Earth, RuneId.Mercury };
                 case SpellId.FlamePillar:
                     return new[] { RuneId.Fire, RuneId.Salt, RuneId.Earth };
+                case SpellId.FirePillar:
+                    return new[] { RuneId.Fire, RuneId.Salt };
                 case SpellId.Fireball:
                     return new[] { RuneId.Fire, RuneId.Mercury };
                 default:

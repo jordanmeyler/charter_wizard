@@ -11,7 +11,7 @@ namespace RuneMagic
     {
         public static readonly SpellId[] MiteKeys =
         {
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.WaterJet, SpellId.IcePillar, SpellId.IceWall,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.WaterJet, SpellId.IcePillar, SpellId.IceWall,
             SpellId.LightningBolt, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt,
             SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
@@ -24,7 +24,7 @@ namespace RuneMagic
 
         public static readonly SpellId[] TorchKeys =
         {
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.Frenzy, SpellId.Snuff, SpellId.SunLance, SpellId.Smother,
             SpellId.Ignite, SpellId.Melt, SpellId.Witchfire
         };
 
@@ -32,7 +32,7 @@ namespace RuneMagic
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.EarthPillar, SpellId.RaisedEarth,
             SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall,
-            SpellId.FlamePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise,
+            SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise,
             SpellId.Tree, SpellId.WoodWall,
             SpellId.Hop, SpellId.Flight
         };
@@ -46,13 +46,13 @@ namespace RuneMagic
         public static readonly SpellId[] FogKeys =
         {
             SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight,
-            SpellId.Fireball, SpellId.FlamePillar, SpellId.Ignite, SpellId.Melt, SpellId.Witchfire, SpellId.SunLance,
+            SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.Ignite, SpellId.Melt, SpellId.Witchfire, SpellId.SunLance,
             SpellId.DayWake, SpellId.BrilliantArc
         };
 
         public static readonly SpellId[] ArrowKeys =
         {
-            SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar,
+            SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar, SpellId.FirePillar,
             SpellId.IcePillar, SpellId.MetalPillar, SpellId.VineRise, SpellId.Tree, SpellId.WoodWall,
             SpellId.Menhir, SpellId.Bridge
         };

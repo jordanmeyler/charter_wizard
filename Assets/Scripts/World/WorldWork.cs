@@ -92,6 +92,7 @@ namespace RuneMagic
             switch (spell)
             {
                 case SpellId.FlamePillar:
+                case SpellId.FirePillar:
                 case SpellId.IcePillar:
                 case SpellId.IceWall:
                 case SpellId.Wall:
@@ -337,7 +338,7 @@ namespace RuneMagic
             material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier;
 
         public static bool IsFlameBody(MaterialId material) =>
-            material == MaterialId.Hearth || material == MaterialId.Ember;
+            material == MaterialId.Hearth || material == MaterialId.Fire;
 
         public static bool IsLavaBody(MaterialId material) =>
             material == MaterialId.Lava;
@@ -528,6 +529,11 @@ namespace RuneMagic
             if (spell == SpellId.FlamePillar)
             {
                 return MaterialId.Hearth;
+            }
+
+            if (spell == SpellId.FirePillar)
+            {
+                return MaterialId.Fire;
             }
 
             if (spell == SpellId.LavaPillar)
@@ -1375,7 +1381,9 @@ namespace RuneMagic
             {
                 return spell == SpellId.OilPillar
                     ? "A stood wick. A later fire sentence would make it a bomb."
-                    : "Rest stands where the floor was, and fills the hollow.";
+                    : spell == SpellId.FirePillar
+                        ? "Hunger stands. Without a source it will not last."
+                        : "Rest stands where the floor was, and fills the hollow.";
             }
 
             if (filled > 0)
@@ -1383,6 +1391,11 @@ namespace RuneMagic
                 if (spell == SpellId.OilPillar)
                 {
                     return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
+                if (spell == SpellId.FirePillar)
+                {
+                    return "Hunger stands. Without a source it will not last.";
                 }
 
                 if (DriesWater(spell) && !IsPillar(spell) && !FreezesWater(spell))
@@ -1423,6 +1436,11 @@ namespace RuneMagic
                 if (spell == SpellId.OilPillar)
                 {
                     return "A stood wick. A later fire sentence would make it a bomb.";
+                }
+
+                if (spell == SpellId.FirePillar)
+                {
+                    return "Hunger stands. Without a source it will not last.";
                 }
 
                 if (spell == SpellId.Tree)

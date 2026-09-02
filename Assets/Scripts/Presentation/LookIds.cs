@@ -116,6 +116,23 @@ namespace RuneMagic
                     Add(ids, "pillar-timber");
                     Add(ids, "pillar-wood");
                     return ids.ToArray();
+                case MaterialId.Fire:
+                    Add(ids, "pillar-fire");
+                    Add(ids, "fire-pillar");
+                    break;
+                case MaterialId.Hearth:
+                    Add(ids, "pillar-hearth");
+                    Add(ids, "flame-pillar");
+                    Add(ids, "pillar-flame");
+                    break;
+                case MaterialId.Ember:
+                    Add(ids, "pillar-ember");
+                    Add(ids, "pillar-fire");
+                    break;
+                case MaterialId.Lava:
+                    Add(ids, "pillar-lava");
+                    Add(ids, "lava-pillar");
+                    break;
             }
 
             Add(ids, "pillar");
@@ -133,6 +150,58 @@ namespace RuneMagic
         }
 
         public static string[] Pit() => new[] { "pit" };
+
+        /// <summary>
+        /// Shot / pillar body ids for a spell. Kebab names first
+        /// (<c>fire-pillar</c>), then the compact enum, then family.
+        /// </summary>
+        public static string[] SpellBody(SpellId spell, string family)
+        {
+            var ids = new List<string>(8);
+            if (spell != SpellId.None)
+            {
+                var kebab = Kebab(spell.ToString());
+                var compact = spell.ToString().ToLowerInvariant();
+                Add(ids, kebab + "-shot");
+                Add(ids, kebab);
+                if (!string.Equals(compact, kebab, System.StringComparison.Ordinal))
+                {
+                    Add(ids, compact + "-shot");
+                    Add(ids, compact);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(family))
+            {
+                var key = family.Trim().ToLowerInvariant();
+                Add(ids, key + "-shot");
+                Add(ids, "fx-" + key);
+            }
+
+            return ids.ToArray();
+        }
+
+        public static string Kebab(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return string.Empty;
+            }
+
+            var built = new System.Text.StringBuilder(name.Length + 4);
+            for (var i = 0; i < name.Length; i++)
+            {
+                var c = name[i];
+                if (i > 0 && char.IsUpper(c))
+                {
+                    built.Append('-');
+                }
+
+                built.Append(char.ToLowerInvariant(c));
+            }
+
+            return built.ToString();
+        }
 
         public static void Audit(List<string> broken)
         {
@@ -152,9 +221,21 @@ namespace RuneMagic
             if (!Contains(Bridge(MaterialId.Stone), "bridge")
                 || !Contains(Bridge(MaterialId.Ice), "bridge-ice")
                 || !Contains(Column(MaterialId.Ice), "pillar-ice")
+                || !Contains(Column(MaterialId.Fire), "fire-pillar")
+                || !Contains(Column(MaterialId.Hearth), "flame-pillar")
+                || !Contains(Column(MaterialId.Lava), "lava-pillar")
                 || !Contains(Floor(MaterialId.Dirt), "floor-dirt"))
             {
                 broken.Add("Bridge, pillar, and leftover dirt must share one id list so a Look can replace them");
+            }
+
+            var fireBody = SpellBody(SpellId.FirePillar, "fire");
+            if (!Contains(fireBody, "fire-pillar")
+                || !Contains(fireBody, "fire-pillar-shot")
+                || !Contains(SpellBody(SpellId.LavaPillar, "lava"), "lava-pillar")
+                || !Contains(SpellBody(SpellId.FlamePillar, "fire"), "flame-pillar"))
+            {
+                broken.Add("New pillar spells must resolve Looks as fire-pillar / lava-pillar / flame-pillar");
             }
         }
 

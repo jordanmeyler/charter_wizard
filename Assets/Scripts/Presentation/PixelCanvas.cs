@@ -394,7 +394,9 @@ namespace RuneMagic
                 texture,
                 new Rect(0f, 0f, Width, Height),
                 pivot ?? new Vector2(0.5f, 0.5f),
-                ppu);
+                ppu,
+                0,
+                SpriteMeshType.FullRect);
         }
     }
 

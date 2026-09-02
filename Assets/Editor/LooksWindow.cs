@@ -18,11 +18,12 @@ namespace RuneMagic
         {
             "wall", "wall-ice", "wall-timber", "wall-plant", "wall-moss",
             "bridge", "bridge-ice", "bridge-stone",
-            "pillar", "pillar-ice",
+            "pillar", "pillar-ice", "fire-pillar", "flame-pillar", "lava-pillar",
+            "pillar-fire", "pillar-hearth", "pillar-lava",
             "floor-dirt", "floor-stone", "floor-water", "pit", "door", "door-open",
             "cover-ice", "cover-fire", "cover-vine",
             "tile-fire", "tile-wet", "tile-charge", "tile-grow", "tile-fog", "tile-poison",
-            "fireball-shot", "douse-shot", "arrow-shot", "fx-fire", "fx-ice", "fx-earth"
+            "fireball-shot", "douse-shot", "arrow-shot", "fx-fire", "fx-ice", "fx-earth", "fx-lava"
         };
 
         [MenuItem("Window/Rune Magic/Looks")]

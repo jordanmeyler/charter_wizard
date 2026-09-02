@@ -43,17 +43,12 @@ namespace RuneMagic
                 return;
             }
 
-            // Lerp in world space. Rounding every frame after the lerp
-            // stair-steps the camera down a pixel when the target sits
-            // between snap points (or the rigidbody interpolates).
             var next = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-damp * Time.deltaTime));
             next.z = -10f;
-            if ((next - desired).sqrMagnitude < 0.0004f)
-            {
-                next = Snap(desired);
-            }
-
-            transform.position = next;
+            // Always snap. A sub-pixel camera samples Tight pack tiles
+            // across their 1px extrude and draws brown wall hairlines
+            // on dirt and stone.
+            transform.position = Snap(next);
         }
 
         Vector3 Snap(Vector3 point)

@@ -457,8 +457,9 @@ namespace RuneMagic
 
         /// <summary>
         /// Floor stamps keep the tileset they sit on. Wall and door
-        /// stamps keep a distinct wall face from this layer. Reusing
-        /// the floor sprite as the brick hid every Walls-layer tile.
+        /// stamps keep a distinct wall face from this layer. Never
+        /// write a null look — Play then invents random atlas brick
+        /// and pebble tiles on cells the author already stamped.
         /// </summary>
         static void AuthorWalkLook(WorldTile tile, TileKind kind, Sprite look, Sprite priorLook)
         {
@@ -467,22 +468,26 @@ namespace RuneMagic
                 return;
             }
 
+            var keep = WalkLookToKeep(kind, look, priorLook);
+            if (keep != null)
+            {
+                tile.AuthorLook(keep);
+            }
+        }
+
+        /// <summary>
+        /// Floor keeps the first tileset. Wall / door keep this layer's
+        /// face. A null wall face must not reuse the floor as brick,
+        /// and must not clear the authored look so Play can invent one.
+        /// </summary>
+        public static Sprite WalkLookToKeep(TileKind kind, Sprite look, Sprite priorLook)
+        {
             if (kind == TileKind.Wall || kind == TileKind.Door)
             {
-                tile.AuthorLook(look != null && look != priorLook ? look : null);
-                return;
+                return look;
             }
 
-            if (priorLook != null)
-            {
-                tile.AuthorLook(priorLook);
-                return;
-            }
-
-            if (look != null)
-            {
-                tile.AuthorLook(look);
-            }
+            return priorLook != null ? priorLook : look;
         }
 
         static Sprite KeepFloorUnder(TileKind kind, WorldTile prior, out MaterialId floor)
@@ -868,31 +873,41 @@ namespace RuneMagic
                 return null;
             }
 
-            if (paint != null && paint.sprite != null && !IsPaletteChip(paint))
+            return StampWalkSprite(
+                paint != null ? paint.sprite : null,
+                map != null ? map.GetSprite(pos) : null,
+                raw is Tile painted ? painted.sprite : null,
+                paint != null && !paint.KeepsPaintedLook
+                    ? paint.PreviewSprite(pos.x, pos.y)
+                    : null);
+        }
+
+        /// <summary>
+        /// The sprite already on the cell is the look. Floor-Stone /
+        /// Wall-Stone / Floor-Dirt pack art is that look when the
+        /// author painted with the stamp. Discarding it used to let
+        /// Play invent pebble lines and random brick.
+        /// Editor KeepLook still holds a different tileset on authored
+        /// tiles (Floor_Stone_…), so those keep the tileset sprite.
+        /// </summary>
+        public static Sprite StampWalkSprite(Sprite paintSprite, Sprite shown, Sprite rawSprite, Sprite preview)
+        {
+            if (paintSprite != null)
             {
-                return paint.sprite;
+                return paintSprite;
             }
 
-            if (raw is Tile painted && painted.sprite != null && (paint == null || !paint.IsQualityStamp))
+            if (shown != null)
             {
-                return painted.sprite;
+                return shown;
             }
 
-            if (map != null)
+            if (rawSprite != null)
             {
-                var shown = map.GetSprite(pos);
-                if (shown != null && (paint == null || shown != paint.sprite || !IsPaletteChip(paint)))
-                {
-                    return shown;
-                }
+                return rawSprite;
             }
 
-            if (paint != null && !paint.KeepsPaintedLook)
-            {
-                return paint.PreviewSprite(pos.x, pos.y);
-            }
-
-            return paint != null && paint.IsQualityStamp ? null : SpriteOf(raw);
+            return preview;
         }
 
         /// <summary>
@@ -900,7 +915,7 @@ namespace RuneMagic
         /// Authored KeepLook tiles use Wall_Stone_… names and hold
         /// the tileset already painted on that cell.
         /// </summary>
-        static bool IsPaletteChip(WorldPaintTile paint)
+        public static bool IsPaletteChip(WorldPaintTile paint)
         {
             if (paint == null || !paint.IsQualityStamp)
             {
@@ -912,6 +927,58 @@ namespace RuneMagic
                 || name.StartsWith("Wall-", System.StringComparison.OrdinalIgnoreCase)
                 || name.StartsWith("Cover-", System.StringComparison.OrdinalIgnoreCase)
                 || name.StartsWith("Aura-", System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static void Audit(System.Collections.Generic.List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            var dirt = TileAtlas.Get("floor-dirt");
+            var stone = TileAtlas.Get("floor-stone");
+            var brick = TileAtlas.Get("wall");
+            if (dirt == null || stone == null)
+            {
+                return;
+            }
+
+            if (StampWalkSprite(dirt, dirt, null, null) != dirt
+                || StampWalkSprite(null, stone, null, null) != stone
+                || StampWalkSprite(null, null, dirt, null) != dirt)
+            {
+                broken.Add("A Floor or Wall stamp must keep the sprite already on that cell");
+            }
+
+            if (StampWalkSprite(null, null, null, stone) != stone)
+            {
+                broken.Add("A stamp with no painted sprite may use its preview, not a later atlas pick");
+            }
+
+            if (WalkLookToKeep(TileKind.Floor, dirt, stone) != stone
+                || WalkLookToKeep(TileKind.Floor, dirt, null) != dirt)
+            {
+                broken.Add("A later Floor stamp must keep the tileset already on the cell");
+            }
+
+            if (brick != null
+                && (WalkLookToKeep(TileKind.Wall, brick, stone) != brick
+                    || WalkLookToKeep(TileKind.Wall, brick, brick) != brick))
+            {
+                broken.Add("A Wall stamp must keep its own face, even when it matches the tile under it");
+            }
+
+            if (WalkLookToKeep(TileKind.Wall, null, stone) != null
+                || WalkLookToKeep(TileKind.Door, null, dirt) != null)
+            {
+                broken.Add("A Wall stamp without a face must not reuse the floor as brick or invent a look");
+            }
+
+            if (TileSprite.Solid(dirt) == null || TileSprite.Solid(stone) == null)
+            {
+                broken.Add("Stamped dirt and stone must keep a full-rect sprite with no sheet bleed");
+            }
         }
 
         static Sprite CoverLookOf(Tilemap map, Vector3Int pos, WorldPaintTile paint, TileBase raw)

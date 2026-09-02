@@ -3,10 +3,11 @@ using System.Collections.Generic;
 namespace RuneMagic
 {
     /// <summary>
-    /// Marks the player has chosen to keep on the Charter wall.
-    /// The wall does not fill itself — a mark stays only after it is kept.
-    /// For now the player just selects it. Later a rune's depth will ask
-    /// for a variety of casts and other conditions before it will stay.
+    /// Marks the player has chosen to keep. Later they will sit on the
+    /// Charter wall so a remembered mark can be strung without hunting
+    /// the weave. The wall does not fill itself. For now Play hides the
+    /// wall and the player draws from the grid. Later a rune's depth
+    /// will ask for a variety of casts and other conditions.
     /// </summary>
     public sealed class RuneMemory
     {

@@ -162,15 +162,7 @@ namespace RuneMagic
 
         string[] AuthoredIds()
         {
-            var family = _look.Family.ToString().ToLowerInvariant();
-            var spell = _spell.ToString().ToLowerInvariant();
-            return new[]
-            {
-                spell + "-shot",
-                spell,
-                family + "-shot",
-                "fx-" + family
-            };
+            return LookIds.SpellBody(_spell, _look.Family.ToString());
         }
 
         Sprite BodySprite()

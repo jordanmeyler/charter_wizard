@@ -141,7 +141,7 @@ namespace RuneMagic
             E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Hunger breaks.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Rest thrown breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a body and asked to rest. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt · Earth", "Lava · Salt · Earth", "Pillar", SpellOutcome.Kill),
+            E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a standing body. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt", "Lava · Salt", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it freezes without banks. It will thaw.", "Ice-wall", "Water · Earth · Salt · Water · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
@@ -163,6 +163,7 @@ namespace RuneMagic
             E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Grow", SpellOutcome.Kill),
             E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
+            E(82, SpellBook.End, SpellId.FirePillar, "Hunger given a standing body. A column of fire. Without a source it goes out in a few seconds.", "Fire-pillar", "Fire · Salt", "", "Pillar", SpellOutcome.Kill),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
             E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
@@ -247,15 +248,37 @@ namespace RuneMagic
             }
 
             var salt = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt });
-            if (ChainBook.CollectExact(salt, SpellShape.None).Count != 0)
+            var firePillar = ChainBook.CollectExact(salt, SpellShape.None);
+            if (firePillar.Count == 0 || firePillar[0].Spell != SpellId.FirePillar)
             {
-                broken.Add("Fire · Salt should not be an exact catalog sentence");
+                broken.Add("Fire · Salt should be Fire-pillar");
             }
 
-            var filled = ChainBook.CollectFillable(salt, SpellShape.None, FreeAttunement.DefaultFillBudget);
-            if (filled.Count < 2)
+            var flamePillar = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt, RuneId.Earth });
+            var flamePillarExact = ChainBook.CollectExact(flamePillar, SpellShape.None);
+            if (flamePillarExact.Count == 0 || flamePillarExact[0].Spell != SpellId.FlamePillar)
             {
-                broken.Add("Fire · Salt should clash between at least two fillable chains");
+                broken.Add("Fire · Salt · Earth should stay Flame-pillar");
+            }
+
+            var lavaPillar = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Earth, RuneId.Salt });
+            var lavaPillarExact = ChainBook.CollectExact(lavaPillar, SpellShape.None);
+            if (lavaPillarExact.Count == 0 || lavaPillarExact[0].Spell != SpellId.LavaPillar)
+            {
+                broken.Add("Fire · Earth · Salt should be Lava-pillar");
+            }
+
+            var lavaJoin = Composition.FromSequence(new[] { RuneId.Lava, RuneId.Salt });
+            var lavaJoinExact = ChainBook.CollectExact(lavaJoin, SpellShape.None);
+            if (lavaJoinExact.Count == 0 || lavaJoinExact[0].Spell != SpellId.LavaPillar)
+            {
+                broken.Add("Lava · Salt should be Lava-pillar");
+            }
+
+            var oldLava = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Earth, RuneId.Salt, RuneId.Earth });
+            if (ChainBook.CollectExact(oldLava, SpellShape.None).Count != 0)
+            {
+                broken.Add("Fire · Earth · Salt · Earth is no longer Lava-pillar");
             }
 
             var earthSalt = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Salt });
@@ -857,9 +880,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 95)
+            if (Entries.Length < 96)
             {
-                broken.Add("The written book must keep every catalog spell, including 91–92 Tree and Wood-wall, 93–95 oil coverings, and 96 Forest");
+                broken.Add("The written book must keep every catalog spell, including 82 Fire-pillar, 91–92 Tree and Wood-wall, 93–95 oil coverings, and 96 Forest");
             }
         }
 

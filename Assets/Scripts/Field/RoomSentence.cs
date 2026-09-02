@@ -66,14 +66,20 @@ namespace RuneMagic
     /// <summary>
     /// The weave is what the camera can see. A rune is available when
     /// something on screen speaks it; that mark is valid to string.
-    /// Generation puts at least one of each available rune in the
-    /// grid, then extra copies from how often that material appears.
+    /// Generation puts several of each available rune in the grid so
+    /// a lone tile stays clickable, then extra copies from how often
+    /// that material appears — uncommon marks take a larger share.
     /// Creature recipes stay as written. You are mind, body, and soul
     /// when you are in view.
     /// </summary>
     public static class RoomSentence
     {
         public const int GridCells = RuneTapestry.Rows * RuneTapestry.DefaultCols;
+        /// <summary>
+        /// A spoken rune must show up this often. One tile used to
+        /// yield one glyph, which the clipped belt could hide.
+        /// </summary>
+        public const int MinCopiesPerRune = 3;
         public const string PitOrigin = "the pit";
         public const string AirOrigin = "the air";
 
@@ -158,8 +164,9 @@ namespace RuneMagic
 
         /// <summary>
         /// Build a weave grid from camera tallies. Every available
-        /// rune appears at least once; leftover cells follow material
-        /// frequency. Used by play and by the audit.
+        /// rune appears often enough to click; leftover cells follow
+        /// material frequency with uncommon marks lifted. Used by
+        /// play and by the audit.
         /// </summary>
         public static List<WeaveGlyph> Compose(Tally tally, int seed, int cells)
         {
@@ -201,6 +208,7 @@ namespace RuneMagic
                 marks.Add(new WeaveGlyph(RuneId.None, MaterialId.Void, WeaveKind.Tear, PitOrigin));
             }
 
+            EnsureMinimumCopies(marks, tally, sequence);
             var used = sequence.Count + marks.Count;
             var extras = Mathf.Max(0, cells - used);
             FillByFrequency(marks, tally, extras, seed);
@@ -244,6 +252,69 @@ namespace RuneMagic
             }
         }
 
+        static void EnsureMinimumCopies(List<WeaveGlyph> marks, Tally tally, List<WeaveGlyph> groups)
+        {
+            if (marks == null || tally == null || tally.Count.Count == 0)
+            {
+                return;
+            }
+
+            var have = new Dictionary<RuneId, int>();
+            CountShownInto(have, groups);
+            CountShownInto(have, marks);
+
+            var rarest = new List<KeyValuePair<RuneId, int>>(tally.Count.Count);
+            foreach (var pair in tally.Count)
+            {
+                if (pair.Key != RuneId.None && pair.Value > 0)
+                {
+                    rarest.Add(pair);
+                }
+            }
+
+            rarest.Sort((a, b) => a.Value.CompareTo(b.Value));
+            for (var i = 0; i < rarest.Count; i++)
+            {
+                var rune = rarest[i].Key;
+                have.TryGetValue(rune, out var n);
+                while (n < MinCopiesPerRune)
+                {
+                    marks.Add(tally.GlyphOf(rune));
+                    n++;
+                }
+            }
+        }
+
+        static void CountShownInto(Dictionary<RuneId, int> dest, List<WeaveGlyph> glyphs)
+        {
+            if (dest == null || glyphs == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < glyphs.Count; i++)
+            {
+                var rune = glyphs[i].Shown;
+                if (rune == RuneId.None)
+                {
+                    continue;
+                }
+
+                dest.TryGetValue(rune, out var n);
+                dest[rune] = n + 1;
+            }
+        }
+
+        /// <summary>
+        /// Soften raw tile counts so a puddle still takes a real
+        /// share of leftover cells. A floor of stone still speaks
+        /// more. 1 → 4, 4 → 8, 16 → 16, 36 → 24.
+        /// </summary>
+        static int SpeakWeight(int count)
+        {
+            return Mathf.Max(1, Mathf.RoundToInt(4f * Mathf.Sqrt(Mathf.Max(1, count))));
+        }
+
         static void FillByFrequency(List<WeaveGlyph> marks, Tally tally, int extras, int seed)
         {
             if (marks == null || tally == null || extras <= 0 || tally.Count.Count == 0)
@@ -261,9 +332,10 @@ namespace RuneMagic
                     continue;
                 }
 
+                var weight = SpeakWeight(pair.Value);
                 runes.Add(pair.Key);
-                weights.Add(pair.Value);
-                total += pair.Value;
+                weights.Add(weight);
+                total += weight;
             }
 
             if (total <= 0 || runes.Count == 0)
@@ -631,9 +703,11 @@ namespace RuneMagic
                     live.Add(RuneId.Water);
                     break;
                 case MaterialId.Hearth:
-                case MaterialId.Ember:
                     live.Add(RuneId.Fire);
                     live.Add(RuneId.Flame);
+                    break;
+                case MaterialId.Ember:
+                    live.Add(RuneId.Fire);
                     break;
                 case MaterialId.Lava:
                     live.Add(RuneId.Lava);
@@ -794,17 +868,33 @@ namespace RuneMagic
                 broken.Add("The weave must not invent Light or Dark the camera did not speak");
             }
 
-            if (CountShown(grid, RuneId.Earth) < 1
-                || CountShown(grid, RuneId.Salt) < 1
-                || CountShown(grid, RuneId.Stone) < 1
-                || CountShown(grid, RuneId.Water) < 1)
+            if (CountShown(grid, RuneId.Earth) < MinCopiesPerRune
+                || CountShown(grid, RuneId.Salt) < MinCopiesPerRune
+                || CountShown(grid, RuneId.Stone) < MinCopiesPerRune
+                || CountShown(grid, RuneId.Water) < MinCopiesPerRune)
             {
-                broken.Add("Each available rune must appear at least once in the generated grid");
+                broken.Add("Each available rune must appear often enough to click in the generated grid");
             }
 
             if (CountShown(grid, RuneId.Earth) <= CountShown(grid, RuneId.Water))
             {
                 broken.Add("A frequent material must speak more often than a rare one");
+            }
+
+            var lone = new Tally();
+            lone.Add(RuneId.Earth, stone, 30);
+            lone.Add(RuneId.Salt, new WeaveGlyph(RuneId.Salt, MaterialId.Stone, WeaveKind.Material, "stone"), 30);
+            lone.Add(RuneId.Stone, new WeaveGlyph(RuneId.Stone, MaterialId.Stone, WeaveKind.Material, "stone"), 30);
+            lone.Add(RuneId.Fire, new WeaveGlyph(RuneId.Fire, MaterialId.Hearth, WeaveKind.Material, "hearth"), 1);
+            var loneGrid = Compose(lone, 11, GridCells);
+            if (CountShown(loneGrid, RuneId.Fire) < MinCopiesPerRune)
+            {
+                broken.Add("A single on-screen tile must speak often enough to cast");
+            }
+
+            if (CountShown(loneGrid, RuneId.Earth) <= CountShown(loneGrid, RuneId.Fire))
+            {
+                broken.Add("A frequent material must still speak more often than a single tile");
             }
 
             var pits = new Tally();
@@ -820,9 +910,9 @@ namespace RuneMagic
             spark.Add(RuneId.Spark, new WeaveGlyph(RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal"));
             ExpandComposing(spark, RuneId.Spark, MaterialId.Metal, WeaveKind.Material, "metal");
             var sparkGrid = Compose(spark, 5, GridCells);
-            if (CountShown(sparkGrid, RuneId.Spark) < 1
-                || CountShown(sparkGrid, RuneId.Fire) < 1
-                || CountShown(sparkGrid, RuneId.Air) < 1
+            if (CountShown(sparkGrid, RuneId.Spark) < MinCopiesPerRune
+                || CountShown(sparkGrid, RuneId.Fire) < MinCopiesPerRune
+                || CountShown(sparkGrid, RuneId.Air) < MinCopiesPerRune
                 || CountShown(sparkGrid, RuneId.Lumen) > 0)
             {
                 broken.Add("A stood Spark must stand as itself with Fire and Air, and must not invent Light");
