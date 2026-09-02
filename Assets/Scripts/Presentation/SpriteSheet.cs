@@ -6,6 +6,8 @@ namespace RuneMagic
     public sealed class SpriteSheetClip
     {
         public string name = "idle";
+        [Tooltip("Unity sprites, in order. When set, Play uses these and ignores Start / Count.")]
+        public Sprite[] sprites;
         public int start;
         public int count = 4;
         public float fps = 8f;
@@ -75,7 +77,46 @@ namespace RuneMagic
 
         public Sprite[] Slice(SpriteSheetClip clip)
         {
-            if (texture == null || clip == null || clip.count <= 0 || cellWidth <= 0 || cellHeight <= 0)
+            if (clip == null)
+            {
+                return System.Array.Empty<Sprite>();
+            }
+
+            if (clip.sprites != null && clip.sprites.Length > 0)
+            {
+                var count = 0;
+                for (var i = 0; i < clip.sprites.Length; i++)
+                {
+                    if (clip.sprites[i] != null)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count == 0)
+                {
+                    return System.Array.Empty<Sprite>();
+                }
+
+                if (count == clip.sprites.Length)
+                {
+                    return clip.sprites;
+                }
+
+                var kept = new Sprite[count];
+                var write = 0;
+                for (var i = 0; i < clip.sprites.Length; i++)
+                {
+                    if (clip.sprites[i] != null)
+                    {
+                        kept[write++] = clip.sprites[i];
+                    }
+                }
+
+                return kept;
+            }
+
+            if (texture == null || clip.count <= 0 || cellWidth <= 0 || cellHeight <= 0)
             {
                 return System.Array.Empty<Sprite>();
             }

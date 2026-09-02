@@ -11,19 +11,47 @@ Motion to the matching clip if it says None. Generated painters stay
 as a fallback for locks and for the player if that controller is
 missing.
 
-A custom still **overrides** a generated clip. The game looks up art in this order:
+A custom still or clip **overrides** a generated painter. One lookup,
+used for conjured walls, bridges, pillars, leftovers, covers, and
+shots. Floor / Wall **stamps** still keep the tileset you painted —
+these ids are only for what a spell stands.
 
-1. A row in [`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json) (`source` PNG or painted `cells`)
-2. A named slice in [`Assets/Resources/Catalog/tiles.json`](Assets/Resources/Catalog/tiles.json) (your sprite sheets)
-3. A file at `Assets/Resources/Sprites/{id}.png`
-4. The built-in painter
+1. A **Look** (`Create → Rune Magic → Look`, or `Window → Rune Magic → Looks`). Drag Unity-sliced sprites onto **Frames**. One sprite is a still; several loop at **FPS**.
+2. A **Sprite Sheet** under `Assets/Resources/SpriteSheets/` — same thing, or drag sprites onto a clip's **Sprites** array.
+3. A row in [`Assets/Resources/Catalog/art.json`](Assets/Resources/Catalog/art.json), or a PNG at `Assets/Resources/Sprites/{id}.png`
+4. A named slice in [`Assets/Resources/Catalog/tiles.json`](Assets/Resources/Catalog/tiles.json) (pack default)
+5. The built-in painter
 
-**In the Scene, prefer Unity sprites.** Drag a slice onto a Door or Gate
-**Portrait**. That skips the painter for that object. Spells look up
-clip ids (`fireball-shot`, `fireball`, `fire-shot`, `fx-fire`) on a
-`Sprite Sheet` under `Assets/Resources/SpriteSheets/`, or a PNG with
-that filename. Particle prefabs go in `Assets/Resources/Fx/` — see
-below.
+**In the Scene, prefer Unity sprites.** Slice the texture in the Sprite
+Editor, then assign the slices. Drag a slice onto a Door or Gate
+**Portrait** to skip the painter for that object. Particle prefabs go
+in `Assets/Resources/Fx/` — see below.
+
+## Looks (the Unity path)
+
+`Window → Rune Magic → Looks` → pick an id → **Create Look asset**.
+Open it, drag sprites onto **Frames**, set **FPS** if it should loop.
+
+| Id | What Play draws |
+|---|---|
+| `wall` / `wall-ice` / `wall-timber` / `wall-plant` | Spell wall |
+| `bridge` / `bridge-ice` | Spell span |
+| `pillar` / `pillar-ice` | Earth-pillar / ice column |
+| `fire-pillar` / `pillar-fire` | Fire-pillar (`Fire · Salt`) |
+| `flame-pillar` / `pillar-hearth` | Flame-pillar (lasting hearth) |
+| `lava-pillar` / `pillar-lava` | Lava-pillar |
+| `floor-dirt` / `floor-stone` / `floor-water` | Leftover dirt, conjured floor |
+| `pit` / `door` / `door-open` | Pit and baked door |
+| `cover-ice` / `cover-fire` / `cover-vine` | Cover sheen (ice-shot, freeze) |
+| `tile-fire` / `tile-wet` / `tile-charge` | Spell leftover glow |
+| `fireball-shot` / `douse-shot` / `fx-fire` | Flying shot |
+
+Material-specific ids win (`wall-ice` before `wall`). Timber walls stay
+the tree painter until you assign `wall-timber`. Empty Frames means
+“use the next fallback.”
+
+`python3 Tools/import-sprite.py file.png --id wall-ice` still works —
+that is the PNG / art.json path, same id.
 
 ## What to drop in
 
@@ -74,16 +102,19 @@ slice onto **Portrait**.
 ## Spells and effects
 
 Casts are still generated painters + code particles until you replace
-them. Two Unity paths:
+them. Same Look ids as walls and leftovers.
 
-**1. Sprite / sheet (the flying body).**  
-`Window → Rune Magic → Sprite Sheet`, or `Create → Rune Magic → Sprite
-Sheet`. Save under `Assets/Resources/SpriteSheets/`. Name a clip after
-the spell or the element:
+**1. Look or sheet (the flying body).**  
+`Window → Rune Magic → Looks` → create `fireball-shot`, drag sprites.
+Or `Create → Rune Magic → Sprite Sheet` under `Assets/Resources/SpriteSheets/`.
+Name the clip after the spell or the element:
 
 | Id | When it is used |
 |---|---|
 | `fireball-shot` | Fireball, and other Fire shots if no spell-specific clip exists |
+| `fire-pillar` / `fire-pillar-shot` | Fire-pillar body (cast + standing column) |
+| `flame-pillar` | Flame-pillar |
+| `lava-pillar` / `fx-lava` | Lava-pillar; Lava family particles |
 | `fireball` | same, second try |
 | `fire-shot` | any Fire-family shot |
 | `fx-fire` | last Fire fallback |

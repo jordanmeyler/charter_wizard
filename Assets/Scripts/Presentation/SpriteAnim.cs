@@ -38,6 +38,15 @@ namespace RuneMagic
             return anim;
         }
 
+        public void Stop()
+        {
+            _frames = null;
+            _clip = string.Empty;
+            _onComplete = null;
+            _index = -1;
+            _age = 0f;
+        }
+
         public void Play(string clip, float fps = 8f, bool loop = true)
         {
             if (string.IsNullOrWhiteSpace(clip))

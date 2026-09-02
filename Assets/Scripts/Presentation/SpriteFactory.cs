@@ -16,19 +16,14 @@ namespace RuneMagic
                 return Square(new Color(0.4f, 0.38f, 0.42f));
             }
 
-            if (CatalogBook.TrySprite(id, out var custom) && custom != null)
+            if (LookLibrary.TryAuthored(id, out var authored) && authored != null)
             {
-                return custom;
+                return authored;
             }
 
             if (TileAtlas.TryGet(id, out var atlas) && atlas != null)
             {
                 return atlas;
-            }
-
-            if (SpriteSheetLibrary.TrySprite(id, out var sheet) && sheet != null)
-            {
-                return sheet;
             }
 
             var painted = SpriteActors.Still(id);
@@ -110,9 +105,9 @@ namespace RuneMagic
 
         public static Sprite[] Clip(string id)
         {
-            if (SpriteSheetLibrary.TryClip(id, out var sheet) && sheet != null && sheet.Length > 0)
+            if (LookLibrary.TryAuthoredClip(id, out var authored) && authored != null && authored.Length > 0)
             {
-                return sheet;
+                return authored;
             }
 
             var clip = SpriteActors.Clip(id);
@@ -126,7 +121,7 @@ namespace RuneMagic
 
         public static bool HasClip(string id)
         {
-            if (SpriteSheetLibrary.TryClip(id, out var sheet) && sheet != null && sheet.Length > 1)
+            if (LookLibrary.HasAuthoredClip(id))
             {
                 return true;
             }
@@ -136,47 +131,17 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Art the author dropped in — catalog, sprite sheet, or a PNG
-        /// under Resources/Sprites. Does not return a generated painter.
+        /// Art the author assigned — a Look, Sprite Sheet, art.json,
+        /// or a PNG under Resources/Sprites. Not a pack slice or painter.
         /// </summary>
         public static bool TryAuthored(string id, out Sprite sprite)
         {
-            sprite = null;
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return false;
-            }
-
-            if (CatalogBook.TrySprite(id, out var custom) && custom != null)
-            {
-                sprite = custom;
-                return true;
-            }
-
-            if (SpriteSheetLibrary.TrySprite(id, out var sheet) && sheet != null)
-            {
-                sprite = sheet;
-                return true;
-            }
-
-            return false;
+            return LookLibrary.TryAuthored(id, out sprite);
         }
 
         public static bool TryAuthoredClip(string id, out Sprite[] frames)
         {
-            if (SpriteSheetLibrary.TryClip(id, out frames) && frames != null && frames.Length > 0)
-            {
-                return true;
-            }
-
-            if (TryAuthored(id, out var still) && still != null)
-            {
-                frames = new[] { still };
-                return true;
-            }
-
-            frames = null;
-            return false;
+            return LookLibrary.TryAuthoredClip(id, out frames);
         }
 
         public static Sprite MemoPublic(string key, System.Func<Sprite> build) => Memo(key, build);
@@ -246,6 +211,11 @@ namespace RuneMagic
 
         public static Sprite Floor(MaterialId material, int x, int y, int frame = 0)
         {
+            if (LookLibrary.TryAuthored(LookIds.Floor(material), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             var atlas = TileAtlas.Floor(material, x, y, frame);
             if (atlas != null)
             {
@@ -286,6 +256,11 @@ namespace RuneMagic
 
         public static Sprite Wall(MaterialId material, int x, int y)
         {
+            if (LookLibrary.TryAuthored(LookIds.Wall(material), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             if (material == MaterialId.Timber)
             {
                 var timberSeed = Hash(x, y, (int)material + 17);
@@ -309,6 +284,11 @@ namespace RuneMagic
 
         public static Sprite Pit(int x, int y)
         {
+            if (LookLibrary.TryAuthored(LookIds.Pit(), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             if (TileAtlas.TryGet("pit", out var atlas) && atlas != null)
             {
                 return atlas;
@@ -335,8 +315,26 @@ namespace RuneMagic
             });
         }
 
-        public static Sprite Bridge()
+        public static Sprite Bridge() => Bridge(MaterialId.Stone, 0, 0);
+
+        public static Sprite Bridge(MaterialId material, int x, int y)
         {
+            if (LookLibrary.TryAuthored(LookIds.Bridge(material), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
+            if (TileAtlas.TryGet("bridge", out var pack) && pack != null
+                && (material == MaterialId.Stone || material == MaterialId.None || material == MaterialId.Timber))
+            {
+                return pack;
+            }
+
+            if (material != MaterialId.Stone && material != MaterialId.None && material != MaterialId.Timber)
+            {
+                return Floor(material, x, y);
+            }
+
             return Memo("bridge-v2", () =>
             {
                 var canvas = new PixelCanvas(32);
@@ -363,6 +361,11 @@ namespace RuneMagic
 
         public static Sprite Door(bool open, bool leaf)
         {
+            if (LookLibrary.TryAuthored(LookIds.Door(open, leaf), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             var atlas = TileAtlas.Door(open, leaf);
             if (atlas != null)
             {
@@ -604,20 +607,42 @@ namespace RuneMagic
 
         public static Sprite Column(MaterialId material, int x, int y)
         {
+            if (LookLibrary.TryAuthored(LookIds.Column(material), out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             if (material == MaterialId.Timber)
             {
                 var timberSeed = Hash(x, y, (int)material + 41);
                 return Memo($"column:{material}:{timberSeed}", () => PaintTreeColumn(MaterialCatalog.Of(material), timberSeed));
             }
 
-            var atlas = TileAtlas.Column(material);
-            if (atlas != null)
+            if (!IsHungerColumn(material))
             {
-                return atlas;
+                var atlas = TileAtlas.Column(material);
+                if (atlas != null)
+                {
+                    return atlas;
+                }
             }
 
             var seed = Hash(x, y, (int)material + 41);
             return Memo($"column:{material}:{seed}", () => PaintColumn(MaterialCatalog.Of(material), seed));
+        }
+
+        static bool IsHungerColumn(MaterialId material)
+        {
+            switch (material)
+            {
+                case MaterialId.Fire:
+                case MaterialId.Hearth:
+                case MaterialId.Ember:
+                case MaterialId.Lava:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static Sprite TargetRing()

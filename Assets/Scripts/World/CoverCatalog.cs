@@ -129,6 +129,11 @@ namespace RuneMagic
                 return null;
             }
 
+            if (LookLibrary.TryAuthored(id, out var authored) && authored != null)
+            {
+                return authored;
+            }
+
             return TileAtlas.TryGet(id, out var sprite) && sprite != null
                 ? sprite
                 : null;

@@ -115,6 +115,16 @@ namespace RuneMagic
                 return ElementFamily.Lava;
             }
 
+            if (spell == SpellId.FirePillar || spell == SpellId.FlamePillar)
+            {
+                return ElementFamily.Fire;
+            }
+
+            if (spell == SpellId.LavaPillar)
+            {
+                return ElementFamily.Lava;
+            }
+
             if (spell == SpellId.Grove
                 || spell == SpellId.Tree || spell == SpellId.WoodWall || spell == SpellId.VineRise
                 || spell == SpellId.Forest || spell == SpellId.CallGrowth)
