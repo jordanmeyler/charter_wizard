@@ -5,7 +5,8 @@ namespace RuneMagic
 {
     /// <summary>
     /// How a condition lives on a body.
-    /// Timed clocks lift. Focus holds until a mark is reused.
+        /// Timed clocks lift. Focus holds until another focus
+        /// sentence reuses a mark other than Sulphur.
     /// Meters run down; empty is death or ash.
     /// </summary>
     public enum StatusClock
