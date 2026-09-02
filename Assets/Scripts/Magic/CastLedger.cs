@@ -3,9 +3,10 @@ using System.Collections.Generic;
 namespace RuneMagic
 {
     /// <summary>
-    /// The last twenty-five attempted casts. Charter and Free both
-    /// keep the marks that were strung. Workings the adept Keep also
-    /// live in the Grimoire, past this strip.
+    /// The last twenty-five unique writings. Recasting the same
+    /// combination moves it to the top. Charter and Free both keep
+    /// the marks that were strung. Workings the adept Keep also live
+    /// in the Grimoire, past this strip.
     /// </summary>
     public sealed class CastLedger
     {
@@ -37,6 +38,24 @@ namespace RuneMagic
                         _entries.RemoveAt(i);
                     }
                 }
+            }
+
+            for (var i = 0; i < _entries.Count; i++)
+            {
+                if (!WorkingNames.SameComposition(_entries[i].Runes, runes))
+                {
+                    continue;
+                }
+
+                var old = _entries[i];
+                if (string.IsNullOrWhiteSpace(givenName) && !string.IsNullOrWhiteSpace(old.GivenName))
+                {
+                    givenName = old.GivenName;
+                }
+
+                saved = saved || old.Saved;
+                _entries.RemoveAt(i);
+                break;
             }
 
             _entries.Insert(0, new CastAttempt(stance, runes, worked, spell, givenName ?? string.Empty, saved));
