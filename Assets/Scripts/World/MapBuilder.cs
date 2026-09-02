@@ -32,8 +32,8 @@ namespace RuneMagic
         {
             SpellId.HurledStone, SpellId.StonePillar, SpellId.EarthPillar, SpellId.RaisedEarth,
             SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall,
-            SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree,
-            SpellId.Tree, SpellId.WoodWall,
+            SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree, SpellId.Nightshade,
+            SpellId.Tree, SpellId.WoodWall, SpellId.SunOrb, SpellId.Sanctuary,
             SpellId.Hop, SpellId.Flight
         };
 
@@ -47,13 +47,13 @@ namespace RuneMagic
         {
             SpellId.Gust, SpellId.Gale, SpellId.Push, SpellId.StormCall, SpellId.Flight,
             SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.Ignite, SpellId.Melt, SpellId.Witchfire, SpellId.SunLance,
-            SpellId.DayWake, SpellId.BrilliantArc
+            SpellId.DayWake, SpellId.BrilliantArc, SpellId.SunOrb, SpellId.Sanctuary, SpellId.Wolfsbane, SpellId.GroveCure
         };
 
         public static readonly SpellId[] ArrowKeys =
         {
             SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall, SpellId.StonePillar, SpellId.EarthPillar, SpellId.FlamePillar, SpellId.FirePillar,
-            SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree, SpellId.Tree, SpellId.WoodWall,
+            SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree, SpellId.Nightshade, SpellId.Tree, SpellId.WoodWall, SpellId.SunOrb, SpellId.Sanctuary,
             SpellId.Menhir, SpellId.Bridge
         };
 
@@ -224,6 +224,13 @@ namespace RuneMagic
                         HintPlaque.Spawn(world, prop.text);
                     }
 
+                    break;
+                case "altar":
+                case "pray":
+                case "interact":
+                    WorldInteract.Spawn(world,
+                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell,
+                        string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
                     break;
                 case "runes":
                     RuneStringSource.Spawn(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));

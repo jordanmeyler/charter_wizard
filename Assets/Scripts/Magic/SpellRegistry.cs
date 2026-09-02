@@ -52,6 +52,64 @@ namespace RuneMagic
                 return SpellId.Poison;
             }
 
+            if (key.Equals("graveice", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("darkcrystal", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("dark-crystal", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.DarkCrystal);
+                return SpellId.DarkCrystal;
+            }
+
+            if (key.Equals("deathcloud", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("death-cloud", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.DeathCloud);
+                return SpellId.DeathCloud;
+            }
+
+            if (key.Equals("airwall", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("air-wall", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.AirWall);
+                return SpellId.AirWall;
+            }
+
+            if (key.Equals("wort", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("wolfsbane", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Wolfsbane);
+                return SpellId.Wolfsbane;
+            }
+
+            if (key.Equals("hemlock", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Hemlock);
+                return SpellId.Hemlock;
+            }
+
+            if (key.Equals("grovecure", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("grove-cure", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.GroveCure);
+                return SpellId.GroveCure;
+            }
+
+            if (key.Equals("sunorb", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("sun-orb", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.SunOrb);
+                return SpellId.SunOrb;
+            }
+
+            if (key.Equals("nightshade", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("venombloom", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("venom-bloom", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Nightshade);
+                return SpellId.Nightshade;
+            }
+
             if (System.Enum.TryParse(key, true, out SpellId enumerated) && enumerated != SpellId.None)
             {
                 Remember(key, enumerated);

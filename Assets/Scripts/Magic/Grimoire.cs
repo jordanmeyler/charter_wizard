@@ -84,6 +84,56 @@ namespace RuneMagic
             _keptWorkings.Add(new KeptWorking(stance, copy, spell, name));
         }
 
+        public bool KeepsComposition(IReadOnlyList<RuneId> runes)
+        {
+            if (runes == null || runes.Count == 0)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < _keptWorkings.Count; i++)
+            {
+                if (WorkingNames.SameComposition(_keptWorkings[i].Runes, runes))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryAutoKeep(CastingStance stance, IReadOnlyList<RuneId> runes, SpellId spell)
+        {
+            if (KeepsComposition(runes))
+            {
+                return false;
+            }
+
+            KeepWorking(stance, runes, spell, string.Empty);
+            return true;
+        }
+
+        public bool RenameWorking(int index, string givenName)
+        {
+            if (!TryGetKept(index, out var old))
+            {
+                return false;
+            }
+
+            var name = givenName?.Trim() ?? string.Empty;
+            _keptWorkings[index] = new KeptWorking(old.Stance, old.Runes, old.Spell, name);
+            if (string.IsNullOrEmpty(name))
+            {
+                Names.Forget(old.Runes);
+            }
+            else
+            {
+                Names.Remember(old.Runes, name);
+            }
+
+            return true;
+        }
+
         public bool TryGetKept(int index, out KeptWorking working)
         {
             if (index < 0 || index >= _keptWorkings.Count)

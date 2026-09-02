@@ -225,7 +225,9 @@ or a wall at each end, or the span falls. Metal hangs without a
 far bank. Ice freezes water without banks; earth only muds it.
 
 Plaques, altars, and teaching columns come after these three
-play.
+play. An **Interact** (`WorldInteract`) is an empty GameObject —
+parent tiles or child sprites for the statue. Prayer shows a
+written spell; Cast or Continue. **E** uses it.
 
 ## Sprites on runes, items, and effects
 

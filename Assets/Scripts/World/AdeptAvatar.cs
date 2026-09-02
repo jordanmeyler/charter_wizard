@@ -250,7 +250,7 @@ namespace RuneMagic
                 || (_director != null && (_director.IsCasting || _director.Busy));
             if (_usesAnimator && _animator != null)
             {
-                _animator.speed = GameHud.EditingName ? 0f : 1f;
+                _animator.speed = GameHud.HoldsPlay ? 0f : 1f;
                 _animator.SetBool(MovingParam, moving);
                 _animator.SetBool(CastingParam, WorldHeld || aiming);
                 _animator.SetBool(AirborneParam, IsHopping);

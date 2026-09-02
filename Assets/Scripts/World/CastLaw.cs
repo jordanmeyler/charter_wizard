@@ -2,15 +2,16 @@ namespace RuneMagic
 {
     /// <summary>
     /// The world clock holds only while a menu is up (the Charter,
-    /// pause, or naming). Going to aim closes that menu: time runs
-    /// again and the adept stands until the click lands, unless an
-    /// item or condition later grants motion during a cast.
+    /// pause, naming, or a prayer reveal). Going to aim closes that
+    /// menu: time runs again and the adept stands until the click
+    /// lands, unless an item or condition later grants motion during
+    /// a cast.
     /// </summary>
     public static class CastLaw
     {
-        public static bool HoldsWorld(PlayMode mode, bool naming = false)
+        public static bool HoldsWorld(PlayMode mode, bool menu = false)
         {
-            return naming || mode == PlayMode.Paused || mode == PlayMode.Charter;
+            return menu || mode == PlayMode.Paused || mode == PlayMode.Charter;
         }
 
         public static bool IsCasting(PlayMode mode)

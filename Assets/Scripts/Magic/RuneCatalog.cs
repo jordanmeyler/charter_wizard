@@ -77,7 +77,8 @@ namespace RuneMagic
         Thunder,
         Oil,
         Miasma,
-        Poison
+        Poison,
+        DarkCrystal
     }
 
     public readonly struct RuneDef
@@ -157,7 +158,8 @@ namespace RuneMagic
                 new RuneDef(RuneId.Anima, RuneFamily.Material, "Anima", "Aa", "Eros. Receptivity, empathy, intuition, emotional connection. Yield given mind and rest. Water · Sulphur · Earth. Opens a work to many, and can make it healing."),
                 new RuneDef(RuneId.Current, RuneFamily.Material, "Current", "Cu", "Yield going. Water · Mercury."),
                 new RuneDef(RuneId.Ember, RuneFamily.Material, "Ember", "Em", "Hunger after the grave takes its motion. Fire · Death."),
-                new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt.")
+                new RuneDef(RuneId.Shade, RuneFamily.Material, "Shade", "Sh", "Withheld, given a body, marked by the grave. Dark · Death · Salt."),
+                new RuneDef(RuneId.DarkCrystal, RuneFamily.Material, "Dark-crystal", "Dc", "Crystal withheld and marked by the grave. Crystal · Dark · Death. Free masonry. Ordinary fire will not take it.")
             };
 
             ById = new System.Collections.Generic.Dictionary<RuneId, RuneDef>(defs.Length);
@@ -365,6 +367,10 @@ namespace RuneMagic
                 case "blight":
                     id = RuneId.Poison;
                     return true;
+                case "darkcrystal":
+                case "dark-crystal":
+                    id = RuneId.DarkCrystal;
+                    return true;
             }
 
             return System.Enum.TryParse(name, true, out id) && id != RuneId.None && TryGet(id, out _);
@@ -556,7 +562,7 @@ namespace RuneMagic
             RuneId.Dust, RuneId.Mud, RuneId.Stone,
             RuneId.Lava, RuneId.Metal, RuneId.Obsidian, RuneId.Glass, RuneId.Crystal,
             RuneId.Acid, RuneId.Miasma, RuneId.Poison, RuneId.Plasma,
-            RuneId.Current, RuneId.Shade, RuneId.Aether
+            RuneId.Current, RuneId.Shade, RuneId.Aether, RuneId.DarkCrystal
         };
     }
 

@@ -46,7 +46,7 @@ namespace RuneMagic
             EditorGUILayout.HelpBox(
                 "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
                 "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
-                "2. Main already has a Map (Grid + Tiles + Environment Details + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Interactables are GameObjects, not a tile layer.\n" +
+                "2. Main already has a Map (Grid + Tiles + Environment Details + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Interactables are GameObjects, not a tile layer. Drop Interact on an empty object and dress it with tiles; prayer shows a spell.\n" +
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Environment Details for plants and furniture. Select Cover for ice / fire / aura. Hide a layer in Tile Properties, the Rune Layers Scene overlay, or the Hierarchy eye so you can paint the tiles under it.\n" +
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
@@ -123,6 +123,7 @@ namespace RuneMagic
             DrawPlace("Door", "WorldDoor — closed / open sprites, blocks when shut");
             DrawPlace("Barrier", "BarrierLock — cover cells, clear material");
             DrawPlace("Plaque", "HintPlaque — readable text");
+            DrawPlace("Interact", "WorldInteract — empty GO + tiles; prayer shows a spell");
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
             DrawPlace("Charm", "FreeCharm — teaches Fire · Mercury");
             DrawPlace("Rune", "RuneStringSource — a written sentence in the field");
@@ -290,6 +291,7 @@ namespace RuneMagic
             Write("Door", typeof(WorldDoor));
             Write("Barrier", typeof(BarrierLock));
             Write("Plaque", typeof(HintPlaque));
+            WriteInteract();
             Write("Crystal", typeof(SpawnCrystal));
             Write("Charm", typeof(FreeCharm));
             Write("Rune", typeof(RuneStringSource));
@@ -359,6 +361,24 @@ namespace RuneMagic
             DestroyImmediate(host);
         }
 
+        static void WriteInteract()
+        {
+            if (LoadPrefab("Interact") != null)
+            {
+                return;
+            }
+
+            var host = new GameObject("Interact");
+            var view = host.AddComponent<WorldInteract>();
+            var so = new SerializedObject(view);
+            so.FindProperty("verb").stringValue = "Pray";
+            so.FindProperty("spell").stringValue = "Fireball";
+            so.FindProperty("look").stringValue = "a stone for prayer. The sentence waits.";
+            so.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(host, $"{PrefabFolder}/Interact.prefab");
+            DestroyImmediate(host);
+        }
+
         static void Write(string name, System.Type type)
         {
             if (LoadPrefab(name) != null)
@@ -370,7 +390,11 @@ namespace RuneMagic
 
             var host = new GameObject(name);
             host.AddComponent(type);
-            host.AddComponent<SpriteRenderer>();
+            if (type != typeof(WorldInteract))
+            {
+                host.AddComponent<SpriteRenderer>();
+            }
+
             PrefabUtility.SaveAsPrefabAsset(host, path);
             DestroyImmediate(host);
         }

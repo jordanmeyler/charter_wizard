@@ -43,10 +43,17 @@ namespace RuneMagic
             if (verb.Target == SpellTarget.Self)
             {
                 var adept = AdeptAvatar.Find();
-                if (adept != null && verb.Status != StatusId.None)
+                if (adept != null)
                 {
                     var host = StatusHost.On(adept) ?? adept.gameObject.AddComponent<StatusHost>();
-                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
+                    if (StrikeLaw.Cleanses(spell))
+                    {
+                        notes.Add(host.Cleanse());
+                    }
+                    else if (verb.Status != StatusId.None)
+                    {
+                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
+                    }
                 }
 
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
@@ -118,6 +125,17 @@ namespace RuneMagic
                     notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find(), heldRunes, spell));
                 }
 
+                if (StrikeLaw.RaisesDead(spell))
+                {
+                    host.Zombify();
+                    notes.Add($"{body.name} wakes wrong. The grave holds them.");
+                }
+
+                if (StrikeLaw.Cleanses(spell))
+                {
+                    notes.Add(host.Cleanse());
+                }
+
                 if (WorldWork.IsOilWork(spell) && host.Nature == CreatureNature.Fire)
                 {
                     var actor = body.GetComponent<CombatActor>();
@@ -156,11 +174,26 @@ namespace RuneMagic
                     case TileVerb.Douse:
                     case TileVerb.Wet:
                         tile.Drench(1f);
-                        if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
+                        if (tile.IsPoisonedPlant || tile.HasPoisonCover)
+                        {
+                            tile.RestoreNature();
+                            tile.WashPoison();
+                            changed++;
+                            break;
+                        }
+
+                        if (tile.HoldsPlant)
                         {
                             if (tile.IsPlantish && growBy > 0)
                             {
                                 tile.Grow(growBy);
+                            }
+
+                            var walked = grid.SpreadPlant(tile, Mathf.Max(1, spreadLeft > 0 ? spreadLeft : 1));
+                            if (walked > 0)
+                            {
+                                spreadLeft = Mathf.Max(0, spreadLeft - walked);
+                                changed++;
                             }
 
                             if (spreadLeft > 0 && PlantLaw.CanGrowFrom(tile, spell))
@@ -177,6 +210,11 @@ namespace RuneMagic
                         changed++;
                         break;
                     case TileVerb.Grow:
+                        if (StrikeLaw.HealsNature(spell) && tile.RestoreNature())
+                        {
+                            changed++;
+                        }
+
                         if (tile.PlacePlantCover())
                         {
                             changed++;
@@ -187,7 +225,7 @@ namespace RuneMagic
                             tile.PlantHere();
                             changed++;
                         }
-                        else if (tile.IsPlantish || tile.HasPlantCover || tile.HasPlantishDetail)
+                        else if (tile.HoldsPlant)
                         {
                             if (tile.IsPlantish && growBy > 0)
                             {
@@ -236,10 +274,38 @@ namespace RuneMagic
                         break;
                     case TileVerb.Foul:
                         tile.Foul(1f);
-                        changed++;
+                        if (tile.IsPoisonedPlant)
+                        {
+                            var walked = grid.SpreadPoison(tile, Mathf.Max(1, PlantLaw.PoisonSpread(spell)));
+                            if (walked > 0)
+                            {
+                                changed++;
+                            }
+                        }
+                        else if (tile.HoldsPlant && tile.PoisonPlant())
+                        {
+                            changed++;
+                        }
+                        else
+                        {
+                            changed++;
+                        }
+
                         break;
                     case TileVerb.Poison:
-                        tile.SlickPoison();
+                        if (tile.IsPoisonedPlant || tile.HasPoisonCover)
+                        {
+                            var walked = grid.SpreadPoison(tile, Mathf.Max(1, PlantLaw.PoisonSpread(spell)));
+                            if (walked > 0)
+                            {
+                                changed++;
+                            }
+                        }
+                        else
+                        {
+                            tile.SlickPoison();
+                        }
+
                         changed++;
                         break;
                     case TileVerb.Vent:
@@ -272,6 +338,13 @@ namespace RuneMagic
                         break;
                     case TileVerb.Wither:
                         if (tile.WitherPlant())
+                        {
+                            changed++;
+                        }
+
+                        break;
+                    case TileVerb.Restore:
+                        if (tile.RestoreNature())
                         {
                             changed++;
                         }
@@ -320,9 +393,11 @@ namespace RuneMagic
                 notes.Add(verb.Tiles == TileVerb.Grow
                     ? (spell == SpellId.Forest
                         ? "A living plant opens to every water you can see."
-                        : spell == SpellId.Grow
-                            ? "The living plant is sent. Green stands at the mark."
-                            : "Plant cover stands from your feet.")
+                        : spell == SpellId.Wolfsbane
+                            ? "Wolfsbane stands as a patch. Yield will walk it. Poison will turn it."
+                            : spell == SpellId.Grow
+                                ? "The living plant is sent. Green stands at the mark."
+                                : "Plant cover stands from your feet.")
                     : verb.Tiles == TileVerb.Ignite
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge
@@ -333,15 +408,17 @@ namespace RuneMagic
                                     ? "The hanging veil is given a body."
                                     : verb.Tiles == TileVerb.Foul
                                         ? "A sick mist stands on the floor."
-                                        : verb.Tiles == TileVerb.Poison
-                                            ? "A poison slick finds the walk. Yield will wash it."
+                                            : verb.Tiles == TileVerb.Poison
+                                            ? "Poison finds the walk. A living plant turns. More poison walks."
                                             : verb.Tiles == TileVerb.Dirt
                                                 ? "Loose rest lands. Ground-fire dies. Earth speaks here."
                                                 : verb.Tiles == TileVerb.Vine
                                                     ? "The vegetable body climbs. Hunger can run this line as a wick."
                                                     : verb.Tiles == TileVerb.Wither
                                                         ? "The vegetable body is withheld. What remains speaks Death."
-                                                        : "Yield finds the floor.");
+                                                        : verb.Tiles == TileVerb.Restore
+                                                            ? "Blighted green remembers itself. The foul lifts."
+                                                            : "Yield finds the floor.");
             }
         }
 

@@ -25,9 +25,9 @@ namespace RuneMagic
     public static class VitalLaw
     {
         public const float AdeptBurnSeconds = 8f;
-        public const float AdeptPoisonSeconds = 6f;
+        public const float AdeptPoisonSeconds = 14f;
         public const float FleshBurnSeconds = 6f;
-        public const float FleshPoisonSeconds = 6f;
+        public const float FleshPoisonSeconds = 14f;
         public const float IceBurnSeconds = 4f;
         public const float EarthBurnSeconds = 12f;
         /// <summary>
@@ -167,11 +167,11 @@ namespace RuneMagic
             ClockOf(id) == StatusClock.Meter;
 
         /// <summary>
-        /// Meters do not linger. Off the matching fire or foul, the
-        /// status drops instead of pausing.
+        /// Hunger lifts off the fire. Poison does not — it stays
+        /// until Light cleanses it, and the clock still runs.
         /// </summary>
         public static bool MeterEndsWithoutContact(StatusId id) =>
-            IsMeter(id);
+            id == StatusId.Burning;
 
         /// <summary>
         /// Burning and poison only hold while the body still stands in
@@ -538,6 +538,11 @@ namespace RuneMagic
                 broken.Add("Burning and poison must be meters that run to death");
             }
 
+            if (AdeptPoisonSeconds < 12f || FleshPoisonSeconds < 12f)
+            {
+                broken.Add("Poison must take longer than a short burn to finish its work");
+            }
+
             if (ClockOf(StatusId.Charmed) != StatusClock.Focus
                 || ClockOf(StatusId.Sleeping) != StatusClock.Focus
                 || ClockOf(StatusId.Stoneskin) != StatusClock.Focus)
@@ -560,11 +565,11 @@ namespace RuneMagic
             }
 
             if (!MeterEndsWithoutContact(StatusId.Burning)
-                || !MeterEndsWithoutContact(StatusId.Poisoned)
+                || MeterEndsWithoutContact(StatusId.Poisoned)
                 || MeterEndsWithoutContact(StatusId.Frozen)
                 || MeterEndsWithoutContact(StatusId.Stunned))
             {
-                broken.Add("Burning and poison must reset once the body leaves that fire or foul");
+                broken.Add("Burning lifts off the fire; poison stays until Light cleanses it");
             }
 
             if (IsFireContact(null) || IsPoisonLiquidContact(null) || IsChargeContact(null))

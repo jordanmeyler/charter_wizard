@@ -364,6 +364,14 @@ namespace RuneMagic
         public bool IsGeyser { get; private set; }
         public bool IsPoisonWell { get; private set; }
         /// <summary>
+        /// A vegetable body the grave has taken. Water remembers
+        /// the green. More poison walks to a neighbour, the way
+        /// yield walks a living plant.
+        /// </summary>
+        public bool IsPoisonPlant { get; private set; }
+        public bool IsLightWell { get; private set; }
+        public int LightWellRadius { get; private set; }
+        /// <summary>
         /// Fire a spell or NPC working started. Authored torches, kindled
         /// halls, and painted cover stay still until work finds them.
         /// </summary>
@@ -623,6 +631,11 @@ namespace RuneMagic
         public bool Insulates => ChargeLaw.Insulates(Conduct);
         public bool IsCharged => Charge > ChargeLaw.LiveMin;
         public bool IsPlantish => IsPlantMaterial(Material) && !HasAshCover;
+        public bool HoldsPlant =>
+            !HasAshCover
+            && (IsPlantish || HasPlantCover || HasPlantishDetail || HasVine || IsPoisonPlant);
+        public bool IsPoisonedPlant =>
+            HoldsPlant && (IsPoisonPlant || IsPoisonWell);
         public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
         /// <summary>
         /// Fuel hunger can finish. Kindled halls, rest fire, and ember
@@ -1148,6 +1161,9 @@ namespace RuneMagic
             _hasFoundation = false;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsPoisonPlant = false;
+            IsLightWell = false;
+            LightWellRadius = 0;
             _hungerLife = 0f;
             ClearLinger();
             Reshape(restored);
@@ -1270,7 +1286,21 @@ namespace RuneMagic
             }
 
             IsPoisonWell = true;
-            SlickPoison();
+            IsPoisonPlant = true;
+            PaintCover(TileCover.Poison);
+            RefreshFx();
+            return true;
+        }
+
+        public bool MarkLightWell(int radius = 2)
+        {
+            if (Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            IsLightWell = true;
+            LightWellRadius = radius < 1 ? 1 : radius;
             return true;
         }
 
@@ -1396,12 +1426,20 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Liquid poison on the walk. Contact only; yield washes it.
+        /// Liquid poison on the walk. A living plant becomes its
+        /// poison variant. Yield washes a slick; a poisoned plant
+        /// needs yield on the body, or shown work, to remember itself.
         /// </summary>
         public void SlickPoison(float amount = 1f)
         {
             if (Kind == TileKind.Wall || Kind == TileKind.Door)
             {
+                return;
+            }
+
+            if (HoldsPlant && !IsPoisonedPlant)
+            {
+                PoisonPlant();
                 return;
             }
 
@@ -1415,6 +1453,23 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// The grave takes a standing plant. It stays a plant, but
+        /// it speaks poison until yield or shown work wakes it.
+        /// </summary>
+        public bool PoisonPlant()
+        {
+            if (!HoldsPlant || IsPoisonedPlant)
+            {
+                return false;
+            }
+
+            IsPoisonPlant = true;
+            PaintCover(TileCover.Poison);
+            RefreshFx();
+            return true;
+        }
+
+        /// <summary>
         /// Withhold a vegetable body. Living green dies. Leftover
         /// dirt (or the old walk) keeps a wither covering that
         /// speaks Death, so the grave can be drawn.
@@ -1425,6 +1480,12 @@ namespace RuneMagic
             if (IsPoisonWell)
             {
                 IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (IsPoisonPlant)
+            {
+                IsPoisonPlant = false;
                 changed = true;
             }
 
@@ -1477,6 +1538,71 @@ namespace RuneMagic
             if (changed)
             {
                 _growth = 0;
+                RefreshFx();
+            }
+
+            return changed;
+        }
+
+        /// <summary>
+        /// Shown or living plant-work remembers a blighted body.
+        /// Wither, poison slick, and foul breath lift. A weeping
+        /// poison tree wakes as a living plant again.
+        /// </summary>
+        public bool RestoreNature()
+        {
+            var wasPlant = HoldsPlant || IsPoisonWell || IsPoisonPlant;
+            var changed = false;
+            if (IsPoisonWell)
+            {
+                IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (IsPoisonPlant)
+            {
+                IsPoisonPlant = false;
+                changed = true;
+            }
+
+            if (Miasma > 0.05f)
+            {
+                Miasma = 0f;
+                if (Cover == TileCover.Miasma)
+                {
+                    PaintCover(TileCover.None);
+                }
+
+                changed = true;
+            }
+
+            if (HasPoisonCover)
+            {
+                PaintCover(TileCover.None);
+                Wet = Mathf.Max(0f, Wet - 0.35f);
+                changed = true;
+            }
+
+            if (HasWitherCover)
+            {
+                PaintCover(TileCover.None);
+                PlacePlantCover();
+                RefreshFx();
+                return true;
+            }
+
+            if (changed && wasPlant && !HasPlantCover && !HasVine)
+            {
+                PlacePlantCover();
+            }
+
+            if (changed && IsPlantish)
+            {
+                Grow(1);
+            }
+
+            if (changed)
+            {
                 RefreshFx();
             }
 
@@ -1689,6 +1815,9 @@ namespace RuneMagic
             Oil = 0f;
             IsGeyser = false;
             IsPoisonWell = false;
+            IsPoisonPlant = false;
+            IsLightWell = false;
+            LightWellRadius = 0;
             Fire = 0f;
             if (IsConjured)
             {

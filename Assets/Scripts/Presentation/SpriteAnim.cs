@@ -88,7 +88,7 @@ namespace RuneMagic
 
         void LateUpdate()
         {
-            if ((FreezeWhenWorldHeld && AdeptAvatar.WorldHeld) || GameHud.EditingName)
+            if ((FreezeWhenWorldHeld && AdeptAvatar.WorldHeld) || GameHud.HoldsPlay)
             {
                 return;
             }

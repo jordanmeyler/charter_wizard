@@ -125,7 +125,33 @@ namespace RuneMagic
         StoneForm,
         GaleForm,
         GroveForm,
-        CloudForm
+        CloudForm,
+        AcidRain,
+        MetalRain,
+        LavaRain,
+        EmberRain,
+        SparkRain,
+        OilRain,
+        AshRain,
+        PlantRain,
+        DeathCloud,
+        AirWall,
+        Glacier,
+        Cleanse,
+        Turn,
+        Animate,
+        DeathHost,
+        Exorcism,
+        DarkCrystal = GraveIce,
+        Wolfsbane,
+        GroveCure,
+        SunOrb,
+        Sanctuary,
+        Spore,
+        Hemlock,
+        Nightshade,
+        Briar,
+        Wort = Wolfsbane
     }
 
     public readonly struct SpellRecipe
@@ -211,7 +237,7 @@ namespace RuneMagic
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Remote, SpellId.LightningStrike, "Lightning strike", "Compressed. Catalog: Fire · Air · Salt · Air · Mercury. A spark given form from the air, falling from the sky.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
-            Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Mercury · Salt. You fly.");
+            Register(RuneId.Animus, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Animus · Air · Mercury · Salt. Breath given logos, going, stood on you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Remote, SpellId.Confuse, "Confuse", "Mind of air, placed elsewhere. They lose the thread.");
             Register(RuneId.Air, RuneId.Lumen, SpellShape.Spread, SpellId.DayWake, "Day-wake", "Light blooming from the feet.");
@@ -224,6 +250,11 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Soft ground given a body.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Shot, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A climbing line, and a wick. A spell, not a rune.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Grow, "Grow", "Compressed. Catalog: Plant · Life · Mercury. The living plant sent. Sprout at a distance.");
+            Register(RuneId.Plant, RuneId.Water, SpellShape.Remote, SpellId.Wolfsbane, "Wolfsbane", "Compressed. Catalog: Plant · Life · Water · Mercury. A living plant given yield and sent. A patch. Yield walks it. Poison turns it.");
+            Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.GroveCure, "Grove-cure", "Compressed. Catalog: Plant · Life · Anima · Mercury. A living plant opened to many and sent. Poison lifts.");
+            Register(RuneId.Plant, RuneId.Salt, SpellShape.Remote, SpellId.Briar, "Briar", "Compressed. Catalog: Plant · Life · Salt · Mercury. A stood living plant sent. It holds them.");
+            Register(RuneId.Plant, RuneId.Mors, SpellShape.Shot, SpellId.Hemlock, "Hemlock", "Compressed. Catalog: Plant · Life · Death · Mercury. A living plant, then the grave, sent.");
+            Register(RuneId.Plant, RuneId.Mors, SpellShape.Pillar, SpellId.Nightshade, "Nightshade", "Compressed. Catalog: Plant · Life · Death · Salt. A living poison column. It weeps.");
             Register(RuneId.Plant, RuneId.Salt, SpellShape.Pillar, SpellId.Tree, "Tree", "Compressed. Catalog: Plant · Life · Salt. A living vegetable body given a standing body.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
             Register(RuneId.Plant, RuneId.Umbra, SpellShape.Spread, SpellId.Wither, "Wither", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. Plants around the feet die. The remains speak Death.");
@@ -234,6 +265,7 @@ namespace RuneMagic
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Spread, SpellId.OilSlick, "Oil slick", "Compressed. Catalog: Oil · Salt · Oil. Fuel given a body, then more fuel. It runs outward.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");
             Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison spray", "Compressed. Catalog: Poison · Mercury. A stream of the grave of a plant. It poisons what it crosses.");
+            Register(RuneId.Poison, RuneId.Air, SpellShape.Shot, SpellId.Spore, "Spore", "Compressed. Catalog: Poison · Air · Mercury. The grave of a plant given breath and sent.");
             Register(RuneId.Poison, RuneId.Salt, SpellShape.Pillar, SpellId.TaintedTree, "Tainted-tree", "Compressed. Catalog: Poison · Salt · Earth. A poison column. It weeps onto adjacent tiles until it is destroyed.");
             Register(RuneId.Flame, RuneId.Sulphur, SpellShape.Self, SpellId.FlameForm, "Flame-form", "Compressed. Catalog: Flame · Salt · Sulphur. You become hunger's body. Hunger cannot take you.");
             Register(RuneId.Earth, RuneId.Anima, SpellShape.Self, SpellId.StoneForm, "Stone-form", "Compressed. Catalog: Earth · Anima · Earth · Salt · Sulphur. Rest given eros and itself again. You become rest.");
@@ -246,6 +278,25 @@ namespace RuneMagic
             Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
             Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. Yield given eros and itself again. You become yield.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
+            Register(RuneId.Cloud, RuneId.Acid, SpellShape.Remote, SpellId.AcidRain, "Acid rain", "Compressed. Catalog: Cloud · Acid · Mercury.");
+            Register(RuneId.Cloud, RuneId.Metal, SpellShape.Remote, SpellId.MetalRain, "Metal rain", "Compressed. Catalog: Cloud · Metal · Mercury.");
+            Register(RuneId.Cloud, RuneId.Lava, SpellShape.Remote, SpellId.LavaRain, "Lava rain", "Compressed. Catalog: Cloud · Lava · Mercury.");
+            Register(RuneId.Cloud, RuneId.Fire, SpellShape.Remote, SpellId.EmberRain, "Ember rain", "Compressed. Catalog: Cloud · Fire · Mercury.");
+            Register(RuneId.Cloud, RuneId.Spark, SpellShape.Remote, SpellId.SparkRain, "Spark rain", "Compressed. Catalog: Cloud · Spark · Mercury.");
+            Register(RuneId.Cloud, RuneId.Oil, SpellShape.Remote, SpellId.OilRain, "Oil rain", "Compressed. Catalog: Cloud · Oil · Mercury.");
+            Register(RuneId.Cloud, RuneId.Ash, SpellShape.Remote, SpellId.AshRain, "Ash rain", "Compressed. Catalog: Cloud · Ash · Mercury.");
+            Register(RuneId.Cloud, RuneId.Plant, SpellShape.Remote, SpellId.PlantRain, "Plant rain", "Compressed. Catalog: Cloud · Plant · Mercury.");
+            Register(RuneId.Cloud, RuneId.Mors, SpellShape.Remote, SpellId.DeathCloud, "Death-cloud", "Compressed. Catalog: Cloud · Dark · Death · Animus · Mercury.");
+            Register(RuneId.Air, RuneId.Salt, SpellShape.Pillar, SpellId.AirWall, "Air-wall", "Compressed. Catalog: Air · Salt · Air · Mercury. A wall of wind.");
+            Register(RuneId.Glacier, RuneId.Mercury, SpellShape.Shot, SpellId.Glacier, "Glacier", "Compressed. Catalog: Ice · Animus · Ice · Mercury.");
+            Register(RuneId.Lumen, RuneId.Mercury, SpellShape.Self, SpellId.Cleanse, "Cleanse", "Compressed. Catalog: Light · Salt · Water · Mercury.");
+            Register(RuneId.Lumen, RuneId.Vita, SpellShape.Pillar, SpellId.SunOrb, "Sun-orb", "Compressed. Catalog: Light · Life · Salt. Shown waking, given a body.");
+            Register(RuneId.Lumen, RuneId.Anima, SpellShape.Pillar, SpellId.Sanctuary, "Sanctuary", "Compressed. Catalog: Light · Life · Anima · Salt. Shown waking, opened to many, given a body.");
+            Register(RuneId.Vita, RuneId.Mors, SpellShape.Remote, SpellId.Turn, "Turn", "Compressed. Catalog: Life · Death · Sulphur · Mercury.");
+            Register(RuneId.Mors, RuneId.Anima, SpellShape.Spread, SpellId.Animate, "Animate", "Compressed. Catalog: the four · Death · Anima · Mercury.");
+            Register(RuneId.Mors, RuneId.Anima, SpellShape.Self, SpellId.DeathHost, "Death-host", "Compressed. Catalog: the four · Death · Anima · Sulphur.");
+            Register(RuneId.Lumen, RuneId.Vita, SpellShape.Remote, SpellId.Exorcism, "Exorcism", "Compressed. Catalog: Light · Life · Mercury.");
+            Register(RuneId.DarkCrystal, RuneId.Mors, SpellShape.Remote, SpellId.DarkCrystal, "Dark-crystal", "Compressed. Catalog: Crystal · Dark · Death.");
 
             Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt. Hungry earth given a standing body.");
             Register(RuneId.Metal, RuneId.Earth, SpellShape.Pillar, SpellId.MetalPillar, "Metal-pillar", "Compressed. Catalog: Metal · Salt · Earth. Lava · Spark · Earth asked to stand. It hangs without a far bank.");

@@ -190,6 +190,87 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Yield on a living plant walks one ring onto dry floor
+        /// or cover, the way a watered seed takes the next bed.
+        /// Poisoned plants do not walk green — they wait for yield
+        /// to remember themselves, or for more poison to walk venom.
+        /// </summary>
+        public int SpreadPlant(WorldTile from, int budget)
+        {
+            if (from == null || budget <= 0 || !from.HoldsPlant || from.IsPoisonedPlant)
+            {
+                return 0;
+            }
+
+            var used = 0;
+            var around = Neighbors(from.Coord);
+            for (var i = 0; i < around.Count && used < budget; i++)
+            {
+                var tile = around[i];
+                if (tile.HasAshCover || tile.HoldsPlant || tile.IsPoisonedPlant)
+                {
+                    continue;
+                }
+
+                if (tile.PlacePlantCover())
+                {
+                    used++;
+                }
+            }
+
+            return used;
+        }
+
+        /// <summary>
+        /// Poison on a poisoned plant walks one ring. Living
+        /// neighbours become the poison variant. Empty walk takes
+        /// a slick.
+        /// </summary>
+        public int SpreadPoison(WorldTile from, int budget)
+        {
+            if (from == null || budget <= 0 || !from.IsPoisonedPlant && !from.HasPoisonCover)
+            {
+                return 0;
+            }
+
+            var used = 0;
+            var around = Neighbors(from.Coord);
+            for (var i = 0; i < around.Count && used < budget; i++)
+            {
+                var tile = around[i];
+                if (tile.HasAshCover)
+                {
+                    continue;
+                }
+
+                if (tile.HoldsPlant && !tile.IsPoisonedPlant)
+                {
+                    if (tile.PoisonPlant())
+                    {
+                        used++;
+                    }
+
+                    continue;
+                }
+
+                if (tile.HasPoisonCover || tile.IsPoisonedPlant)
+                {
+                    continue;
+                }
+
+                if (tile.Kind == TileKind.Wall || tile.Kind == TileKind.Door)
+                {
+                    continue;
+                }
+
+                tile.SlickPoison();
+                used++;
+            }
+
+            return used;
+        }
+
+        /// <summary>
         /// A spell-watered land plant may take neighboring tiles that
         /// already hold water — a water floor or a water covering.
         /// Cover on water stays put, the way ice does, unless Forest
