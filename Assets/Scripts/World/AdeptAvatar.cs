@@ -232,8 +232,8 @@ namespace RuneMagic
         {
             BindView();
             WorldHeld = Time.time < _stillUntil;
-            var moving = _motor != null && _motor.Moving;
-            var aiming = _casting || (_director != null && _director.Mode == PlayMode.Aiming);
+            var moving = _motor != null && _motor.Moving && (_director == null || _director.CanMove);
+            var aiming = _casting || (_director != null && _director.IsCasting);
             if (_usesAnimator && _animator != null)
             {
                 _animator.speed = GameHud.EditingName ? 0f : 1f;

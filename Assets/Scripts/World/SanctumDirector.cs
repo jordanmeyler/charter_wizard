@@ -67,9 +67,16 @@ namespace RuneMagic
         public bool HasSpanStart => _spanStart.HasValue;
         public bool Busy { get; private set; }
         public bool Started { get; private set; }
+        public bool IsCasting => CastLaw.IsCasting(Mode, Busy);
+
+        /// <summary>
+        /// Default false: the adept stands while aiming or releasing.
+        /// Items and conditions later set this so a caster can walk.
+        /// </summary>
+        public bool AllowsMoveWhileCasting { get; set; }
+
         public bool CanMove =>
-            (Mode == PlayMode.Exploring || Mode == PlayMode.Aiming || Mode == PlayMode.Charter)
-            && !Busy && !GameHud.EditingName;
+            CastLaw.AllowsMove(Mode, Busy, GameHud.EditingName, AllowsMoveWhileCasting);
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -163,12 +170,18 @@ namespace RuneMagic
 
         void Update()
         {
+            SyncWorldClock();
             TrackPlayer();
             CurrentTarget = Mode == PlayMode.Aiming ? ResolveAimFocus() : ResolveFocus();
             UpdateSight();
             UpdateTargetRing();
             UpdateAimGhost();
             HandleInput();
+        }
+
+        void SyncWorldClock()
+        {
+            Time.timeScale = CastLaw.HoldsWorld(Mode, GameHud.EditingName) ? 0f : 1f;
         }
 
         void OnDisable()
@@ -202,7 +215,7 @@ namespace RuneMagic
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
             }
 
-            if (Mode == PlayMode.Paused || GameHud.EditingName)
+            if (CastLaw.HoldsWorld(Mode, GameHud.EditingName))
             {
                 FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
                 return;
@@ -492,10 +505,11 @@ namespace RuneMagic
         public void OpenCharter()
         {
             Mode = PlayMode.Charter;
+            SyncWorldClock();
             RefreshVisibleRunes();
             Log(GlyphView.Speak(
-                "The screen unrolls. You can walk. Every root mark is ready. What you have already strung stays until you cast or close.",
-                "The screen unrolls. You can walk. Draw marks from the weave. What you have already strung stays until you cast or close."));
+                "The screen unrolls. Time holds. Every root mark is ready. What you have already strung stays until you cast or close.",
+                "The screen unrolls. Time holds. Draw marks from the weave. What you have already strung stays until you cast or close."));
         }
 
         public void CloseCharter(bool releaseString = true)
@@ -513,6 +527,7 @@ namespace RuneMagic
             }
 
             Mode = PlayMode.Exploring;
+            SyncWorldClock();
             if (released)
             {
                 Log(Held.Occupied
@@ -539,27 +554,24 @@ namespace RuneMagic
         {
             if (Mode == PlayMode.Paused)
             {
-                Time.timeScale = 1f;
                 Mode = _modeBeforePause;
+                SyncWorldClock();
                 return;
             }
 
             _modeBeforePause = Mode;
             Mode = PlayMode.Paused;
-            Time.timeScale = 0f;
+            SyncWorldClock();
         }
 
         public void PauseForNaming()
         {
-            Time.timeScale = 0f;
+            SyncWorldClock();
         }
 
         public void ResumeFromNaming()
         {
-            if (Mode != PlayMode.Paused)
-            {
-                Time.timeScale = 1f;
-            }
+            SyncWorldClock();
         }
 
         public void OpenGrimoire()
