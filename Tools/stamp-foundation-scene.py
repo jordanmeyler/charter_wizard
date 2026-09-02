@@ -16,6 +16,7 @@ ENEMY_GUID = "61bf0193c5968b0fe905c2e42b5e7f7c"
 ITEM_GUID = "b5a4b106858840aa9dc12dda44dd9bf2"
 DECOR_GUID = "2b8d0f4a6c184e7b9d1e3f5a7c9b2345"
 PLAQUE_GUID = "813811c7afd64d4f83d7773870e8043f"
+SPEECH_GUID = "c4e8a91b2d734f6a8e1c5b09d7f3a246"
 CRYSTAL_GUID = "072a4e1835f6ad94e270c1b38405e6f7"
 TORCH_GUID = "7efda3cc1e3945d0a3c074e14475aefc"
 GATE_GUID = "b96f9601482f4e9ca74087f8f18e20b7"
@@ -470,6 +471,31 @@ MonoBehaviour:
                     f"  portrait: {{fileID: 0}}\n"
                 )
                 add_object("Plaque", PLAQUE_GUID, pos, fields)
+            elif typ in ("speech", "sign", "talk", "approach"):
+                cue = 1 if typ in ("sign", "talk") else 0
+                verb = prop.get("verb") or ("Talk" if typ == "talk" else "Read")
+                sprite = prop.get("sprite") or ("plaque" if typ == "sign" else "")
+                fields = (
+                    f"  title: {prop.get('displayName') or ''}\n"
+                    f"  speaker: {prop.get('note') or ''}\n"
+                    f"  text: {json.dumps(prop.get('text') or 'The way is shut.')}\n"
+                    f"  pages: []\n"
+                    f"  cue: {cue}\n"
+                    f"  verb: {verb}\n"
+                    f"  radius: 1.6\n"
+                    f"  approachOnce: {1 if typ in ('speech', 'approach') else 0}\n"
+                    f"  interactOnce: 0\n"
+                    f"  look: {prop.get('note') or ''}\n"
+                    f"  spriteId: {sprite}\n"
+                    f"  portrait: {{fileID: 0}}\n"
+                    f"  hideLook: {0 if sprite else 1}\n"
+                )
+                add_object(
+                    "Talk" if typ == "talk" else "Sign" if typ == "sign" else "Speech",
+                    SPEECH_GUID,
+                    pos,
+                    fields,
+                )
             elif typ == "torch":
                 fields = (
                     "  authoredName: Cold Torch\n"

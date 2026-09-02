@@ -185,7 +185,7 @@ namespace RuneMagic
             _propText = EditorGUILayout.TextField(_propText);
             _propRunes = EditorGUILayout.TextField(_propRunes);
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.HelpBox("Left click paints a tile. Shift-click places the prop (plaque, runes, mite, arrows, fog, crystal, gate…). Alt-click clears a stamp. The browser editor in Tools/map-editor.html is the fuller painter — attack, heading, and cast seconds live there.", MessageType.None);
+            EditorGUILayout.HelpBox("Left click paints a tile. Shift-click places the prop (plaque, speech, sign, talk, runes, mite, arrows, fog, crystal, gate…). Alt-click clears a stamp. The browser editor in Tools/map-editor.html is the fuller painter — attack, heading, and cast seconds live there.", MessageType.None);
         }
 
         void DrawGrid(MapRoom room)

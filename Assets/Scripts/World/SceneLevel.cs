@@ -173,6 +173,12 @@ namespace RuneMagic
                 interacts[i].EnsureBound();
             }
 
+            var speeches = Object.FindObjectsByType<WorldSpeech>(FindObjectsSortMode.None);
+            for (var i = 0; i < speeches.Length; i++)
+            {
+                speeches[i].EnsureBound();
+            }
+
             var decors = Object.FindObjectsByType<WorldDecor>(FindObjectsSortMode.None);
             for (var i = 0; i < decors.Length; i++)
             {

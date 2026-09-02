@@ -229,6 +229,14 @@ play. An **Interact** (`WorldInteract`) is an empty GameObject —
 parent tiles or child sprites for the statue. Prayer shows a
 written spell; Cast or Continue. **E** uses it.
 
+A **Speech** (`WorldSpeech`) is a text window. Add the
+component to a Gate (or an empty volume next to it), set
+**Cue = Approach** and **Approach Once** — the message plays
+the first time someone walks in. **Sign** and **Talk** use
+**Cue = Interact** and the same **E** button; set the verb to
+Read or Talk. Extra **Pages** click through. Conversation
+trees can replace those pages later.
+
 ## Sprites on runes, items, and effects
 
 You control the picture from the Inspector. Nothing here is a tile layer.
