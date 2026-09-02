@@ -261,6 +261,20 @@ namespace RuneMagic
                 broken.Add("Hide bad recipes must keep only the last failed cast");
             }
 
+            var recents = new CastLedger();
+            var fireball = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Mercury });
+            var hop = Composition.FromSequence(new[] { RuneId.Air, RuneId.Salt, RuneId.Air });
+            recents.Record(fireball, CastingStance.Charter, true, SpellId.Fireball);
+            recents.Record(hop, CastingStance.Charter, true, SpellId.Hop);
+            recents.Record(fireball, CastingStance.Free, true, SpellId.Fireball);
+            if (recents.Recent.Count != 2
+                || recents.Recent[0].Stance != CastingStance.Free
+                || !WorkingNames.SameComposition(recents.Recent[0].Runes, fireball.Sequence)
+                || !WorkingNames.SameComposition(recents.Recent[1].Runes, hop.Sequence))
+            {
+                broken.Add("Recent must show each writing once and move a recast to the top");
+            }
+
             var book = new Grimoire();
             book.KeepWorking(CastingStance.Free, new[] { RuneId.Fire, RuneId.Mercury }, SpellId.None, "wild");
             if (book.KeptWorkings.Count != 1
