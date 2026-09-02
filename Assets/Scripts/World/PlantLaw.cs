@@ -144,10 +144,14 @@ namespace RuneMagic
                 return;
             }
 
+            // Compile-time constant on purpose — fails if the grow
+            // disk is later widened or narrowed.
+#pragma warning disable CS0162
             if (GrowRadius != 3)
             {
                 broken.Add("Grow from the feet lays plant cover three tiles out");
             }
+#pragma warning restore CS0162
 
             if (MaxSpread(SpellId.Douse) != 1
                 || MaxSpread(SpellId.WaterJet) != 1
