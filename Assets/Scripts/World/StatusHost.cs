@@ -523,8 +523,8 @@ namespace RuneMagic
             }
 
             director.Log(spec.IsWard
-                ? $"The {spec.Name} loses its hold. A mark from that sentence was asked to do other work."
-                : $"{name}'s {spec.Name} lifts. Focus broke — a mark from that sentence was reused.");
+                ? $"The {spec.Name} loses its hold. Another mind sentence asked a mark to do other work."
+                : $"{name}'s {spec.Name} lifts. Focus broke — another mind sentence reused a mark.");
         }
 
         public void Zombify()
@@ -538,7 +538,7 @@ namespace RuneMagic
         {
             var removed = DropWhere(effect =>
             {
-                if (effect.Id == StatusId.Zombified || effect.Spec.IsStance)
+                if (effect.Id == StatusId.Zombified || effect.Spec.NeedsFocus)
                 {
                     return false;
                 }
@@ -546,7 +546,7 @@ namespace RuneMagic
                 return effect.Spec.Kind == StatusKind.Debuff;
             }, false);
             return removed > 0
-                ? $"{name} is shown clean. The foul and the hold lift."
+                ? $"{name} is shown clean. The foul lifts."
                 : $"{name} is already clean.";
         }
 

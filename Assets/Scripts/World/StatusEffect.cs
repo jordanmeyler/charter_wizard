@@ -89,8 +89,9 @@ namespace RuneMagic
         public bool IsStance => IsWard || IsForm;
         /// <summary>
         /// Focus holds mind work — ailments and wards. Wards use
-        /// Sulphur; they are mind spells. A later sentence that
-        /// reuses a mark lets the held working go.
+        /// Sulphur; they are mind spells. Another focus sentence
+        /// that reuses a mark other than Sulphur lets the held
+        /// working go. A fireball or a wall does not.
         /// Burning and poison are meters: they run while the body
         /// still stands in that fire or foul, then empty is ash or death.
         /// Leave the cover and the condition resets.
