@@ -26,7 +26,11 @@ namespace RuneMagic
             spell == SpellId.Flight;
 
         public static bool IsPush(SpellId spell) =>
-            spell == SpellId.Push || spell == SpellId.Gale;
+            spell == SpellId.Push
+            || spell == SpellId.Gale
+            || spell == SpellId.Gust
+            || spell == SpellId.AirWall
+            || spell == SpellId.Sandstorm;
 
         public static bool IsSkyStrike(SpellId spell) =>
             spell == SpellId.LightningStrike;
@@ -65,6 +69,7 @@ namespace RuneMagic
                 case SpellId.Poison:
                 case SpellId.Plasma:
                 case SpellId.Vine:
+                case SpellId.Glacier:
                     return true;
                 default:
                     return false;
@@ -85,7 +90,8 @@ namespace RuneMagic
             || spell == SpellId.IceWall
             || spell == SpellId.MetalWall
             || spell == SpellId.ObsidianWall
-            || spell == SpellId.WoodWall;
+            || spell == SpellId.WoodWall
+            || spell == SpellId.AirWall;
 
         public static bool IsPillar(SpellId spell)
         {
@@ -133,8 +139,8 @@ namespace RuneMagic
                 case SpellId.IceWall:
                 case SpellId.IceSpear:
                 case SpellId.Snowfall:
-                case SpellId.GraveIce:
                 case SpellId.Blizzard:
+                case SpellId.Glacier:
                     return true;
                 default:
                     return false;
@@ -1176,7 +1182,9 @@ namespace RuneMagic
 
             if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
                 || spell == SpellId.Monsoon || spell == SpellId.Swamp || spell == SpellId.Snowfall
-                || spell == SpellId.GraveIce)
+                || spell == SpellId.AcidRain || spell == SpellId.MetalRain || spell == SpellId.LavaRain
+                || spell == SpellId.EmberRain || spell == SpellId.SparkRain || spell == SpellId.OilRain
+                || spell == SpellId.AshRain || spell == SpellId.PlantRain || spell == SpellId.DeathCloud)
             {
                 return Disk(CoordOf(to), VeilRadius);
             }
@@ -1661,8 +1669,9 @@ namespace RuneMagic
             return false;
         }
 
-        public static Vector3 PushLanding(WorldGrid grid, Vector3 from, Vector3 body)
+        public static Vector3 PushLanding(WorldGrid grid, Vector3 from, Vector3 body, float tiles = PushTiles)
         {
+            tiles = Mathf.Max(0.1f, tiles);
             var delta = (Vector2)(body - from);
             if (delta.sqrMagnitude < 0.04f)
             {
@@ -1670,13 +1679,13 @@ namespace RuneMagic
             }
 
             delta.Normalize();
-            var dest = (Vector2)body + delta * PushTiles;
+            var dest = (Vector2)body + delta * tiles;
             if (grid == null)
             {
                 return dest;
             }
 
-            var path = Span(CoordOf(body), CoordOf(dest), Mathf.CeilToInt(PushTiles) + 1);
+            var path = Span(CoordOf(body), CoordOf(dest), Mathf.CeilToInt(tiles) + 1);
             var land = CoordOf(body);
             for (var i = 1; i < path.Count; i++)
             {

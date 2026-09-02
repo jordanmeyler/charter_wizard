@@ -204,6 +204,38 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.8f, StatusId.None, 0f, TileVerb.Cloak);
                 case SpellId.TimeStop:
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Stunned, 2f, TileVerb.None);
+                case SpellId.AcidRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Poison);
+                case SpellId.MetalRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.LavaRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Burning, 5f, TileVerb.Ignite);
+                case SpellId.EmberRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Burning, 4f, TileVerb.Ignite);
+                case SpellId.SparkRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Stunned, 2f, TileVerb.Charge);
+                case SpellId.OilRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.None, 0f, TileVerb.Slick);
+                case SpellId.AshRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.None, 0f, TileVerb.Cloak);
+                case SpellId.PlantRain:
+                    return new SpellVerb(SpellTarget.Area, 3f, StatusId.Rooted, 4f, TileVerb.Grow);
+                case SpellId.DeathCloud:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);
+                case SpellId.AirWall:
+                    return new SpellVerb(SpellTarget.Area, 1.4f, StatusId.None, 0f, TileVerb.Vent);
+                case SpellId.Glacier:
+                    return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Frozen, 5f, TileVerb.Freeze);
+                case SpellId.Cleanse:
+                    return new SpellVerb(SpellTarget.Self, 1.6f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.Turn:
+                case SpellId.CorpseCall:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Charmed, 12f, TileVerb.None);
+                case SpellId.Animate:
+                case SpellId.DeathHost:
+                    return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Charmed, 12f, TileVerb.None);
+                case SpellId.Exorcism:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Blight:
                 case SpellId.Miasma:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.Foul);

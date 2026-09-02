@@ -8,7 +8,7 @@ Players will eventually see **effects, not names**. If you only watch what the w
 
 Hot, Cold, Wet, Dry, and Aether stay reserved. **Anima** and **Animus** are wrought now — eros and logos, born with Sulphur. Male and Female are the old names for those two.
 
-There is no damage. A spell **kills**, **restrains**, or does **neither**.
+There is no hit-point bar. A spell **kills**, **restrains**, or does **neither**. Kill is binary: `power × affinity > defense`. Affinity is 0–5. Defense is 1–8. Power is 0–10. Witchfire is 7 and nothing resists it. Glacier sent is 6. Unmake is 10, elementless chaos. Wind **pushes**; it does not kill.
 
 Formation (Shot, Pillar, Spread, Remote, Self) is **written in the chain**, not chosen later. Earth at the end of a body stands (Pillar). Mercury without breath goes *into* a thing or lands away (Remote). Breath already in the chain, then Mercury, flies (Shot). A body around the feet is Spread. Hop and Flight stay on the caster (Self). A pillar is one tile on the floor: a hollow takes it and holds; a floor grows a column. A wall asks for a start and a stop — across a pit it is a two-tile span, on the floor it is a barrier. Standard earth and ice must find a floor or a wall at each end, or the span falls. Ice freezes water without banks. Earth only muds water. A wood wall is a line of trees — over a pit it needs the same banks; on water it grows a walkable cover without banks, the way ice freezes a pool. Hunger eats it. Metal hangs without a far rest. Columns follow the same law.
 
@@ -142,7 +142,7 @@ These are not in the ordinary book. They exist so Free has somewhere to go.
 
 | Wrought | Born from | Concept | What you see |
 | --- | --- | --- | --- |
-| **Grave-ice** | Water · Salt · Death | Yield given a body, then the motion leaves. | Ice that will not thaw like ordinary ice |
+| **Dark-crystal** | Crystal · Dark · Death | Crystal withheld and marked by the grave. | Dark glass. Free masonry. Ordinary fire will not take it. |
 | **Shade** | Dark · Death · Salt | Withheld, given a body, marked by the grave. No Life. | A shape that is not alive |
 | **Poison** | Plant · Death | The vegetable body, then the grave. | Toxin. Blight is the stood form |
 | **Ember** | Fire · Death | Hunger after the grave takes its motion. | Heat without a flame |
@@ -188,7 +188,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 31 | A living vegetable body sent. Plant cover at the mark, the way Sprout stands from the feet. | Grow | Water · Salt · Earth · Life · Mercury | Plant · Life · Mercury | Remote | Neither |
 | 32 | A living body, yield and rest (matter), sent into the living. Flesh remembers. | Mend | Life · Salt · Water · Earth · Mercury | — | Grow | Neither |
 | 33 | Breath given a body, then more breath, kept on you. A leap over a hollow. | Hop | Air · Salt · Air | — | Self | Neither |
-| 34 | Breath going, given a body, kept on you. You fly. Pits will not take you while it lasts. | Flight | Air · Mercury · Salt | Air · Mercury · Salt · Life · Mercury | Self | Neither |
+| 34 | Breath given logos and breath again, going, then stood on you. You fly. Pits will not take you while it lasts. | Flight | Air · Animus · Air · Mercury · Salt | — | Self | Neither |
 | 35 | Fire sent, turned by Sulphur, into a mind. | Rage | Fire · Sulphur · Mercury | — | Remote | Neither |
 | 36 | The withheld reaches a mind. They flee or freeze. | Terror | Dark · Sulphur · Mercury | — | Remote | Restrain |
 | 37 | Yield reaches a mind. They sleep. They can be woken. | Lull | Water · Sulphur · Mercury | — | Remote | Restrain |
@@ -218,14 +218,14 @@ Death is not “still” as a household verb. Earth already means rest. Death me
 | 42 | Withheld, given a body, marked by the grave, and sent. No waking. | Shade | Dark · Death · Salt · Mercury | Shade · Mercury | Remote | Neither | Free |
 | 43 | The grave is sent into a living body. The waking is named so it can be taken. | Unmake | Death · Mercury · Life · Salt | — | Remote | Kill | Free |
 | 44 | The waking passion is given to the grave. They sleep as if dead. | Grave-sleep | Life · Sulphur · Death | — | Remote | Restrain | Free |
-| 45 | The four as a body, marked by the grave, and sent. It arrives dead. | Corpse-call | Salt · Water · Earth · Fire · Death · Mercury | — | Remote | Neither | Free |
+| 45 | One grave is opened and a mind is sent. They rise and serve while you hold the sentence. | Corpse-call | Salt · Water · Earth · Fire · Death · Mercury | — | Remote | Restrain | Free |
 | 46 | Rest marked by the grave, given a body, from the feet. Earth-life and golems come apart. | Grave-dust | Earth · Death · Salt | — | Grow | Kill | Either |
 | 47 | Hunger marked by the grave and sent into a flame. The flame’s motion does not return. | Snuff | Fire · Death · Mercury | Ember · Mercury | Remote | Neither | Either |
 | 48 | The seed marked by the grave and sent. A live rod dies. | Blackout | Fire · Air · Death · Mercury | Spark · Death · Mercury | Shot | Neither | Either |
-| 49 | Yield given a body, then the grave. Ice that will not thaw like ordinary ice. | Grave-ice | Water · Salt · Death | — | Remote | Restrain | Either |
+| 49 | Crystal withheld and marked by the grave. They freeze in dark glass. Free masonry — easier than obsidian. | Dark-crystal | Crystal · Dark · Death | Stone · Water · Dark · Death | Remote | Restrain | Free |
 | 50 | Living breath, then the grave, sent. The breath leaves them. | Last breath | Air · Life · Death · Mercury | — | Remote | Kill | Free |
 
-Ordinary ice is **Water · Earth**. Grave-ice is yield given a body, then the grave (**Water · Salt · Death**). You can tell them apart without names: one melts when hunger finds it; the other does not.
+Ordinary ice is **Water · Earth**. Glacier is ice given logos (`Ice · Animus · Ice`) — ordinary fire cannot take it. **Dark-crystal** is Crystal · Dark · Death, Free masonry, the Free answer to obsidian.
 
 ---
 
@@ -233,11 +233,11 @@ Ordinary ice is **Water · Earth**. Grave-ice is yield given a body, then the gr
 
 Longer because more happened. These sit above the ordinary book and the reserved grave list. They still use the eleven — they just ask more of them at once.
 
-Time-stop is not soul-work. Mercury (spirit / going / the adept’s soul) is not in the sentence. Light is not in it. The story is yield and rest (the world as it is) withheld, the living marked so they stay themselves, the grave taking the motion of instants, the mind reached so thought cannot hurry, then Salt standing that stopped moment around your feet.
+Time-stop is Charter. Mercury (spirit / going / the adept’s soul) is not in the sentence. Death is not in it. The story is yield and rest (the world as it is) withheld, the living marked so they stay themselves, the mind reached so thought cannot hurry, then Salt standing that stopped moment around your feet.
 
 | # | What you see | Spell | Chain | From a join | Form | Does | Gate |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 51 | Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Death · Sulphur · Salt | Ice · Dark · Life · Death · Sulphur · Salt | Grow | Restrain | Free |
+| 51 | Yield and rest are withheld. The living stay; the mind cannot hurry. The stopped moment stands. | Time-stop | Water · Earth · Dark · Life · Sulphur · Salt | Ice · Dark · Life · Sulphur · Salt | Grow | Restrain | Charter |
 
 Floor 1 needed two ordinary sentences the original forty did not write. They sit with the ordinary book even though they are numbered after Time-stop.
 
@@ -296,6 +296,22 @@ Floor 1 needed two ordinary sentences the original forty did not write. They sit
 | 102 | Breath given logos and breath again, stood, held. You become invisible. Enemies lose your trail. Air cannot take you. Fog and foul breath leave as you walk. | Gale-form | Air · Animus · Air · Salt · Sulphur | — | Self | Neither |
 | 103 | A living plant given eros and the living plant again, stood, held. You become the grove. Green springs as you walk. | Grove-form | Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life · Salt · Sulphur | Plant · Life · Anima · Plant · Life · Salt · Sulphur | Self | Neither |
 | 104 | The hanging veil given logos and eros and the veil again, stood, held. You become mist and fly. Pits and water cannot hold you. | Cloud-form | Air · Water · Fire · Sulphur · Air · Water · Sulphur · Earth · Air · Water · Salt · Sulphur | Cloud · Animus · Anima · Cloud · Salt · Sulphur | Self | Neither |
+| 105 | The hanging veil forced through acid and sent down. | Acid rain | Cloud · Acid · Mercury | — | Remote | Kill |
+| 106 | The hanging veil given iron and sent down. Needles. | Metal rain | Cloud · Metal · Mercury | — | Remote | Kill |
+| 107 | The hanging veil given hungry earth and sent down. | Lava rain | Cloud · Lava · Mercury | — | Remote | Kill |
+| 108 | The hanging veil given hunger and sent down. | Ember rain | Cloud · Fire · Mercury | — | Remote | Kill |
+| 109 | The hanging veil given the seed and sent down. | Spark rain | Cloud · Spark · Mercury | — | Remote | Kill |
+| 110 | The hanging veil given fuel and sent down. | Oil rain | Cloud · Oil · Mercury | — | Remote | Neither |
+| 111 | The hanging veil given what hunger left and sent down. | Ash rain | Cloud · Ash · Mercury | — | Remote | Neither |
+| 112 | The hanging veil given a vegetable body and sent down. They root. | Plant rain | Cloud · Plant · Mercury | — | Remote | Restrain |
+| 113 | The hanging veil is withheld, marked by the grave, given logos, and sent. | Death-cloud | Cloud · Dark · Death · Animus · Mercury | — | Remote | Kill |
+| 114 | Breath given a body, more breath, sent as a span. A wall of wind. | Air-wall | Air · Salt · Air · Mercury | — | Pillar | Restrain |
+| 115 | Hard water given logos and itself again, then sent. | Glacier | Ice · Animus · Ice · Mercury | Glacier · Mercury | Shot | Kill |
+| 116 | Shown, given a body of yield, and sent into you. Poison lifts. | Cleanse | Light · Salt · Water · Mercury | — | Self | Neither |
+| 117 | The waking is given to the grave and a mind is sent. They walk as the dead. | Turn | Life · Death · Sulphur · Mercury | — | Remote | Restrain |
+| 118 | Many graves are opened and opened to many. They rise together. | Animate | Salt · Water · Earth · Fire · Death · Anima · Mercury | — | Grow | Restrain |
+| 119 | The four as a grave-body, opened to many, the mind holds. | Death-host | Salt · Water · Earth · Fire · Death · Anima · Sulphur | — | Grow | Restrain |
+| 120 | Shown waking, sent. The dead cannot hold. | Exorcism | Light · Life · Mercury | — | Remote | Kill |
 
 **Wither is a spell, not a rune.** Plant is the wrought rune (`Water · Salt · Earth`). Dark withholds that body around your feet. Plants die. What remains speaks Death — that covering is how the grave mark enters the weave. **Plant · Death** is Poison, the higher grave of a plant. **Poison spray** (`Poison · Mercury`) is a stream that poisons what it crosses. **Tainted-tree** is a poison column (`Poison · Salt · Earth`); it weeps onto adjacent tiles until it is destroyed. Tree is the living plant stood (`Plant · Life · Salt`). Wood-wall is that same rest asked to stand as more living plant (`Plant · Life · Salt · Plant · Life`) — a line of trees. **Forest** opens that living plant to many (`Plant · Life · Anima · Plant · Life`) and covers every water still on the screen. A short water spell only wets what it hits. Sprout lays plant cover three tiles from the caster, the way ice covers water — it does not walk the pool. **Grow** is that same living cover sent (`Plant · Life · Mercury`). A watered land plant may take a neighbouring water tile. Plant cover on water stays put unless Forest drinks the screen. **Vine is a spell** (`Plant · Mercury`); vine on the field speaks Plant. **Wind is a spell** (`Air · Mercury`) — a better name for the old gust. Inferno is not a rune; plasma is witchfire joined to the bolt. Oil-pillar is a stood wick; a later fire sentence, written separately, makes it a bomb. **Oil puddle** is fuel stood (`Oil · Salt`). **Oil geyser** is that fountain sent (`Oil · Salt · Mercury`) — once lit it keeps burning like a kindled hall until water finds it. **Oil slick** repeats the fuel (`Oil · Salt · Oil`) and the covering runs outward from the click. Oil spreads flame across connected fuel in a flash, much faster than timber or plant. A film on water still burns and flashes.
 
@@ -309,9 +325,9 @@ Fire is raw hunger (orange). **Flame** is Fire · Animus · Fire — witchfire, 
 
 A ward turns **its own element**, and the roots that constructed that element. Fire ward turns fire. Water ward turns water, and you walk on yield. Earth ward (Stoneskin) turns earth and crushing — boulders, slams, arrows. Air ward turns air, and fog and foul breath leave as you walk. Plant ward (`Plant · Life · Salt · Sulphur`) turns plant, yield, and rest, and green springs from your feet as you walk. The old opposite square still unmakes matter in the world (water still douses fire), but it is not how a ward is worn. Only one ward or form stands at a time. **Forms** are the higher hold: Flame-form, Tide-form, Stone-form, Gale-form, Grove-form, and Cloud-form. Each is immunity to that element, plus a walk. Gale-form hides you. Cloud-form flies.
 
-**Focus holds mind spells.** Lull, Terror, Rage, Command, Charm, Confuse, the wards, and the forms (they all write Sulphur) stay until you write another sentence that reuses a mark from the held working. Charm is Life · Sulphur · Mercury — a later Fireball (Mercury) lets it go; a wall (Earth · Salt) does not. A ward is the same hold: Wall drops stoneskin (Earth · Salt). Fireball drops a flame ward (Fire) but not a water ward. A fizzle shows the hold breaking. Only one ward or form stands at a time. Elemental work stands on its own: a wall does not vanish, a flame does not snuff itself, and burning and poison run only while you still stand in that fire or foul. Stun and frozen lift on their own clocks. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poison is a liquid slick yield washes. Miasma is airborne fog wind must take. Poisoned flesh dies if it stays in the foul; fire, ice, and earth do not take poison.
+**Focus holds mind spells.** Lull, Terror, Rage, Command, Charm, Confuse, the wards, and the forms (they all write Sulphur) stay until you write another sentence that reuses a mark from the held working. Charm is Life · Sulphur · Mercury — a later Fireball (Mercury) lets it go; a wall (Earth · Salt) does not. A ward is the same hold: Wall drops stoneskin (Earth · Salt). Fireball drops a flame ward (Fire) but not a water ward. A fizzle shows the hold breaking. Only one ward or form stands at a time. Elemental work stands on its own: a wall does not vanish, a flame does not snuff itself. Burning runs only while you still stand in that fire, or while rooted in it. Poison is slower and stays until **Cleanse**. Stun and frozen lift on their own clocks. Ice-spear, ice-pillar, and ice-wall make hard water; they do not freeze the living. Freeze and Snowstorm do. Poison is a liquid slick yield washes. Miasma is airborne fog wind must take.
 
-No Light. No Mercury. Life, Death, and mind (Sulphur) together, with Dark, Water, and Earth. Charter fizzles it. Free writes the whole sentence, or fills one missing rune if six of the seven are already there.
+Time-stop is Charter: yield and rest withheld, Life, mind, Salt. No Death. No Mercury.
 
 A finished spell also names **who it touches** and **what condition it leaves**. Fireball is Single + Burning. Rain is Area + Soaked. Wards are Self. Runtime: `SpellVerb`. The catalog JSON may carry `target` / `status` / `statusSeconds` as notes.
 
@@ -319,7 +335,7 @@ A finished spell also names **who it touches** and **what condition it leaves**.
 
 ## 7. Why this split
 
-**Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Hop and the short Flight are breath given a body (Air · Salt · Air, Air · Mercury · Salt) and do not need Life. Call without Life is a statue.
+**Life** is not a school. It is the mark that the recipe is *about a living thing*. Sprout without Life is a seed. Hop is breath given a body (Air · Salt · Air) and does not need Life. Flight is breath given logos (`Air · Animus · Air · Mercury · Salt`). Call without Life is a statue.
 
 **Salt** is not a school either. It is how a work *stands*: walls, pillars, a live floor, a wick, ice that holds. A hunting spark does not need it.
 

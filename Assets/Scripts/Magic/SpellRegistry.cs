@@ -52,6 +52,28 @@ namespace RuneMagic
                 return SpellId.Poison;
             }
 
+            if (key.Equals("graveice", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("darkcrystal", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("dark-crystal", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.DarkCrystal);
+                return SpellId.DarkCrystal;
+            }
+
+            if (key.Equals("deathcloud", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("death-cloud", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.DeathCloud);
+                return SpellId.DeathCloud;
+            }
+
+            if (key.Equals("airwall", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("air-wall", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.AirWall);
+                return SpellId.AirWall;
+            }
+
             if (System.Enum.TryParse(key, true, out SpellId enumerated) && enumerated != SpellId.None)
             {
                 Remember(key, enumerated);

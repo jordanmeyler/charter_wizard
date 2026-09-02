@@ -86,7 +86,7 @@ These already have tiles and a class. Floor 1 uses Ice and Water as hazards (the
 
 ## Not listed yet (open)
 
-Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, grave-ice (Water · Salt · Death), shade-stuff. Add a `MaterialId`, a `WorldMaterial` row, a `MaterialPaint`, and a line here. Joins that birth them still live in `MaterialTree` / [`SPELLS.md`](SPELLS.md).
+Bone, flesh, blood, cloth, paper, gold, silver, mercury-as-metal, dark-crystal (Crystal · Dark · Death), shade-stuff. Add a `MaterialId`, a `WorldMaterial` row, a `MaterialPaint`, and a line here. Joins that birth them still live in `MaterialTree` / [`SPELLS.md`](SPELLS.md).
 
 ---
 

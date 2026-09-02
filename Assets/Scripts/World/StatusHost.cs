@@ -10,6 +10,7 @@ namespace RuneMagic
     public sealed class StatusHost : MonoBehaviour
     {
         public CreatureNature Nature { get; private set; } = CreatureNature.Flesh;
+        public AffinityProfile Profile { get; private set; } = AffinityProfile.Of(CreatureNature.Flesh);
         public IReadOnlyList<StatusInstance> Active => _effects;
         public System.Action<StatusId> OnFatal;
 
@@ -36,6 +37,7 @@ namespace RuneMagic
         public void Bind(CreatureNature nature, Vector3 chipOffset)
         {
             Nature = nature;
+            Profile = AffinityProfile.Of(nature);
             _sprite = GetComponent<SpriteRenderer>();
             if (_sprite != null)
             {
@@ -255,7 +257,8 @@ namespace RuneMagic
                 : spec.NeedsConcentration ? FocusLaw.DefaultRunes(id) : System.Array.Empty<RuneId>();
 
             var incoming = spec.Element;
-            if (!spec.IsWard && incoming != Essence.None && incoming != Essence.Mind)
+            if (!spec.IsWard && incoming != Essence.None && incoming != Essence.Mind
+                && !StrikeLaw.IgnoresWard(source, incoming))
             {
                 var ward = FendingName(incoming);
                 if (!string.IsNullOrEmpty(ward))
@@ -524,61 +527,32 @@ namespace RuneMagic
                 : $"{name}'s {spec.Name} lifts. Focus broke — a mark from that sentence was reused.");
         }
 
+        public void Zombify()
+        {
+            Profile = Profile.AsZombie();
+            Nature = CreatureNature.Undead;
+            Apply(StatusId.Zombified, float.PositiveInfinity);
+        }
+
+        public string Cleanse()
+        {
+            var removed = DropWhere(effect =>
+            {
+                if (effect.Id == StatusId.Zombified || effect.Spec.IsStance)
+                {
+                    return false;
+                }
+
+                return effect.Spec.Kind == StatusKind.Debuff;
+            }, false);
+            return removed > 0
+                ? $"{name} is shown clean. The foul and the hold lift."
+                : $"{name} is already clean.";
+        }
+
         float Affinity(StatusId id)
         {
-            if (id == StatusId.Poisoned)
-            {
-                return Nature == CreatureNature.Flesh || Nature == CreatureNature.Mind ? 1f : 0f;
-            }
-
-            switch (Nature)
-            {
-                case CreatureNature.Fire:
-                    if (id == StatusId.Burning)
-                    {
-                        return 0f;
-                    }
-
-                    if (id == StatusId.Soaked || id == StatusId.Frozen)
-                    {
-                        return 1.45f;
-                    }
-
-                    break;
-                case CreatureNature.Ice:
-                    if (id == StatusId.Frozen)
-                    {
-                        return 0f;
-                    }
-
-                    if (id == StatusId.Burning)
-                    {
-                        return 1.5f;
-                    }
-
-                    break;
-                case CreatureNature.Earth:
-                    if (id == StatusId.Burning || id == StatusId.Frozen || id == StatusId.Soaked)
-                    {
-                        return 0.25f;
-                    }
-
-                    if (id == StatusId.Stunned || StatusSpec.IsMindAilment(id))
-                    {
-                        return 1.2f;
-                    }
-
-                    break;
-                case CreatureNature.Mind:
-                    if (id == StatusId.Stunned || StatusSpec.IsMindAilment(id))
-                    {
-                        return 1.35f;
-                    }
-
-                    break;
-            }
-
-            return 1f;
+            return StrikeLaw.StatusAffinity(Profile, id);
         }
 
         void Update()
@@ -606,7 +580,8 @@ namespace RuneMagic
 
                 if (_effects[i].Spec.IsMeter
                     && VitalLaw.MeterEndsWithoutContact(_effects[i].Id)
-                    && !VitalLaw.ContactFeeds(_effects[i].Id, grid, transform.position, airborne))
+                    && !VitalLaw.ContactFeeds(_effects[i].Id, grid, transform.position, airborne)
+                    && !(_effects[i].Id == StatusId.Burning && Has(StatusId.Rooted)))
                 {
                     _effects.RemoveAt(i);
                     continue;

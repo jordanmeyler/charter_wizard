@@ -1772,7 +1772,7 @@ namespace RuneMagic
 
                         if (WorldWork.IsPush(work))
                         {
-                            var shoved = ShoveHits(impact.Locks, target, origin);
+                            var shoved = ShoveHits(impact.Locks, target, origin, work);
                             workNote = FirstNote(shoved, workNote);
                         }
                     }
@@ -2234,21 +2234,21 @@ namespace RuneMagic
             return best;
         }
 
-        string ShoveHits(IReadOnlyList<ISpellLock> hits, ISpellLock fallback, Vector3 origin)
+        string ShoveHits(IReadOnlyList<ISpellLock> hits, ISpellLock fallback, Vector3 origin, SpellId spell)
         {
             var pushed = 0;
             if (hits != null)
             {
                 for (var i = 0; i < hits.Count; i++)
                 {
-                    if (ShoveLock(hits[i], origin))
+                    if (ShoveLock(hits[i], origin, spell))
                     {
                         pushed++;
                     }
                 }
             }
 
-            if (pushed == 0 && ShoveLock(fallback, origin))
+            if (pushed == 0 && ShoveLock(fallback, origin, spell))
             {
                 pushed++;
             }
@@ -2263,14 +2263,20 @@ namespace RuneMagic
                 : "The wind takes them. They go.";
         }
 
-        bool ShoveLock(ISpellLock encounter, Vector3 origin)
+        bool ShoveLock(ISpellLock encounter, Vector3 origin, SpellId spell = SpellId.Push)
         {
             if (!LockAlive(encounter) || encounter is not MonoBehaviour body || body == null)
             {
                 return false;
             }
 
-            var land = WorldWork.PushLanding(Grid, origin, encounter.WorldPosition);
+            var host = StatusHost.On(body);
+            if (!StrikeLaw.CanPush(spell, host))
+            {
+                return false;
+            }
+
+            var land = WorldWork.PushLanding(Grid, origin, encounter.WorldPosition, StrikeLaw.PushTiles(spell, host));
             if (Vector2.Distance(land, encounter.WorldPosition) < 0.2f)
             {
                 return false;
@@ -2525,6 +2531,11 @@ namespace RuneMagic
             if (encounter is ChargeGate charge && charge.YieldsTo(spell))
             {
                 return true;
+            }
+
+            if (encounter is EncounterLock && encounter is MonoBehaviour body)
+            {
+                return StrikeLaw.Kills(spell, StatusHost.On(body));
             }
 
             if (encounter?.AcceptedKeys == null)

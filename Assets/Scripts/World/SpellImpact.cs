@@ -43,10 +43,17 @@ namespace RuneMagic
             if (verb.Target == SpellTarget.Self)
             {
                 var adept = AdeptAvatar.Find();
-                if (adept != null && verb.Status != StatusId.None)
+                if (adept != null)
                 {
                     var host = StatusHost.On(adept) ?? adept.gameObject.AddComponent<StatusHost>();
-                    notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
+                    if (StrikeLaw.Cleanses(spell))
+                    {
+                        notes.Add(host.Cleanse());
+                    }
+                    else if (verb.Status != StatusId.None)
+                    {
+                        notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
+                    }
                 }
 
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
@@ -116,6 +123,17 @@ namespace RuneMagic
                 if (verb.Status != StatusId.None)
                 {
                     notes.Add(host.Apply(verb.Status, verb.StatusSeconds, AdeptAvatar.Find(), heldRunes, spell));
+                }
+
+                if (StrikeLaw.RaisesDead(spell))
+                {
+                    host.Zombify();
+                    notes.Add($"{body.name} wakes wrong. The grave holds them.");
+                }
+
+                if (StrikeLaw.Cleanses(spell))
+                {
+                    notes.Add(host.Cleanse());
                 }
 
                 if (WorldWork.IsOilWork(spell) && host.Nature == CreatureNature.Fire)

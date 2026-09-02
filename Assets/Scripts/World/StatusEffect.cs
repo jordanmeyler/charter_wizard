@@ -28,7 +28,8 @@ namespace RuneMagic
         Raging,
         Charmed,
         Confused,
-        Poisoned
+        Poisoned,
+        Zombified
     }
 
     public enum StatusKind
@@ -45,7 +46,9 @@ namespace RuneMagic
         Fire,
         Ice,
         Earth,
-        Mind
+        Mind,
+        Plant,
+        Undead
     }
 
     /// <summary>
@@ -150,6 +153,8 @@ namespace RuneMagic
                     return new StatusSpec(id, "confused", StatusKind.Debuff, new Color(0.78f, 0.86f, 0.28f), Essence.Mind, false, false, false);
                 case StatusId.Poisoned:
                     return new StatusSpec(id, "poisoned", StatusKind.Debuff, new Color(0.42f, 0.82f, 0.22f), Essence.Poison, false, false, false);
+                case StatusId.Zombified:
+                    return new StatusSpec(id, "zombified", StatusKind.Debuff, new Color(0.32f, 0.42f, 0.28f), Essence.None, false, false, false);
                 case StatusId.Stoneskin:
                     return new StatusSpec(id, "stoneskin", StatusKind.Ward, new Color(0.62f, 0.58f, 0.5f), Essence.Earth, false, false, true);
                 case StatusId.Veiled:
