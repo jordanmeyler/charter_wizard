@@ -163,7 +163,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 6 | Hunger’s wildcard given a standing body — a wick that stays. | Ignite | Fire · Sulphur · Salt | — | Remote | Neither |
 | 7 | Hunger given breath and sent. A bolt, not a body. Walls stop it. | Lightning | Fire · Air · Mercury | Lightning · Mercury | Shot | Kill |
 | 8 | That bolt finds yield given a standing body. The pool, not the bolt, is what dies. | Chain | Fire · Air · Mercury · Water · Salt | Lightning · Mercury · Water · Salt | Remote | Kill |
-| 9 | The seed given a standing body around your feet. They cannot step. | Live-floor | Fire · Air · Salt | Spark · Salt | Grow | Kill / Restrain |
+| 9 | The seed given a standing body around your feet. They cannot step. Stone holds the spark a second; wood refuses the cell; metal walks it. | Live-floor | Fire · Air · Salt | Spark · Salt | Grow | Kill / Restrain |
 | 10 | The bolt, turned by Sulphur, reaches a mind. They lock. | Jolt | Fire · Air · Sulphur · Mercury | Spark · Sulphur · Mercury | Remote | Restrain |
 | 11 | The bolt meets rest, then every mind around you. They drop. | Thunderclap | Fire · Air · Earth · Sulphur | Lightning · Earth · Sulphur | Grow | Restrain |
 | 12 | The hanging veil given a body, then the bolt is sent from it. | Storm | Air · Water · Salt · Fire · Air · Mercury | Cloud · Salt · Lightning · Mercury | Remote | Kill / Neither |
