@@ -77,6 +77,7 @@ namespace RuneMagic
             StepFire();
             StepHungerPillars();
             StepPoisonWells();
+            StepLightWells();
             StepWet();
             StepCharge();
         }
@@ -132,6 +133,49 @@ namespace RuneMagic
                     }
 
                     _grid.Get(around[n])?.SlickPoison();
+                }
+            }
+        }
+
+        void StepLightWells()
+        {
+            var wells = new List<(Vector2Int Coord, int Radius, Vector3 World)>();
+            foreach (var tile in _grid.All)
+            {
+                if (tile != null && tile.IsLightWell)
+                {
+                    wells.Add((tile.Coord, tile.LightWellRadius > 0 ? tile.LightWellRadius : 2, tile.WorldOrigin));
+                }
+            }
+
+            if (wells.Count == 0)
+            {
+                return;
+            }
+
+            var hosts = FindObjectsByType<StatusHost>(FindObjectsSortMode.None);
+            for (var i = 0; i < wells.Count; i++)
+            {
+                var well = wells[i];
+                var around = WorldWork.Disk(well.Coord, well.Radius);
+                for (var n = 0; n < around.Count; n++)
+                {
+                    _grid.Get(around[n])?.RestoreNature();
+                }
+
+                var reach = well.Radius + 0.6f;
+                for (var h = 0; h < hosts.Length; h++)
+                {
+                    var host = hosts[h];
+                    if (host == null)
+                    {
+                        continue;
+                    }
+
+                    if (Vector2.Distance(host.transform.position, well.World) <= reach)
+                    {
+                        host.Cleanse();
+                    }
                 }
             }
         }

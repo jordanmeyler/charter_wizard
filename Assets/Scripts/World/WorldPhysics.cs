@@ -184,7 +184,8 @@ namespace RuneMagic
                 || WorldWork.IsBoulderWork(spell)
                 || WorldWork.IsLightWork(spell)
                 || WorldWork.IsVineWork(spell)
-                || WorldWork.IsPoisonLiquid(spell);
+                || WorldWork.IsPoisonLiquid(spell)
+                || WorldWork.IsPoisonBreath(spell);
         }
 
         public static ISpellVolume VolumeOf(ISpellLock encounter)
@@ -930,9 +931,12 @@ namespace RuneMagic
 
             if (!WorldWork.IsPoisonLiquid(SpellId.Poison)
                 || !SweepsPath(SpellId.Poison, SpellShape.Shot)
-                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison)
+                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison
+                || !WorldWork.IsPoisonLiquid(SpellId.Hemlock)
+                || !WorldWork.IsPoisonBreath(SpellId.Spore)
+                || !SweepsPath(SpellId.Spore, SpellShape.Shot))
             {
-                broken.Add("Poison spray must send a stream that poisons what it crosses");
+                broken.Add("Poison spray and hemlock must stream; spore must travel as breath");
             }
 
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
@@ -958,9 +962,11 @@ namespace RuneMagic
                 || !WorldWork.IsPlantGrowWork(SpellId.Sprout)
                 || WorldWork.IsPlantGrowWork(SpellId.Forest)
                 || WorldWork.IsPlantGrowWork(SpellId.Grow)
-                || SpellVerb.Of(SpellId.Grow).Radius != PlantLaw.GrowRadius)
+                || SpellVerb.Of(SpellId.Grow).Radius != PlantLaw.GrowRadius
+                || SpellVerb.Of(SpellId.Wolfsbane).Radius != PlantLaw.GrowRadius
+                || WorldWork.IsPlantGrowWork(SpellId.Wolfsbane))
             {
-                broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow does the same at range");
+                broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow and Wolfsbane do the same at range");
             }
 
             MatterLaw.Audit(broken);

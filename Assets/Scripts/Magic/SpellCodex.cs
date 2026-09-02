@@ -73,7 +73,8 @@ namespace RuneMagic
 
     /// <summary>
     /// Written story-chains. 1–40 are the ordinary book (no Death).
-    /// 41–50 are Death / Free. 51 is Time-stop, a longer Free working.
+    /// 41–50 are Death / Free. 51 is Time-stop (Charter).
+    /// 121–128 are plant-cure, light orbs, and living venom.
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -115,7 +116,7 @@ namespace RuneMagic
             E(31, SpellBook.GrowHeal, SpellId.Grow, "A living vegetable body sent. Plant cover at the mark, the way Sprout stands from the feet.", "Grow", "Water · Salt · Earth · Life · Mercury", "Plant · Life · Mercury", "Remote", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Grow", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
-            E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
+            E(34, SpellBook.Cross, SpellId.Flight, "Breath given logos and breath again, going, then stood on you. You fly.", "Flight", "Air · Animus · Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
             E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
@@ -126,13 +127,13 @@ namespace RuneMagic
             E(42, SpellBook.Grave, SpellId.Shade, "Withheld, given a body, marked by the grave, and sent.", "Shade", "Dark · Death · Salt · Mercury", "Shade · Mercury", "Remote", SpellOutcome.Neither, "Free"),
             E(43, SpellBook.Grave, SpellId.Unmake, "The grave is sent into a living body.", "Unmake", "Death · Mercury · Life · Salt", "", "Remote", SpellOutcome.Kill, "Free"),
             E(44, SpellBook.Grave, SpellId.GraveSleep, "The waking passion is given to the grave. Sleep as if dead.", "Grave-sleep", "Life · Sulphur · Death", "", "Remote", SpellOutcome.Restrain, "Free"),
-            E(45, SpellBook.Grave, SpellId.CorpseCall, "The four as a body, marked by the grave, and sent.", "Corpse-call", "Salt · Water · Earth · Fire · Death · Mercury", "", "Remote", SpellOutcome.Neither, "Free"),
+            E(45, SpellBook.Grave, SpellId.CorpseCall, "One grave is opened and a mind is sent. They rise and serve while you hold the sentence.", "Corpse-call", "Salt · Water · Earth · Fire · Death · Mercury", "", "Remote", SpellOutcome.Restrain, "Free"),
             E(46, SpellBook.Grave, SpellId.GraveDust, "Rest marked by the grave. Earth-life and golems come apart.", "Grave-dust", "Earth · Death · Salt", "", "Grow", SpellOutcome.Kill, "Either"),
             E(47, SpellBook.Grave, SpellId.Snuff, "Hunger marked by the grave and sent into a flame.", "Snuff", "Fire · Death · Mercury", "Ember · Mercury", "Remote", SpellOutcome.Neither, "Either"),
             E(48, SpellBook.Grave, SpellId.Blackout, "The seed marked by the grave and sent. A live rod dies.", "Blackout", "Fire · Air · Death · Mercury", "Spark · Death · Mercury", "Shot", SpellOutcome.Neither, "Either"),
-            E(49, SpellBook.Grave, SpellId.GraveIce, "Yield given a body, then the grave. Ice that will not thaw.", "Grave-ice", "Water · Salt · Death", "", "Remote", SpellOutcome.Restrain, "Either"),
+            E(49, SpellBook.Grave, SpellId.DarkCrystal, "Crystal withheld and marked by the grave. They freeze in dark glass. Free masonry — easier than obsidian, notorious among Free sorcerers.", "Dark-crystal", "Crystal · Dark · Death", "Stone · Water · Dark · Death", "Remote", SpellOutcome.Restrain, "Free"),
             E(50, SpellBook.Grave, SpellId.LastBreath, "Living breath, then the grave, sent. The breath leaves them.", "Last breath", "Air · Life · Death · Mercury", "", "Remote", SpellOutcome.Kill, "Free"),
-            E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the motion of instants leaves; the mind cannot hurry.", "Time-stop", "Water · Earth · Dark · Life · Death · Sulphur · Salt", "Ice · Dark · Life · Death · Sulphur · Salt", "Grow", SpellOutcome.Restrain, "Free"),
+            E(51, SpellBook.Hold, SpellId.TimeStop, "Yield and rest are withheld. The living stay; the mind cannot hurry. The stopped moment stands.", "Time-stop", "Water · Earth · Dark · Life · Sulphur · Salt", "Ice · Dark · Life · Sulphur · Salt", "Grow", SpellOutcome.Restrain),
             E(52, SpellBook.Weather, SpellId.Douse, "Yield sent. Water thrown. Hunger ends.", "Douse", "Water · Mercury", "", "Shot", SpellOutcome.Neither),
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. Wind.", "Wind", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
@@ -185,7 +186,31 @@ namespace RuneMagic
             E(101, SpellBook.Mind, SpellId.StoneForm, "Rest given eros and rest again, stood, held. Earth and crushing cannot take you.", "Stone-form", "Earth · Anima · Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(102, SpellBook.Mind, SpellId.GaleForm, "Breath given logos and breath again, stood, held. You become invisible. Enemies lose your trail. Air cannot take you. Fog and foul breath leave as you walk.", "Gale-form", "Air · Animus · Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant given eros and the living plant again, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Anima · Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither),
-            E(104, SpellBook.Mind, SpellId.CloudForm, "The hanging veil given logos and eros and the veil again, stood, held. You become mist and fly. Pits and water cannot hold you.", "Cloud-form", "Air · Water · Fire · Sulphur · Air · Water · Sulphur · Earth · Air · Water · Salt · Sulphur", "Cloud · Animus · Anima · Cloud · Salt · Sulphur", "Self", SpellOutcome.Neither)
+            E(104, SpellBook.Mind, SpellId.CloudForm, "The hanging veil given logos and eros and the veil again, stood, held. You become mist and fly. Pits and water cannot hold you.", "Cloud-form", "Air · Water · Fire · Sulphur · Air · Water · Sulphur · Earth · Air · Water · Salt · Sulphur", "Cloud · Animus · Anima · Cloud · Salt · Sulphur", "Self", SpellOutcome.Neither),
+            E(105, SpellBook.Weather, SpellId.AcidRain, "The hanging veil forced through acid and sent down.", "Acid rain", "Cloud · Acid · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(106, SpellBook.Weather, SpellId.MetalRain, "The hanging veil given iron and sent down. Needles.", "Metal rain", "Cloud · Metal · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(107, SpellBook.Weather, SpellId.LavaRain, "The hanging veil given hungry earth and sent down.", "Lava rain", "Cloud · Lava · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(108, SpellBook.Weather, SpellId.EmberRain, "The hanging veil given hunger and sent down.", "Ember rain", "Cloud · Fire · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(109, SpellBook.Weather, SpellId.SparkRain, "The hanging veil given the seed and sent down.", "Spark rain", "Cloud · Spark · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(110, SpellBook.Weather, SpellId.OilRain, "The hanging veil given fuel and sent down.", "Oil rain", "Cloud · Oil · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(111, SpellBook.Weather, SpellId.AshRain, "The hanging veil given what hunger left and sent down.", "Ash rain", "Cloud · Ash · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(112, SpellBook.Weather, SpellId.PlantRain, "The hanging veil given a vegetable body and sent down. They root.", "Plant rain", "Cloud · Plant · Mercury", "", "Remote", SpellOutcome.Restrain),
+            E(113, SpellBook.Grave, SpellId.DeathCloud, "The hanging veil is withheld, marked by the grave, given logos, and sent.", "Death-cloud", "Cloud · Dark · Death · Animus · Mercury", "", "Remote", SpellOutcome.Kill, "Free"),
+            E(114, SpellBook.Weather, SpellId.AirWall, "Breath given a body, more breath, sent as a span. A wall of wind. They go.", "Air-wall", "Air · Salt · Air · Mercury", "", "Pillar", SpellOutcome.Restrain),
+            E(115, SpellBook.End, SpellId.Glacier, "Hard water given logos and itself again, then sent. Ordinary fire cannot take it.", "Glacier", "Ice · Animus · Ice · Mercury", "Glacier · Mercury", "Shot", SpellOutcome.Kill),
+            E(116, SpellBook.GrowHeal, SpellId.Cleanse, "Shown, given a body of yield, and sent into you. Poison and the lesser holds lift. Tricky work.", "Cleanse", "Light · Salt · Water · Mercury", "", "Self", SpellOutcome.Neither),
+            E(117, SpellBook.Grave, SpellId.Turn, "The waking is given to the grave and a mind is sent. They walk as the dead. Know their formula.", "Turn", "Life · Death · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain, "Free"),
+            E(118, SpellBook.Grave, SpellId.Animate, "Many graves are opened and opened to many. They rise together.", "Animate", "Salt · Water · Earth · Fire · Death · Anima · Mercury", "", "Grow", SpellOutcome.Restrain, "Free"),
+            E(119, SpellBook.Grave, SpellId.DeathHost, "The four as a grave-body, opened to many, the mind holds. The host does not end until focus breaks.", "Death-host", "Salt · Water · Earth · Fire · Death · Anima · Sulphur", "", "Grow", SpellOutcome.Restrain, "Free"),
+            E(120, SpellBook.End, SpellId.Exorcism, "Shown waking, sent. The dead cannot hold.", "Exorcism", "Light · Life · Mercury", "", "Remote", SpellOutcome.Kill),
+            E(121, SpellBook.GrowHeal, SpellId.Wolfsbane, "A living plant given yield and sent. Wolfsbane. A patch grows from the mark. Yield walks it. Poison turns it. Poison already on a plant walks, the way yield walks green.", "Wolfsbane", "Water · Salt · Earth · Life · Water · Mercury", "Plant · Life · Water · Mercury", "Remote", SpellOutcome.Neither),
+            E(122, SpellBook.GrowHeal, SpellId.GroveCure, "A living plant opened to many and sent. Poison lifts around the mark. Blighted green remembers itself.", "Grove-cure", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Mercury", "Plant · Life · Anima · Mercury", "Remote", SpellOutcome.Neither),
+            E(123, SpellBook.GrowHeal, SpellId.SunOrb, "Shown waking, given a body. A sun-orb. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sun-orb", "Light · Life · Salt", "", "Pillar", SpellOutcome.Kill),
+            E(124, SpellBook.GrowHeal, SpellId.Sanctuary, "Shown waking, opened to many, given a body. A sanctuary. Poison lifts. The dead cannot hold. Blighted green remembers itself.", "Sanctuary", "Light · Life · Water · Sulphur · Earth · Salt", "Light · Life · Anima · Salt", "Pillar", SpellOutcome.Kill),
+            E(125, SpellBook.Grave, SpellId.Spore, "The grave of a plant given breath and sent. A spore. Foul breath that poisons what it crosses.", "Spore", "Water · Salt · Earth · Death · Air · Mercury", "Poison · Air · Mercury", "Shot", SpellOutcome.Kill, "Either"),
+            E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
+            E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
+            E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -774,6 +799,7 @@ namespace RuneMagic
             SpanLaw.Audit(broken);
             FocusLaw.Audit(broken);
             VitalLaw.Audit(broken);
+            StrikeLaw.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
             if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _) || !TryGet(SpellId.ObsidianWall, out _))
@@ -935,9 +961,33 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 104)
+            if (Entries.Length < 128)
             {
-                broken.Add("The written book must keep every catalog spell, including Grow, Wither, Tainted-tree, Plant ward, the five elemental forms, and Cloud-form");
+                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, and living venom");
+            }
+
+            var flight = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Animus, RuneId.Air, RuneId.Mercury, RuneId.Salt
+            });
+            var flightExact = ChainBook.CollectExact(flight, SpellShape.None);
+            if (flightExact.Count == 0 || flightExact[0].Spell != SpellId.Flight)
+            {
+                broken.Add("Air · Animus · Air · Mercury · Salt should be Flight");
+            }
+
+            if (!TryGet(SpellId.TimeStop, out var timeStop) || timeStop.FreeOnly)
+            {
+                broken.Add("Time-stop is Charter — it no longer writes Death");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.DarkCrystal, out var darkCrystalBirth)
+                || darkCrystalBirth.Count != 3
+                || darkCrystalBirth[0] != RuneId.Crystal
+                || darkCrystalBirth[1] != RuneId.Umbra
+                || darkCrystalBirth[2] != RuneId.Mors)
+            {
+                broken.Add("Dark-crystal must be Crystal · Dark · Death");
             }
 
             var grow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mercury });
@@ -990,6 +1040,76 @@ namespace RuneMagic
                 || !WorldPhysics.SweepsPath(SpellId.Poison, SpellShape.Shot))
             {
                 broken.Add("Poison · Mercury must be a poison spray that streams along its path");
+            }
+
+            var wolfsbane = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Water, RuneId.Mercury });
+            var wolfsbaneExact = ChainBook.CollectExact(wolfsbane, SpellShape.None);
+            if (wolfsbaneExact.Count == 0 || wolfsbaneExact[0].Spell != SpellId.Wolfsbane)
+            {
+                broken.Add("Plant · Life · Water · Mercury should be Wolfsbane");
+            }
+
+            var groveCure = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Anima, RuneId.Mercury });
+            var groveCureExact = ChainBook.CollectExact(groveCure, SpellShape.None);
+            if (groveCureExact.Count == 0 || groveCureExact[0].Spell != SpellId.GroveCure)
+            {
+                broken.Add("Plant · Life · Anima · Mercury should be Grove-cure");
+            }
+
+            var sunOrb = Composition.FromSequence(new[] { RuneId.Lumen, RuneId.Vita, RuneId.Salt });
+            var sunOrbExact = ChainBook.CollectExact(sunOrb, SpellShape.None);
+            if (sunOrbExact.Count == 0 || sunOrbExact[0].Spell != SpellId.SunOrb)
+            {
+                broken.Add("Light · Life · Salt should be Sun-orb");
+            }
+
+            var sanctuary = Composition.FromSequence(new[] { RuneId.Lumen, RuneId.Vita, RuneId.Anima, RuneId.Salt });
+            var sanctuaryExact = ChainBook.CollectExact(sanctuary, SpellShape.None);
+            if (sanctuaryExact.Count == 0 || sanctuaryExact[0].Spell != SpellId.Sanctuary)
+            {
+                broken.Add("Light · Life · Anima · Salt should be Sanctuary");
+            }
+
+            var spore = Composition.FromSequence(new[] { RuneId.Poison, RuneId.Air, RuneId.Mercury });
+            var sporeExact = ChainBook.CollectExact(spore, SpellShape.None);
+            if (sporeExact.Count == 0 || sporeExact[0].Spell != SpellId.Spore)
+            {
+                broken.Add("Poison · Air · Mercury should be Spore");
+            }
+
+            var hemlock = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mors, RuneId.Mercury });
+            var hemlockExact = ChainBook.CollectExact(hemlock, SpellShape.None);
+            if (hemlockExact.Count == 0 || hemlockExact[0].Spell != SpellId.Hemlock)
+            {
+                broken.Add("Plant · Life · Death · Mercury should be Hemlock");
+            }
+
+            var nightshade = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mors, RuneId.Salt });
+            var nightshadeExact = ChainBook.CollectExact(nightshade, SpellShape.None);
+            if (nightshadeExact.Count == 0 || nightshadeExact[0].Spell != SpellId.Nightshade)
+            {
+                broken.Add("Plant · Life · Death · Salt should be Nightshade");
+            }
+
+            var briar = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Salt, RuneId.Mercury });
+            var briarExact = ChainBook.CollectExact(briar, SpellShape.None);
+            if (briarExact.Count == 0 || briarExact[0].Spell != SpellId.Briar)
+            {
+                broken.Add("Plant · Life · Salt · Mercury should be Briar");
+            }
+
+            if (SpellVerb.Of(SpellId.Wolfsbane).Tiles != TileVerb.Grow
+                || SpellVerb.Of(SpellId.Wolfsbane).Radius != PlantLaw.GrowRadius
+                || SpellVerb.Of(SpellId.SunOrb).Tiles != TileVerb.Restore
+                || !StrikeLaw.Cleanses(SpellId.Wolfsbane)
+                || !PlantLaw.PlantsNewBodies(SpellId.Wolfsbane)
+                || !WorldWork.IsPoisonBreath(SpellId.Spore)
+                || !WorldWork.IsPoisonLiquid(SpellId.Hemlock)
+                || !WorldWork.IsPoisonWell(SpellId.Nightshade)
+                || !WorldWork.IsVineWork(SpellId.Briar)
+                || !WorldWork.IsLightWell(SpellId.SunOrb))
+            {
+                broken.Add("Wolfsbane is a sent living patch; spore is breath; hemlock is liquid; nightshade weeps; briar climbs; the orb stands");
             }
 
             var cloudForm = Composition.FromSequence(new[]

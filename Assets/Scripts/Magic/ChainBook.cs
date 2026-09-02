@@ -64,6 +64,7 @@ namespace RuneMagic
             SetBirth(RuneId.Oil, RuneId.Plant, RuneId.Fire, RuneId.Earth);
             SetBirth(RuneId.Miasma, RuneId.Cloud, RuneId.Acid);
             SetBirth(RuneId.Aether, RuneId.Lumen, RuneId.Umbra);
+            SetBirth(RuneId.DarkCrystal, RuneId.Crystal, RuneId.Umbra, RuneId.Mors);
 
             Shapes["shot"] = SpellShape.Shot;
             Shapes["pillar"] = SpellShape.Pillar;

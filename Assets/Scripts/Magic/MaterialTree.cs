@@ -50,6 +50,7 @@ namespace RuneMagic
             Add(RuneId.Plant, RuneId.Mors, RuneId.Poison, BlendKind.Stable, "The vegetable body, then the grave. Plant · Death → Poison.");
             Add(RuneId.Flame, RuneId.Lightning, RuneId.Plasma, BlendKind.Violent, "Witchfire joined to the bolt. Flame · Lightning → Plasma.");
             Add(RuneId.Cloud, RuneId.Acid, RuneId.Miasma, BlendKind.Violent, "The hanging veil forced through acid. Cloud · Acid → Miasma.");
+            Add(RuneId.Crystal, RuneId.Umbra, RuneId.DarkCrystal, BlendKind.Stable, "Crystal withheld. Dark-crystal is Free masonry.");
         }
 
         public static IReadOnlyList<(RuneId Left, RuneId Right, BlendResult Result)> All => Canonical;
