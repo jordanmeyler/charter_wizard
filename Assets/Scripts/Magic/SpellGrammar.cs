@@ -152,8 +152,7 @@ namespace RuneMagic
         Briar,
         // Aliases of earlier ids. Keep these last so they do not
         // reset the next unique values.
-        DarkCrystal = GraveIce,
-        Wort = Wolfsbane
+        DarkCrystal = GraveIce
     }
 
     public readonly struct SpellRecipe
@@ -378,8 +377,7 @@ namespace RuneMagic
             {
                 "Grow=VineRise", "VineRise=Grow",
                 "Wither=Grotto", "Grotto=Wither",
-                "DarkCrystal=GraveIce", "GraveIce=DarkCrystal",
-                "Wort=Wolfsbane", "Wolfsbane=Wort"
+                "DarkCrystal=GraveIce", "GraveIce=DarkCrystal"
             };
 
             var byValue = new Dictionary<int, string>();

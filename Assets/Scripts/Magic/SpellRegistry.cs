@@ -74,8 +74,7 @@ namespace RuneMagic
                 return SpellId.AirWall;
             }
 
-            if (key.Equals("wort", System.StringComparison.OrdinalIgnoreCase)
-                || key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase)
+            if (key.Equals("remedy", System.StringComparison.OrdinalIgnoreCase)
                 || key.Equals("wolfsbane", System.StringComparison.OrdinalIgnoreCase))
             {
                 Remember(key, SpellId.Wolfsbane);
