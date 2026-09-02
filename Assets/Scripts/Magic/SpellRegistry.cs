@@ -32,6 +32,26 @@ namespace RuneMagic
                 return SpellId.Gust;
             }
 
+            if (key.Equals("vinerise", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("grow", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Grow);
+                return SpellId.Grow;
+            }
+
+            if (key.Equals("grotto", System.StringComparison.OrdinalIgnoreCase)
+                || key.Equals("wither", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Wither);
+                return SpellId.Wither;
+            }
+
+            if (key.Equals("poisonspray", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.Poison);
+                return SpellId.Poison;
+            }
+
             if (System.Enum.TryParse(key, true, out SpellId enumerated) && enumerated != SpellId.None)
             {
                 Remember(key, enumerated);

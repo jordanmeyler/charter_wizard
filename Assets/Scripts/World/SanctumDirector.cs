@@ -237,7 +237,11 @@ namespace RuneMagic
 
             if (Underfoot != null && Underfoot.IsDeepWater && (adept == null || !adept.IsAirborne))
             {
-                FallInPit(player);
+                var host = StatusHost.On(player);
+                if (host == null || !host.WalksOnWater)
+                {
+                    FallInPit(player);
+                }
             }
 
             if (Underfoot != null && Underfoot.HasMiasma && (adept == null || !adept.IsAirborne))
@@ -261,6 +265,11 @@ namespace RuneMagic
                 }
             }
 
+            if (Underfoot != null)
+            {
+                TickStanceWalk(player, Underfoot);
+            }
+
             if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 var host = StatusHost.On(player);
@@ -272,7 +281,7 @@ namespace RuneMagic
                     if (Underfoot.Kindled && !warded && (adept == null || !adept.IsAirborne))
                     {
                         KillPlayer(DeathCause.Plain(
-                            "The flaming hall finds you. Wear a water ward, or throw yield first."));
+                            "The flaming hall finds you. Wear a flame ward, or throw yield first."));
                     }
                 }
 
@@ -2355,11 +2364,45 @@ namespace RuneMagic
             CheckFinished();
         }
 
+        void TickStanceWalk(Transform player, WorldTile tile)
+        {
+            if (tile == null || player == null)
+            {
+                return;
+            }
+
+            var host = StatusHost.On(player);
+            if (host == null)
+            {
+                return;
+            }
+
+            if (host.SproutsWhileWalking)
+            {
+                tile.PlacePlantCover();
+            }
+
+            if (host.ClearsVeilsWhileWalking)
+            {
+                tile.Vent(SpellId.Gust);
+            }
+
+            if (host.DousesWhileWalking)
+            {
+                tile.Drench(0.45f);
+            }
+
+            if (host.KindlesWhileWalking && !tile.IsDeepWater)
+            {
+                tile.Ignite(0.35f);
+            }
+        }
+
         public void FallInPit(Transform player)
         {
             var wet = Underfoot != null && Underfoot.Material == MaterialId.Water;
             KnockBack(player, wet
-                ? "You cannot swim. Freeze it, span it, dry it, or give breath a body and cross."
+                ? "You cannot swim. Wear a water ward, freeze it, span it, dry it, or give breath a body and cross."
                 : "The pit takes you. Raise a column, draw a wall across, or give breath a body and leap.");
         }
 

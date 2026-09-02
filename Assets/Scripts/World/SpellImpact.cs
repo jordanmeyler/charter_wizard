@@ -270,6 +270,13 @@ namespace RuneMagic
                         }
 
                         break;
+                    case TileVerb.Wither:
+                        if (tile.WitherPlant())
+                        {
+                            changed++;
+                        }
+
+                        break;
                 }
             }
 
@@ -313,7 +320,9 @@ namespace RuneMagic
                 notes.Add(verb.Tiles == TileVerb.Grow
                     ? (spell == SpellId.Forest
                         ? "A living plant opens to every water you can see."
-                        : "Plant cover stands from your feet.")
+                        : spell == SpellId.Grow
+                            ? "The living plant is sent. Green stands at the mark."
+                            : "Plant cover stands from your feet.")
                     : verb.Tiles == TileVerb.Ignite
                         ? "Hunger finds the floor."
                         : verb.Tiles == TileVerb.Charge
@@ -330,7 +339,9 @@ namespace RuneMagic
                                                 ? "Loose rest lands. Ground-fire dies. Earth speaks here."
                                                 : verb.Tiles == TileVerb.Vine
                                                     ? "The vegetable body climbs. Hunger can run this line as a wick."
-                                                    : "Yield finds the floor.");
+                                                    : verb.Tiles == TileVerb.Wither
+                                                        ? "The vegetable body is withheld. What remains speaks Death."
+                                                        : "Yield finds the floor.");
             }
         }
 

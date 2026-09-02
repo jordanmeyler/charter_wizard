@@ -16,8 +16,8 @@ namespace RuneMagic
         public bool CanLook => true;
 
         public string LookText => GlyphView.Speak(
-            "a hall of hunger. Water ward is Water · Salt · Sulphur — wear it and walk. Yield thrown also puts the flame out, but there is no water here to throw.",
-            "a hall of hunger. Yield given a body, then the mind holds it on you. The three marks write that sentence. Wear it and walk. Yield thrown also forgets the flame — but yield has no vessel here.");
+            "a hall of hunger. Flame ward is Fire · Salt · Sulphur — wear it and walk. Yield thrown also puts the flame out, but there is no water here to throw.",
+            "a hall of hunger. Hunger given a body, then the mind holds it on you. The three marks write that sentence. Wear it and walk. Yield thrown also forgets the flame — but yield has no vessel here.");
 
         public static FlameHall Spawn(Vector3 position)
         {
@@ -46,7 +46,7 @@ namespace RuneMagic
             renderer.sortingOrder = 2;
             renderer.color = new Color(1f, 0.55f, 0.22f, 0.95f);
             WorldLabel.Attach(transform,
-                GlyphView.Speak("Water · Salt · Sulphur", "Wear yield. The marks write the ward."),
+                GlyphView.Speak("Fire · Salt · Sulphur", "Wear hunger. The marks write the ward."),
                 new Vector3(0f, 0.62f, 0f),
                 new Color(1f, 0.72f, 0.38f), 12);
             Lookables.Register(this);
@@ -67,8 +67,8 @@ namespace RuneMagic
 
             _told = true;
             FindFirstObjectByType<SanctumDirector>()?.Log(GlyphView.Speak(
-                "Hunger holds the walk. Water · Salt · Sulphur is a water ward — wear it and the hall will not take you. Douse also works, if you can throw yield.",
-                "Hunger holds the walk. The three marks are a ward: yield given a body, then the mind holds it on you. Wear that and walk. Yield thrown also forgets the flame."));
+                "Hunger holds the walk. Fire · Salt · Sulphur is a flame ward — wear it and the hall will not take you. Douse also works, if you can throw yield.",
+                "Hunger holds the walk. The three marks are a ward: hunger given a body, then the mind holds it on you. Wear that and walk. Yield thrown also forgets the flame."));
         }
 
         void OnDisable()

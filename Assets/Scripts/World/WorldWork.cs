@@ -99,7 +99,7 @@ namespace RuneMagic
                 case SpellId.MetalWall:
                 case SpellId.ObsidianWall:
                 case SpellId.WoodWall:
-                case SpellId.VineRise:
+                case SpellId.TaintedTree:
                 case SpellId.StonePillar:
                 case SpellId.EarthPillar:
                 case SpellId.MetalPillar:
@@ -541,7 +541,7 @@ namespace RuneMagic
                 return MaterialId.Lava;
             }
 
-            if (spell == SpellId.VineRise)
+            if (spell == SpellId.TaintedTree)
             {
                 return MaterialId.Grove;
             }
@@ -766,6 +766,24 @@ namespace RuneMagic
                 }
             }
 
+            if (IsPoisonLiquid(spell))
+            {
+                var slicked = SlickPoison(grid, cells);
+                if (slicked > 0)
+                {
+                    notes.Add("A stream of the grave of a plant finds the walk. It poisons what it crosses.");
+                }
+            }
+
+            if (IsPoisonWell(spell))
+            {
+                var mouth = grid.Get(CoordOf(to));
+                if (mouth != null && mouth.MarkPoisonWell())
+                {
+                    notes.Add("A tainted tree stands. Poison weeps onto the tiles beside it.");
+                }
+            }
+
             return FirstFilled(notes);
         }
 
@@ -895,6 +913,29 @@ namespace RuneMagic
                 {
                     changed++;
                 }
+            }
+
+            return changed;
+        }
+
+        public static int SlickPoison(WorldGrid grid, List<Vector2Int> cells)
+        {
+            if (grid == null || cells == null || cells.Count == 0)
+            {
+                return 0;
+            }
+
+            var changed = 0;
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var tile = grid.Get(cells[i]);
+                if (tile == null)
+                {
+                    continue;
+                }
+
+                tile.SlickPoison();
+                changed++;
             }
 
             return changed;
@@ -1040,6 +1081,30 @@ namespace RuneMagic
             return (maxX - minX + 1) < SmallPitSpan && (maxY - minY + 1) < SmallPitSpan;
         }
 
+        public static bool IsPlantWork(SpellId spell)
+        {
+            switch (spell)
+            {
+                case SpellId.Sprout:
+                case SpellId.Grow:
+                case SpellId.Grove:
+                case SpellId.CallGrowth:
+                case SpellId.Forest:
+                case SpellId.Vine:
+                case SpellId.Tree:
+                case SpellId.WoodWall:
+                case SpellId.Plantward:
+                case SpellId.GroveForm:
+                case SpellId.Wither:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsPoisonWell(SpellId spell) =>
+            spell == SpellId.TaintedTree;
+
         public static bool IsPlantGrowWork(SpellId spell)
         {
             return spell == SpellId.Sprout || spell == SpellId.Grove;
@@ -1060,6 +1125,7 @@ namespace RuneMagic
                 case SpellId.Quagmire:
                 case SpellId.Sprout:
                 case SpellId.Grove:
+                case SpellId.Wither:
                 case SpellId.Darkness:
                 case SpellId.Miasma:
                 case SpellId.Monsoon:
@@ -1093,7 +1159,7 @@ namespace RuneMagic
                 || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.Douse
                 || spell == SpellId.IceSpear || spell == SpellId.LightningBolt
                 || spell == SpellId.BrilliantArc || spell == SpellId.Blackout
-                || spell == SpellId.Vine)
+                || spell == SpellId.Vine || spell == SpellId.Poison)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }

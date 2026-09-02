@@ -183,7 +183,8 @@ namespace RuneMagic
                 || WorldWork.IsShatterWork(spell)
                 || WorldWork.IsBoulderWork(spell)
                 || WorldWork.IsLightWork(spell)
-                || WorldWork.IsVineWork(spell);
+                || WorldWork.IsVineWork(spell)
+                || WorldWork.IsPoisonLiquid(spell);
         }
 
         public static ISpellVolume VolumeOf(ISpellLock encounter)
@@ -352,6 +353,16 @@ namespace RuneMagic
             if (WorldWork.IsWaterWork(spell) || WorldWork.FreezesWater(spell))
             {
                 return Essence.Water;
+            }
+
+            if (WorldWork.IsPlantWork(spell) || WorldWork.IsVineWork(spell))
+            {
+                return Essence.Plant;
+            }
+
+            if (WorldWork.IsPoisonLiquid(spell) || WorldWork.IsPoisonVeil(spell) || WorldWork.IsPoisonWell(spell))
+            {
+                return Essence.Poison;
             }
 
             if (WorldWork.IsShatterWork(spell) || WorldWork.IsBoulderWork(spell) || WorldWork.IsPillar(spell)
@@ -915,6 +926,13 @@ namespace RuneMagic
                 broken.Add("Vine must send a climbing body that hunger can run as a wick");
             }
 
+            if (!WorldWork.IsPoisonLiquid(SpellId.Poison)
+                || !SweepsPath(SpellId.Poison, SpellShape.Shot)
+                || SpellVerb.Of(SpellId.Poison).Tiles != TileVerb.Poison)
+            {
+                broken.Add("Poison spray must send a stream that poisons what it crosses");
+            }
+
             if (DominantAura(VeilKind.Darkness, false, true) != VeilKind.Darkness
                 || DominantAura(VeilKind.None, false, true) != VeilKind.Fog
                 || SpellVerb.Of(SpellId.Darkness).Tiles != TileVerb.Cloak)
@@ -933,9 +951,11 @@ namespace RuneMagic
 
             if (SpellVerb.Of(SpellId.Sprout).Radius != PlantLaw.GrowRadius
                 || !WorldWork.IsPlantGrowWork(SpellId.Sprout)
-                || WorldWork.IsPlantGrowWork(SpellId.Forest))
+                || WorldWork.IsPlantGrowWork(SpellId.Forest)
+                || WorldWork.IsPlantGrowWork(SpellId.Grow)
+                || SpellVerb.Of(SpellId.Grow).Radius != PlantLaw.GrowRadius)
             {
-                broken.Add("Sprout must grow a three-tile plant cover from the feet");
+                broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow does the same at range");
             }
 
             MatterLaw.Audit(broken);

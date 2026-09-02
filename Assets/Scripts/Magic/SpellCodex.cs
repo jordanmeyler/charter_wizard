@@ -112,7 +112,7 @@ namespace RuneMagic
             E(28, SpellBook.Cross, SpellId.ObsidianPath, "Hungry earth quenched and given a body. A path.", "Obsidian path", "Fire · Earth · Salt · Water", "Lava · Salt · Water", "Remote", SpellOutcome.Neither),
             E(29, SpellBook.GrowHeal, SpellId.Sprout, "A vegetable body marked living, from the feet. Plant cover in a three-tile disk.", "Sprout", "Water · Salt · Earth · Life", "Plant · Life", "Grow", SpellOutcome.Neither),
             E(30, SpellBook.Hold, SpellId.Vine, "The vegetable body sent. A climbing line from you to the mark. It holds them, and hunger can run it as a wick. A spell — the field speaks Plant.", "Vine", "Water · Salt · Earth · Mercury", "Plant · Mercury", "Shot", SpellOutcome.Restrain),
-            E(31, SpellBook.GrowHeal, SpellId.VineRise, "The sent plant asked to stand.", "Vine-rise", "Water · Salt · Earth · Mercury · Earth", "Plant · Mercury · Earth", "Pillar", SpellOutcome.Neither),
+            E(31, SpellBook.GrowHeal, SpellId.Grow, "A living vegetable body sent. Plant cover at the mark, the way Sprout stands from the feet.", "Grow", "Water · Salt · Earth · Life · Mercury", "Plant · Life · Mercury", "Remote", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Grow", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
             E(34, SpellBook.Cross, SpellId.Flight, "Breath going, given a body, kept on you. You fly.", "Flight", "Air · Mercury · Salt", "Air · Mercury · Salt · Life · Mercury", "Self", SpellOutcome.Neither),
@@ -137,10 +137,10 @@ namespace RuneMagic
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. Wind.", "Wind", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
             E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth. Over a pit it must join two floors, or it falls. Water takes mud, not a span.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar),
-            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Arrows break. Hunger sent still finds you.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Hunger breaks.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Rest thrown breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Yield thrown breaks. Foul breath also breaks.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams — break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Water breaks. You walk on yield.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Fire breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Air breaks. Fog and foul breath leave.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a standing body. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt", "Lava · Salt", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
@@ -152,7 +152,7 @@ namespace RuneMagic
             E(68, SpellBook.Mind, SpellId.Charm, "A living mind is reached and sent. They fetch, and they fight what you have marked.", "Charm", "Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(69, SpellBook.Hold, SpellId.Swamp, "Rest meeting yield, going, given a body around your feet. A watery swamp.", "Swamp", "Earth · Water · Mercury · Salt", "Mud · Mercury · Salt", "Grow", SpellOutcome.Restrain),
             E(70, SpellBook.End, SpellId.Witchfire, "Fire given logos and its own perpetuity, then sent. Witchfire. It eats what ordinary hunger cannot.", "Witchfire", "Fire · Animus · Fire · Mercury", "Flame · Mercury", "Remote", SpellOutcome.Kill),
-            E(71, SpellBook.Cross, SpellId.Grotto, "The vegetable body is withheld. Rest opens a damp cave.", "Grotto", "Water · Salt · Earth · Dark", "Plant · Dark", "Remote", SpellOutcome.Neither),
+            E(71, SpellBook.GrowHeal, SpellId.Wither, "The vegetable body is withheld. Plants around your feet die. What remains speaks Death.", "Wither", "Water · Salt · Earth · Dark", "Plant · Dark", "Grow", SpellOutcome.Kill),
             E(72, SpellBook.Weather, SpellId.Thunder, "The arc meeting rest.", "Thunder", "Fire · Air · Earth", "Lightning · Earth", "Remote", SpellOutcome.Neither),
             E(73, SpellBook.SeeHide, SpellId.Darkness, "The hanging veil is withheld. Nothing in the vicinity can see.", "Darkness", "Air · Water · Dark", "Cloud · Dark", "Remote", SpellOutcome.Neither),
             E(74, SpellBook.Weather, SpellId.Blizzard, "The veil given ice, a body, going, and wind.", "Blizzard", "Air · Water · Salt · Water · Earth · Mercury · Air · Mercury", "Cloud · Salt · Ice · Mercury · Air · Mercury", "Remote", SpellOutcome.Restrain),
@@ -160,7 +160,7 @@ namespace RuneMagic
             E(76, SpellBook.Cross, SpellId.WaterPillar, "Yield and rest given a standing body. A column of water.", "Water-pillar", "Water · Earth · Salt", "Ice · Salt", "Pillar", SpellOutcome.Neither),
             E(77, SpellBook.End, SpellId.OilShot, "Fuel sent. Surfaces hold flame. Fire already standing grows.", "Oil shot", "Water · Salt · Earth · Fire · Earth · Mercury", "Oil · Mercury", "Shot", SpellOutcome.Neither),
             E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. A later fire sentence would make it a bomb.", "Oil-pillar", "Water · Salt · Earth · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
-            E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent.", "Poison", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
+            E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent as a stream. It poisons what it crosses.", "Poison spray", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Grow", SpellOutcome.Kill),
             E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
             E(82, SpellBook.End, SpellId.FirePillar, "Hunger given a standing body. A column of fire. Without a source it goes out in a few seconds.", "Fire-pillar", "Fire · Salt", "", "Pillar", SpellOutcome.Kill),
@@ -177,7 +177,14 @@ namespace RuneMagic
             E(93, SpellBook.End, SpellId.OilPuddle, "Fuel given a standing body. A puddle. Surfaces hold flame.", "Oil puddle", "Water · Salt · Earth · Fire · Earth · Salt", "Oil · Salt", "Remote", SpellOutcome.Neither),
             E(94, SpellBook.End, SpellId.OilGeyser, "A stood fountain of fuel, sent to a point. Hunger that finds it will not leave — it burns as hall-fire does, until yield is thrown.", "Oil geyser", "Water · Salt · Earth · Fire · Earth · Salt · Mercury", "Oil · Salt · Mercury", "Remote", SpellOutcome.Neither),
             E(95, SpellBook.End, SpellId.OilSlick, "Fuel given a body, then more fuel. It runs outward from a point and covers a wide floor.", "Oil slick", "Water · Salt · Earth · Fire · Earth · Salt · Water · Salt · Earth · Fire · Earth", "Oil · Salt · Oil", "Remote", SpellOutcome.Neither),
-            E(96, SpellBook.GrowHeal, SpellId.Forest, "A living plant opened to many, then more living plant. It drinks every water still on the screen and covers the pool to the edge of what you can see.", "Forest", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life", "Plant · Life · Anima · Plant · Life", "Remote", SpellOutcome.Neither)
+            E(96, SpellBook.GrowHeal, SpellId.Forest, "A living plant opened to many, then more living plant. It drinks every water still on the screen and covers the pool to the edge of what you can see.", "Forest", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life", "Plant · Life · Anima · Plant · Life", "Remote", SpellOutcome.Neither),
+            E(97, SpellBook.Grave, SpellId.TaintedTree, "The grave of a plant given a standing body and asked to rest. A tainted tree. It weeps poison onto adjacent tiles until it is destroyed.", "Tainted-tree", "Water · Salt · Earth · Death · Salt · Earth", "Poison · Salt · Earth", "Pillar", SpellOutcome.Kill, "Either"),
+            E(98, SpellBook.Mind, SpellId.Plantward, "A living plant stood, then the mind holds it on you. Plant, yield, and rest break. Green springs from your feet as you walk.", "Plant ward", "Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither),
+            E(99, SpellBook.Mind, SpellId.FlameForm, "Witchfire given a body, then the mind holds you as that body. Hunger cannot take you. The walk kindles.", "Flame-form", "Fire · Animus · Fire · Salt · Sulphur", "Flame · Salt · Sulphur", "Self", SpellOutcome.Neither),
+            E(100, SpellBook.Mind, SpellId.TideForm, "Yield given mind and yield again, stood, held. Water cannot take you. You walk it, and the walk is wet.", "Tide-form", "Water · Anima · Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(101, SpellBook.Mind, SpellId.StoneForm, "Rest given logos and rest again, stood, held. Earth and crushing cannot take you.", "Stone-form", "Earth · Animus · Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(102, SpellBook.Mind, SpellId.GaleForm, "Breath given logos and breath again, stood, held. Air cannot take you. Fog and foul breath leave as you walk.", "Gale-form", "Air · Animus · Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant opened to many, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Salt · Sulphur", "Plant · Life · Anima · Salt · Sulphur", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -578,7 +585,7 @@ namespace RuneMagic
                 || WorldWork.StopsOnWalls(SpellId.Rain)
                 || WorldWork.StopsOnWalls(SpellId.Hop)
                 || WorldWork.StopsOnWalls(SpellId.Wall)
-                || WorldWork.StopsOnWalls(SpellId.Grotto))
+                || WorldWork.StopsOnWalls(SpellId.Wither))
             {
                 broken.Add("Remote, hop, and stood work must not be treated as flying shots");
             }
@@ -722,11 +729,12 @@ namespace RuneMagic
                 broken.Add("Flame · Lightning · Mercury should be Plasma");
             }
 
-            if (!TryGet(SpellId.Grotto, out var grotto)
-                || !ChainBook.SameStory(grotto.RecipeRunes, ChainBook.Parse("Water · Salt · Earth · Dark"))
-                || !ChainBook.SameStory(grotto.ViaRunes, ChainBook.Parse("Plant · Dark")))
+            if (!TryGet(SpellId.Wither, out var wither)
+                || !ChainBook.SameStory(wither.RecipeRunes, ChainBook.Parse("Water · Salt · Earth · Dark"))
+                || !ChainBook.SameStory(wither.ViaRunes, ChainBook.Parse("Plant · Dark"))
+                || wither.Shape != SpellShape.Spread)
             {
-                broken.Add("Grotto must be Water · Salt · Earth · Dark, via Plant · Dark");
+                broken.Add("Wither must be Water · Salt · Earth · Dark, via Plant · Dark, from the feet");
             }
 
             if (!TryGet(SpellId.StormCall, out var storm)
@@ -912,9 +920,61 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 96)
+            if (Entries.Length < 103)
             {
-                broken.Add("The written book must keep every catalog spell, including 82 Fire-pillar, 91–92 Tree and Wood-wall, 93–95 oil coverings, and 96 Forest");
+                broken.Add("The written book must keep every catalog spell, including Grow, Wither, Tainted-tree, Plant ward, and the five elemental forms");
+            }
+
+            var grow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Mercury });
+            var growExact = ChainBook.CollectExact(grow, SpellShape.None);
+            if (growExact.Count == 0 || growExact[0].Spell != SpellId.Grow)
+            {
+                broken.Add("Plant · Life · Mercury should be Grow");
+            }
+
+            var oldVineRise = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Mercury, RuneId.Earth });
+            if (ChainBook.CollectExact(oldVineRise, SpellShape.None).Count != 0)
+            {
+                broken.Add("Plant · Mercury · Earth is no longer Vine-rise — Grow is Plant · Life · Mercury");
+            }
+
+            var tainted = Composition.FromSequence(new[] { RuneId.Poison, RuneId.Salt, RuneId.Earth });
+            var taintedExact = ChainBook.CollectExact(tainted, SpellShape.None);
+            if (taintedExact.Count == 0 || taintedExact[0].Spell != SpellId.TaintedTree)
+            {
+                broken.Add("Poison · Salt · Earth should be Tainted-tree");
+            }
+
+            var plantWard = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Salt, RuneId.Sulphur });
+            var plantWardExact = ChainBook.CollectExact(plantWard, SpellShape.None);
+            if (plantWardExact.Count == 0 || plantWardExact[0].Spell != SpellId.Plantward)
+            {
+                broken.Add("Plant · Life · Salt · Sulphur should be Plant ward");
+            }
+
+            if (!ElementalLaw.WardsAgainst(Essence.Fire, Essence.Fire)
+                || !ElementalLaw.WardsAgainst(Essence.Water, Essence.Water)
+                || ElementalLaw.WardsAgainst(Essence.Water, Essence.Fire)
+                || !ElementalLaw.WardsAgainst(Essence.Plant, Essence.Water)
+                || !ElementalLaw.WardsAgainst(Essence.Plant, Essence.Earth)
+                || !ElementalLaw.WardsAgainst(Essence.Plant, Essence.Plant))
+            {
+                broken.Add("A ward must turn its own element and the roots that constructed it, not the old opposite");
+            }
+
+            if (SpellVerb.Of(SpellId.Grow).Tiles != TileVerb.Grow
+                || WorldWork.IsPlantGrowWork(SpellId.Grow)
+                || SpellVerb.Of(SpellId.Wither).Tiles != TileVerb.Wither)
+            {
+                broken.Add("Grow is sprout at range; Wither withholds plant from the feet");
+            }
+
+            if (!TryGet(SpellId.Poison, out var poisonSpray)
+                || poisonSpray.Name != "Poison spray"
+                || !WorldWork.IsPoisonLiquid(SpellId.Poison)
+                || !WorldPhysics.SweepsPath(SpellId.Poison, SpellShape.Shot))
+            {
+                broken.Add("Poison · Mercury must be a poison spray that streams along its path");
             }
         }
 

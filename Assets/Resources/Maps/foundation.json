@@ -1298,7 +1298,7 @@
           "x": 14,
           "y": 9,
           "runes": [
-            "Water"
+            "Fire"
           ],
           "dir": "up"
         },
@@ -1307,7 +1307,7 @@
           "x": 10,
           "y": 9,
           "runes": [
-            "Water",
+            "Fire",
             "Salt",
             "Sulphur"
           ],

@@ -38,6 +38,7 @@ namespace RuneMagic
         ScatterDust,
         Sprout,
         VineRise,
+        Grow = VineRise,
         CallGrowth,
         Melt,
         Ignite,
@@ -92,6 +93,7 @@ namespace RuneMagic
         Witchfire,
         Grove,
         Grotto,
+        Wither = Grotto,
         Thunder,
         Darkness,
         Blizzard,
@@ -115,7 +117,14 @@ namespace RuneMagic
         OilPuddle,
         OilGeyser,
         OilSlick,
-        FirePillar
+        FirePillar,
+        TaintedTree,
+        Plantward,
+        FlameForm,
+        TideForm,
+        StoneForm,
+        GaleForm,
+        GroveForm
     }
 
     public readonly struct SpellRecipe
@@ -213,20 +222,26 @@ namespace RuneMagic
             Register(RuneId.Mud, RuneId.Mercury, SpellShape.Spread, SpellId.Swamp, "Swamp", "Compressed. Catalog: Earth · Water · Mercury · Salt. A watery swamp from the feet.");
             Register(RuneId.Mud, RuneId.Salt, SpellShape.Spread, SpellId.Quagmire, "Quagmire", "Compressed. Catalog: Earth · Water · Salt. Soft ground given a body.");
             Register(RuneId.Plant, RuneId.Mercury, SpellShape.Shot, SpellId.Vine, "Vine", "Compressed. Catalog: Plant · Mercury. The vegetable body sent. A climbing line, and a wick. A spell, not a rune.");
-            Register(RuneId.Plant, RuneId.Mercury, SpellShape.Pillar, SpellId.VineRise, "Vine-rise", "The sent plant asked to stand.");
+            Register(RuneId.Plant, RuneId.Vita, SpellShape.Remote, SpellId.Grow, "Grow", "Compressed. Catalog: Plant · Life · Mercury. The living plant sent. Sprout at a distance.");
             Register(RuneId.Plant, RuneId.Salt, SpellShape.Pillar, SpellId.Tree, "Tree", "Compressed. Catalog: Plant · Life · Salt. A living vegetable body given a standing body.");
             Register(RuneId.Plant, RuneId.Vita, SpellShape.Spread, SpellId.Sprout, "Sprout", "The vegetable body marked living, from the feet.");
-            Register(RuneId.Plant, RuneId.Umbra, SpellShape.Remote, SpellId.Grotto, "Grotto", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. A damp cave opens. Not a rune.");
+            Register(RuneId.Plant, RuneId.Umbra, SpellShape.Spread, SpellId.Wither, "Wither", "Compressed. Catalog: Plant · Dark. The vegetable body withheld. Plants around the feet die. The remains speak Death.");
+            Register(RuneId.Plant, RuneId.Sulphur, SpellShape.Self, SpellId.Plantward, "Plant ward", "Compressed. Catalog: Plant · Life · Salt · Sulphur. A living plant stood, then the mind holds it. Green springs as you walk.");
             Register(RuneId.Oil, RuneId.Mercury, SpellShape.Shot, SpellId.OilShot, "Oil shot", "Compressed. Catalog: Oil · Mercury. Fuel sent. Fire grows.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Remote, SpellId.OilPuddle, "Oil puddle", "Compressed. Catalog: Oil · Salt. Fuel given a standing body. A puddle.");
             Register(RuneId.Oil, RuneId.Mercury, SpellShape.Remote, SpellId.OilGeyser, "Oil geyser", "Compressed. Catalog: Oil · Salt · Mercury. A stood fountain. Hunger that finds it will not leave.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Spread, SpellId.OilSlick, "Oil slick", "Compressed. Catalog: Oil · Salt · Oil. Fuel given a body, then more fuel. It runs outward.");
             Register(RuneId.Oil, RuneId.Salt, SpellShape.Pillar, SpellId.OilPillar, "Oil-pillar", "Compressed. Catalog: Oil · Salt · Earth. A stood wick. A later fire sentence would make it a bomb.");
-            Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison", "Compressed. Catalog: Plant · Death · Mercury. The grave of a plant, sent.");
+            Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison spray", "Compressed. Catalog: Poison · Mercury. A stream of the grave of a plant. It poisons what it crosses.");
+            Register(RuneId.Poison, RuneId.Salt, SpellShape.Pillar, SpellId.TaintedTree, "Tainted-tree", "Compressed. Catalog: Poison · Salt · Earth. A poison column. It weeps onto adjacent tiles until it is destroyed.");
+            Register(RuneId.Flame, RuneId.Sulphur, SpellShape.Self, SpellId.FlameForm, "Flame-form", "Compressed. Catalog: Flame · Salt · Sulphur. You become hunger's body. Hunger cannot take you.");
+            Register(RuneId.Stone, RuneId.Sulphur, SpellShape.Self, SpellId.StoneForm, "Stone-form", "You become rest. Earth and crushing cannot take you.");
+            Register(RuneId.Air, RuneId.Animus, SpellShape.Self, SpellId.GaleForm, "Gale-form", "You become breath. Air and foul veils cannot take you.");
+            Register(RuneId.Plant, RuneId.Anima, SpellShape.Self, SpellId.GroveForm, "Grove-form", "You become the living plant. Green springs as you walk.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");
             Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
-            Register(RuneId.Plant, RuneId.Anima, SpellShape.Remote, SpellId.CallGrowth, "Call-growth", "Plant invited at a distance. Two wet steps.");
+            Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. You become yield.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 
             Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt. Hungry earth given a standing body.");

@@ -28,7 +28,8 @@ namespace RuneMagic
             TileCover.Poison,
             TileCover.Fog,
             TileCover.Mud,
-            TileCover.Ash
+            TileCover.Ash,
+            TileCover.Wither
         };
 
         public static RuneId RuneOf(TileCover cover)
@@ -45,6 +46,7 @@ namespace RuneMagic
                 case TileCover.Fog: return RuneId.Cloud;
                 case TileCover.Mud: return RuneId.Mud;
                 case TileCover.Ash: return RuneId.Ash;
+                case TileCover.Wither: return RuneId.Mors;
                 default: return RuneId.None;
             }
         }
@@ -77,6 +79,8 @@ namespace RuneMagic
                     return TileCover.Mud;
                 case RuneId.Ash:
                     return TileCover.Ash;
+                case RuneId.Mors:
+                    return TileCover.Wither;
                 default:
                     return TileCover.None;
             }
@@ -96,6 +100,7 @@ namespace RuneMagic
                 case TileCover.Fog: return MaterialId.Cloud;
                 case TileCover.Mud: return MaterialId.Mud;
                 case TileCover.Ash: return MaterialId.Ash;
+                case TileCover.Wither: return MaterialId.None;
                 default: return MaterialId.None;
             }
         }
@@ -117,6 +122,7 @@ namespace RuneMagic
                 case TileCover.Fog: return "tile-fog";
                 case TileCover.Mud: return "floor-mud";
                 case TileCover.Ash: return "floor-ash";
+                case TileCover.Wither: return "floor-ash";
                 default: return null;
             }
         }
@@ -312,7 +318,8 @@ namespace RuneMagic
                 || !Speaks(TileCover.Fire, RuneId.Fire)
                 || !Speaks(TileCover.Ice, RuneId.Ice)
                 || !Speaks(TileCover.Ash, RuneId.Ash)
-                || !Speaks(TileCover.Vine, RuneId.Plant))
+                || !Speaks(TileCover.Vine, RuneId.Plant)
+                || !Speaks(TileCover.Wither, RuneId.Mors))
             {
                 broken.Add("A spoken cover must put its own rune in the weave so it can be drawn");
             }

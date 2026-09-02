@@ -142,6 +142,11 @@ namespace RuneMagic
             || string.Equals(_coverId, "ash", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-ash", System.StringComparison.OrdinalIgnoreCase);
 
+        public bool HasWitherCover =>
+            Cover == TileCover.Wither
+            || string.Equals(_coverId, "wither", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(_coverId, "cover-wither", System.StringComparison.OrdinalIgnoreCase);
+
         /// <summary>
         /// Water on this cell: a water floor, a water covering, or
         /// yield a spell left behind. Neighbor water is not enough.
@@ -345,6 +350,7 @@ namespace RuneMagic
         /// and will not leave until yield is thrown.
         /// </summary>
         public bool IsGeyser { get; private set; }
+        public bool IsPoisonWell { get; private set; }
         /// <summary>
         /// Fire a spell or NPC working started. Authored torches, kindled
         /// halls, and painted cover stay still until work finds them.
@@ -1065,6 +1071,7 @@ namespace RuneMagic
             Foundation = default;
             _hasFoundation = false;
             IsGeyser = false;
+            IsPoisonWell = false;
             _hungerLife = 0f;
             ClearLinger();
             Reshape(restored);
@@ -1177,6 +1184,18 @@ namespace RuneMagic
 
             IsGeyser = true;
             return SlickOil(1f);
+        }
+
+        public bool MarkPoisonWell()
+        {
+            if (Kind == TileKind.Door || Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            IsPoisonWell = true;
+            SlickPoison();
+            return true;
         }
 
         public bool SlickOil(float amount = 1f)
@@ -1317,6 +1336,75 @@ namespace RuneMagic
             }
 
             RefreshFx();
+        }
+
+        /// <summary>
+        /// Withhold a vegetable body. Living green dies. Leftover
+        /// dirt (or the old walk) keeps a wither covering that
+        /// speaks Death, so the grave can be drawn.
+        /// </summary>
+        public bool WitherPlant()
+        {
+            var changed = false;
+            if (IsPoisonWell)
+            {
+                IsPoisonWell = false;
+                changed = true;
+            }
+
+            if (HasVine || HasPlantCover)
+            {
+                PaintCover(TileCover.Wither);
+                changed = true;
+            }
+
+            if (HasPlantishDetail)
+            {
+                _detailMaterial = MaterialId.None;
+                changed = true;
+            }
+
+            if (IsConjured && WorldWork.IsPlantBody(Material))
+            {
+                RestoreFoundation();
+                PaintCover(TileCover.Wither);
+                return true;
+            }
+
+            if (IsPlantish)
+            {
+                var leftover = CoverCatalog.LeftoverFloor(Material);
+                if (leftover == MaterialId.None)
+                {
+                    leftover = MaterialId.Dirt;
+                }
+
+                if (Kind == TileKind.Wall)
+                {
+                    Reshape(new TileDef(TileKind.Floor, leftover));
+                }
+                else
+                {
+                    Reshape(new TileDef(Kind == TileKind.None ? TileKind.Floor : Kind, leftover));
+                }
+
+                PaintCover(TileCover.Wither);
+                _growth = 0;
+                return true;
+            }
+
+            if (changed && !HasWitherCover && Cover != TileCover.Poison)
+            {
+                PaintCover(TileCover.Wither);
+            }
+
+            if (changed)
+            {
+                _growth = 0;
+                RefreshFx();
+            }
+
+            return changed;
         }
 
         public void Dry(float amount)
@@ -1524,6 +1612,7 @@ namespace RuneMagic
 
             Oil = 0f;
             IsGeyser = false;
+            IsPoisonWell = false;
             Fire = 0f;
             if (IsConjured)
             {
@@ -2167,7 +2256,7 @@ namespace RuneMagic
 
             // A painted walk tile must stay visible. Opaque pack covers
             // (hell lava, ice sheets) used to hide that sprite in Play.
-            if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud)
+            if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud || Cover == TileCover.Wither)
             {
                 return Mathf.Min(alpha, 0.72f);
             }
@@ -2521,6 +2610,8 @@ namespace RuneMagic
                     return ElementLook.Of(ElementFamily.Lightning);
                 case TileCover.Vine:
                     return ElementLook.Of(ElementFamily.Plant);
+                case TileCover.Wither:
+                    return ElementLook.Of(ElementFamily.Poison);
                 default:
                     return default;
             }

@@ -48,7 +48,11 @@ namespace RuneMagic
         /// Liquid poison on the walk. Contact only; yield washes it.
         /// Miasma is the airborne cloud.
         /// </summary>
-        Poison
+        Poison,
+        /// <summary>
+        /// What withholding leaves of a vegetable body. Speaks Death.
+        /// </summary>
+        Wither
     }
 
     /// <summary>
