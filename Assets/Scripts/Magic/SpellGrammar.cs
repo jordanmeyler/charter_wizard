@@ -235,13 +235,13 @@ namespace RuneMagic
             Register(RuneId.Poison, RuneId.Mercury, SpellShape.Shot, SpellId.Poison, "Poison spray", "Compressed. Catalog: Poison · Mercury. A stream of the grave of a plant. It poisons what it crosses.");
             Register(RuneId.Poison, RuneId.Salt, SpellShape.Pillar, SpellId.TaintedTree, "Tainted-tree", "Compressed. Catalog: Poison · Salt · Earth. A poison column. It weeps onto adjacent tiles until it is destroyed.");
             Register(RuneId.Flame, RuneId.Sulphur, SpellShape.Self, SpellId.FlameForm, "Flame-form", "Compressed. Catalog: Flame · Salt · Sulphur. You become hunger's body. Hunger cannot take you.");
-            Register(RuneId.Stone, RuneId.Sulphur, SpellShape.Self, SpellId.StoneForm, "Stone-form", "You become rest. Earth and crushing cannot take you.");
-            Register(RuneId.Air, RuneId.Animus, SpellShape.Self, SpellId.GaleForm, "Gale-form", "You become breath. Air and foul veils cannot take you.");
-            Register(RuneId.Plant, RuneId.Anima, SpellShape.Self, SpellId.GroveForm, "Grove-form", "You become the living plant. Green springs as you walk.");
+            Register(RuneId.Earth, RuneId.Anima, SpellShape.Self, SpellId.StoneForm, "Stone-form", "Compressed. Catalog: Earth · Anima · Earth · Salt · Sulphur. Rest given eros and itself again. You become rest.");
+            Register(RuneId.Air, RuneId.Animus, SpellShape.Self, SpellId.GaleForm, "Gale-form", "Compressed. Catalog: Air · Animus · Air · Salt · Sulphur. You become breath. Air and foul veils cannot take you.");
+            Register(RuneId.Plant, RuneId.Anima, SpellShape.Self, SpellId.GroveForm, "Grove-form", "Compressed. Catalog: Plant · Life · Anima · Plant · Life · Salt · Sulphur. You become the living plant. Green springs as you walk.");
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");
             Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
-            Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. You become yield.");
+            Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. Yield given eros and itself again. You become yield.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");
 
             Register(RuneId.Lava, RuneId.Salt, SpellShape.Pillar, SpellId.LavaPillar, "Lava-pillar", "Compressed. Catalog: Fire · Earth · Salt. Hungry earth given a standing body.");

@@ -181,10 +181,10 @@ namespace RuneMagic
             E(97, SpellBook.Grave, SpellId.TaintedTree, "The grave of a plant given a standing body and asked to rest. A tainted tree. It weeps poison onto adjacent tiles until it is destroyed.", "Tainted-tree", "Water · Salt · Earth · Death · Salt · Earth", "Poison · Salt · Earth", "Pillar", SpellOutcome.Kill, "Either"),
             E(98, SpellBook.Mind, SpellId.Plantward, "A living plant stood, then the mind holds it on you. Plant, yield, and rest break. Green springs from your feet as you walk.", "Plant ward", "Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither),
             E(99, SpellBook.Mind, SpellId.FlameForm, "Witchfire given a body, then the mind holds you as that body. Hunger cannot take you. The walk kindles.", "Flame-form", "Fire · Animus · Fire · Salt · Sulphur", "Flame · Salt · Sulphur", "Self", SpellOutcome.Neither),
-            E(100, SpellBook.Mind, SpellId.TideForm, "Yield given mind and yield again, stood, held. Water cannot take you. You walk it, and the walk is wet.", "Tide-form", "Water · Anima · Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(101, SpellBook.Mind, SpellId.StoneForm, "Rest given logos and rest again, stood, held. Earth and crushing cannot take you.", "Stone-form", "Earth · Animus · Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(100, SpellBook.Mind, SpellId.TideForm, "Yield given eros and yield again, stood, held. Water cannot take you. You walk it, and the walk is wet.", "Tide-form", "Water · Anima · Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(101, SpellBook.Mind, SpellId.StoneForm, "Rest given eros and rest again, stood, held. Earth and crushing cannot take you.", "Stone-form", "Earth · Anima · Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(102, SpellBook.Mind, SpellId.GaleForm, "Breath given logos and breath again, stood, held. Air cannot take you. Fog and foul breath leave as you walk.", "Gale-form", "Air · Animus · Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant opened to many, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Salt · Sulphur", "Plant · Life · Anima · Salt · Sulphur", "Self", SpellOutcome.Neither)
+            E(103, SpellBook.Mind, SpellId.GroveForm, "A living plant given eros and the living plant again, stood, held. You become the grove. Green springs as you walk.", "Grove-form", "Water · Salt · Earth · Life · Water · Sulphur · Earth · Water · Salt · Earth · Life · Salt · Sulphur", "Plant · Life · Anima · Plant · Life · Salt · Sulphur", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -976,6 +976,8 @@ namespace RuneMagic
             {
                 broken.Add("Poison · Mercury must be a poison spray that streams along its path");
             }
+
+            FormLaw.Audit(broken);
         }
 
         public static bool TryGet(int number, out CodexEntry entry)
