@@ -38,6 +38,7 @@ namespace RuneMagic
             return CurrentRoom;
         }
 
+        public IInteractable NearbyInteract { get; private set; }
         public WorldTile Underfoot { get; private set; }
         public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
         public DeathCause LastDeath { get; private set; }
@@ -76,7 +77,7 @@ namespace RuneMagic
         public bool AllowsMoveWhileCasting { get; set; }
 
         public bool CanMove =>
-            CastLaw.AllowsMove(Mode, GameHud.EditingName, AllowsMoveWhileCasting);
+            CastLaw.AllowsMove(Mode, GameHud.HoldsPlay, AllowsMoveWhileCasting);
 
         readonly CastResolver _resolver = new();
         ISpellLock[] _locks;
@@ -174,6 +175,9 @@ namespace RuneMagic
         {
             TrackPlayer();
             CurrentTarget = Mode == PlayMode.Aiming ? ResolveAimFocus() : ResolveFocus();
+            NearbyInteract = Mode == PlayMode.Exploring && PlayerTransform() != null
+                ? Interactables.Nearest(PlayerTransform().position)
+                : null;
             UpdateSight();
             UpdateTargetRing();
             UpdateAimGhost();
@@ -189,7 +193,7 @@ namespace RuneMagic
 
         void SyncWorldClock()
         {
-            Time.timeScale = CastLaw.HoldsWorld(Mode, GameHud.EditingName) ? 0f : 1f;
+            Time.timeScale = CastLaw.HoldsWorld(Mode, GameHud.HoldsPlay) ? 0f : 1f;
         }
 
         void OnDisable()
@@ -223,7 +227,7 @@ namespace RuneMagic
                 _safePoint = WorldGrid.Center(Underfoot.Coord.x, Underfoot.Coord.y);
             }
 
-            if (CastLaw.HoldsWorld(Mode, GameHud.EditingName))
+            if (CastLaw.HoldsWorld(Mode, GameHud.HoldsPlay))
             {
                 FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
                 return;
@@ -316,11 +320,11 @@ namespace RuneMagic
 
         void HandleInput()
         {
-            if (GameHud.EditingName)
+            if (GameHud.HoldsPlay)
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    GameHud.CancelNaming();
+                    GameHud.CancelHeldMenu();
                 }
 
                 return;
@@ -460,6 +464,12 @@ namespace RuneMagic
             if (Mode == PlayMode.Charter)
             {
                 HandleCharterInput();
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.E) && NearbyInteract != null)
+            {
+                UseNearbyInteract();
                 return;
             }
 
@@ -1195,6 +1205,50 @@ namespace RuneMagic
             SendWorking(kept.Runes, kept.Stance, worked: true);
         }
 
+        public void UseNearbyInteract()
+        {
+            if (Busy || Mode != PlayMode.Exploring || NearbyInteract == null)
+            {
+                return;
+            }
+
+            NearbyInteract.Interact(this);
+        }
+
+        public void CastRevealed(CodexEntry entry)
+        {
+            if (Busy || entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            {
+                return;
+            }
+
+            var stance = entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
+            BeginAim(Composition.FromSequence(entry.RecipeRunes), stance, fromHeld: false);
+        }
+
+        public void RenameKept(int index, string givenName)
+        {
+            if (!Grimoire.RenameWorking(index, givenName))
+            {
+                return;
+            }
+
+            Grimoire.TryGetKept(index, out var kept);
+            var label = CallWorking(kept.Runes);
+            if (Held.Occupied && WorkingNames.SameComposition(Held.Composition.Sequence, kept.Runes))
+            {
+                Held = new StoredSpell(Held.Composition, Held.Stance, label);
+            }
+
+            Log(string.IsNullOrEmpty(kept.GivenName)
+                ? GlyphView.Speak(
+                    "The name is lifted. The page still holds those marks.",
+                    "The name is lifted. The page still holds the marks.")
+                : GlyphView.Speak(
+                    $"{label} is the name for that same writing. Spark is not Fire · Air.",
+                    "The name holds for that same writing."));
+        }
+
         public void KeepRecent(int index, string givenName)
         {
             if (!Ledger.TryKeep(index, givenName))
@@ -1205,7 +1259,15 @@ namespace RuneMagic
 
             var attempt = Ledger.Recent[index];
             Grimoire.KeepWorking(attempt.Stance, attempt.Runes, attempt.Spell, attempt.GivenName);
-            Grimoire.Names.Remember(attempt.Runes, attempt.GivenName);
+            if (!string.IsNullOrWhiteSpace(attempt.GivenName))
+            {
+                Grimoire.Names.Remember(attempt.Runes, attempt.GivenName);
+            }
+            else
+            {
+                Grimoire.Names.Forget(attempt.Runes);
+            }
+
             var label = CallWorking(attempt.Runes);
             if (Held.Occupied && WorkingNames.SameComposition(Held.Composition.Sequence, attempt.Runes))
             {
@@ -1215,9 +1277,13 @@ namespace RuneMagic
             var freeNote = attempt.Stance == CastingStance.Free
                 ? " Free is wild — sending it again writes from the same marks, and may not land the same way."
                 : string.Empty;
-            Log(GlyphView.Speak(
-                $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.{freeNote}",
-                "The working is kept in your book. The name holds for that same writing."));
+            Log(string.IsNullOrWhiteSpace(attempt.GivenName)
+                ? GlyphView.Speak(
+                    $"Those marks are written in the Grimoire without a name. Rename the page when you want.{freeNote}",
+                    "The working is written in your book without a name. Rename it when you want.")
+                : GlyphView.Speak(
+                    $"{label} is kept in the Grimoire for that same writing. Spark is not Fire · Air — only this composition carries the name.{freeNote}",
+                    "The working is kept in your book. The name holds for that same writing."));
         }
 
         void SendWorking(IReadOnlyList<RuneId> runes, CastingStance stance, bool worked)
@@ -2632,7 +2698,7 @@ namespace RuneMagic
                 worked,
                 spell,
                 given,
-                saved: !string.IsNullOrEmpty(given),
+                saved: Grimoire.KeepsComposition(composition.Sequence) || !string.IsNullOrEmpty(given),
                 hideBadRecipes: GameSettings.HideBadRecipes);
         }
 

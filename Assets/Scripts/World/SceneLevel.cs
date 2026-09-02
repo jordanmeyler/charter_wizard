@@ -167,6 +167,12 @@ namespace RuneMagic
                 plaques[i].EnsureBound();
             }
 
+            var interacts = Object.FindObjectsByType<WorldInteract>(FindObjectsSortMode.None);
+            for (var i = 0; i < interacts.Length; i++)
+            {
+                interacts[i].EnsureBound();
+            }
+
             var decors = Object.FindObjectsByType<WorldDecor>(FindObjectsSortMode.None);
             for (var i = 0; i < decors.Length; i++)
             {

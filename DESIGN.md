@@ -231,7 +231,9 @@ The player **moves and casts**. Perception is a stance, not a tile overlay. The 
 
 World altars do not teach by writing FIRE. They put the **mark beside a picture** of the thing — flame, water, rock, gale; a standing body, an opening path, a mind. Play hides the name. Develop still writes it.
 
-A **recent-cast strip** (last twenty-five) sits on the Charter and the world, with a **Grimoire** tab beside it. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down. Keep a working and it stays in the book so you can send it again after it leaves the strip.
+A **recent-cast strip** (last twenty-five) sits on the Charter and the world, with a **Grimoire** tab beside it. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down. With **Add new spells** on, a working that holds is written in the book without a name — rename it later. Off: Keep a recipe yourself from Recent. Bookmarks (highlighting pages you care about) come later; unnamed auto-keep is the way to leave the rest unhighlighted.
+
+A **WorldInteract** is an empty use volume. Place it on a GameObject and dress the statue with tiles. **E** or the Interact button prays: the game shows a written spell with elemental / catalyst labels. Cast aims that working (it counts in Recent); Continue leaves it.
 
 **Two sights, toggled in play (F1 or the bar):**
 

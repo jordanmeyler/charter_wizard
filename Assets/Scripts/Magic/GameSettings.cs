@@ -3,8 +3,10 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Player-facing play options. Both naming and hiding stacked
-    /// failures start on. The last choice is kept.
+    /// Player-facing play options. Auto-writing new workings into
+    /// the Grimoire (unnamed) and hiding stacked failures start on.
+    /// Off, a recipe is only kept when the adept saves it. The last
+    /// choice is kept.
     /// </summary>
     public static class GameSettings
     {

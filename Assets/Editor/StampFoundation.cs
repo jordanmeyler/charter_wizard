@@ -375,6 +375,15 @@ namespace RuneMagic
                     var plaque = host.AddComponent<HintPlaque>();
                     SetString(plaque, "text", prop.text);
                     break;
+                case "altar":
+                case "pray":
+                case "interact":
+                    host = new GameObject("Interact");
+                    var interact = host.AddComponent<WorldInteract>();
+                    SetString(interact, "verb", string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
+                    SetString(interact, "spell", string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
+                    SetString(interact, "look", prop.note);
+                    break;
                 case "torch":
                     host = new GameObject("Torch");
                     host.AddComponent<TorchFixture>();
@@ -465,7 +474,7 @@ namespace RuneMagic
             var doomed = new List<GameObject>();
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
-                if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or
+                if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or WorldInteract or
                     TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or SpawnCrystal or BarrierLock)
                 {
                     doomed.Add(behaviour.gameObject);

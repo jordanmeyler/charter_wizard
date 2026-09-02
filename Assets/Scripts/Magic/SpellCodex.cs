@@ -316,6 +316,40 @@ namespace RuneMagic
             {
                 broken.Add("Free workings must be keepable by the runes that were strung");
             }
+
+            var unnamed = new Grimoire();
+            if (!unnamed.TryAutoKeep(CastingStance.Charter, new[] { RuneId.Fire, RuneId.Mercury }, SpellId.Fireball)
+                || unnamed.KeptWorkings.Count != 1
+                || !string.IsNullOrEmpty(unnamed.KeptWorkings[0].GivenName)
+                || unnamed.KeptWorkings[0].Label != WorkingNames.RunePhrase(new[] { RuneId.Fire, RuneId.Mercury })
+                || unnamed.TryAutoKeep(CastingStance.Charter, new[] { RuneId.Fire, RuneId.Mercury }, SpellId.Fireball))
+            {
+                broken.Add("Add new spells must write an unnamed page once and leave it to be renamed");
+            }
+
+            if (!unnamed.RenameWorking(0, "Hunger sent")
+                || unnamed.KeptWorkings[0].GivenName != "Hunger sent"
+                || unnamed.Names.Call(new[] { RuneId.Fire, RuneId.Mercury }) != "Hunger sent")
+            {
+                broken.Add("A kept working must be renameable from the Grimoire");
+            }
+
+            if (!PrayerReveal.TryNamed("Fireball", out var prayed)
+                || prayed.Spell != SpellId.Fireball
+                || !PrayerReveal.TryRecipe("Fire · Mercury", out var fromChain)
+                || fromChain.Spell != SpellId.Fireball
+                || PrayerReveal.RolesOf(prayed.RecipeRunes).Count != 2
+                || PrayerReveal.RolesOf(prayed.RecipeRunes)[0] != "elemental"
+                || PrayerReveal.RolesOf(prayed.RecipeRunes)[1] != "catalyst")
+            {
+                broken.Add("Prayer must show a written spell and label elemental and catalyst marks");
+            }
+
+            if (!PrayerReveal.TryUnkept(unnamed, out var next)
+                || WorkingNames.SameComposition(next.RecipeRunes, new[] { RuneId.Fire, RuneId.Mercury }))
+            {
+                broken.Add("An empty altar should offer a written spell that is not already in the book");
+            }
         }
 
         static void ValidateFills(List<string> broken)
