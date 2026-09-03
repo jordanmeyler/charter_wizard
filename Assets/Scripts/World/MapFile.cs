@@ -67,6 +67,7 @@ namespace RuneMagic
         public bool blocking;
         public bool finishes;
         public bool ensouled;
+        public bool recipeOnly;
         public string attack;
         public float castSeconds;
         public string[] cast;
