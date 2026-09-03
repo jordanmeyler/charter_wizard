@@ -514,6 +514,11 @@ namespace RuneMagic
 
         void OnValidate()
         {
+            if (!teachRecipe && !showBirth)
+            {
+                teachRecipe = true;
+            }
+
             if (Application.isPlaying)
             {
                 return;
