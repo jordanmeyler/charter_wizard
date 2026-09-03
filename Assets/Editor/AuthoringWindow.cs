@@ -343,10 +343,10 @@ namespace RuneMagic
             so.FindProperty("catalogId").stringValue = spec.CatalogId;
             so.FindProperty("displayName").stringValue = spec.FileName;
             so.FindProperty("spriteId").stringValue = spec.SpriteId;
-            if (CatalogBook.TryItem(spec.CatalogId, out var item) && item != null)
+            if (CatalogBook.TryItem(spec.CatalogId, out var catalog) && catalog != null)
             {
-                so.FindProperty("look").stringValue = item.look ?? string.Empty;
-                so.FindProperty("note").stringValue = item.note ?? string.Empty;
+                so.FindProperty("look").stringValue = catalog.look ?? string.Empty;
+                so.FindProperty("note").stringValue = catalog.note ?? string.Empty;
             }
 
             so.ApplyModifiedPropertiesWithoutUndo();

@@ -32,6 +32,12 @@ namespace RuneMagic
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            if (_teach == null || _birth == null || _recipe == null)
+            {
+                DrawDefaultInspector();
+                return;
+            }
+
             EditorGUILayout.PropertyField(
                 _teach,
                 new GUIContent("Teach Recipe", "Pray the authored writing. Cast aims those runes."));
