@@ -326,6 +326,14 @@ namespace RuneMagic
                 {
                     GameHud.CancelHeldMenu();
                 }
+                else if (GameHud.ShowingSpeech
+                    && (Input.GetKeyDown(KeyCode.E)
+                        || Input.GetKeyDown(KeyCode.Space)
+                        || Input.GetKeyDown(KeyCode.Return)
+                        || Input.GetKeyDown(KeyCode.KeypadEnter)))
+                {
+                    GameHud.AdvanceHeldSpeech();
+                }
 
                 return;
             }

@@ -4,9 +4,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// Player-facing play options. Auto-writing new workings into
-    /// the Grimoire (unnamed) and hiding stacked failures start on.
-    /// Off, a recipe is only kept when the adept saves it. The last
-    /// choice is kept.
+    /// the Grimoire (unnamed) starts off; hiding stacked failures
+    /// starts on. Off, a recipe is only kept when the adept saves it.
+    /// The last choice is kept.
     /// </summary>
     public static class GameSettings
     {
@@ -14,12 +14,12 @@ namespace RuneMagic
         const string PromptNamesKey = "RuneMagic.PromptNewSpells";
 
         public static bool HideBadRecipes { get; private set; } = true;
-        public static bool PromptNewSpells { get; private set; } = true;
+        public static bool PromptNewSpells { get; private set; } = false;
 
         static GameSettings()
         {
             HideBadRecipes = PlayerPrefs.GetInt(HideBadKey, 1) != 0;
-            PromptNewSpells = PlayerPrefs.GetInt(PromptNamesKey, 1) != 0;
+            PromptNewSpells = PlayerPrefs.GetInt(PromptNamesKey, 0) != 0;
         }
 
         public static void SetHideBadRecipes(bool value)

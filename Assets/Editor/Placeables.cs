@@ -109,6 +109,15 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Plaque", false, 27)]
         static void Plaque() => Spawn("Plaque", typeof(HintPlaque));
 
+        [MenuItem("GameObject/Rune Magic/Speech", false, 27)]
+        static void Speech() => SpawnSpeech("Speech", SpeechCue.Approach, "Read", true, true, string.Empty);
+
+        [MenuItem("GameObject/Rune Magic/Sign", false, 27)]
+        static void Sign() => SpawnSpeech("Sign", SpeechCue.Interact, "Read", true, false, "plaque");
+
+        [MenuItem("GameObject/Rune Magic/Talk", false, 27)]
+        static void Talk() => SpawnSpeech("Talk", SpeechCue.Interact, "Talk", true, false, string.Empty);
+
         [MenuItem("GameObject/Rune Magic/Interact", false, 27)]
         static void Interact() => SpawnInteract();
 
@@ -193,6 +202,34 @@ namespace RuneMagic
                 ? SceneView.lastActiveSceneView.pivot
                 : Vector3.zero);
             Undo.RegisterCreatedObjectUndo(host, "Create Interact");
+            Selection.activeGameObject = host;
+        }
+
+        static void SpawnSpeech(
+            string name,
+            SpeechCue cue,
+            string verb,
+            bool approachOnce,
+            bool hideLook,
+            string spriteId)
+        {
+            if (AuthoringWindow.TryPlace(name))
+            {
+                return;
+            }
+
+            var host = new GameObject(name);
+            var speech = host.AddComponent<WorldSpeech>();
+            speech.Author(cue, verb, "The way is shut.", approachOnce, false, hideLook, spriteId);
+            if (!hideLook && host.GetComponent<SpriteRenderer>() == null)
+            {
+                host.AddComponent<SpriteRenderer>();
+            }
+
+            host.transform.position = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                ? SceneView.lastActiveSceneView.pivot
+                : Vector3.zero);
+            Undo.RegisterCreatedObjectUndo(host, "Create " + name);
             Selection.activeGameObject = host;
         }
 

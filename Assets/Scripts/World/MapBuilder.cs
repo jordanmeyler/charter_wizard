@@ -232,6 +232,20 @@ namespace RuneMagic
                         string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell,
                         string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
                     break;
+                case "speech":
+                case "sign":
+                case "talk":
+                case "approach":
+                    WorldSpeech.Spawn(world,
+                        prop.text,
+                        SpeechCueOf(prop),
+                        SpeechVerbOf(prop),
+                        SpeechApproachOnce(prop),
+                        prop.displayName,
+                        prop.note,
+                        prop.note,
+                        prop.sprite);
+                    break;
                 case "runes":
                     RuneStringSource.Spawn(world, ParseRunes(prop.runes), MapFile.HeadingOf(prop.dir));
                     break;
@@ -719,6 +733,54 @@ namespace RuneMagic
 
         static string IdOf(MapProp prop, string fallback) =>
             string.IsNullOrEmpty(prop.formulaId) ? fallback : prop.formulaId;
+
+        static SpeechCue SpeechCueOf(MapProp prop)
+        {
+            if (!string.IsNullOrWhiteSpace(prop.trigger))
+            {
+                var trigger = prop.trigger.Trim().ToLowerInvariant();
+                if (trigger == "interact" || trigger == "read" || trigger == "talk")
+                {
+                    return SpeechCue.Interact;
+                }
+
+                if (trigger == "both")
+                {
+                    return SpeechCue.Both;
+                }
+
+                return SpeechCue.Approach;
+            }
+
+            var type = (prop.type ?? string.Empty).ToLowerInvariant();
+            if (type == "sign" || type == "talk")
+            {
+                return SpeechCue.Interact;
+            }
+
+            return SpeechCue.Approach;
+        }
+
+        static string SpeechVerbOf(MapProp prop)
+        {
+            if (!string.IsNullOrWhiteSpace(prop.verb))
+            {
+                return prop.verb.Trim();
+            }
+
+            return (prop.type ?? string.Empty).ToLowerInvariant() == "talk" ? "Talk" : "Read";
+        }
+
+        static bool SpeechApproachOnce(MapProp prop)
+        {
+            var type = (prop.type ?? string.Empty).ToLowerInvariant();
+            if (type == "speech" || type == "approach")
+            {
+                return true;
+            }
+
+            return prop.once;
+        }
 
         static RuneId FirstRune(string[] names)
         {

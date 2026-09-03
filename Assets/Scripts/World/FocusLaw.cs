@@ -5,11 +5,14 @@ namespace RuneMagic
 {
     /// <summary>
     /// Focus holds mind spells. Charm, command, lull, rage, terror,
-    /// confuse, and the wards (they all write Sulphur) stay
-    /// until another sentence reuses a mark from the held working.
-    /// Burning is a contact meter. Poison is a slower meter that
-    /// stays until Light cleanses it.
-    /// Other elemental work (a wall, frost, stun) stands on its own clock.
+    /// confuse, and the wards (they all write Sulphur) stay until
+    /// another focus sentence reuses a mark from the held working.
+    /// Sulphur is the mind rune — it is how a hold is written, not
+    /// a copied mark — so two holds can stand if the rest of the
+    /// sentences do not share a rune. A fireball or a wall does not
+    /// ask focus to let go. Burning is a contact meter. Poison is a
+    /// slower meter that stays until Light cleanses it. Other
+    /// elemental work stands on its own clock.
     /// </summary>
     public static class FocusLaw
     {
@@ -32,9 +35,12 @@ namespace RuneMagic
         public static bool Holds(StatusId id) =>
             StatusSpec.Of(id).NeedsFocus;
 
+        public static bool IsCopiedRune(RuneId rune) =>
+            rune != RuneId.None && rune != RuneId.Sulphur;
+
         public static bool Breaks(StatusId held, SpellId next)
         {
-            if (!Holds(held) || next == SpellId.None)
+            if (!Holds(held) || !IsMindSpell(next))
             {
                 return false;
             }
@@ -44,6 +50,11 @@ namespace RuneMagic
 
         public static int Release(Component caster, SpellId spell, Composition composition, StatusId incoming)
         {
+            if (!IsMindSpell(spell))
+            {
+                return 0;
+            }
+
             return StatusHost.ReleaseAll(caster, UsedRunes(spell, composition), incoming, spell);
         }
 
@@ -94,7 +105,7 @@ namespace RuneMagic
 
             for (var i = 0; i < left.Count; i++)
             {
-                if (Contains(right, left[i]))
+                if (IsCopiedRune(left[i]) && Contains(right, left[i]))
                 {
                     return true;
                 }
@@ -105,7 +116,7 @@ namespace RuneMagic
 
         public static bool Contains(IReadOnlyList<RuneId> runes, RuneId wanted)
         {
-            if (runes == null || wanted == RuneId.None)
+            if (runes == null || !IsCopiedRune(wanted))
             {
                 return false;
             }
@@ -226,12 +237,27 @@ namespace RuneMagic
                 broken.Add("Focus must hold charm and sleep");
             }
 
-            if (!Breaks(StatusId.Stoneskin, SpellId.Wall)
-                || !Breaks(StatusId.Watershield, SpellId.Douse)
-                || !Breaks(StatusId.Flameward, SpellId.Fireball)
-                || Breaks(StatusId.Stoneskin, SpellId.Fireball))
+            if (Breaks(StatusId.Stoneskin, SpellId.Wall)
+                || Breaks(StatusId.Watershield, SpellId.Douse)
+                || Breaks(StatusId.Flameward, SpellId.Fireball)
+                || Breaks(StatusId.Sleeping, SpellId.Fireball)
+                || Breaks(StatusId.Charmed, SpellId.Fireball)
+                || Breaks(StatusId.Charmed, SpellId.Wall)
+                || Breaks(StatusId.Stoneskin, SpellId.Hop))
             {
-                broken.Add("A shared mark drops a ward; Fireball must not drop stoneskin");
+                broken.Add("A non-focus sentence must not drop a hold");
+            }
+
+            if (!Breaks(StatusId.Stoneskin, SpellId.Flameward)
+                || !Breaks(StatusId.Watershield, SpellId.Lull)
+                || !Breaks(StatusId.Flameward, SpellId.Rage)
+                || !Breaks(StatusId.Charmed, SpellId.Command)
+                || !Breaks(StatusId.Charmed, SpellId.Plantward)
+                || Breaks(StatusId.Charmed, SpellId.Stoneskin)
+                || Breaks(StatusId.Sleeping, SpellId.Flameward)
+                || Breaks(StatusId.Stoneskin, SpellId.Charm))
+            {
+                broken.Add("Focus lets go only when another focus sentence reuses a mark other than Sulphur");
             }
         }
     }

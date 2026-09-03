@@ -528,59 +528,53 @@ namespace RuneMagic
                 broken.Add("A zero fill budget must not complete a missing rune");
             }
 
-            if (!FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse))
+            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Douse)
+                || FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball)
+                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Fireball)
+                || FocusLaw.Breaks(StatusId.Charmed, SpellId.Fireball)
+                || FocusLaw.Breaks(StatusId.Charmed, SpellId.Wall)
+                || FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall)
+                || FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Hop)
+                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Hop))
             {
-                broken.Add("Douse must drop a water ward — both use Water");
-            }
-
-            if (FocusLaw.Breaks(StatusId.Watershield, SpellId.Fireball))
-            {
-                broken.Add("Fireball must not drop a water ward");
-            }
-
-            if (!FocusLaw.Breaks(StatusId.Flameward, SpellId.Fireball))
-            {
-                broken.Add("Fireball must drop a flame ward — both use Fire");
+                broken.Add("A non-focus sentence must not drop a hold");
             }
 
             if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Rage))
             {
-                broken.Add("Rage must drop sleep — both reuse Sulphur and Mercury");
-            }
-
-            if (!FocusLaw.Breaks(StatusId.Sleeping, SpellId.Fireball))
-            {
-                broken.Add("Fireball must drop sleep — Lull and Fireball both send Mercury");
-            }
-
-            if (FocusLaw.Breaks(StatusId.Sleeping, SpellId.Hop))
-            {
-                broken.Add("Hop must not drop sleep — no shared marks");
-            }
-
-            if (!FocusLaw.Breaks(StatusId.Charmed, SpellId.Fireball))
-            {
-                broken.Add("Fireball must drop charm — both send Mercury");
+                broken.Add("Rage must drop sleep — both send Mercury");
             }
 
             if (!FocusLaw.Breaks(StatusId.Charmed, SpellId.Command))
             {
-                broken.Add("Command must drop charm — another mind sentence reuses Sulphur and Mercury");
+                broken.Add("Command must drop charm — both send Mercury");
             }
 
-            if (FocusLaw.Breaks(StatusId.Charmed, SpellId.Wall))
+            if (!FocusLaw.Breaks(StatusId.Watershield, SpellId.Lull))
             {
-                broken.Add("A wall must not drop charm — earth stands without those marks");
+                broken.Add("Lull must drop a water ward — both use Water");
             }
 
-            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Fireball))
+            if (!FocusLaw.Breaks(StatusId.Flameward, SpellId.Rage))
             {
-                broken.Add("Fireball must not drop stoneskin");
+                broken.Add("Rage must drop a flame ward — both use Fire");
             }
 
-            if (!FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Wall))
+            if (!FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Flameward))
             {
-                broken.Add("Wall must drop stoneskin — both use Earth and Salt");
+                broken.Add("A later ward must drop stoneskin — both stand with Salt");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Charmed, SpellId.Stoneskin)
+                || FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Charm)
+                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Flameward))
+            {
+                broken.Add("Sulphur alone must not drop a hold — charm can stand with stoneskin");
+            }
+
+            if (!FocusLaw.Breaks(StatusId.Charmed, SpellId.Plantward))
+            {
+                broken.Add("Plant ward must drop charm — both write Life");
             }
 
             if (FocusLaw.Breaks(StatusId.Burning, SpellId.Douse))
@@ -834,6 +828,7 @@ namespace RuneMagic
             FocusLaw.Audit(broken);
             VitalLaw.Audit(broken);
             StrikeLaw.Audit(broken);
+            SpellGrammar.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
             if (!TryGet(SpellId.MetalPillar, out _) || !TryGet(SpellId.MetalWall, out _) || !TryGet(SpellId.ObsidianWall, out _))

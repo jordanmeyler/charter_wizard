@@ -5,7 +5,8 @@ namespace RuneMagic
 {
     /// <summary>
     /// How a condition lives on a body.
-    /// Timed clocks lift. Focus holds until a mark is reused.
+        /// Timed clocks lift. Focus holds until another focus
+        /// sentence reuses a mark other than Sulphur.
     /// Meters run down; empty is death or ash.
     /// </summary>
     public enum StatusClock
@@ -538,10 +539,14 @@ namespace RuneMagic
                 broken.Add("Burning and poison must be meters that run to death");
             }
 
+            // Compile-time constants on purpose — they fail if poison
+            // is later shortened to a short burn.
+#pragma warning disable CS0162
             if (AdeptPoisonSeconds < 12f || FleshPoisonSeconds < 12f)
             {
                 broken.Add("Poison must take longer than a short burn to finish its work");
             }
+#pragma warning restore CS0162
 
             if (ClockOf(StatusId.Charmed) != StatusClock.Focus
                 || ClockOf(StatusId.Sleeping) != StatusClock.Focus
