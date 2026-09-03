@@ -378,13 +378,15 @@ namespace RuneMagic
                 case "altar":
                 case "pray":
                 case "interact":
-                    host = new GameObject("Interact");
-                    var interact = host.AddComponent<WorldInteract>();
-                    SetString(interact, "verb", string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
-                    SetString(interact, "spell", string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
-                    SetString(interact, "look", prop.note);
-                    SetRunes(interact, "recipe", ParseStampRunes(prop.runes));
-                    SetRunes(interact, "via", ParseStampRunes(prop.formula));
+                    host = new GameObject("Altar");
+                    var altar = host.AddComponent<WorldAltar>();
+                    SetBool(altar, "teachRecipe", true);
+                    SetBool(altar, "showBirth", false);
+                    SetString(altar, "verb", string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
+                    SetString(altar, "spell", string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
+                    SetString(altar, "look", prop.note);
+                    SetRunes(altar, "recipe", ParseStampRunes(prop.runes));
+                    SetRunes(altar, "via", ParseStampRunes(prop.formula));
                     break;
                 case "elemental-altar":
                 case "join-altar":
@@ -431,7 +433,7 @@ namespace RuneMagic
 
             host.transform.SetParent(parent, false);
             host.transform.position = world;
-            if (host.GetComponent<ElementalAltar>() == null && host.GetComponent<SpriteRenderer>() == null)
+            if (host.GetComponent<WorldAltar>() == null && host.GetComponent<SpriteRenderer>() == null)
             {
                 host.AddComponent<SpriteRenderer>();
             }
@@ -493,8 +495,8 @@ namespace RuneMagic
 
         static GameObject StampElemental(MapProp prop)
         {
-            var host = new GameObject("Elemental Altar");
-            var altar = host.AddComponent<ElementalAltar>();
+            var host = new GameObject("Altar");
+            var altar = host.AddComponent<WorldAltar>();
             var runes = ParseStampRunes(prop.runes);
             var result = MapFile.ParseRune(prop.spell);
             RuneId[] sources = null;
@@ -520,7 +522,10 @@ namespace RuneMagic
                 result = RuneId.Spark;
             }
 
-            altar.Author(result, sources);
+            SetBool(altar, "teachRecipe", false);
+            SetBool(altar, "showBirth", true);
+            SetEnum(altar, "result", (int)result);
+            SetRunes(altar, "sources", sources);
             return host;
         }
 
@@ -552,6 +557,38 @@ namespace RuneMagic
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        static void SetBool(Object target, string field, bool value)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(field);
+            if (property != null && property.propertyType == SerializedPropertyType.Boolean)
+            {
+                property.boolValue = value;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
+
+        static void SetEnum(Object target, string field, int value)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(field);
+            if (property != null && property.propertyType == SerializedPropertyType.Enum)
+            {
+                property.enumValueIndex = value;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
+
         static void SetString(Object target, string field, string value)
         {
             if (target == null || string.IsNullOrEmpty(value))
@@ -573,9 +610,9 @@ namespace RuneMagic
             var doomed = new List<GameObject>();
             foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
             {
-                if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or WorldInteract or
+                if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or WorldAltar or
                     WorldSpeech or TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or
-                    SpawnCrystal or BarrierLock or ElementalAltar)
+                    SpawnCrystal or BarrierLock)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

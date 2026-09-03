@@ -121,14 +121,8 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Talk", false, 27)]
         static void Talk() => SpawnSpeech("Talk", SpeechCue.Interact, "Talk", true, false, string.Empty);
 
-        [MenuItem("GameObject/Rune Magic/Interact", false, 27)]
-        static void Interact() => SpawnInteract();
-
         [MenuItem("GameObject/Rune Magic/Altar", false, 27)]
-        static void Altar() => SpawnInteract();
-
-        [MenuItem("GameObject/Rune Magic/Elemental Altar", false, 27)]
-        static void ElementalAltarItem() => Spawn("Elemental Altar", typeof(ElementalAltar));
+        static void Altar() => SpawnAltar();
 
         [MenuItem("GameObject/Rune Magic/Crystal", false, 28)]
         static void Crystal() => Spawn("Crystal", typeof(SpawnCrystal));
@@ -195,19 +189,19 @@ namespace RuneMagic
             }
         }
 
-        static void SpawnInteract()
+        static void SpawnAltar()
         {
-            if (AuthoringWindow.TryPlace("Interact"))
+            if (AuthoringWindow.TryPlace("Altar"))
             {
                 return;
             }
 
-            var host = new GameObject("Interact");
-            host.AddComponent<WorldInteract>();
+            var host = new GameObject("Altar");
+            host.AddComponent<WorldAltar>();
             host.transform.position = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
                 ? SceneView.lastActiveSceneView.pivot
                 : Vector3.zero);
-            Undo.RegisterCreatedObjectUndo(host, "Create Interact");
+            Undo.RegisterCreatedObjectUndo(host, "Create Altar");
             Selection.activeGameObject = host;
         }
 
@@ -248,8 +242,7 @@ namespace RuneMagic
 
             var host = new GameObject(name);
             host.AddComponent(type);
-            if (type != typeof(WorldInteract) && type != typeof(ElementalAltar) &&
-                host.GetComponent<SpriteRenderer>() == null)
+            if (type != typeof(WorldAltar) && host.GetComponent<SpriteRenderer>() == null)
             {
                 host.AddComponent<SpriteRenderer>();
             }

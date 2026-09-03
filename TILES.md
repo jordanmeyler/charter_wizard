@@ -232,13 +232,13 @@ or a wall at each end, or the span falls. Metal hangs without a
 far bank. Ice freezes water without banks; earth only muds it.
 
 Plaques, altars, and teaching columns come after these three
-play. An **Interact** (`WorldInteract`) is an empty GameObject —
-parent tiles or child sprites for the statue. Set the recipe
-runes (and an optional second writing). Prayer shows that
-sentence; Cast or Continue. **E** uses it.
-
-An **Elemental Altar** (`ElementalAltar`) shows how a join is
-made: sources on the left, an equals, then the born mark.
+play. An **Altar** (`WorldAltar`) is an empty GameObject —
+parent tiles or child sprites for the statue. Check **Teach
+Recipe** and set the recipe runes (and an optional second
+writing). Prayer shows that sentence; Cast or Continue. **E**
+uses it. Check **Show Birth** to stand how a join is made:
+sources on the left, an equals, then the born mark. Both can
+be on.
 
 A **Speech** (`WorldSpeech`) is a text window. Add the
 component to a Gate (or an empty volume next to it), set

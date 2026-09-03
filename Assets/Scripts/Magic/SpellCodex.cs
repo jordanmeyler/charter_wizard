@@ -388,14 +388,14 @@ namespace RuneMagic
                 broken.Add("A prayer altar must keep an authored second writing");
             }
 
-            if (!ElementalAltar.TryResolve(RuneId.Spark, null, out var sparkSources, out var spark)
+            if (!WorldAltar.TryBirth(RuneId.Spark, null, out var sparkSources, out var spark)
                 || spark != RuneId.Spark
                 || sparkSources == null
                 || sparkSources.Count != 2
                 || sparkSources[0] != RuneId.Fire
                 || sparkSources[1] != RuneId.Air)
             {
-                broken.Add("An elemental altar must show Fire · Air becoming Spark");
+                broken.Add("An altar birth must show Fire · Air becoming Spark");
             }
 
             if (!PrayerReveal.TryUnkept(unnamed, out var next)
