@@ -30,13 +30,15 @@ namespace RuneMagic
             Vector3 origin,
             Vector3 aim,
             float potency,
-            Composition composition = default)
+            Composition composition = default,
+            Vector3? from = null)
         {
             var verb = SpellVerb.Of(spell, shape);
             var notes = new List<string>(4);
             var hits = new List<ISpellLock>();
             var radius = SpellVerb.RadiusOf(spell, shape, potency);
-            var sweep = WorldPhysics.Build(grid, spell, shape, origin, origin, aim, potency);
+            var sweepFrom = from ?? origin;
+            var sweep = WorldPhysics.Build(grid, spell, shape, origin, sweepFrom, aim, potency);
             var heldRunes = FocusLaw.UsedRunes(spell, composition);
             WorldPhysics.BlowFog(locks, sweep);
 

@@ -959,7 +959,9 @@ namespace RuneMagic
             {
                 var origin = CasterPosition();
                 _spanStart = SpellFormations.ClampPoint(SpellShape.Remote, origin, worldPoint);
-                AimHint = "Start is set. Click the far end. Across a pit it is a span; on the floor it is a barrier.";
+                AimHint = WorldWork.IsGustWall(SpellCodex.WorkOf(PendingSpell))
+                    ? "Start is set. Click the far end. They blow that way."
+                    : "Start is set. Click the far end. Across a pit it is a span; on the floor it is a barrier.";
                 Log("The near end is marked. Click the far end, or Esc to withhold.");
                 return;
             }
@@ -1069,6 +1071,16 @@ namespace RuneMagic
                 return "Click where you want to land. Breath given a body carries you over a hollow.";
             }
 
+            if (WorldWork.IsBlink(spell))
+            {
+                return "Click a nearby landing. The seed jumps you. A wall will not stop you.";
+            }
+
+            if (WorldWork.IsTeleport(spell))
+            {
+                return "Click anywhere you can see. The seed is withheld and shown there.";
+            }
+
             if (WorldWork.IsFlight(spell))
             {
                 return "Click to keep the breath on you. Walk while it lasts — pits will not take you. Recast the same sentence to land.";
@@ -1096,7 +1108,9 @@ namespace RuneMagic
 
             if (WorldWork.NeedsSpan(spell))
             {
-                return spell == SpellId.IceWall
+                return WorldWork.IsGustWall(spell)
+                    ? "Click the near end, then the far end. A wall of air stands on that line and blows them toward the far end."
+                    : spell == SpellId.IceWall
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Ice freezes water without banks. Fire thaws ice."
                     : spell == SpellId.MetalWall
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Iron needs no far rest, and it will stand on water."
@@ -1719,7 +1733,7 @@ namespace RuneMagic
                 target = ResolveCastLock(shape, origin, aim, potency, spell)
                     ?? ResolveCastLock(shape, origin, requested, potency, spell)
                     ?? target;
-                if (WorldWork.IsHop(SpellCodex.WorkOf(spell)))
+                if (WorldWork.IsHop(SpellCodex.WorkOf(spell)) || WorldWork.IsRelocate(SpellCodex.WorkOf(spell)))
                 {
                     target = FindLockNear(aim, 1.8f) ?? FindLockNear(origin, 2.4f) ?? target;
                 }
@@ -1809,7 +1823,7 @@ namespace RuneMagic
                     {
                         var work = SpellCodex.WorkOf(outcome.Spell);
                         FocusLaw.Release(AdeptAvatar.Find(), work, composition, SpellVerb.Of(work, shape).Status);
-                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency, composition);
+                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency, composition, spanFrom);
                         impactNote = impact.Note;
                         if (impact.Locks.Count > 0)
                         {
@@ -1867,7 +1881,16 @@ namespace RuneMagic
                             workNote = FirstNote(flavor, workNote);
                         }
 
-                        if (WorldWork.IsPush(work))
+                        if (WorldWork.IsGustWall(work))
+                        {
+                            var start = spanFrom ?? origin;
+                            var shoved = GustCorridor.Blow(Grid, start, aim) > 0
+                                ? "A wall of air finds them. They blow toward the far end."
+                                : string.Empty;
+                            workNote = FirstNote(shoved, workNote);
+                            GustCorridor.Lay(Grid, start, aim);
+                        }
+                        else if (WorldWork.IsPush(work))
                         {
                             var shoved = ShoveHits(impact.Locks, target, origin, work);
                             workNote = FirstNote(shoved, workNote);
@@ -1930,6 +1953,23 @@ namespace RuneMagic
                 return WorldWork.HopLanding(Grid, origin, requested, facing);
             }
 
+            if (WorldWork.IsBlink(spell))
+            {
+                var facing = Vector2.right;
+                var motor = PlayerTransform() != null ? PlayerTransform().GetComponent<PlayerMotor2D>() : null;
+                if (motor != null)
+                {
+                    facing = motor.Facing;
+                }
+
+                return WorldWork.BlinkLanding(Grid, origin, requested, facing);
+            }
+
+            if (WorldWork.IsTeleport(spell))
+            {
+                return WorldWork.TeleportLanding(Grid, origin, requested, FieldView.OnScreen());
+            }
+
             if (WorldWork.NeedsSpan(spell))
             {
                 return SpellFormations.ClampPoint(SpellShape.Remote, origin, requested, potency);
@@ -1974,12 +2014,22 @@ namespace RuneMagic
                 yield break;
             }
 
+            if (WorldWork.IsRelocate(spell) && player != null)
+            {
+                var land = AimPoint(spell, SpellShape.Self, origin, requested);
+                SnapCaster(player, land);
+                _carryNote = WorldWork.IsBlink(spell)
+                    ? "The seed jumps you."
+                    : "You stand where you can see.";
+                yield break;
+            }
+
             if (!WorldWork.IsHop(spell) || player == null)
             {
                 yield break;
             }
 
-            var land = AimPoint(spell, SpellShape.Self, origin, requested);
+            var hopLand = AimPoint(spell, SpellShape.Self, origin, requested);
             if (adept != null)
             {
                 adept.KeepAirborne(0.45f);
@@ -1991,7 +2041,7 @@ namespace RuneMagic
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                var next = Vector3.Lerp(origin, land, Mathf.Clamp01(elapsed / duration));
+                var next = Vector3.Lerp(origin, hopLand, Mathf.Clamp01(elapsed / duration));
                 if (body != null)
                 {
                     body.position = next;
@@ -2001,6 +2051,17 @@ namespace RuneMagic
                 yield return null;
             }
 
+            SnapCaster(player, hopLand);
+        }
+
+        static void SnapCaster(Transform player, Vector3 land)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            var body = player.GetComponent<Rigidbody2D>();
             if (body != null)
             {
                 body.position = land;
@@ -2182,7 +2243,9 @@ namespace RuneMagic
             var origin = CasterPosition();
             var shape = ChosenShape == SpellShape.None ? SpellShape.Shot : ChosenShape;
             var point = AimPoint(PendingSpell, shape, origin, mouse);
-            var mark = shape == SpellShape.Spread && !WorldWork.IsHop(SpellCodex.WorkOf(PendingSpell))
+            var mark = shape == SpellShape.Spread
+                && !WorldWork.IsHop(SpellCodex.WorkOf(PendingSpell))
+                && !WorldWork.IsRelocate(SpellCodex.WorkOf(PendingSpell))
                 ? origin
                 : point;
             _aimMark.transform.position = mark;
