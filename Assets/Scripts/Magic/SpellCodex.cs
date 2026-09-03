@@ -249,6 +249,16 @@ namespace RuneMagic
                     continue;
                 }
 
+                if (entry.RecipeRunes.Count > SpellComposer.MaxSlots)
+                {
+                    broken.Add($"{entry.Number} {entry.Name}: recipe is {entry.RecipeRunes.Count} runes; the string holds {SpellComposer.MaxSlots}");
+                }
+
+                if (entry.ViaRunes.Count > SpellComposer.MaxSlots)
+                {
+                    broken.Add($"{entry.Number} {entry.Name}: via is {entry.ViaRunes.Count} runes; the string holds {SpellComposer.MaxSlots}");
+                }
+
                 if (!ChainBook.Matches(entry, entry.RecipeRunes))
                 {
                     broken.Add($"{entry.Number} {entry.Name}: recipe does not match itself");
