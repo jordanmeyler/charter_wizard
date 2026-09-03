@@ -112,8 +112,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// One sheen per spoken cover. Ice-shot, ice-wall over water,
-        /// and a stamped ice mark all draw the same ice sheet.
+        /// One sheen per spoken cover. Ice-shot, ice-pillar over water,
+        /// ice-wall over water, and a stamped ice mark all draw the
+        /// same ice sheet.
         /// </summary>
         public static string SheenId(TileCover cover)
         {
@@ -421,7 +422,7 @@ namespace RuneMagic
                 || SheenId(TileCover.Miasma) != "tile-poison"
                 || SheenId(TileCover.Poison) != "tile-wet")
             {
-                broken.Add("Each spoken cover must use one sheen so ice-shot and ice-wall match");
+                broken.Add("Each spoken cover must use one sheen so ice-shot, ice-pillar, and ice-wall match");
             }
         }
     }

@@ -172,7 +172,7 @@ No Death. Life only where the thing is living. If Spark (or Cloud, Ice, Plant…
 | 15 | Hunger forced through yield and sent. Soft life ends. | Scald | Fire · Water · Mercury | Steam · Mercury | Shot | Kill |
 | 16 | Yield learns a little breath so it can leave the vessel, then is sent. | Water-jet | Water · Air · Mercury | — | Shot | Restrain / Neither |
 | 17 | Yield going, more yield, given a body. They bog. Spark can travel it. | Flood | Water · Mercury · Water · Salt | Current · Water · Salt | Grow | Restrain |
-| 18 | Hard water asked to rest as a column. Over a pit it must join two floors. On water it freezes without banks. It will thaw. | Ice-pillar | Water · Earth · Salt · Earth | Ice · Salt · Earth | Pillar | Restrain / Neither |
+| 18 | Hard water asked to rest as a column. Over a pit it must join two floors. On water it freezes the pool around it without banks, the same ice sheet as ice-spear. It will thaw. | Ice-pillar | Water · Earth · Salt · Earth | Ice · Salt · Earth | Pillar | Restrain / Neither |
 | 19 | Hard water sent. It does not freeze a living body. | Ice-spear | Water · Earth · Mercury | Ice · Mercury | Shot | Restrain |
 | 20 | The veil is given ice’s story and sent softly. They freeze. | Snowfall | Air · Water · Water · Earth · Mercury | Cloud · Ice · Mercury | Remote | Restrain |
 | 21 | The hard water-body meets hunger and remembers yield. | Thaw | Water · Earth · Fire | Ice · Fire | Remote | Neither |

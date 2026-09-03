@@ -338,6 +338,15 @@ namespace RuneMagic
                 broken.Add("Ice and plant over water must not ask for a start or end bank");
             }
 
+            if (!WorldWork.IceColumnSealsPool(SpellId.IcePillar, true)
+                || WorldWork.IceColumnSealsPool(SpellId.IcePillar, false)
+                || WorldWork.IceColumnSealsPool(SpellId.EarthPillar, true)
+                || WorldWork.IceColumnPoolRadius != 1
+                || WorldWork.Disk(new Vector2Int(4, 4), WorldWork.IceColumnPoolRadius).Count != 5)
+            {
+                broken.Add("Ice column on water must freeze the click and the water around it, the same sheet as ice-shot");
+            }
+
             if (NeedsEndAnchors(SpanGrade.Metal, false, true)
                 || NeedsEndAnchors(SpanGrade.Advanced, true, true))
             {
