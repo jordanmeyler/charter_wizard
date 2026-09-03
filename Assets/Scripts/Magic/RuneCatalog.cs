@@ -134,7 +134,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
                 new RuneDef(RuneId.Oil, RuneFamily.Material, "Oil", "Ol", "A vegetable body pressed with hunger and rest. Plant · Fire · Earth. It holds flame."),
-                new RuneDef(RuneId.Miasma, RuneFamily.Material, "Miasma", "Mi", "The hanging veil forced through acid. Cloud · Acid. Foul breath."),
+                new RuneDef(RuneId.Miasma, RuneFamily.Material, "Miasma", "Mi", "Hunger takes the grave of a plant. Poison · Fire. Foul breath that holds the step."),
                 new RuneDef(RuneId.Poison, RuneFamily.Material, "Poison", "Po", "The vegetable body, then the grave. Plant · Death."),
 
                 new RuneDef(RuneId.Salt, RuneFamily.Aspect, "Salt", "Sa", "Body. A standing manifestation — walls, pillars, and the flesh of a creature."),

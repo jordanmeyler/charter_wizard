@@ -282,7 +282,8 @@ namespace RuneMagic
             Register(RuneId.Cloud, RuneId.Animus, SpellShape.Self, SpellId.CloudForm, "Cloud-form", "Compressed. Catalog: Cloud · Animus · Anima · Cloud · Salt · Sulphur. You become mist and fly.");
             Register(RuneId.Cloud, RuneId.Anima, SpellShape.Self, SpellId.CloudForm, "Cloud-form", "Compressed. Catalog: Cloud · Animus · Anima · Cloud · Salt · Sulphur. You become mist and fly.");
             Register(RuneId.Plant, RuneId.Anima, SpellShape.Self, SpellId.GroveForm, "Grove-form", "Compressed. Catalog: Plant · Life · Anima · Plant · Life · Salt · Sulphur. You become the living plant. Green springs as you walk.");
-            Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Cloud · Acid. Foul breath given a body.");
+            Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Poison · Fire. Hunger taking the grave of a plant. Foul breath given a body.");
+            Register(RuneId.Poison, RuneId.Fire, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Poison · Fire. Hunger taking the grave of a plant.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");
             Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
             Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. Yield given eros and itself again. You become yield.");

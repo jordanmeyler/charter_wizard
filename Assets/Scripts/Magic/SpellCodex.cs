@@ -163,7 +163,7 @@ namespace RuneMagic
             E(77, SpellBook.End, SpellId.OilShot, "Fuel sent. Surfaces hold flame. Fire already standing grows.", "Oil shot", "Water · Salt · Earth · Fire · Earth · Mercury", "Oil · Mercury", "Shot", SpellOutcome.Neither),
             E(78, SpellBook.End, SpellId.OilPillar, "A stood wick. A later fire sentence would make it a bomb.", "Oil-pillar", "Water · Salt · Earth · Fire · Earth · Salt · Earth", "Oil · Salt · Earth", "Pillar", SpellOutcome.Neither),
             E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent as a stream. It poisons what it crosses.", "Poison spray", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
-            E(80, SpellBook.SeeHide, SpellId.Miasma, "The hanging veil forced through acid. Foul breath.", "Miasma", "Cloud · Acid", "", "Grow", SpellOutcome.Kill),
+            E(80, SpellBook.SeeHide, SpellId.Miasma, "Hunger takes the grave of a plant. Foul breath that poisons faster, and holds the step.", "Miasma", "Water · Salt · Earth · Death · Fire", "Poison · Fire", "Grow", SpellOutcome.Kill),
             E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
             E(82, SpellBook.End, SpellId.FirePillar, "Hunger given a standing body. A column of fire. Without a source it goes out in a few seconds.", "Fire-pillar", "Fire · Salt", "", "Pillar", SpellOutcome.Kill),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
@@ -1216,6 +1216,23 @@ namespace RuneMagic
                 || !WorldPhysics.SweepsPath(SpellId.Poison, SpellShape.Shot))
             {
                 broken.Add("Poison · Mercury must be a poison spray that streams along its path");
+            }
+
+            var miasmaJoin = Composition.FromSequence(new[] { RuneId.Poison, RuneId.Fire });
+            var miasmaExact = ChainBook.CollectExact(miasmaJoin, SpellShape.None);
+            if (miasmaExact.Count == 0 || miasmaExact[0].Spell != SpellId.Miasma)
+            {
+                broken.Add("Poison · Fire should be Miasma");
+            }
+
+            if (!MaterialTree.TryBlend(RuneId.Poison, RuneId.Fire, out var burnedPoison)
+                || burnedPoison.Result != RuneId.Miasma
+                || !ChainBook.TryBirth(RuneId.Miasma, out var miasmaBirth)
+                || miasmaBirth.Count != 2
+                || miasmaBirth[0] != RuneId.Poison
+                || miasmaBirth[1] != RuneId.Fire)
+            {
+                broken.Add("Burning poison must join to miasma: Poison · Fire");
             }
 
             var wolfsbane = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Vita, RuneId.Water, RuneId.Mercury });

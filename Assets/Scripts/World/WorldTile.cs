@@ -263,6 +263,7 @@ namespace RuneMagic
             HasVine
             || (HasOil && !IsGeyser)
             || HasPlantishDetail
+            || HasPoisonCover
             || (HasFireCover && !Kindled);
 
         /// <summary>
@@ -535,6 +536,13 @@ namespace RuneMagic
                         : VitalLaw.TinderBurnSeconds;
                 }
 
+                if (HasPoisonCover)
+                {
+                    seconds = seconds > 0f
+                        ? Mathf.Min(seconds, VitalLaw.TinderBurnSeconds)
+                        : VitalLaw.TinderBurnSeconds;
+                }
+
                 return seconds;
             }
         }
@@ -696,6 +704,7 @@ namespace RuneMagic
             && (IsPlantish
                 || HasPlantishDetail
                 || HasVine
+                || HasPoisonCover
                 || (HasOil && !IsGeyser)
                 || (HasFireCover && !Kindled)
                 || (Kind == TileKind.Wall && VitalLaw.CanBurn(Material))
@@ -761,6 +770,11 @@ namespace RuneMagic
                 }
 
                 if (HasFireCover && !Kindled)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerTinder);
+                }
+
+                if (HasPoisonCover)
                 {
                     hunger = Mathf.Max(hunger, VitalLaw.HungerTinder);
                 }
@@ -1328,6 +1342,11 @@ namespace RuneMagic
                 Kindled = true;
             }
 
+            if (amount > 0f && Fire > 0.05f)
+            {
+                BurnPoisonToMiasma();
+            }
+
             RefreshFx();
         }
 
@@ -1513,7 +1532,41 @@ namespace RuneMagic
                 Wet = Mathf.Max(Wet, Mathf.Clamp01(amount * 0.35f));
             }
 
+            if (IsBurning || LiveFire || Fire > 0.05f)
+            {
+                BurnPoisonToMiasma();
+                return;
+            }
+
             RefreshFx();
+        }
+
+        /// <summary>
+        /// Hunger takes a poison slick and lifts it as foul breath.
+        /// The recipe is the same join: Poison · Fire → Miasma.
+        /// The cloud itself will not catch.
+        /// </summary>
+        public bool BurnPoisonToMiasma()
+        {
+            if (!HasPoisonCover && Material != MaterialId.Acid)
+            {
+                return false;
+            }
+
+            if (HasPoisonCover)
+            {
+                PaintCover(TileCover.None);
+            }
+
+            if (Material == MaterialId.Acid
+                && (Kind == TileKind.Floor || Kind == TileKind.Bridge))
+            {
+                Reshape(new TileDef(Kind, MaterialId.Scoured));
+            }
+
+            Foul(1f);
+            RefreshFx();
+            return true;
         }
 
         /// <summary>

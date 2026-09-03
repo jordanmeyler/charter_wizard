@@ -249,17 +249,7 @@ namespace RuneMagic
                 }
             }
 
-            if (Underfoot != null && Underfoot.HasMiasma && (adept == null || !adept.IsAirborne))
-            {
-                var host = StatusHost.On(player);
-                if (host == null || !host.Fends(Essence.Poison))
-                {
-                    PlacePlayer(player, _safePoint, "The breath is foul. Send air through it.");
-                    FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
-                    return;
-                }
-            }
-            else if ((adept == null || !adept.IsAirborne)
+            if ((adept == null || !adept.IsAirborne)
                 && ((Underfoot != null && Underfoot.IsPoisonWater)
                     || WorldPhysics.MiasmaCloudAt(Grid, player.position)))
             {
