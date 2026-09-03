@@ -4,14 +4,13 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// One teaching slab. An empty use volume — dress the statue
-    /// with a Portrait, child sprites, or nearby tiles. Transform
-    /// scale sizes this volume, an authored look, and Show Birth
-    /// marks; painted tilemap tiles stay tile-sized. Check Teach
-    /// Recipe to pray a written sentence. Uncheck Show Other
-    /// Writing to teach only that recipe. Check Show Birth to
-    /// stand sources = the born mark (Fire · Air = Spark). Recipe
-    /// and birth can be on at once.
+    /// One teaching slab. An empty use volume — place it over
+    /// tiles or under a prefab group. Transform / parent scale
+    /// sizes the pray range (the gold circle). Check Teach Recipe
+    /// to pray a written sentence. Uncheck Show Other Writing to
+    /// teach only that recipe. Check Show Birth to stand sources
+    /// = the born mark (Fire · Air = Spark). Recipe and birth can
+    /// be on at once.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -49,6 +48,7 @@ namespace RuneMagic
         [Header("Use")]
         [SerializeField] string verb = "Pray";
         [SerializeField] string look = "a stone for prayer. The sentence waits.";
+        [Tooltip("Pray / look reach. Transform or parent scale multiplies this. The gold circle in the Scene is that range.")]
         [SerializeField] float radius = 1.15f;
         [Tooltip("Optional. Leave unset so tiles or the generated birth marks carry the look.")]
         [SerializeField] string spriteId;
@@ -531,7 +531,11 @@ namespace RuneMagic
                 return;
             }
 
-            PreviewLook();
+            if (showBirth)
+            {
+                ResolveBirth();
+                RefreshLook();
+            }
         }
 
         void OnValidate()
@@ -559,34 +563,17 @@ namespace RuneMagic
                 return;
             }
 
-            PreviewLook();
-        }
-#endif
-
-        void PreviewLook()
-        {
             ResolveBirth();
-            if (portrait != null || !string.IsNullOrEmpty(spriteId))
-            {
-                if (showBirth)
-                {
-                    RefreshLook();
-                    return;
-                }
-
-                AuthoringUtil.ApplyLook(gameObject, 3, spriteId, portrait, null, 1f);
-                ClearDisplay();
-                return;
-            }
-
             if (showBirth)
             {
                 RefreshLook();
-                return;
             }
-
-            ClearDisplay();
+            else
+            {
+                ClearDisplay();
+            }
         }
+#endif
 
         void OnDisable()
         {
@@ -630,21 +617,22 @@ namespace RuneMagic
 
         void OnDrawGizmosSelected()
         {
-            var prior = Gizmos.matrix;
-            Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.85f);
-            var local = showBirth ? Vector3.up * MarkHover : Vector3.zero;
-            Gizmos.DrawWireSphere(local, Mathf.Max(0.4f, LocalLookRadius));
-            Gizmos.matrix = prior;
+            DrawRange(new Color(0.92f, 0.78f, 0.38f, 0.9f));
         }
 
         void OnDrawGizmos()
         {
-            var prior = Gizmos.matrix;
-            Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.35f);
-            Gizmos.DrawWireSphere(Vector3.zero, 0.18f);
-            Gizmos.matrix = prior;
+            DrawRange(new Color(0.92f, 0.78f, 0.38f, 0.45f));
         }
+
+        void DrawRange(Color color)
+        {
+            Gizmos.color = color;
+            Gizmos.DrawWireSphere(WorldPosition, UseRadius);
+            Gizmos.color = new Color(color.r, color.g, color.b, color.a * 0.7f);
+            Gizmos.DrawWireSphere(transform.position, 0.12f);
+        }
+
+        float UseRadius => teachRecipe ? InteractRadius : LookRadius;
     }
 }
