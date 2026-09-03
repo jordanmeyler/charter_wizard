@@ -233,7 +233,8 @@ namespace RuneMagic
                         ParseRunes(prop.runes),
                         ParseRunes(prop.formula),
                         string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text,
-                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
+                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell,
+                        !prop.recipeOnly);
                     break;
                 case "elemental-altar":
                 case "join-altar":

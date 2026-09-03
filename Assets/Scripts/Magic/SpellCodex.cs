@@ -388,6 +388,28 @@ namespace RuneMagic
                 broken.Add("A prayer altar must keep an authored second writing");
             }
 
+            if (!PrayerReveal.TryResolve(new[] { RuneId.Earth, RuneId.Salt }, null, string.Empty, null, out var earthBoth)
+                || earthBoth.Entry.Spell != SpellId.EarthPillar
+                || !earthBoth.HasVia
+                || !WorkingNames.SameComposition(earthBoth.Via, new[] { RuneId.Stone }))
+            {
+                broken.Add("A prayer altar must show Stone as the other writing of Earth-pillar");
+            }
+
+            if (!PrayerReveal.TryResolve(
+                    new[] { RuneId.Earth, RuneId.Salt },
+                    new[] { RuneId.Stone },
+                    string.Empty,
+                    null,
+                    out var earthOnly,
+                    showOther: false)
+                || earthOnly.Entry.Spell != SpellId.EarthPillar
+                || earthOnly.HasVia
+                || !WorkingNames.SameComposition(earthOnly.Recipe, new[] { RuneId.Earth, RuneId.Salt }))
+            {
+                broken.Add("A prayer altar can teach only the authored recipe");
+            }
+
             if (!WorldAltar.TryBirth(RuneId.Spark, null, out var sparkSources, out var spark)
                 || spark != RuneId.Spark
                 || sparkSources == null

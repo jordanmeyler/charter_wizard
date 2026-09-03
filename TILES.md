@@ -235,10 +235,11 @@ Plaques, altars, and teaching columns come after these three
 play. An **Altar** (`WorldAltar`) is an empty GameObject —
 parent tiles or child sprites for the statue. Check **Teach
 Recipe** and set the recipe runes (and an optional second
-writing). Prayer shows that sentence; Cast or Continue. **E**
-uses it. Check **Show Birth** to stand how a join is made:
-sources on the left, an equals, then the born mark. Both can
-be on.
+writing). Prayer shows that sentence; Cast or Continue. Uncheck
+**Show Other Writing** to teach only the Recipe — Earth-pillar
+is then `Earth · Salt`, not also Stone. **E** uses it. Check
+**Show Birth** to stand how a join is made: sources on the
+left, an equals, then the born mark. Both can be on.
 
 A **Speech** (`WorldSpeech`) is a text window. Add the
 component to a Gate (or an empty volume next to it), set

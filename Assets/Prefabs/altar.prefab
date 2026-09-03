@@ -46,8 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldAltar
   teachRecipe: 1
   showBirth: 0
-  recipe: 
-  via: 
+  recipe: []
+  via: []
+  showOtherWriting: 1
   result: 5
   sources: 
   verb: Pray
