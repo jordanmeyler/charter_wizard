@@ -29,7 +29,8 @@ namespace RuneMagic
         Charmed,
         Confused,
         Poisoned,
-        Zombified
+        Zombified,
+        Flying
     }
 
     public enum StatusKind
@@ -87,11 +88,20 @@ namespace RuneMagic
         public bool IsWard => Kind == StatusKind.Ward;
         public bool IsForm => Kind == StatusKind.Form;
         public bool IsStance => IsWard || IsForm;
+        public bool IsBuff => Kind == StatusKind.Buff;
+        /// <summary>
+        /// Recast the same sentence to let a worn hold go — wards,
+        /// forms, veil, flight, and mind ailments. Meters and frost
+        /// do not answer that way.
+        /// </summary>
+        public bool RecastDismisses =>
+            IsStance || IsBuff || IsMindAilment(Id);
         /// <summary>
         /// Focus holds mind work — ailments and wards. Wards use
         /// Sulphur; they are mind spells. Another focus sentence
         /// that reuses a mark other than Sulphur lets the held
-        /// working go. A fireball or a wall does not.
+        /// working go. Recasting the same sentence also lets it go.
+        /// A fireball or a wall does not.
         /// Burning and poison are meters: they run while the body
         /// still stands in that fire or foul, then empty is ash or death.
         /// Leave the cover and the condition resets.
@@ -180,6 +190,8 @@ namespace RuneMagic
                     return new StatusSpec(id, "grove-form", StatusKind.Form, new Color(0.16f, 0.48f, 0.2f), Essence.Plant, false, false, false);
                 case StatusId.CloudForm:
                     return new StatusSpec(id, "cloud-form", StatusKind.Form, new Color(0.78f, 0.86f, 0.95f), Essence.Air, false, false, false);
+                case StatusId.Flying:
+                    return new StatusSpec(id, "flight", StatusKind.Buff, new Color(0.75f, 0.92f, 1f), Essence.None, false, false, false);
                 default:
                     return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, Essence.None, false, false, false);
             }
@@ -212,6 +224,9 @@ namespace RuneMagic
                 || id == StatusId.Frozen
                 || id == StatusId.Charmed;
         }
+
+        public static bool RecastDismisses(StatusId id) =>
+            Of(id).RecastDismisses;
     }
 
     public sealed class StatusInstance

@@ -288,8 +288,9 @@ namespace RuneMagic
                 case SpellId.GraveDust:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.Foul);
                 case SpellId.Hop:
-                case SpellId.Flight:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.Flight:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Flying, WorldWork.FlightSeconds, TileVerb.None);
                 default:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
             }

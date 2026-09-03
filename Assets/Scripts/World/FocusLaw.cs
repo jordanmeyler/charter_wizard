@@ -6,13 +6,14 @@ namespace RuneMagic
     /// <summary>
     /// Focus holds mind spells. Charm, command, lull, rage, terror,
     /// confuse, and the wards (they all write Sulphur) stay until
-    /// another focus sentence reuses a mark from the held working.
-    /// Sulphur is the mind rune — it is how a hold is written, not
-    /// a copied mark — so two holds can stand if the rest of the
-    /// sentences do not share a rune. A fireball or a wall does not
-    /// ask focus to let go. Burning is a contact meter. Poison is a
-    /// slower meter that stays until Light cleanses it. Other
-    /// elemental work stands on its own clock.
+    /// another focus sentence reuses a mark from the held working,
+    /// or until you recast the same sentence. Sulphur is the mind
+    /// rune — it is how a hold is written, not a copied mark — so
+    /// two holds can stand if the rest of the sentences do not share
+    /// a rune. A fireball or a wall does not ask focus to let go.
+    /// Burning is a contact meter. Poison is a slower meter that
+    /// stays until Light cleanses it. Other elemental work stands
+    /// on its own clock.
     /// </summary>
     public static class FocusLaw
     {
@@ -235,6 +236,29 @@ namespace RuneMagic
             if (!Holds(StatusId.Charmed) || !Holds(StatusId.Sleeping))
             {
                 broken.Add("Focus must hold charm and sleep");
+            }
+
+            if (!StatusSpec.RecastDismisses(StatusId.CloudForm)
+                || !StatusSpec.RecastDismisses(StatusId.Flameward)
+                || !StatusSpec.RecastDismisses(StatusId.Watershield)
+                || !StatusSpec.RecastDismisses(StatusId.Stoneskin)
+                || !StatusSpec.RecastDismisses(StatusId.Charmed)
+                || !StatusSpec.RecastDismisses(StatusId.Sleeping)
+                || !StatusSpec.RecastDismisses(StatusId.Veiled)
+                || !StatusSpec.RecastDismisses(StatusId.Flying)
+                || StatusSpec.RecastDismisses(StatusId.Burning)
+                || StatusSpec.RecastDismisses(StatusId.Frozen)
+                || StatusSpec.RecastDismisses(StatusId.Poisoned)
+                || StatusSpec.RecastDismisses(StatusId.Stunned))
+            {
+                broken.Add("Recasting lets go of a ward, form, flight, veil, or mind hold — not a meter or frost");
+            }
+
+            if (SpellVerb.Of(SpellId.Flight).Status != StatusId.Flying
+                || SpellVerb.Of(SpellId.Hop).Status != StatusId.None
+                || SpellVerb.Of(SpellId.CloudForm).Status != StatusId.CloudForm)
+            {
+                broken.Add("Flight stands on you as flight; hop is only a leap; cloud-form stays a form");
             }
 
             if (Breaks(StatusId.Stoneskin, SpellId.Wall)

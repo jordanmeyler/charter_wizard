@@ -57,7 +57,7 @@ namespace RuneMagic
 
         public static readonly FormationDef Self = new(
             SpellShape.Self, "Self", "keep it on you",
-            "Click to confirm. The spell stays on the caster. Hop still asks for a landing.", 4.8f, 2.4f);
+            "Click to confirm. The spell stays on the caster. Recast a worn hold to let it go. Hop still asks for a landing.", 4.8f, 2.4f);
 
         static readonly FormationDef[] AllDefs = { Shot, Pillar, Spread, Remote, Self };
 

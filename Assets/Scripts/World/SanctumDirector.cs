@@ -1070,7 +1070,17 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Pits will not take you while it lasts.";
+                return "Click to keep the breath on you. Recast the same sentence to land. Pits will not take you while it lasts.";
+            }
+
+            var verb = SpellVerb.Of(spell);
+            if (StatusSpec.RecastDismisses(verb.Status))
+            {
+                return verb.Target == SpellTarget.Self
+                    ? "Click to wear it. Recast the same sentence to let it go."
+                    : verb.Target == SpellTarget.Area
+                        ? "Click to confirm. Recast the same sentence on a held mind to let it go."
+                        : "Click who it should hold. Recast the same sentence on them to let it go.";
             }
 
             if (WorldWork.IsTimeStop(spell))
@@ -1925,12 +1935,6 @@ namespace RuneMagic
         {
             var player = PlayerTransform();
             var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
-            if (WorldWork.IsFlight(spell) && adept != null)
-            {
-                adept.KeepAirborne(WorldWork.FlightSeconds);
-                yield break;
-            }
-
             if (WorldWork.IsTimeStop(spell) && adept != null)
             {
                 adept.HoldWorld(WorldWork.TimeStopSeconds);

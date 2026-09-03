@@ -156,7 +156,7 @@ namespace RuneMagic
             Has(StatusId.GaleForm) || Has(StatusId.Veiled);
 
         public bool Flies =>
-            Has(StatusId.CloudForm);
+            Has(StatusId.CloudForm) || Has(StatusId.Flying);
 
         public bool SproutsWhileWalking =>
             Has(StatusId.Plantward) || Has(StatusId.GroveForm);
@@ -312,6 +312,12 @@ namespace RuneMagic
             {
                 if (_effects[i].Id == id)
                 {
+                    if (spec.RecastDismisses && SameWorking(_effects[i], source))
+                    {
+                        Drop(id, false);
+                        return $"{name}'s {spec.Name} lifts.";
+                    }
+
                     if (!spec.IsMeter)
                     {
                         _effects[i].Remaining = spec.NeedsConcentration
@@ -476,6 +482,16 @@ namespace RuneMagic
         public void Clear(StatusId id)
         {
             Drop(id, false);
+        }
+
+        static bool SameWorking(StatusInstance existing, SpellId source)
+        {
+            if (source == SpellId.None || existing.SourceSpell == SpellId.None)
+            {
+                return true;
+            }
+
+            return existing.SourceSpell == source;
         }
 
         int Drop(StatusId id, bool fizzle)

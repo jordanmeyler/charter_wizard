@@ -665,13 +665,16 @@
       "id": "Flight",
       "book": "Cross",
       "name": "Flight",
-      "want": "Breath given logos and breath again, going, then stood on you. You fly.",
+      "want": "Breath given logos and breath again, going, then stood on you. You fly. Recast the same breath to land.",
       "recipe": "Air · Animus · Air · Mercury · Salt",
       "via": "",
       "form": "Self",
       "outcome": "Neither",
       "gate": "",
-      "work": "Flight"
+      "work": "Flight",
+      "target": "Self",
+      "status": "Flying",
+      "statusSeconds": 10
     },
     {
       "number": 35,
