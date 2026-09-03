@@ -273,9 +273,13 @@ mark as an inscription. Ice is Water · Earth. **Fire cover**
 can catch and interact once a spell starts hunger (click the
 mark to draw Fire). Ice melts, oil fuels, metal conducts.
 **Floor-Fire / Wall-Fire** are rest matter, like stone — they
-do not spread on their own. Vine cover speaks Plant — Vine is
-a climbing shot (`Plant · Mercury`), not a rune, and hunger
-can run it as a wick. When hunger finishes the fuel, fire cover
+do not spread on their own. A plant spell on that walk lights
+the covering, not the masonry. Vine cover speaks Plant — Vine
+is a climbing shot (`Plant · Mercury`), not a rune, and hunger
+can run it as a wick. **Cover-Vine** is the plant medium that
+chain-burns across stone: stamp it (or write Vine / Sprout) to
+let fire cross a gap. **Floor-Plant** and **Floor-Grove** catch
+and burn out; they do not run a field. When hunger finishes the fuel, fire cover
 wears off. A plant or timber walk **swaps** stamp and tile to
 leftover dirt (look and Earth). It does not draw ash over the
 tile you placed. Masonry stays. Cover-Ash and spell leftovers

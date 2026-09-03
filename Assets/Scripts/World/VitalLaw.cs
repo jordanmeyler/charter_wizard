@@ -350,8 +350,8 @@ namespace RuneMagic
 
         /// <summary>
         /// A cell that can catch from a potent source. Neutral walk
-        /// and rest fire in the floor do not. A spell can still hit
-        /// those cells.
+        /// and bare rest fire do not. A covering a spell left — vine
+        /// or oil — is the fuel. A spell can still hit the walk.
         /// </summary>
         public static bool IsSpreadFuel(
             MaterialId walk,
@@ -359,7 +359,7 @@ namespace RuneMagic
             bool vine = false,
             bool oil = false)
         {
-            if (IsRestFire(walk))
+            if (IsRestFire(walk) && !vine && !oil && HungerOf(detail) <= HungerNeutral)
             {
                 return false;
             }
@@ -682,6 +682,7 @@ namespace RuneMagic
                 || IsSpreadFuel(MaterialId.Dirt)
                 || IsSpreadFuel(MaterialId.Fire)
                 || IsSpreadFuel(MaterialId.Ember)
+                || !IsSpreadFuel(MaterialId.Fire, MaterialId.None, true, false)
                 || ConductsFire(MaterialId.Stone)
                 || ConductsFire(MaterialId.Dirt)
                 || !ConductsFire(MaterialId.Ember)
@@ -692,7 +693,7 @@ namespace RuneMagic
                 || !IsSpreadFuel(MaterialId.Dirt, MaterialId.None, true, false)
                 || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
             {
-                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember hosts fire but is not fuel");
+                broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember hosts fire but is not fuel; plant on rest fire is the covering");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f

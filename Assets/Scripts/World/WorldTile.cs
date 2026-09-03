@@ -786,16 +786,22 @@ namespace RuneMagic
         /// <summary>
         /// How hard this live flame may light other cells. A kindled
         /// hall, a geyser, or a lit rest-fire walk is an oil-grade
-        /// source (10). Only a strong source (7+) walks fire, onto
-        /// equal-or-weaker fuel, out to its own reach.
+        /// source (10). A covering a spell left on that walk is the
+        /// fuel — the floor stays rest. Only a strong source (7+)
+        /// walks fire, onto equal-or-weaker fuel, out to its own reach.
         /// </summary>
         public int FirePotency
         {
             get
             {
-                if (Kindled || IsGeyser || (IsFireFloor && LiveFire) || (HasEmber && LiveFire))
+                if (Kindled || IsGeyser)
                 {
                     return VitalLaw.HungerOil;
+                }
+
+                if ((IsFireFloor && LiveFire) || (HasEmber && LiveFire))
+                {
+                    return HasOverlayFuel ? Hunger : VitalLaw.HungerOil;
                 }
 
                 return Hunger;
@@ -895,7 +901,7 @@ namespace RuneMagic
         public bool CanTakePlant =>
             (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             Material != MaterialId.Water && Material != MaterialId.Lava &&
-            Material != MaterialId.Void && !IsPlantish;
+            Material != MaterialId.Void && !IsFireFloor && !IsPlantish;
 
         /// <summary>
         /// Yield holding a vessel with no floor under it. It drowns.
@@ -1117,6 +1123,7 @@ namespace RuneMagic
             }
 
             PaintCover(TileCover.Vine);
+            LightNewPlant();
             RefreshFx();
             return true;
         }
@@ -1141,6 +1148,7 @@ namespace RuneMagic
                 }
 
                 PaintCover(TileCover.Vine);
+                LightNewPlant();
                 RefreshFx();
                 return true;
             }
@@ -1409,37 +1417,62 @@ namespace RuneMagic
 
         /// <summary>
         /// A climbing body on the walk. Hunger runs it like a wick.
+        /// Floor and wall stamps stay at rest; a spell that lays this
+        /// covering on hunger lights the plant, not the masonry.
         /// </summary>
         public bool LayVine()
         {
-            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            if (Kind == TileKind.Door || Material == MaterialId.Void)
             {
                 return false;
             }
 
-            if (IsDeepWater || Material == MaterialId.Lava)
+            if (Kind == TileKind.Wall && !AcceptsVineOnWall)
+            {
+                return false;
+            }
+
+            if (IsDeepWater)
             {
                 return false;
             }
 
             if (HasVine)
             {
-                if (IsBurning)
-                {
-                    Ignite(0.45f);
-                }
-
+                LightNewPlant(0.45f);
                 return true;
             }
 
             PaintCover(TileCover.Vine);
-            if (IsBurning)
-            {
-                Ignite(0.55f);
-            }
-
+            LightNewPlant(0.55f);
             RefreshFx();
             return true;
+        }
+
+        /// <summary>
+        /// Stone walls stay bare. A fire wall, a kindled hall, or
+        /// live hunger takes the climbing body so the covering can
+        /// catch.
+        /// </summary>
+        bool AcceptsVineOnWall =>
+            IsFireFloor || HasFireCover || Kindled || LiveFire || IsBurning;
+
+        /// <summary>
+        /// A spell laid plant on hunger — rest fire, a hall, live
+        /// flame, or fire cover. The covering lights. The walk does
+        /// not become a source by itself.
+        /// </summary>
+        bool ShouldLightNewPlant =>
+            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover;
+
+        void LightNewPlant(float amount = 0.55f)
+        {
+            if (!ShouldLightNewPlant)
+            {
+                return;
+            }
+
+            Ignite(amount);
         }
 
         public void BurnVine()
