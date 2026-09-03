@@ -19,7 +19,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Sundered Heights** | Miasma on the floor | Wind (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The flaming hall** | Kindled floor, no water nearby | Flame ward (`Fire · Salt · Sulphur`); Douse if you fetch yield | First ward. Columns write the sentence at the mouth. |
-| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. The same flame ward turns the shot. |
+| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Lightning…) | Mercury sends. The same flame ward turns the shot. |
 | **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Grow plant cover from the bank (Sprout, three tiles); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |

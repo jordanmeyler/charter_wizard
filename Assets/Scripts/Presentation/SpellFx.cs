@@ -121,7 +121,7 @@ namespace RuneMagic
                 _glow = CreateSprite("Glow", SpriteFactory.Glow(_look.Glow), 18, new Vector3(1.8f, 1.8f, 1f) * _potency);
                 _glow.color = _look.Glow;
                 _body = CreateSprite("Body", BodySprite(), 19, BodyScale());
-                _body.color = color;
+                _body.color = _spell == SpellId.WoodArrow ? Color.white : color;
             }
 
             ElementFx.Stream(transform, _look, _shape, _potency);
@@ -187,7 +187,9 @@ namespace RuneMagic
                 case ElementFamily.Steam:
                     return SpriteFactory.Wisp(color);
                 case ElementFamily.Plant:
-                    return SpriteFactory.Leaf(color);
+                    return _spell == SpellId.WoodArrow
+                        ? SpriteFactory.WoodArrowShot()
+                        : SpriteFactory.Leaf(color);
                 default:
                     break;
             }

@@ -129,6 +129,9 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 3.2f, StatusId.Frozen, 5f, TileVerb.Freeze);
                 case SpellId.DirtToss:
                     return new SpellVerb(SpellTarget.Single, 2.2f, StatusId.None, 0f, TileVerb.Dirt);
+                case SpellId.HurledStone:
+                case SpellId.WoodArrow:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Thunder:
                     return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.Stunned, 1.6f, TileVerb.Charge);
                 case SpellId.Douse:

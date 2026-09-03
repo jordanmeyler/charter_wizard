@@ -120,7 +120,8 @@ Name the clip after the spell or the element:
 | `fire-shot` | any Fire-family shot |
 | `fx-fire` | last Fire fallback |
 | `douse-shot`, `water-shot`, `fx-water` | Water, same pattern |
-| `arrow-shot` | enemy / volley arrows (already wired) |
+| `arrow-shot` | enemy / volley arrows, and Wood arrow if `wood-arrow-shot` is empty |
+| `wood-arrow-shot` | Player / archer wood arrow (`Plant · Salt · Mercury`) |
 
 A PNG at `Assets/Resources/Sprites/fireball-shot.png` is the same id.
 

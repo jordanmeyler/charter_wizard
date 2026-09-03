@@ -212,7 +212,8 @@ namespace RuneMagic
             E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
-            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither)
+            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
+            E(130, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -624,7 +625,8 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
                 || !WorldWork.StopsOnWalls(SpellId.Push)
                 || !WorldWork.StopsOnWalls(SpellId.LightningBolt)
-                || !WorldWork.StopsOnWalls(SpellId.Vine))
+                || !WorldWork.StopsOnWalls(SpellId.Vine)
+                || !WorldWork.StopsOnWalls(SpellId.WoodArrow))
             {
                 broken.Add("A flying shot must stop on a wall");
             }
@@ -647,6 +649,23 @@ namespace RuneMagic
             if (hurledExact.Count == 0 || hurledExact[0].Spell != SpellId.HurledStone)
             {
                 broken.Add("Earth · Salt · Mercury should be Hurled stone");
+            }
+
+            var wood = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury });
+            var woodExact = ChainBook.CollectExact(wood, SpellShape.None);
+            if (woodExact.Count == 0 || woodExact[0].Spell != SpellId.WoodArrow)
+            {
+                broken.Add("Plant · Salt · Mercury should be Wood arrow");
+            }
+
+            var woodRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt, RuneId.Mercury
+            });
+            var woodFromRoots = ChainBook.CollectExact(woodRoots, SpellShape.None);
+            if (woodFromRoots.Count == 0 || woodFromRoots[0].Spell != SpellId.WoodArrow)
+            {
+                broken.Add("Water · Salt · Earth · Salt · Mercury should be Wood arrow");
             }
 
             var monsoon = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Mercury });

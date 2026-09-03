@@ -89,7 +89,7 @@ namespace RuneMagic
                     : shown == CombatKind.Wizard
                         ? "They commit facing when the sentence starts. Empty Cast recipe writes Fire · Mercury. A wall breaks the shot."
                         : shown == CombatKind.Archer
-                            ? "They loose an arrow. Empty Cast recipe writes Earth · Mercury."
+                            ? "They loose a wood arrow (Plant · Salt · Mercury). Plant ward turns it. A rack of Arrows is still crushing — Stoneskin turns those."
                             : "No strike. Use this for the Silent Court's stone men — mind work only.",
                 MessageType.None);
 

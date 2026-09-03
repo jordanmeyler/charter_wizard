@@ -2082,6 +2082,19 @@
       "gate": "",
       "work": "Float",
       "target": "Self"
+    },
+    {
+      "number": 130,
+      "id": "WoodArrow",
+      "book": "End",
+      "name": "Wood arrow",
+      "want": "A vegetable body given a shaft and sent. Wood flies.",
+      "recipe": "Water · Salt · Earth · Salt · Mercury",
+      "via": "Plant · Salt · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "WoodArrow"
     }
   ]
 }

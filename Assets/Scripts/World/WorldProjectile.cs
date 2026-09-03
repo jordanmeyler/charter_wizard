@@ -5,7 +5,8 @@ namespace RuneMagic
     public enum ProjectileKind
     {
         Arrow,
-        Fireball
+        Fireball,
+        Wood
     }
 
     /// <summary>
@@ -38,21 +39,21 @@ namespace RuneMagic
             }
 
             direction.Normalize();
-            var host = new GameObject(kind == ProjectileKind.Arrow ? "Arrow" : "Fireball");
+            var host = new GameObject(NameOf(kind));
             host.transform.position = from;
             var shot = host.AddComponent<WorldProjectile>();
             shot._grid = grid;
             shot._kind = kind;
             shot._source = source;
             shot._allegiance = allegiance;
-            shot._recipe = source != null ? source.CastRecipe : System.Array.Empty<RuneId>();
+            shot._recipe = source != null && source.CastRecipe != null && source.CastRecipe.Length > 0
+                ? source.CastRecipe
+                : DefaultRecipe(kind);
             shot._velocity = direction * speed;
             var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             host.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             shot._renderer = host.AddComponent<SpriteRenderer>();
-            shot._renderer.sprite = kind == ProjectileKind.Arrow
-                ? SpriteFactory.Named("arrow-shot")
-                : SpriteFactory.Named("fireball-shot");
+            shot._renderer.sprite = SpriteFactory.Named(LookOf(kind));
             shot._renderer.sortingOrder = 18;
             if (kind == ProjectileKind.Fireball)
             {
@@ -199,7 +200,9 @@ namespace RuneMagic
                     var ward = host.FendingName(incoming);
                     var note = _kind == ProjectileKind.Fireball
                         ? $"Hunger breaks on the {ward}."
-                        : $"The shot breaks on the {ward}.";
+                        : _kind == ProjectileKind.Wood
+                            ? $"Wood breaks on the {ward}."
+                            : $"The shot breaks on the {ward}.";
                     FindFirstObjectByType<SanctumDirector>()?.Log(note);
                     BreakOnBody();
                     return;
@@ -229,6 +232,45 @@ namespace RuneMagic
 
             FindFirstObjectByType<SanctumDirector>()?.TurnLock(encounter);
             Destroy(gameObject);
+        }
+
+        static string LookOf(ProjectileKind kind)
+        {
+            switch (kind)
+            {
+                case ProjectileKind.Wood:
+                    return "wood-arrow-shot";
+                case ProjectileKind.Fireball:
+                    return "fireball-shot";
+                default:
+                    return "arrow-shot";
+            }
+        }
+
+        static string NameOf(ProjectileKind kind)
+        {
+            switch (kind)
+            {
+                case ProjectileKind.Wood:
+                    return "WoodArrow";
+                case ProjectileKind.Arrow:
+                    return "Arrow";
+                default:
+                    return "Fireball";
+            }
+        }
+
+        static RuneId[] DefaultRecipe(ProjectileKind kind)
+        {
+            switch (kind)
+            {
+                case ProjectileKind.Wood:
+                    return DeathCause.RecipeOf(SpellId.WoodArrow);
+                case ProjectileKind.Arrow:
+                    return DeathCause.RecipeOf(SpellId.HurledStone);
+                default:
+                    return DeathCause.RecipeOf(SpellId.Fireball);
+            }
         }
     }
 }

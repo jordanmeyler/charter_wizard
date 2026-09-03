@@ -142,6 +142,58 @@ namespace RuneMagic
             return _sight;
         }
 
+        ProjectileKind ShotKind()
+        {
+            if (WritesWood())
+            {
+                return ProjectileKind.Wood;
+            }
+
+            if (Kind == CombatKind.Archer)
+            {
+                return ProjectileKind.Wood;
+            }
+
+            return ProjectileKind.Fireball;
+        }
+
+        bool WritesWood()
+        {
+            if (_castRecipe == null)
+            {
+                return false;
+            }
+
+            var plant = false;
+            var mercury = false;
+            var life = false;
+            var death = false;
+            var fire = false;
+            for (var i = 0; i < _castRecipe.Length; i++)
+            {
+                switch (_castRecipe[i])
+                {
+                    case RuneId.Plant:
+                        plant = true;
+                        break;
+                    case RuneId.Mercury:
+                        mercury = true;
+                        break;
+                    case RuneId.Vita:
+                        life = true;
+                        break;
+                    case RuneId.Mors:
+                        death = true;
+                        break;
+                    case RuneId.Fire:
+                        fire = true;
+                        break;
+                }
+            }
+
+            return plant && mercury && !life && !death && !fire;
+        }
+
         static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
         {
             if (written != null && written.Length > 0)
@@ -154,7 +206,7 @@ namespace RuneMagic
                 case CombatKind.Wizard:
                     return new[] { RuneId.Fire, RuneId.Mercury };
                 case CombatKind.Archer:
-                    return new[] { RuneId.Earth, RuneId.Mercury };
+                    return new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury };
                 default:
                     return System.Array.Empty<RuneId>();
             }
@@ -591,9 +643,9 @@ namespace RuneMagic
                 return;
             }
 
-            var shot = Kind == CombatKind.Archer ? ProjectileKind.Arrow : ProjectileKind.Fireball;
+            var shot = ShotKind();
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Arrow ? 7.4f : 6.4f, this, ShotOf());
+            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Fireball ? 6.4f : 7.4f, this, ShotOf());
         }
 
         public static void NoticePlayerSpell(SpellId spell, Vector3 origin, Vector3 aim)

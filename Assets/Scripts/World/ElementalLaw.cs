@@ -94,6 +94,8 @@ namespace RuneMagic
             {
                 case ProjectileKind.Fireball:
                     return Essence.Fire;
+                case ProjectileKind.Wood:
+                    return Essence.Plant;
                 case ProjectileKind.Arrow:
                     return Essence.Physical;
                 default:

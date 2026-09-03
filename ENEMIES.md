@@ -75,7 +75,7 @@ On the same Inspector, **Attack**:
 |---|---|---|---|
 | **Golem** | Slam in reach | ~0.85s windup | — |
 | **Wizard** | Fireball, facing locked when they start writing | 2 | `Fire · Mercury` |
-| **Archer** | Arrow | ~1.15 | `Earth · Mercury` |
+| **Archer** | Wood arrow (`Plant · Salt · Mercury`, power 3) | ~1.15 | `Plant · Salt · Mercury` |
 | **None** | Wander only | — | — |
 
 A wizard shows the marks they are writing over their head. Raise a wall
@@ -83,24 +83,54 @@ to break the shot, hop over it, get behind them, or wear a flame ward
 (`Fire · Salt · Sulphur`). In the Mixed Court a fire wizard answers a
 wall with a flame-pillar.
 
-To write a different sentence, fill **Cast recipe** (`Spark`, `Mercury`
-for the bolt adept; `Earth`, `Salt`, `Mercury` for the arrow adept).
+To write a different sentence, fill **Cast recipe**. A wizard who writes
+`Plant · Salt · Mercury` looses a wood arrow instead of a fireball.
+`Spark · Mercury` still shows those marks; the flying body stays a
+fireball until we give bolt its own shot. An **Arrows** rack on the
+tilemap is crushing (Stoneskin). A written wood arrow is plant (Plant
+ward).
 
 **Blocking** on a Golem is a solid body — you cannot walk through it.
 Wizards leave it off so you can step past while they write.
 
-## Add another
+## Add another enemy
+
+Yes — duplicate a prefab. No new C# for a new body.
 
 1. Duplicate **Golem** or **Warden** in `Assets/Prefabs/Enemies`.
 2. Change **Name** / **Id**. `golem` is earth. `fire-golem` is fire.
    `warden` is an ensouled watcher.
 3. Drag another ElvGames facing, or **Fill empty frames from pack**
    after you set **Sprite Id**.
-4. Set **Attack**, **Formula**, **Ensouled**, **Blocking**, **Grant**.
+4. Set **Attack**, **Formula**, **Cast recipe**, **Ensouled**,
+   **Blocking**, **Grant**.
 5. Drop the new prefab in the room.
 
 `GameObject → Rune Magic → Mite` is the same component with no pack
 art. Set Sprite Id or drag frames yourself.
+
+A new *kind* of strike (not slam / fireball / wood arrow) still needs
+a `CombatKind` or a `SpellId`. A new wood archer does not — set Attack
+to **Archer**, or set a Wizard's Cast recipe to `Plant · Salt · Mercury`.
+
+## Animation — frames on the prefab, not a controller
+
+Enemies do **not** use a Unity Animator Controller. The adept does
+(`Idle` / `Walk` / `Cast` / `Hop` on Hero_22).
+
+For a golem or warden:
+
+1. Slice a sheet (ElvGames already is).
+2. Drag idle slices onto **Idle Frames**.
+3. Drag slam / cast slices onto **Attack Frames**.
+4. Optional: **Resolve Frames** for the unmake.
+
+That is the animation. Play loops those arrays. Changing how they look
+is a new set of slices on that same prefab — not a new controller.
+
+If you leave the arrays empty, **Sprite Id** / **Idle Clip** /
+**Attack Clip** fall back to catalog painters (`enemy-011`,
+`fire-golem-slam`, `warden-cast`).
 
 ## Rooms that want these
 
