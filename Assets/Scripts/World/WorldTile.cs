@@ -28,7 +28,7 @@ namespace RuneMagic
         /// An opened door is a hole in the wall.
         /// </summary>
         public bool BlocksTravel =>
-            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen) || _detailBlocks;
+            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen) || _detailBlocks || _detail2Blocks;
 
         public bool IsEmitting =>
             !Def.TearsTapestry
@@ -47,6 +47,7 @@ namespace RuneMagic
         SpriteRenderer _cover;
         SpriteRenderer _coverMark;
         SpriteRenderer _detail;
+        SpriteRenderer _detail2;
         SpriteRenderer _fx;
         Sprite _authoredLook;
         Sprite _underlayLook;
@@ -54,6 +55,9 @@ namespace RuneMagic
         Sprite _detailLook;
         MaterialId _detailMaterial;
         bool _detailBlocks;
+        Sprite _detail2Look;
+        MaterialId _detail2Material;
+        bool _detail2Blocks;
         Collider2D _collider;
         int _growth;
         GameObject _linger;
@@ -163,12 +167,24 @@ namespace RuneMagic
         /// <summary>
         /// A Decor-layer stamp. Sprite and material sit on top of the
         /// walk cell, so a plant can burn off and leave the stone.
+        /// A second stamp on the same cell (Environment Details lvl 2)
+        /// stacks on top of the first instead of replacing it.
         /// </summary>
         public void AuthorDetail(Sprite sprite, MaterialId material, bool blocks = false)
         {
-            _detailLook = TileSprite.Solid(sprite);
-            _detailMaterial = material;
-            _detailBlocks = blocks;
+            if (_detailLook != null || _detailMaterial != MaterialId.None)
+            {
+                _detail2Look = TileSprite.Solid(sprite);
+                _detail2Material = material;
+                _detail2Blocks = blocks;
+            }
+            else
+            {
+                _detailLook = TileSprite.Solid(sprite);
+                _detailMaterial = material;
+                _detailBlocks = blocks;
+            }
+
             if (_renderer != null)
             {
                 ApplyDetail();
@@ -178,7 +194,15 @@ namespace RuneMagic
 
         public void AuthorBlocks(bool blocks)
         {
-            _detailBlocks = blocks;
+            if (_detail2Look != null || _detail2Material != MaterialId.None)
+            {
+                _detail2Blocks = blocks;
+            }
+            else
+            {
+                _detailBlocks = blocks;
+            }
+
             if (_renderer != null)
             {
                 RefreshCollider();
@@ -221,7 +245,8 @@ namespace RuneMagic
             && (Material == MaterialId.Ember
                 || Cover == TileCover.Ember
                 || CoverMaterial == MaterialId.Ember
-                || _detailMaterial == MaterialId.Ember);
+                || _detailMaterial == MaterialId.Ember
+                || _detail2Material == MaterialId.Ember);
 
         /// <summary>
         /// Hunger seated in the walk itself — Floor-Fire, a hearth, lava.
@@ -475,6 +500,15 @@ namespace RuneMagic
                     }
                 }
 
+                if (_detail2Material != MaterialId.None)
+                {
+                    var top = MaterialCatalog.Of(_detail2Material).BurnSeconds;
+                    if (top > 0f)
+                    {
+                        seconds = seconds > 0f ? Mathf.Min(seconds, top) : top;
+                    }
+                }
+
                 if (HasAshCover)
                 {
                     return 0f;
@@ -559,6 +593,11 @@ namespace RuneMagic
                     value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(_detailMaterial));
                 }
 
+                if (_detail2Material != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.LeftoverOf(_detail2Material));
+                }
+
                 if (WorldMatter.TryOverlayConductivity(WorldOrigin, out var item))
                 {
                     value = ChargeLaw.Combine(value, item);
@@ -618,6 +657,11 @@ namespace RuneMagic
                     value = ChargeLaw.Combine(value, ChargeLaw.Of(_detailMaterial));
                 }
 
+                if (_detail2Material != MaterialId.None)
+                {
+                    value = ChargeLaw.Combine(value, ChargeLaw.Of(_detail2Material));
+                }
+
                 if (WorldMatter.TryOverlayConduct(WorldOrigin, out var item))
                 {
                     value = ChargeLaw.Combine(value, item);
@@ -636,7 +680,9 @@ namespace RuneMagic
             && (IsPlantish || HasPlantCover || HasPlantishDetail || HasVine || IsPoisonPlant);
         public bool IsPoisonedPlant =>
             HoldsPlant && (IsPoisonPlant || IsPoisonWell);
-        public bool HasPlantishDetail => IsPlantMaterial(_detailMaterial) && !HasAshCover;
+        public bool HasPlantishDetail =>
+            !HasAshCover
+            && (IsPlantMaterial(_detailMaterial) || IsPlantMaterial(_detail2Material));
         /// <summary>
         /// Fuel hunger can finish. Kindled halls, rest fire, and ember
         /// stay. Fire cover, timber walls, and plant / timber floors
@@ -674,6 +720,7 @@ namespace RuneMagic
             && (HasEmber
                 || VitalLaw.ConductsFire(Material)
                 || VitalLaw.ConductsFire(_detailMaterial)
+                || VitalLaw.ConductsFire(_detail2Material)
                 || VitalLaw.ConductsFire(CoverMaterial));
 
         /// <summary>
@@ -696,6 +743,11 @@ namespace RuneMagic
                 if (_detailMaterial != MaterialId.None)
                 {
                     hunger = Mathf.Max(hunger, VitalLaw.HungerOf(_detailMaterial));
+                }
+
+                if (_detail2Material != MaterialId.None)
+                {
+                    hunger = Mathf.Max(hunger, VitalLaw.HungerOf(_detail2Material));
                 }
 
                 if (HasVine)
@@ -756,6 +808,11 @@ namespace RuneMagic
                     quench = Mathf.Max(quench, VitalLaw.QuenchOf(_detailMaterial));
                 }
 
+                if (_detail2Material != MaterialId.None)
+                {
+                    quench = Mathf.Max(quench, VitalLaw.QuenchOf(_detail2Material));
+                }
+
                 var cover = CoverMaterial;
                 if (cover != MaterialId.None && cover != MaterialId.Oil)
                 {
@@ -790,11 +847,18 @@ namespace RuneMagic
         }
 
         public bool HasDetail =>
-            _detailLook != null || _detailMaterial != MaterialId.None;
+            _detailLook != null
+            || _detailMaterial != MaterialId.None
+            || _detail2Look != null
+            || _detail2Material != MaterialId.None;
         float DetailFlammability =>
-            _detailMaterial == MaterialId.None
-                ? 0f
-                : MaterialCatalog.Of(_detailMaterial).Flammability;
+            Mathf.Max(
+                _detailMaterial == MaterialId.None
+                    ? 0f
+                    : MaterialCatalog.Of(_detailMaterial).Flammability,
+                _detail2Material == MaterialId.None
+                    ? 0f
+                    : MaterialCatalog.Of(_detail2Material).Flammability);
 
         float CoverFlammability
         {
@@ -1497,7 +1561,16 @@ namespace RuneMagic
 
             if (HasPlantishDetail)
             {
-                _detailMaterial = MaterialId.None;
+                if (IsPlantMaterial(_detailMaterial))
+                {
+                    _detailMaterial = MaterialId.None;
+                }
+
+                if (IsPlantMaterial(_detail2Material))
+                {
+                    _detail2Material = MaterialId.None;
+                }
+
                 changed = true;
             }
 
@@ -1932,7 +2005,7 @@ namespace RuneMagic
         /// </summary>
         void KeepEmber()
         {
-            if (Material == MaterialId.Ember || _detailMaterial == MaterialId.Ember)
+            if (Material == MaterialId.Ember || _detailMaterial == MaterialId.Ember || _detail2Material == MaterialId.Ember)
             {
                 return;
             }
@@ -2341,10 +2414,19 @@ namespace RuneMagic
             _detailLook = null;
             _detailMaterial = MaterialId.None;
             _detailBlocks = false;
+            _detail2Look = null;
+            _detail2Material = MaterialId.None;
+            _detail2Blocks = false;
             if (_detail != null)
             {
                 _detail.enabled = false;
                 _detail.sprite = null;
+            }
+
+            if (_detail2 != null)
+            {
+                _detail2.enabled = false;
+                _detail2.sprite = null;
             }
         }
 
@@ -2355,36 +2437,35 @@ namespace RuneMagic
                 return;
             }
 
-            if (_detailLook == null)
+            ApplyDetailSlot(_detailLook, _detailMaterial, ref _detail, 2, "TileDetail");
+            ApplyDetailSlot(_detail2Look, _detail2Material, ref _detail2, 3, "TileDetail2");
+        }
+
+        void ApplyDetailSlot(Sprite look, MaterialId material, ref SpriteRenderer view, int orderAdd, string name)
+        {
+            if (look == null)
             {
-                if (_detail != null)
+                if (view != null)
                 {
-                    _detail.enabled = false;
+                    view.enabled = false;
                 }
 
                 return;
             }
 
-            var view = EnsureDetail();
-            view.sprite = _detailLook;
-            view.sortingOrder = _renderer.sortingOrder + 2;
-            view.transform.localScale = _detailMaterial == MaterialId.Ash
+            if (view == null)
+            {
+                var child = new GameObject(name);
+                child.transform.SetParent(transform, false);
+                view = child.AddComponent<SpriteRenderer>();
+            }
+
+            view.sprite = look;
+            view.sortingOrder = _renderer.sortingOrder + orderAdd;
+            view.transform.localScale = material == MaterialId.Ash
                 ? new Vector3(0.7f, 0.7f, 1f)
                 : Vector3.one;
             view.enabled = true;
-        }
-
-        SpriteRenderer EnsureDetail()
-        {
-            if (_detail != null)
-            {
-                return _detail;
-            }
-
-            var child = new GameObject("TileDetail");
-            child.transform.SetParent(transform, false);
-            _detail = child.AddComponent<SpriteRenderer>();
-            return _detail;
         }
 
         static bool IsPlantMaterial(MaterialId material)
