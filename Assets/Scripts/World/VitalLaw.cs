@@ -194,11 +194,10 @@ namespace RuneMagic
         /// <summary>
         /// Burning and poison only run while the body still stands in
         /// that kind of walk or covering. Hunger needs live fire, a
-        /// kindled hall, ember, or a stood flame — a painted fire mark
-        /// at rest is not enough. Poison needs a poison slick underfoot,
-        /// or a miasma cloud (the tile, a neighbour, or a hanging
-        /// veil). Leave the fire and the burn lifts. Leave the foul
-        /// and the poison clock waits.
+        /// kindled hall, fire cover, ember, or a stood flame. Poison
+        /// needs a poison slick underfoot, or a miasma cloud (the
+        /// tile, a neighbour, or a hanging veil). Leave the fire and
+        /// the burn lifts. Leave the foul and the poison clock waits.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -237,8 +236,16 @@ namespace RuneMagic
                 || tile.LiveFire
                 || tile.Kindled
                 || tile.HasEmber
+                || tile.HasFireCover
                 || WorldWork.BurnsOccupants(tile);
         }
+
+        /// <summary>
+        /// Spoken covers that feed the burn meter on contact.
+        /// Fire cover is hunger on the walk. Ember is coals.
+        /// </summary>
+        public static bool CoverFeedsBurn(TileCover cover) =>
+            cover == TileCover.Fire || cover == TileCover.Ember;
 
         public static bool IsChargeContact(WorldTile tile) =>
             tile != null && tile.IsCharged;
@@ -638,6 +645,15 @@ namespace RuneMagic
             if (IsFireContact(null) || IsPoisonLiquidContact(null) || IsChargeContact(null))
             {
                 broken.Add("Empty ground cannot feed a burn, poison, or charge contact");
+            }
+
+            if (!CoverFeedsBurn(TileCover.Fire)
+                || !CoverFeedsBurn(TileCover.Ember)
+                || CoverFeedsBurn(TileCover.Ice)
+                || CoverFeedsBurn(TileCover.Ash)
+                || CoverFeedsBurn(TileCover.Poison))
+            {
+                broken.Add("Fire cover and ember must feed the burn meter; ice, ash, and poison must not");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
