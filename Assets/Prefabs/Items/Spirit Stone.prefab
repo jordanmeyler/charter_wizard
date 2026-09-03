@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: spirit-stone
   displayName: Spirit Stone
+  look: the spirit is motion.
+  note: The spirit is motion.
+  catalogId: spirit-stone
   spriteId: stone-spirit
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: The spirit is motion.
-  look: the spirit is motion.
 --- !u!212 &394499118988741963
 SpriteRenderer:
   serializedVersion: 2

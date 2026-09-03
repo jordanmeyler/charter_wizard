@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1000629970084644023}
   - component: {fileID: 186599116348185755}
   - component: {fileID: 113132737618248709}
+  - component: {fileID: 394841650791581319}
+  - component: {fileID: -7353123547989823660}
   m_Layer: 0
   m_Name: Cultist
   m_TagString: Untagged
@@ -144,3 +146,29 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+--- !u!114 &394841650791581319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 306339364120643371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d5f3c02e4e5b9f0c7d6e5f4a3b2c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldYSort
+  bias: 0
+--- !u!210 &-7353123547989823660
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 306339364120643371}
+  m_Enabled: 1
+  m_SortingLayerID: 1847392011
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0

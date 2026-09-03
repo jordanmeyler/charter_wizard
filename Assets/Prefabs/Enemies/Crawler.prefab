@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 509909057849865981}
   - component: {fileID: 590603793517169764}
   - component: {fileID: 298057627234957726}
+  - component: {fileID: 6450026979072448144}
+  - component: {fileID: 5228401292844347769}
   m_Layer: 0
   m_Name: Crawler
   m_TagString: Untagged
@@ -144,3 +146,29 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+--- !u!114 &6450026979072448144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908646017764826504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d5f3c02e4e5b9f0c7d6e5f4a3b2c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldYSort
+  bias: 0
+--- !u!210 &5228401292844347769
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908646017764826504}
+  m_Enabled: 1
+  m_SortingLayerID: 1847392011
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0

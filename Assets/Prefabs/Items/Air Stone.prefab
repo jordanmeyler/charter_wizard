@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: air-stone
   displayName: Air Stone
+  look: breath, that which will not stay.
+  note: Breath, that which will not stay.
+  catalogId: air-stone
   spriteId: stone-air
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Breath, that which will not stay.
-  look: breath, that which will not stay.
 --- !u!212 &53115277970979202
 SpriteRenderer:
   serializedVersion: 2

@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: fire-stone
   displayName: Fire Stone
+  look: hunger that will not rest.
+  note: Hunger that will not rest.
+  catalogId: fire-stone
   spriteId: stone-fire
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Hunger that will not rest.
-  look: hunger that will not rest.
 --- !u!212 &452081134403625117
 SpriteRenderer:
   serializedVersion: 2

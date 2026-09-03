@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: earth-stone
   displayName: Earth Stone
+  look: rest, that which remains.
+  note: Rest, that which remains.
+  catalogId: earth-stone
   spriteId: stone-earth
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Rest, that which remains.
-  look: rest, that which remains.
 --- !u!212 &1143714396680796549
 SpriteRenderer:
   serializedVersion: 2
