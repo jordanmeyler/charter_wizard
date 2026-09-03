@@ -119,9 +119,9 @@ On a **Gate** or **Door**, drag a Unity sprite onto **Portrait** — that is the
 | --- | --- |
 | [`Tools/catalog-editor.html`](Tools/catalog-editor.html) | Edit recipes, joins, pixel sprites, and items. Export `spells.json` / `art.json` back into `Assets/Resources/Catalog/`. |
 | [`Tools/import-sprite.py`](Tools/import-sprite.py) | Copy a PNG into `Assets/Resources/Sprites/` and register it in `art.json` |
-| Unity `Window → Rune Magic → Catalog` | Jump to those files |
+| Unity `Window → Rune Magic → Catalog` | Edit pack item descriptions, or jump to `spells.json` / `art.json` |
 
-A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place a **Item** in the scene and set its catalog id (or sprite) on the Inspector.
+A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop`, `Wall`…). Work is the coded verb it reuses. A new lock key is the spell `id`. A new item is an `art.json` row; place a **Item** in the scene and set its catalog id (or sprite) on the Inspector. **Description** on that Item (or on a stone prefab) is what the pack and `You see` show — `Window → Rune Magic → Catalog` edits every pack item in one list.
 
 ## Where to grow the trees
 

@@ -90,7 +90,7 @@
       if (tab === "spells") spells.spells.push({ number: spells.spells.length+1, id: "NewSpell", book: "End", name: "New spell", want: "", recipe: "Fire · Salt · Mercury", via: "", form: "Remote", outcome: "Neither", gate: "", work: "Melt" });
       if (tab === "joins") spells.joins.push({ rune: "Spark", sources: ["Fire","Air"] });
       if (tab === "sprites") art.sprites.push({ id: "new-sprite", width: 32, height: 32, pixelsPerUnit: 32, source: "", pivot: "0.5,0.5", colors: ["#00000000","#e86a2a","#ffe7a0","#1a1014"], cells: "0".repeat(32*32) });
-      if (tab === "items") art.items.push({ id: "new-item", name: "New item", kind: "item", sprite: "charm", teachesSpell: "Fireball", note: "" });
+      if (tab === "items") art.items.push({ id: "new-item", name: "New item", kind: "stone", sprite: "charm", teachesSpell: "", note: "", look: "" });
       index = currentList().length - 1;
       draw();
     }
@@ -125,16 +125,16 @@
         <div class="grid2">
           <label>Id <input name="id" value="${esc(item.id)}"></label>
           <label>Name <input name="name" value="${esc(item.name)}"></label>
-          <label>Kind <select name="kind">${opts(["item","key","charm","ward","medium","relic","mite","torch","rod","chasm"], item.kind)}</select></label>
+          <label>Kind <select name="kind">${opts(["item","stone","artifact","key","charm","ward","medium","relic","mite","torch","rod","chasm"], item.kind)}</select></label>
           <label>Sprite id <input name="sprite" value="${esc(item.sprite||"")}"></label>
           <label>Lit sprite <input name="spriteLit" value="${esc(item.spriteLit||"")}"></label>
           <label>Teaches spell <input name="teachesSpell" value="${esc(item.teachesSpell||"")}"></label>
         </div>
         <label>Formula runes (comma) <input name="formula" value="${esc((item.formula||[]).join(", "))}"></label>
         <label>Accepted keys (comma, empty = tutorial preset) <input name="keys" value="${esc((item.keys||[]).join(", "))}"></label>
-        <label>Pickup note <textarea name="note">${esc(item.note||"")}</textarea></label>
-        <label>Look (inspect in the pack) <textarea name="look">${esc(item.look||"")}</textarea></label>
-        <p class="hint">Carryable kinds (key, charm, ward, medium, relic, item) go into the pack. Place on a map with type <code>item</code> and <code>item: "${item.id||"..."}"</code>.</p>`;
+        <label>Pickup line <textarea name="note">${esc(item.note||"")}</textarea></label>
+        <label>Description (pack and You see) <textarea name="look">${esc(item.look||"")}</textarea></label>
+        <p class="hint">Carryable kinds (key, charm, ward, medium, relic, item, stone) go into the pack. Description is what I / You see shows. In Unity, edit the same text on the stone Inspector or Window → Rune Magic → Catalog.</p>`;
     }
 
     function spriteForm(item) {

@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: Yield and rest asked to live.
+  look: yield and rest asked to live.
 --- !u!212 &890566569349100737
 SpriteRenderer:
   serializedVersion: 2

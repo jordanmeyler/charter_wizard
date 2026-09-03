@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: Fire from the sky.
+  look: fire from the sky.
 --- !u!212 &320801895316690077
 SpriteRenderer:
   serializedVersion: 2
