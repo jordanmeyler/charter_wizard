@@ -950,14 +950,19 @@ namespace RuneMagic
             {
                 if (_attackFrames != null && _attackFrames.Length > 0)
                 {
-                    _anim.Play(_attackFrames, fps, true, string.IsNullOrEmpty(_attackClip) ? "attack" : _attackClip);
+                    var clip = string.IsNullOrEmpty(_attackClip) ? "attack" : _attackClip;
+                    if (_anim.Clip != clip)
+                    {
+                        _anim.Play(_attackFrames, fps, true, clip);
+                    }
+
                     return;
                 }
 
-                var clip = !string.IsNullOrEmpty(_attackClip) ? _attackClip : DefaultAttackClip();
-                if (!string.IsNullOrEmpty(clip))
+                var named = !string.IsNullOrEmpty(_attackClip) ? _attackClip : DefaultAttackClip();
+                if (!string.IsNullOrEmpty(named))
                 {
-                    _anim.Play(clip, fps);
+                    _anim.Play(named, fps);
                 }
 
                 return;
@@ -965,7 +970,12 @@ namespace RuneMagic
 
             if (_idleFrames != null && _idleFrames.Length > 0)
             {
-                _anim.Play(_idleFrames, fps, true, string.IsNullOrEmpty(_idleClip) ? "idle" : _idleClip);
+                var clip = string.IsNullOrEmpty(_idleClip) ? "idle" : _idleClip;
+                if (_anim.Clip != clip)
+                {
+                    _anim.Play(_idleFrames, fps, true, clip);
+                }
+
                 return;
             }
 
