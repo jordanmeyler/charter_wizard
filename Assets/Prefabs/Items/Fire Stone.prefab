@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: Hunger that will not rest.
+  look: hunger that will not rest.
 --- !u!212 &452081134403625117
 SpriteRenderer:
   serializedVersion: 2

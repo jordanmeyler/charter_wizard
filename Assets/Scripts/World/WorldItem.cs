@@ -22,6 +22,7 @@ namespace RuneMagic
     /// Fragile props do not pick up — they yield to opposed work.
     /// Drop a prefab (Fire Stone, Water Stone, …) from any folder under
     /// Assets/Prefabs rather than a blank Item and a typed id.
+    /// Description is the pack / You see text. Pickup line is the take log.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -43,9 +44,17 @@ namespace RuneMagic
             fragile
             || (_item != null && (_item.fragile || string.Equals(_item.kind, "prop", System.StringComparison.OrdinalIgnoreCase)));
 
+        [Header("Words")]
+        [SerializeField] string displayName;
+        [Tooltip("Pack inspect and You see. Leave empty to use the catalog row for this Catalog Id.")]
+        [TextArea(3, 8)]
+        [SerializeField] string look;
+        [Tooltip("Spoken when it goes into the pack. Leave empty to use the catalog note.")]
+        [TextArea(2, 5)]
+        [SerializeField] string note;
+
         [Header("Authoring")]
         [SerializeField] string catalogId;
-        [SerializeField] string displayName;
         [SerializeField] string spriteId;
         [SerializeField] Sprite portrait;
         [SerializeField] Sprite[] idleFrames;
@@ -58,8 +67,6 @@ namespace RuneMagic
         [SerializeField] bool fragile;
         [SerializeField] string[] keys;
         [SerializeField] string teachesSpell;
-        [SerializeField] string note;
-        [SerializeField] string look;
 
         CatalogItem _item;
         Grimoire _grimoire;
@@ -325,6 +332,10 @@ namespace RuneMagic
             if (!string.IsNullOrEmpty(_item.note))
             {
                 _log?.Invoke(_item.note);
+            }
+            else if (!string.IsNullOrEmpty(_item.look))
+            {
+                _log?.Invoke(_item.look);
             }
             else if (carried)
             {

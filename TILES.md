@@ -302,6 +302,8 @@ Drag one from `Assets/Prefabs` (they ship in `Items/`):
 
 Snap it to a floor cell. Walking onto it puts that stone in the pack. The blank **Item** prefab is only for a new catalog row.
 
+**Description** on the Inspector (or `Window → Rune Magic → Catalog`) is what the pack and `You see` show. **Pickup line** is spoken when it is taken. Leave either empty to keep the catalog row in `art.json`.
+
 ### 2. The lock (Gate)
 
 Drag `Assets/Prefabs/Gate`. Sit it in front of the door. This is the

@@ -138,7 +138,7 @@ Aether = the **philosopher's stone**, union of a **Light aspect** (sol · projec
 - **Wards / passives** — e.g. a *fire cloak* removes the standing cost of recasting water/ice.
 - **Rune-mediums** — e.g. a *lamp* puts a Fire rune in your field where none flows; or (Free) a medium that makes one specific spell reliable.
 - **Stones / artifacts** — seat a concept in a gate; most gates have another solution, so they usually *ease* rather than hard-lock. They also name the idea (hunger, yield, ice, spark).
-- **The pack** — stones, artifacts, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Each look is a short hint at the rune (the spirit is motion; salt of the earth; fire from the sky). Doors still gate on possession, not on using an item from a menu.
+- **The pack** — stones, artifacts, charms, wards, and mediums are carried. **I** opens the pack to look; click an item to read it. Each look is a short hint at the rune (the spirit is motion; salt of the earth; fire from the sky). Authors change that text on the item’s **Description** field, or all at once in `Window → Rune Magic → Catalog`. Doors still gate on possession, not on using an item from a menu.
 - **The info box** — the Rune Magic panel is a running look: mouse-over or the current target, then `You see` and the description. Workings are spoken as the runes that were written, or as a name the player saved for that exact composition. Spark and Fire · Air are different writings of the same join.
 - **The Primordial gate** — access to Primordial is *only* opened by acquiring an item or performing a deed.
 
