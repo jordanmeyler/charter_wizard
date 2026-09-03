@@ -52,7 +52,10 @@ namespace RuneMagic
             var host = new GameObject(NameOf(result));
             host.transform.position = origin;
             var altar = host.AddComponent<ElementalAltar>();
-            altar.Author(result, sources);
+            altar.result = result;
+            altar.sources = PrayerWorking.HasMarks(sources)
+                ? PrayerWorking.Copy(sources)
+                : System.Array.Empty<RuneId>();
             altar.BindFromAuthoring();
             return altar;
         }
@@ -317,6 +320,7 @@ namespace RuneMagic
                 return;
             }
 
+            child.name = DisplayChild + ".old";
             if (Application.isPlaying)
             {
                 Destroy(child.gameObject);
