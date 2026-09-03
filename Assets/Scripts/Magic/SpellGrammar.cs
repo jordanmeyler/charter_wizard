@@ -221,8 +221,8 @@ namespace RuneMagic
             Register(RuneId.Anima, RuneId.Salt, SpellShape.Spread, SpellId.Chorus, "Chorus", "Compressed. Catalog: Anima · Salt. Care given a body around the feet. The work opens to many.");
 
             Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent.");
-            Register(RuneId.Spark, RuneId.Mercury, SpellShape.Self, SpellId.Blink, "Blink", "Compressed. Catalog: Spark · Mercury · Salt. The seed going, then stood on you. A short jump. Walls will not stop you.");
-            Register(RuneId.Spark, RuneId.Umbra, SpellShape.Self, SpellId.Teleport, "Teleport", "Compressed. Catalog: Spark · Dark · Light · Mercury · Salt. The seed withheld, shown, going, stood. Anywhere you can see.");
+            Register(RuneId.Spark, RuneId.Salt, SpellShape.Self, SpellId.Blink, "Blink", "Compressed. Catalog: Air · Salt · Air · Spark. The hop given the seed. A short jump. Walls will not stop you.");
+            Register(RuneId.Spark, RuneId.Lumen, SpellShape.Self, SpellId.Teleport, "Teleport", "Compressed. Catalog: Air · Salt · Air · Spark · Light. The spark-leap shown. Anywhere you can see.");
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury when the bolt already stands.");
             Register(RuneId.Spark, RuneId.Salt, SpellShape.Spread, SpellId.LiveFloor, "Live-floor", "Charged ground around the caster.");
             Register(RuneId.Spark, RuneId.Sulphur, SpellShape.Remote, SpellId.Jolt, "Jolt", "Stun placed at a point.");
@@ -243,7 +243,7 @@ namespace RuneMagic
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Remote, SpellId.LightningStrike, "Lightning strike", "Compressed. Catalog: Fire · Air · Salt · Air · Mercury. A spark given form from the air, falling from the sky.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
-            Register(RuneId.Animus, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Animus · Air · Mercury · Salt. Breath given logos, going, stood on you.");
+            Register(RuneId.Animus, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Salt · Air · Animus · Mercury. The hop given logos, then going.");
             Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Float, "Float", "Compressed. Catalog: Air · Mercury · Salt. Breath going, then stood on you. You hang. Wind and vine move you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Remote, SpellId.Confuse, "Confuse", "Mind of air, placed elsewhere. They lose the thread.");

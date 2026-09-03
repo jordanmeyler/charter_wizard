@@ -162,7 +162,7 @@ namespace RuneMagic
                 case SpellShape.Shot:
                     return IsAny(material, RuneId.Earth, RuneId.Ice, RuneId.Stone, RuneId.Air);
                 case SpellShape.Self:
-                    return material == RuneId.Air;
+                    return material == RuneId.Air || material == RuneId.Spark;
                 default:
                     return false;
             }
@@ -247,6 +247,8 @@ namespace RuneMagic
                     return material == RuneId.Air;
                 case SpellShape.Pillar:
                     return material == RuneId.Fire;
+                case SpellShape.Self:
+                    return material == RuneId.Spark;
                 default:
                     return false;
             }
@@ -262,8 +264,6 @@ namespace RuneMagic
                     return IsAny(material, RuneId.Air, RuneId.Earth, RuneId.Water);
                 case SpellShape.Shot:
                     return material == RuneId.Fire;
-                case SpellShape.Self:
-                    return material == RuneId.Spark;
                 default:
                     return false;
             }

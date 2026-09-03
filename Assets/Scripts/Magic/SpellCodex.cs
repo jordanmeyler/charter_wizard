@@ -117,7 +117,7 @@ namespace RuneMagic
             E(31, SpellBook.GrowHeal, SpellId.Grow, "A living vegetable body sent. Plant cover at the mark, the way Sprout stands from the feet.", "Grow", "Water · Salt · Earth · Life · Mercury", "Plant · Life · Mercury", "Remote", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Grow", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
-            E(34, SpellBook.Cross, SpellId.Flight, "Breath given logos and breath again, going, then stood on you. You fly. Recast the same breath to land.", "Flight", "Air · Animus · Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
+            E(34, SpellBook.Cross, SpellId.Flight, "That leap given logos, then going. You fly. Recast the same breath to land.", "Flight", "Air · Salt · Air · Fire · Sulphur · Air · Mercury", "Air · Salt · Air · Animus · Mercury", "Self", SpellOutcome.Neither),
             E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
@@ -213,8 +213,8 @@ namespace RuneMagic
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
             E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
-            E(130, SpellBook.Cross, SpellId.Blink, "The seed going, then stood on you. You jump as the spark. A wall will not stop you.", "Blink", "Fire · Air · Mercury · Salt", "Spark · Mercury · Salt", "Self", SpellOutcome.Neither),
-            E(131, SpellBook.Cross, SpellId.Teleport, "The seed is withheld, then shown, going, stood on you. You leave and arrive anywhere you can see.", "Teleport", "Fire · Air · Dark · Light · Mercury · Salt", "Spark · Dark · Light · Mercury · Salt", "Self", SpellOutcome.Neither)
+            E(130, SpellBook.Cross, SpellId.Blink, "That leap given the seed. You jump as the spark. A wall will not stop you.", "Blink", "Air · Salt · Air · Fire · Air", "Air · Salt · Air · Spark", "Self", SpellOutcome.Neither),
+            E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -1013,12 +1013,31 @@ namespace RuneMagic
 
             var flight = Composition.FromSequence(new[]
             {
-                RuneId.Air, RuneId.Animus, RuneId.Air, RuneId.Mercury, RuneId.Salt
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Animus, RuneId.Mercury
             });
             var flightExact = ChainBook.CollectExact(flight, SpellShape.None);
             if (flightExact.Count == 0 || flightExact[0].Spell != SpellId.Flight)
             {
-                broken.Add("Air · Animus · Air · Mercury · Salt should be Flight");
+                broken.Add("Air · Salt · Air · Animus · Mercury should be Flight");
+            }
+
+            var flightRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Fire, RuneId.Sulphur, RuneId.Air, RuneId.Mercury
+            });
+            var flightFromRoots = ChainBook.CollectExact(flightRoots, SpellShape.None);
+            if (flightFromRoots.Count == 0 || flightFromRoots[0].Spell != SpellId.Flight)
+            {
+                broken.Add("Air · Salt · Air · Fire · Sulphur · Air · Mercury should be Flight");
+            }
+
+            var oldFlight = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Animus, RuneId.Air, RuneId.Mercury, RuneId.Salt
+            });
+            if (ChainBook.CollectExact(oldFlight, SpellShape.None).Count != 0)
+            {
+                broken.Add("Air · Animus · Air · Mercury · Salt is no longer Flight — Flight expands Hop");
             }
 
             var hover = Composition.FromSequence(new[] { RuneId.Air, RuneId.Mercury, RuneId.Salt });
@@ -1028,45 +1047,68 @@ namespace RuneMagic
                 broken.Add("Air · Mercury · Salt should be Float");
             }
 
-            var blink = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury, RuneId.Salt });
+            var blink = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Fire, RuneId.Air
+            });
             var blinkExact = ChainBook.CollectExact(blink, SpellShape.None);
             if (blinkExact.Count == 0 || blinkExact[0].Spell != SpellId.Blink)
             {
-                broken.Add("Fire · Air · Mercury · Salt should be Blink");
+                broken.Add("Air · Salt · Air · Fire · Air should be Blink");
             }
 
-            var blinkVia = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury, RuneId.Salt });
+            var blinkVia = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Spark
+            });
             var blinkViaExact = ChainBook.CollectExact(blinkVia, SpellShape.None);
             if (blinkViaExact.Count == 0 || blinkViaExact[0].Spell != SpellId.Blink)
             {
-                broken.Add("Spark · Mercury · Salt should be Blink");
+                broken.Add("Air · Salt · Air · Spark should be Blink");
+            }
+
+            var hopStill = Composition.FromSequence(new[] { RuneId.Air, RuneId.Salt, RuneId.Air });
+            var hopStillExact = ChainBook.CollectExact(hopStill, SpellShape.None);
+            if (hopStillExact.Count == 0 || hopStillExact[0].Spell != SpellId.Hop)
+            {
+                broken.Add("Air · Salt · Air should stay Hop, not fill toward Blink or Flight");
+            }
+
+            var wallStill = Composition.FromSequence(new[]
+            {
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Mercury
+            });
+            var wallStillExact = ChainBook.CollectExact(wallStill, SpellShape.None);
+            if (wallStillExact.Count == 0 || wallStillExact[0].Spell != SpellId.AirWall)
+            {
+                broken.Add("Air · Salt · Air · Mercury should stay Air-wall");
             }
 
             var boltStill = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury });
             var boltStillExact = ChainBook.CollectExact(boltStill, SpellShape.None);
             if (boltStillExact.Count == 0 || boltStillExact[0].Spell != SpellId.LightningBolt)
             {
-                broken.Add("Spark · Mercury should stay Lightning, not fill toward Blink");
+                broken.Add("Spark · Mercury should stay Lightning, not become Blink");
             }
 
             var teleport = Composition.FromSequence(new[]
             {
-                RuneId.Fire, RuneId.Air, RuneId.Umbra, RuneId.Lumen, RuneId.Mercury, RuneId.Salt
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Fire, RuneId.Air, RuneId.Lumen
             });
             var teleportExact = ChainBook.CollectExact(teleport, SpellShape.None);
             if (teleportExact.Count == 0 || teleportExact[0].Spell != SpellId.Teleport)
             {
-                broken.Add("Fire · Air · Dark · Light · Mercury · Salt should be Teleport");
+                broken.Add("Air · Salt · Air · Fire · Air · Light should be Teleport");
             }
 
             var teleportVia = Composition.FromSequence(new[]
             {
-                RuneId.Spark, RuneId.Umbra, RuneId.Lumen, RuneId.Mercury, RuneId.Salt
+                RuneId.Air, RuneId.Salt, RuneId.Air, RuneId.Spark, RuneId.Lumen
             });
             var teleportViaExact = ChainBook.CollectExact(teleportVia, SpellShape.None);
             if (teleportViaExact.Count == 0 || teleportViaExact[0].Spell != SpellId.Teleport)
             {
-                broken.Add("Spark · Dark · Light · Mercury · Salt should be Teleport");
+                broken.Add("Air · Salt · Air · Spark · Light should be Teleport");
             }
 
             if (WorldWork.StopsOnWalls(SpellId.Blink) || WorldWork.StopsOnWalls(SpellId.Teleport))
