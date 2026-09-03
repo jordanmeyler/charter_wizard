@@ -42,6 +42,7 @@ namespace RuneMagic
 
             if (verb.Target == SpellTarget.Self)
             {
+                var dismissed = false;
                 var adept = AdeptAvatar.Find();
                 if (adept != null)
                 {
@@ -52,12 +53,18 @@ namespace RuneMagic
                     }
                     else if (verb.Status != StatusId.None)
                     {
+                        var had = host.Has(verb.Status);
                         notes.Add(host.Apply(verb.Status, verb.StatusSeconds, adept, heldRunes, spell));
+                        dismissed = had && !host.Has(verb.Status);
                     }
                 }
 
                 WorldPhysics.Collect(locks, sweep, hits, verb, grid);
-                ApplyTiles(grid, spell, verb, origin, radius, notes);
+                if (!dismissed)
+                {
+                    ApplyTiles(grid, spell, verb, origin, radius, notes);
+                }
+
                 return new SpellImpactResult(First(notes), hits);
             }
 

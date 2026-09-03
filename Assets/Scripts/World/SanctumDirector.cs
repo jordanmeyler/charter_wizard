@@ -87,6 +87,7 @@ namespace RuneMagic
         bool _finished;
         PlayMode _modeBeforePause = PlayMode.Exploring;
         float _castNoticeUntil;
+        string _carryNote;
         ISpellLock _focus;
         SpriteRenderer _targetRing;
         SpriteRenderer _aimMark;
@@ -1070,12 +1071,22 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Walk while it lasts — pits will not take you.";
+                return "Click to keep the breath on you. Walk while it lasts — pits will not take you. Recast the same sentence to land.";
             }
 
             if (WorldWork.IsFloat(spell))
             {
-                return "Click to hang in the breath. You barely walk. Send wind to ride, a vine to pull you, or a jet of yield.";
+                return "Click to hang in the breath. You barely walk. Send wind to ride, a vine to pull you, or a jet of yield. Recast the same sentence to land.";
+            }
+
+            var verb = SpellVerb.Of(spell);
+            if (StatusSpec.RecastDismisses(verb.Status))
+            {
+                return verb.Target == SpellTarget.Self
+                    ? "Click to wear it. Recast the same sentence to let it go."
+                    : verb.Target == SpellTarget.Area
+                        ? "Click to confirm. Recast the same sentence on a held mind to let it go."
+                        : "Click who it should hold. Recast the same sentence on them to let it go.";
             }
 
             if (WorldWork.IsTimeStop(spell))
@@ -1781,7 +1792,13 @@ namespace RuneMagic
                         Debug.LogWarning("Terrain work failed: " + exception.Message);
                     }
 
+                    _carryNote = null;
                     yield return CarryCaster(SpellCodex.WorkOf(outcome.Spell), origin, requested);
+                    if (!string.IsNullOrEmpty(_carryNote))
+                    {
+                        workNote = _carryNote;
+                    }
+
                     yield return DriftFloater(SpellCodex.WorkOf(outcome.Spell), origin, requested);
                 }
 
@@ -1933,13 +1950,21 @@ namespace RuneMagic
             var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
             if (WorldWork.IsFlight(spell) && adept != null)
             {
-                adept.KeepFlying(WorldWork.FlightSeconds);
+                if (!adept.ToggleFlying(WorldWork.FlightSeconds))
+                {
+                    _carryNote = "The flight lifts.";
+                }
+
                 yield break;
             }
 
             if (WorldWork.IsFloat(spell) && adept != null)
             {
-                adept.KeepFloating(WorldWork.FloatSeconds);
+                if (!adept.ToggleFloating(WorldWork.FloatSeconds))
+                {
+                    _carryNote = "The float lifts.";
+                }
+
                 yield break;
             }
 

@@ -665,13 +665,16 @@
       "id": "Flight",
       "book": "Cross",
       "name": "Flight",
-      "want": "Breath given logos and breath again, going, then stood on you. You fly.",
+      "want": "Breath given logos and breath again, going, then stood on you. You fly. Recast the same breath to land.",
       "recipe": "Air · Animus · Air · Mercury · Salt",
       "via": "",
       "form": "Self",
       "outcome": "Neither",
       "gate": "",
-      "work": "Flight"
+      "work": "Flight",
+      "target": "Self",
+      "status": "Flying",
+      "statusSeconds": 10
     },
     {
       "number": 35,
@@ -2071,7 +2074,7 @@
       "id": "Float",
       "book": "Cross",
       "name": "Float",
-      "want": "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you.",
+      "want": "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.",
       "recipe": "Air · Mercury · Salt",
       "via": "",
       "form": "Self",

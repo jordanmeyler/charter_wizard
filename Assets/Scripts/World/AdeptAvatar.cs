@@ -129,6 +129,36 @@ namespace RuneMagic
             _floatUntil = Mathf.Max(_floatUntil, Time.time + seconds);
         }
 
+        /// <summary>
+        /// Recast the same breath to land. True if the hold now stands.
+        /// </summary>
+        public bool ToggleFlying(float seconds)
+        {
+            if (IsFlying)
+            {
+                _flightUntil = 0f;
+                return false;
+            }
+
+            KeepFlying(seconds);
+            return true;
+        }
+
+        /// <summary>
+        /// Recast the same breath to land. True if the hold now stands.
+        /// </summary>
+        public bool ToggleFloating(float seconds)
+        {
+            if (IsFloating)
+            {
+                _floatUntil = 0f;
+                return false;
+            }
+
+            KeepFloating(seconds);
+            return true;
+        }
+
         public void HoldWorld(float seconds)
         {
             if (seconds <= 0f)
