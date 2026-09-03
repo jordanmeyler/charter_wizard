@@ -12,6 +12,7 @@ namespace RuneMagic
         SerializedProperty _birth;
         SerializedProperty _recipe;
         SerializedProperty _via;
+        SerializedProperty _showOther;
         SerializedProperty _result;
         SerializedProperty _sources;
         SerializedProperty _verb;
@@ -23,6 +24,7 @@ namespace RuneMagic
             _birth = serializedObject.FindProperty("showBirth");
             _recipe = serializedObject.FindProperty("recipe");
             _via = serializedObject.FindProperty("via");
+            _showOther = serializedObject.FindProperty("showOtherWriting");
             _result = serializedObject.FindProperty("result");
             _sources = serializedObject.FindProperty("sources");
             _verb = serializedObject.FindProperty("verb");
@@ -50,9 +52,28 @@ namespace RuneMagic
                 EditorGUILayout.Space(6);
                 EditorGUILayout.LabelField("Prayer", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(_recipe, new GUIContent("Recipe"));
-                EditorGUILayout.PropertyField(
-                    _via,
-                    new GUIContent("Via", "Other writing of the same working. Leave empty to use the catalog's other writing."));
+                if (_showOther != null)
+                {
+                    EditorGUILayout.PropertyField(
+                        _showOther,
+                        new GUIContent(
+                            "Show Other Writing",
+                            "Prayer also shows a second writing — Via, or the catalog's other writing when Via is empty. Turn off to teach only the Recipe (Earth-pillar stays Earth · Salt, without Stone)."));
+                }
+
+                if (_showOther == null || _showOther.boolValue)
+                {
+                    EditorGUILayout.PropertyField(
+                        _via,
+                        new GUIContent("Via", "Other writing of the same working. Leave empty to use the catalog's other writing."));
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox(
+                        "Only the Recipe is shown. Earth-pillar is Earth · Salt — Stone is the catalog's other writing.",
+                        MessageType.None);
+                }
+
                 DrawLoadWritings();
             }
 
@@ -97,7 +118,11 @@ namespace RuneMagic
 
             var entry = entries[pick - 1];
             WriteRunes(_recipe, entry.RecipeRunes);
-            WriteRunes(_via, entry.ViaRunes);
+            if (_showOther == null || _showOther.boolValue)
+            {
+                WriteRunes(_via, entry.ViaRunes);
+            }
+
             serializedObject.ApplyModifiedProperties();
             GUI.FocusControl(null);
         }

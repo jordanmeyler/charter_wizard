@@ -83,15 +83,20 @@ namespace RuneMagic
     /// </summary>
     public static class PrayerReveal
     {
+        /// <param name="showOther">
+        /// When false, prayer keeps only the authored recipe —
+        /// Earth-pillar stays Earth · Salt, without Stone.
+        /// </param>
         public static bool TryResolve(
             IReadOnlyList<RuneId> recipe,
             IReadOnlyList<RuneId> via,
             string authored,
             Grimoire book,
-            out PrayerWorking working)
+            out PrayerWorking working,
+            bool showOther = true)
         {
             var shown = PrayerWorking.Copy(recipe);
-            var other = PrayerWorking.Copy(via);
+            var other = showOther ? PrayerWorking.Copy(via) : System.Array.Empty<RuneId>();
             if (shown.Length == 0 && other.Length > 0)
             {
                 shown = other;
@@ -101,7 +106,7 @@ namespace RuneMagic
             if (shown.Length > 0)
             {
                 TryMatchRunes(shown, out var entry);
-                if (other.Length == 0)
+                if (showOther && other.Length == 0)
                 {
                     other = OtherWriting(entry, shown);
                 }
@@ -114,7 +119,7 @@ namespace RuneMagic
             {
                 if (TryNamed(authored, out var named) || TryRecipe(authored, out named))
                 {
-                    working = FromEntry(named);
+                    working = Shown(named, showOther);
                     return true;
                 }
 
@@ -128,7 +133,7 @@ namespace RuneMagic
                 return false;
             }
 
-            working = FromEntry(unkept);
+            working = Shown(unkept, showOther);
             return true;
         }
 
@@ -146,7 +151,14 @@ namespace RuneMagic
 
         public static PrayerWorking FromEntry(CodexEntry entry)
         {
-            return new PrayerWorking(entry, entry.RecipeRunes, entry.ViaRunes);
+            return Shown(entry, true);
+        }
+
+        static PrayerWorking Shown(CodexEntry entry, bool showOther)
+        {
+            return showOther
+                ? new PrayerWorking(entry, entry.RecipeRunes, entry.ViaRunes)
+                : new PrayerWorking(entry, entry.RecipeRunes, System.Array.Empty<RuneId>());
         }
 
         public static bool TryMatchRunes(IReadOnlyList<RuneId> runes, out CodexEntry entry)

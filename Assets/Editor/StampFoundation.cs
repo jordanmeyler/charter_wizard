@@ -387,6 +387,7 @@ namespace RuneMagic
                     SetString(altar, "look", prop.note);
                     SetRunes(altar, "recipe", ParseStampRunes(prop.runes));
                     SetRunes(altar, "via", ParseStampRunes(prop.formula));
+                    SetBool(altar, "showOtherWriting", !prop.recipeOnly);
                     break;
                 case "elemental-altar":
                 case "join-altar":

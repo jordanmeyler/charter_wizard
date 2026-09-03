@@ -5,8 +5,9 @@ namespace RuneMagic
 {
     /// <summary>
     /// One teaching slab. Check Teach Recipe to pray a written
-    /// sentence. Check Show Birth to stand sources = the born mark
-    /// (Fire · Air = Spark). Both can be on at once.
+    /// sentence. Uncheck Show Other Writing to teach only that
+    /// recipe. Check Show Birth to stand sources = the born mark
+    /// (Fire · Air = Spark). Recipe and birth can be on at once.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -31,6 +32,8 @@ namespace RuneMagic
         [Tooltip("Optional second writing of the same working.")]
         [RuneChain]
         [SerializeField] RuneId[] via = System.Array.Empty<RuneId>();
+        [Tooltip("When on, prayer also shows Via, or the catalog's other writing when Via is empty. Turn off to teach only the Recipe.")]
+        [SerializeField] bool showOtherWriting = true;
 
         [Header("Birth")]
         [Tooltip("The wrought mark. Spark fills Fire · Air.")]
@@ -52,6 +55,7 @@ namespace RuneMagic
         bool _wired;
         RuneId[] _recipe;
         RuneId[] _via;
+        bool _showOtherWriting = true;
         string _spell;
         string _look;
         string _verb;
@@ -77,6 +81,7 @@ namespace RuneMagic
             : Sight.OfInteract(_look, InteractVerb);
         public IReadOnlyList<RuneId> AuthoredRecipe => _recipe;
         public IReadOnlyList<RuneId> AuthoredVia => _via;
+        public bool ShowsOtherWriting => _showOtherWriting;
         public bool IsEmitting => showBirth && (Result != RuneId.None || PrayerWorking.HasMarks(Sources));
         public float VoiceRadius => 3.2f;
         public float VoiceWeight => 1.8f;
@@ -87,7 +92,8 @@ namespace RuneMagic
             IReadOnlyList<RuneId> recipe,
             IReadOnlyList<RuneId> via = null,
             string verb = "Pray",
-            string leftoverName = null)
+            string leftoverName = null,
+            bool showOtherWriting = true)
         {
             var host = new GameObject("Altar");
             host.SetActive(false);
@@ -97,6 +103,7 @@ namespace RuneMagic
             view.showBirth = false;
             view.recipe = PrayerWorking.Copy(recipe);
             view.via = PrayerWorking.Copy(via);
+            view.showOtherWriting = showOtherWriting;
             view.verb = verb;
             view.spell = leftoverName ?? string.Empty;
             host.SetActive(true);
@@ -186,13 +193,15 @@ namespace RuneMagic
             string look,
             string verb,
             IReadOnlyList<RuneId> recipe,
-            IReadOnlyList<RuneId> via)
+            IReadOnlyList<RuneId> via,
+            bool showOtherWriting = true)
         {
             this.spell = spell;
             this.look = look;
             this.verb = verb;
             this.recipe = PrayerWorking.Copy(recipe);
             this.via = PrayerWorking.Copy(via);
+            this.showOtherWriting = showOtherWriting;
             teachRecipe = true;
             Bind();
         }
@@ -204,6 +213,7 @@ namespace RuneMagic
             _verb = verb;
             _recipe = PrayerWorking.Copy(recipe);
             _via = PrayerWorking.Copy(via);
+            _showOtherWriting = showOtherWriting;
             ResolveBirth();
             if (!string.IsNullOrWhiteSpace(spriteId) || portrait != null)
             {
@@ -253,7 +263,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (!PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out var working)
+            if (!PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out var working, _showOtherWriting)
                 || !working.HasRecipe)
             {
                 director.Log(GlyphView.Speak(
