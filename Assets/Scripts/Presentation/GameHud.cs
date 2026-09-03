@@ -412,8 +412,11 @@ namespace RuneMagic
                 && !string.Equals(log, look, System.StringComparison.Ordinal);
             var lookH = _infoCollapsed ? 0f : MeasureWrapped(lookStyle, look, innerW, 18f, 54f);
             var logH = showLog ? MeasureWrapped(body, log, innerW, 18f, 40f) : 0f;
-            var holdH = !_infoCollapsed && !string.IsNullOrEmpty(holding) ? 20f : 0f;
-            var statusH = !string.IsNullOrEmpty(statuses) ? 20f : 0f;
+            var holdText = !_infoCollapsed && !string.IsNullOrEmpty(holding)
+                ? "Hold: " + holding
+                : string.Empty;
+            var holdH = MeasureWrapped(holdStyle, holdText, innerW, 18f, 36f);
+            var statusH = MeasureWrapped(statusStyle, statuses, innerW, 18f, 40f);
             var meterH = VitalMeterHeight();
 
             var height = InfoHeader + 8f;
@@ -467,7 +470,7 @@ namespace RuneMagic
 
             if (holdH > 0f)
             {
-                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, holdH), holding, holdStyle);
+                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, holdH), holdText, holdStyle);
                 y += holdH + 2f;
             }
 
