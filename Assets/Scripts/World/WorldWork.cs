@@ -15,7 +15,13 @@ namespace RuneMagic
         // must find floor or wall at each end, or they fall. Metal
         // hangs without a far bank. MaxWallLength stays the hard cap.
         public const int HopTiles = 4;
+        // Walkable airborne. Pits and water will not take the adept.
+        // Must not share hop's motor lock — Flight is the walk.
         public const float FlightSeconds = 10f;
+        // Hang without logos. Weak walk. Wind, vine, and a jet of yield carry you.
+        public const float FloatSeconds = 12f;
+        public const float FloatWalkScale = 0.2f;
+        public const float FloatDriftTiles = 3.4f;
         public const float TimeStopSeconds = 8f;
         public const int VeilRadius = 2;
 
@@ -24,6 +30,15 @@ namespace RuneMagic
 
         public static bool IsFlight(SpellId spell) =>
             spell == SpellId.Flight;
+
+        public static bool IsFloat(SpellId spell) =>
+            spell == SpellId.Float;
+
+        public static bool IsAirborneWork(SpellId spell) =>
+            IsHop(spell) || IsFlight(spell) || IsFloat(spell);
+
+        public static bool DriftsFloater(SpellId spell) =>
+            IsPush(spell) || IsVineWork(spell) || spell == SpellId.WaterJet;
 
         public static bool IsPush(SpellId spell) =>
             spell == SpellId.Push
@@ -37,7 +52,7 @@ namespace RuneMagic
 
         public static bool StopsOnWalls(SpellId spell)
         {
-            if (spell == SpellId.None || IsSkyStrike(spell) || IsHop(spell) || IsFlight(spell))
+            if (spell == SpellId.None || IsSkyStrike(spell) || IsAirborneWork(spell))
             {
                 return false;
             }
@@ -156,7 +171,7 @@ namespace RuneMagic
             IsPillar(spell);
 
         public static bool LeavesGapsWhenCrossing(SpellId spell) =>
-            IsHop(spell) || IsFlight(spell);
+            IsAirborneWork(spell);
 
         public static bool IsSightVeil(SpellId spell)
         {
@@ -667,6 +682,11 @@ namespace RuneMagic
             if (grid == null || spell == SpellId.None)
             {
                 return string.Empty;
+            }
+
+            if (IsFloat(spell))
+            {
+                return "Breath going stands on you. You hang. Wind, a vine, or a jet of yield will move you.";
             }
 
             if (IsHop(spell) || IsFlight(spell))
@@ -1724,6 +1744,49 @@ namespace RuneMagic
             }
 
             return false;
+        }
+
+        public static Vector3 DriftLanding(WorldGrid grid, Vector3 body, Vector3 toward, float tiles, bool stopAtMark)
+        {
+            tiles = Mathf.Max(0.1f, tiles);
+            var delta = (Vector2)(toward - body);
+            if (delta.sqrMagnitude < 0.04f)
+            {
+                return body;
+            }
+
+            var reach = tiles;
+            if (stopAtMark)
+            {
+                reach = Mathf.Min(tiles, delta.magnitude);
+            }
+
+            delta.Normalize();
+            var dest = (Vector2)body + delta * reach;
+            if (grid == null)
+            {
+                return dest;
+            }
+
+            var path = Span(CoordOf(body), CoordOf(dest), Mathf.CeilToInt(reach) + 1);
+            var land = CoordOf(body);
+            for (var i = 1; i < path.Count; i++)
+            {
+                var tile = grid.Get(path[i]);
+                if (tile == null)
+                {
+                    break;
+                }
+
+                if (BlocksCell(path[i], tile))
+                {
+                    break;
+                }
+
+                land = path[i];
+            }
+
+            return WorldGrid.Center(land.x, land.y);
         }
 
         public static Vector3 PushLanding(WorldGrid grid, Vector3 from, Vector3 body, float tiles = PushTiles)

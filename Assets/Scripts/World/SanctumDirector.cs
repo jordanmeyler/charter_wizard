@@ -1070,7 +1070,12 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Pits will not take you while it lasts.";
+                return "Click to keep the breath on you. Walk while it lasts — pits will not take you.";
+            }
+
+            if (WorldWork.IsFloat(spell))
+            {
+                return "Click to hang in the breath. You barely walk. Send wind to ride, a vine to pull you, or a jet of yield.";
             }
 
             if (WorldWork.IsTimeStop(spell))
@@ -1777,6 +1782,7 @@ namespace RuneMagic
                     }
 
                     yield return CarryCaster(SpellCodex.WorkOf(outcome.Spell), origin, requested);
+                    yield return DriftFloater(SpellCodex.WorkOf(outcome.Spell), origin, requested);
                 }
 
                 var impactNote = string.Empty;
@@ -1927,7 +1933,13 @@ namespace RuneMagic
             var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
             if (WorldWork.IsFlight(spell) && adept != null)
             {
-                adept.KeepAirborne(WorldWork.FlightSeconds);
+                adept.KeepFlying(WorldWork.FlightSeconds);
+                yield break;
+            }
+
+            if (WorldWork.IsFloat(spell) && adept != null)
+            {
+                adept.KeepFloating(WorldWork.FloatSeconds);
                 yield break;
             }
 
@@ -1955,6 +1967,58 @@ namespace RuneMagic
             {
                 elapsed += Time.deltaTime;
                 var next = Vector3.Lerp(origin, land, Mathf.Clamp01(elapsed / duration));
+                if (body != null)
+                {
+                    body.position = next;
+                }
+
+                player.position = next;
+                yield return null;
+            }
+
+            if (body != null)
+            {
+                body.position = land;
+            }
+
+            player.position = land;
+        }
+
+        System.Collections.IEnumerator DriftFloater(SpellId spell, Vector3 origin, Vector3 requested)
+        {
+            var player = PlayerTransform();
+            var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
+            if (adept == null || !adept.Drifts || !WorldWork.DriftsFloater(spell))
+            {
+                yield break;
+            }
+
+            var pull = WorldWork.IsVineWork(spell);
+            var tiles = StrikeLaw.PushTiles(spell, StatusHost.On(player));
+            if (tiles <= 0)
+            {
+                tiles = Mathf.RoundToInt(WorldWork.FloatDriftTiles);
+            }
+
+            var motor = player.GetComponent<PlayerMotor2D>();
+            var toward = pull || ((Vector2)(requested - origin)).sqrMagnitude > 0.04f
+                ? requested
+                : origin + (Vector3)(motor != null ? motor.Facing : Vector2.right);
+            var land = WorldWork.DriftLanding(Grid, player.position, toward, tiles, pull);
+            if (Vector2.Distance(land, player.position) < 0.15f)
+            {
+                yield break;
+            }
+
+            adept.KeepAirborne(0.4f);
+            var body = player.GetComponent<Rigidbody2D>();
+            var start = player.position;
+            var elapsed = 0f;
+            const float duration = 0.32f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var next = Vector3.Lerp(start, land, Mathf.Clamp01(elapsed / duration));
                 if (body != null)
                 {
                     body.position = next;
@@ -2580,7 +2644,19 @@ namespace RuneMagic
         {
             var player = PlayerTransform();
             var host = StatusHost.On(player);
-            return host != null ? host.Summary() : string.Empty;
+            var text = host != null ? host.Summary() : string.Empty;
+            var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
+            if (adept != null && adept.IsFlying)
+            {
+                text = string.IsNullOrEmpty(text) ? "flying" : text + " · flying";
+            }
+
+            if (adept != null && adept.IsFloating)
+            {
+                text = string.IsNullOrEmpty(text) ? "floating" : text + " · floating";
+            }
+
+            return text;
         }
 
         public string ConcentrationLine()

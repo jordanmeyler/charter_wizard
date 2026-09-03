@@ -150,6 +150,7 @@ namespace RuneMagic
         Hemlock,
         Nightshade,
         Briar,
+        Float,
         // Aliases of earlier ids. Keep these last so they do not
         // reset the next unique values.
         DarkCrystal = GraveIce
@@ -239,6 +240,7 @@ namespace RuneMagic
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Self, SpellId.Windward, "Wind ward", "Compressed. Catalog: Air · Salt · Sulphur. Breath given a body, then the mind holds it on you.");
             Register(RuneId.Air, RuneId.Salt, SpellShape.Self, SpellId.Hop, "Hop", "Compressed. Catalog: Air · Salt · Air. A leap.");
             Register(RuneId.Animus, RuneId.Mercury, SpellShape.Self, SpellId.Flight, "Flight", "Compressed. Catalog: Air · Animus · Air · Mercury · Salt. Breath given logos, going, stood on you.");
+            Register(RuneId.Air, RuneId.Mercury, SpellShape.Self, SpellId.Float, "Float", "Compressed. Catalog: Air · Mercury · Salt. Breath going, then stood on you. You hang. Wind and vine move you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Spread, SpellId.Daze, "Daze", "Mind of air around you.");
             Register(RuneId.Air, RuneId.Sulphur, SpellShape.Remote, SpellId.Confuse, "Confuse", "Mind of air, placed elsewhere. They lose the thread.");
             Register(RuneId.Air, RuneId.Lumen, SpellShape.Spread, SpellId.DayWake, "Day-wake", "Light blooming from the feet.");

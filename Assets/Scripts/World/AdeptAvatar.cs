@@ -24,7 +24,9 @@ namespace RuneMagic
         public const string CastingParam = "Casting";
         public const string AirborneParam = "Airborne";
 
-        float _airborneUntil;
+        float _hopUntil;
+        float _flightUntil;
+        float _floatUntil;
         float _stillUntil;
         float _flameStand;
         SpriteRenderer _sprite;
@@ -39,17 +41,49 @@ namespace RuneMagic
         bool _casting;
         bool _usesAnimator;
 
-        public bool IsHopping => Time.time < _airborneUntil;
+        /// <summary>
+        /// Scripted hop: the motor yields so CarryCaster can lerp the body.
+        /// Flight must not use this — walking is the point of Flight.
+        /// </summary>
+        public bool IsHopping => Time.time < _hopUntil;
+        public bool IsFlying => Time.time < _flightUntil;
+        public bool IsFloating => Time.time < _floatUntil;
         public bool Flies
         {
             get
             {
+                if (IsFlying || IsFloating)
+                {
+                    return true;
+                }
+
                 if (_status == null)
                 {
                     _status = GetComponent<StatusHost>();
                 }
 
                 return _status != null && _status.Flies;
+            }
+        }
+        /// <summary>
+        /// Float hangs without logos. WASD is a crawl. Flight and
+        /// cloud-form still walk.
+        /// </summary>
+        public bool Drifts
+        {
+            get
+            {
+                if (!IsFloating || IsFlying)
+                {
+                    return false;
+                }
+
+                if (_status == null)
+                {
+                    _status = GetComponent<StatusHost>();
+                }
+
+                return _status == null || !_status.Flies;
             }
         }
         public bool IsAirborne => IsHopping || Flies;
@@ -72,7 +106,27 @@ namespace RuneMagic
                 return;
             }
 
-            _airborneUntil = Mathf.Max(_airborneUntil, Time.time + seconds);
+            _hopUntil = Mathf.Max(_hopUntil, Time.time + seconds);
+        }
+
+        public void KeepFlying(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _flightUntil = Mathf.Max(_flightUntil, Time.time + seconds);
+        }
+
+        public void KeepFloating(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _floatUntil = Mathf.Max(_floatUntil, Time.time + seconds);
         }
 
         public void HoldWorld(float seconds)
@@ -92,7 +146,9 @@ namespace RuneMagic
 
         public void ClearWork()
         {
-            _airborneUntil = 0f;
+            _hopUntil = 0f;
+            _flightUntil = 0f;
+            _floatUntil = 0f;
             _stillUntil = 0f;
             _flameStand = 0f;
             _casting = false;
@@ -276,7 +332,7 @@ namespace RuneMagic
                 }
 
                 _anim?.Play(clip, fps);
-                var bob = moving || IsHopping || aiming
+                var bob = moving || IsHopping || IsFlying || IsFloating || aiming
                     ? 1f
                     : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
                 transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
@@ -324,7 +380,7 @@ namespace RuneMagic
                 return;
             }
 
-            _sprite.color = IsHopping
+            _sprite.color = IsAirborne
                 ? Color.Lerp(_baseColor, new Color(0.75f, 0.92f, 1f, 0.92f), 0.55f)
                 : _baseColor;
         }
