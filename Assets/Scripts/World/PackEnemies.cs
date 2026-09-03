@@ -35,6 +35,71 @@ namespace RuneMagic
             new() { Id = "warden", Name = "Warden", SpriteId = "enemy-012", Formula = new[] { "Fire", "Sulphur", "Mercury" }, Attack = "wizard", Ensouled = true }
         };
 
+        public static CombatKind KindOf(string attack)
+        {
+            switch ((attack ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "golem":
+                case "melee":
+                    return CombatKind.Golem;
+                case "wizard":
+                    return CombatKind.Wizard;
+                case "archer":
+                case "ranged":
+                    return CombatKind.Archer;
+                default:
+                    return CombatKind.None;
+            }
+        }
+
+        public static string AttackName(CombatKind kind)
+        {
+            switch (kind)
+            {
+                case CombatKind.Golem:
+                    return "golem";
+                case CombatKind.Wizard:
+                    return "wizard";
+                case CombatKind.Archer:
+                    return "archer";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public static string SheetPath(string spriteId, char variant)
+        {
+            var id = (spriteId ?? string.Empty).Trim().ToLowerInvariant();
+            if (id.Length != 9 || !id.StartsWith("enemy-") || !char.IsDigit(id[6]))
+            {
+                return null;
+            }
+
+            var letter = char.ToUpperInvariant(variant);
+            if (letter < 'A' || letter > 'D')
+            {
+                letter = 'A';
+            }
+
+            return "Assets/ElvGames/Rogue Adventure/Enemies/Enemy_" + id.Substring(6) + "_" + letter + ".png";
+        }
+
+        public static int FrameIndex(string spriteName)
+        {
+            if (string.IsNullOrEmpty(spriteName))
+            {
+                return -1;
+            }
+
+            var under = spriteName.LastIndexOf('_');
+            if (under < 0 || under == spriteName.Length - 1)
+            {
+                return -1;
+            }
+
+            return int.TryParse(spriteName.Substring(under + 1), out var index) ? index : -1;
+        }
+
         public static EncounterLock Spawn(Spec spec, Vector3 world)
         {
             if (spec == null)

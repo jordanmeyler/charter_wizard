@@ -85,6 +85,9 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Enemies/Golem", false, 50)]
         static void EnemyGolem() => SpawnEnemy(PackEnemies.All[10]);
 
+        [MenuItem("GameObject/Rune Magic/Enemies/Stone Golem", false, 50)]
+        static void EnemyStoneGolem() => SpawnEnemy(PackEnemies.All[10]);
+
         [MenuItem("GameObject/Rune Magic/Enemies/Warden", false, 51)]
         static void EnemyWarden() => SpawnEnemy(PackEnemies.All[11]);
 

@@ -51,7 +51,7 @@ namespace RuneMagic
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details or lvl 2, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
                 "6. Drag prefabs from Assets/Prefabs. Stones can live in any folder under Prefabs. Authoring Place and GameObject → Rune Magic find them by name. A Door has Closed and Open sprites; drag it onto a Gate or Electric Gate. Cover-Fire only marks hunger for the Fire rune; Aura-Fire is a kindled hall.\n" +
-                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies.\n" +
+                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies. Drag Golem or Warden, then Portrait / Idle Frames / Attack Frames and set Attack. See ENEMIES.md.\n" +
                 "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
@@ -90,7 +90,7 @@ namespace RuneMagic
             EditorGUILayout.Space();
             DrawPlace("Item", "blank WorldItem — only if you need a new catalog id");
             DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
-            DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant");
+            DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant. Prefer Enemies/Golem or Warden.");
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Pack enemies", EditorStyles.boldLabel);
             for (var i = 0; i < PackEnemies.All.Length; i++)
@@ -98,7 +98,7 @@ namespace RuneMagic
                 var spec = PackEnemies.All[i];
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(spec.Name, GUILayout.Width(72));
-                EditorGUILayout.LabelField(spec.SpriteId + " — drop in the scene", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(spec.SpriteId + (string.IsNullOrEmpty(spec.Attack) ? " — look only" : " — " + spec.Attack), EditorStyles.miniLabel);
                 if (GUILayout.Button("Place", GUILayout.Width(56)))
                 {
                     if (!TryPlace(spec.Name))
@@ -318,6 +318,7 @@ namespace RuneMagic
                 WriteEnemy(PackEnemies.All[i]);
             }
 
+            EnemyArtBind.BindPrefabs(onlyEmpty: true);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -363,6 +364,7 @@ namespace RuneMagic
             var encounter = host.AddComponent<EncounterLock>();
             encounter.ApplyPack(spec);
             host.AddComponent<SpriteRenderer>();
+            EnemyArtBind.Apply(encounter, overwrite: true, spec);
             PrefabUtility.SaveAsPrefabAsset(host, $"{PrefabFolder}/Enemies/{spec.Name}.prefab");
             DestroyImmediate(host);
         }

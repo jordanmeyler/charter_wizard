@@ -60,13 +60,14 @@ that is the PNG / art.json path, same id.
 | `adept` Animator | Hero_22 clips in `Assets/Animations/Adept` | 16×16 | `0.5,0.18` |
 | `ash-mite`, `ice-thing`, `fire-golem`, `stone-man`, `warden` | Locks | 48–64 | `0.5,0.32` |
 | `fire-golem-slam`, `warden-cast` | Attack frames | same as the actor | same |
+| Pack `Enemy_011` / `012` | Golem / Warden — drag slices onto the prefab | 32×32 at 32 PPU | `0.5,0.18` |
 | `torch`, `torch-lit`, `rod`, `rod-live`, `charm` | Props | 32–48 | `0.5,0.5` |
 | `arrow-shot`, `fireball-shot` | Projectiles | 16–32 | `0.5,0.5` |
 | `{spell}-shot`, `{family}-shot`, `fx-{family}` | Player spell body | 16–32 | `0.5,0.5` |
 | `stone-fire` … `key-spark` | Pack items | 32 | `0.5,0.5` |
 | Gate **Portrait** | Socket lock | any | `0.5,0.5` |
 
-Floors, walls, the door, and dungeon props come from Rogue Adventure (`TileAtlas` / `tiles.json`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `enemy-012`) drop from **GameObject → Rune Magic → Enemies**. Named ids and rects are in [`TILES.md`](TILES.md).
+Floors, walls, the door, and dungeon props come from Rogue Adventure (`TileAtlas` / `tiles.json`). Walking surfaces are **stone, dirt, or water**. Ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `enemy-012`) drop from **GameObject → Rune Magic → Enemies**. Drag the ElvGames slices onto **Portrait** / **Idle Frames** / **Attack Frames** — that is the Unity path, and Golem / Warden already have those assigned. Named ids and rects are in [`TILES.md`](TILES.md). Walkthrough: [`ENEMIES.md`](ENEMIES.md).
 
 ## Ways to get the pictures
 

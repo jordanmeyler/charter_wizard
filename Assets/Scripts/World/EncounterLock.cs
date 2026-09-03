@@ -25,18 +25,32 @@ namespace RuneMagic
         [Header("Authoring")]
         [SerializeField] string authoredName = "Ash Mite";
         [SerializeField] string authoredId = "ash-mite";
+        [Tooltip("Catalog / sheet id if Portrait and Idle Frames are empty. Pack enemies use enemy-001 … enemy-012.")]
         [SerializeField] string spriteId = "ash-mite";
+        [Tooltip("Still for the Scene view. Drag a sliced Unity sprite. Idle Frames override this in Play.")]
         [SerializeField] Sprite portrait;
+        [Tooltip("Loop while they stand or walk. Drag ElvGames Enemy_*_A slices here.")]
         [SerializeField] Sprite[] idleFrames;
+        [Tooltip("Played on a slam or while a wizard writes. Drag Enemy_*_C slices.")]
+        [SerializeField] Sprite[] attackFrames;
+        [Tooltip("Played once when the lock turns, then the body goes.")]
         [SerializeField] Sprite[] resolveFrames;
         [SerializeField] string resolveClip;
+        [Tooltip("Optional clip id if Idle Frames are empty (enemy-011, fire-golem, stone-man, warden).")]
+        [SerializeField] string idleClip;
+        [Tooltip("Optional clip id if Attack Frames are empty (fire-golem-slam, warden-cast).")]
+        [SerializeField] string attackClip;
         [SerializeField] string[] formula = { "Fire", "Salt", "Life" };
         [SerializeField] string[] keys;
         [SerializeField] bool authoredEnsouled;
         [SerializeField] bool authoredBlocking;
         [SerializeField] string grant;
+        [Tooltip("Legacy string. The Attack dropdown writes this.")]
         [SerializeField] string attack;
+        [Tooltip("Golem slams in reach. Wizard writes a 2s fireball. Archer looses a shot. None only wanders.")]
+        [SerializeField] CombatKind authoredAttack;
         [SerializeField] float authoredCastSeconds = 2f;
+        [Tooltip("Marks shown over a caster's head. Empty Wizard writes Fire · Mercury.")]
         [SerializeField] string[] cast;
 
         SpriteRenderer _renderer;
@@ -107,9 +121,10 @@ namespace RuneMagic
                 FindFirstObjectByType<SanctumDirector>()?.UnmakeLock(this,
                     VitalLaw.FatalNote(id, DisplayName, false));
             };
-            var kind = CombatOf(formulaId, attack);
+            var kind = CombatOf(authoredAttack, formulaId, attack);
             var combat = AuthoringUtil.GetOrAdd<CombatActor>(gameObject);
             combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
+            combat.BindLooks(IdleForCombat(), attackFrames, IdleClipName(art, kind), AttackClipName(kind));
         }
 
         public void ApplyPack(PackEnemies.Spec spec)
@@ -124,6 +139,7 @@ namespace RuneMagic
             spriteId = spec.SpriteId;
             formula = spec.Formula;
             attack = spec.Attack;
+            authoredAttack = PackEnemies.KindOf(spec.Attack);
             authoredBlocking = spec.Blocking;
             authoredEnsouled = spec.Ensouled;
         }
@@ -178,6 +194,59 @@ namespace RuneMagic
             return marked;
         }
 
+        Sprite[] IdleForCombat()
+        {
+            if (idleFrames != null && idleFrames.Length > 0)
+            {
+                return idleFrames;
+            }
+
+            return portrait != null ? new[] { portrait } : null;
+        }
+
+        string IdleClipName(string art, CombatKind kind)
+        {
+            if (!string.IsNullOrWhiteSpace(idleClip))
+            {
+                return idleClip.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(art))
+            {
+                return art.Trim();
+            }
+
+            switch (kind)
+            {
+                case CombatKind.Golem:
+                    return authoredId == "stone-man" || authoredId == "golem" ? "stone-man" : "fire-golem";
+                case CombatKind.Wizard:
+                case CombatKind.Archer:
+                    return "warden";
+                default:
+                    return authoredId == "stone-man" ? "stone-man" : "ash-mite";
+            }
+        }
+
+        string AttackClipName(CombatKind kind)
+        {
+            if (!string.IsNullOrWhiteSpace(attackClip))
+            {
+                return attackClip.Trim();
+            }
+
+            switch (kind)
+            {
+                case CombatKind.Golem:
+                    return "fire-golem-slam";
+                case CombatKind.Wizard:
+                case CombatKind.Archer:
+                    return "warden-cast";
+                default:
+                    return string.Empty;
+            }
+        }
+
         static CreatureNature NatureOf(string formulaId, bool ensouled)
         {
             switch ((formulaId ?? string.Empty).ToLowerInvariant())
@@ -187,8 +256,10 @@ namespace RuneMagic
                     return CreatureNature.Fire;
                 case "ice-thing":
                     return CreatureNature.Ice;
+                case "golem":
                 case "stone-man":
                     return CreatureNature.Earth;
+                case "warden":
                 case "spirit-warden":
                     return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
                 default:
@@ -200,26 +271,33 @@ namespace RuneMagic
         {
             switch ((spriteId ?? string.Empty).ToLowerInvariant())
             {
-                case "fire-golem": return 5f;
-                case "stone-man": return 2.5f;
-                case "warden": return 4f;
-                case "ice-thing": return 6f;
-                default: return 7f;
+                case "fire-golem":
+                case "enemy-011":
+                    return 5f;
+                case "stone-man":
+                case "golem":
+                    return 2.5f;
+                case "warden":
+                case "enemy-012":
+                    return 4f;
+                case "ice-thing":
+                    return 6f;
+                default:
+                    return 7f;
             }
         }
 
-        static CombatKind CombatOf(string formulaId, string attack)
+        public static CombatKind CombatOf(CombatKind authored, string formulaId, string attack)
         {
-            switch ((attack ?? string.Empty).ToLowerInvariant())
+            if (authored != CombatKind.None)
             {
-                case "golem":
-                case "melee":
-                    return CombatKind.Golem;
-                case "wizard":
-                    return CombatKind.Wizard;
-                case "archer":
-                case "ranged":
-                    return CombatKind.Archer;
+                return authored;
+            }
+
+            var named = PackEnemies.KindOf(attack);
+            if (named != CombatKind.None)
+            {
+                return named;
             }
 
             switch ((formulaId ?? string.Empty).ToLowerInvariant())
@@ -232,6 +310,102 @@ namespace RuneMagic
                     return CombatKind.None;
             }
         }
+
+        void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                PreviewLook();
+            }
+        }
+
+        void OnValidate()
+        {
+            if (authoredAttack != CombatKind.None)
+            {
+                attack = PackEnemies.AttackName(authoredAttack);
+            }
+
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.delayCall += EditorRefresh;
+#endif
+        }
+
+#if UNITY_EDITOR
+        void EditorRefresh()
+        {
+            if (this == null || Application.isPlaying)
+            {
+                return;
+            }
+
+            PreviewLook();
+        }
+#endif
+
+        void PreviewLook()
+        {
+            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
+            renderer.sortingOrder = 12;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            if (idleFrames != null && idleFrames.Length > 0 && idleFrames[0] != null)
+            {
+                renderer.sprite = idleFrames[0];
+                return;
+            }
+
+            if (portrait != null)
+            {
+                renderer.sprite = portrait;
+                return;
+            }
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                var pack = EditorPackStill(spriteId);
+                if (pack != null)
+                {
+                    renderer.sprite = pack;
+                    return;
+                }
+            }
+#endif
+        }
+
+#if UNITY_EDITOR
+        static Sprite EditorPackStill(string spriteId)
+        {
+            var path = PackEnemies.SheetPath(spriteId, 'A');
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            var assets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
+            Sprite first = null;
+            for (var i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] is not Sprite sprite)
+                {
+                    continue;
+                }
+
+                first ??= sprite;
+                if (PackEnemies.FrameIndex(sprite.name) == 0)
+                {
+                    return sprite;
+                }
+            }
+
+            return first;
+        }
+#endif
 
         void Update()
         {
