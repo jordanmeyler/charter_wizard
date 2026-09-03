@@ -161,6 +161,12 @@ namespace RuneMagic
             return "a place you may " + use.ToLowerInvariant() + ".";
         }
 
+        public static string InteractPrompt(string verb)
+        {
+            var use = string.IsNullOrWhiteSpace(verb) ? "interact" : verb.Trim();
+            return "Press E to " + use.ToLowerInvariant();
+        }
+
         public static string OfCrystal() =>
             "the first standing body. Death sends you back here.";
 
