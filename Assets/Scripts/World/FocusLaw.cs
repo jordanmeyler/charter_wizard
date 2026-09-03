@@ -254,11 +254,12 @@ namespace RuneMagic
                 broken.Add("Recasting lets go of a ward, form, flight, veil, or mind hold — not a meter or frost");
             }
 
-            if (SpellVerb.Of(SpellId.Flight).Status != StatusId.Flying
+            if (SpellVerb.Of(SpellId.Flight).Status != StatusId.None
+                || SpellVerb.Of(SpellId.Float).Status != StatusId.None
                 || SpellVerb.Of(SpellId.Hop).Status != StatusId.None
                 || SpellVerb.Of(SpellId.CloudForm).Status != StatusId.CloudForm)
             {
-                broken.Add("Flight stands on you as flight; hop is only a leap; cloud-form stays a form");
+                broken.Add("Flight and float hang on the caster clock; hop is only a leap; cloud-form stays a form");
             }
 
             if (Breaks(StatusId.Stoneskin, SpellId.Wall)

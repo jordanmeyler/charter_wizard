@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Object = UnityEngine.Object;
 
 namespace RuneMagic
 {
@@ -35,7 +36,8 @@ namespace RuneMagic
 
             var wallsLayer = AddTileLayer(root.transform, "Walls", 2);
             var decorLayer = AddTileLayer(root.transform, "Environment Details", 3);
-            var coverLayer = AddTileLayer(root.transform, "Cover", 4);
+            AddTileLayer(root.transform, "Environment Details lvl 2", 4);
+            var coverLayer = AddTileLayer(root.transform, "Cover", 5);
 
             var authoring = root.AddComponent<LevelAuthoring>();
             authoring.tiles = LevelTileSource.Tilemap;
@@ -55,7 +57,131 @@ namespace RuneMagic
             Undo.RegisterCreatedObjectUndo(root, "Painted Map");
             Selection.activeGameObject = layer;
             EditorGUIUtility.PingObject(layer);
-            Debug.Log("Painted Map created. Paint floors on Tiles, walls on Walls, props on Environment Details, ice/fire on Cover.");
+            Debug.Log("Painted Map created. Paint floors on Tiles, walls on Walls, props on Environment Details, a second stack on Environment Details lvl 2, ice/fire on Cover.");
+        }
+
+        [MenuItem("Window/Rune Magic/Add Environment Details lvl 2")]
+        public static void MenuAddDetailLevel2()
+        {
+            var spec = Object.FindFirstObjectByType<LevelAuthoring>();
+            if (spec == null)
+            {
+                EditorUtility.DisplayDialog(
+                    "Environment Details lvl 2",
+                    "No Map / Level Authoring in the scene.",
+                    "OK");
+                return;
+            }
+
+            var created = EnsureDetailLevel2(spec, out var map);
+            if (map == null)
+            {
+                return;
+            }
+
+            Selection.activeGameObject = map.gameObject;
+            EditorGUIUtility.PingObject(map);
+            EditorUtility.DisplayDialog(
+                "Environment Details lvl 2",
+                created
+                    ? "Added Environment Details lvl 2 on top of Environment Details. Cover still draws above. Select it and paint."
+                    : map.gameObject.name + " is already in the scene. Sorting order is above Environment Details and below Cover. Select it and paint.",
+                "OK");
+        }
+
+        public static bool EnsureDetailLevel2(LevelAuthoring spec, out Tilemap map)
+        {
+            map = null;
+            if (spec == null)
+            {
+                return false;
+            }
+
+            var parent = spec.transform;
+            map = FindDetailLevel2(parent);
+            if (map != null)
+            {
+                PlaceDetailLevel2(map, spec);
+                return false;
+            }
+
+            var order = DetailLevel2Order(spec);
+            map = AddTileLayer(parent, "Environment Details lvl 2", order);
+            Undo.RegisterCreatedObjectUndo(map.gameObject, "Environment Details lvl 2");
+            return true;
+        }
+
+        static Tilemap FindDetailLevel2(Transform parent)
+        {
+            if (parent == null)
+            {
+                return null;
+            }
+
+            var maps = parent.GetComponentsInChildren<Tilemap>(true);
+            for (var i = 0; i < maps.Length; i++)
+            {
+                var n = maps[i].gameObject.name.ToLowerInvariant();
+                var decor = n.Contains("detail")
+                    || n.Contains("decor")
+                    || n.Contains("environment")
+                    || n.Contains("enviroment")
+                    || n.Contains("enviromental");
+                var level2 = n.Contains("lvl 2")
+                    || n.Contains("lvl2")
+                    || n.Contains("level 2")
+                    || n.Contains("details 2")
+                    || n.EndsWith(" 2");
+                if (decor && level2)
+                {
+                    return maps[i];
+                }
+            }
+
+            return null;
+        }
+
+        static void PlaceDetailLevel2(Tilemap map, LevelAuthoring spec)
+        {
+            if (map == null)
+            {
+                return;
+            }
+
+            var renderer = map.GetComponent<TilemapRenderer>();
+            if (renderer == null)
+            {
+                return;
+            }
+
+            var order = DetailLevel2Order(spec);
+            if (renderer.sortingOrder == order)
+            {
+                return;
+            }
+
+            Undo.RecordObject(renderer, "Environment Details lvl 2 order");
+            renderer.sortingOrder = order;
+            EditorUtility.SetDirty(renderer);
+        }
+
+        static int DetailLevel2Order(LevelAuthoring spec)
+        {
+            var decor = SortingOf(spec != null ? spec.decor : null);
+            var cover = SortingOf(spec != null ? spec.overlays : null);
+            var order = decor + 1;
+            if (cover > decor && order >= cover)
+            {
+                order = cover - 1;
+            }
+
+            return Mathf.Max(order, decor);
+        }
+
+        static int SortingOf(Tilemap map)
+        {
+            var renderer = map != null ? map.GetComponent<TilemapRenderer>() : null;
+            return renderer != null ? renderer.sortingOrder : 0;
         }
 
         static Tilemap AddTileLayer(Transform parent, string name, int order)

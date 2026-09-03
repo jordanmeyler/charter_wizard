@@ -34,7 +34,7 @@ namespace RuneMagic
             SpellId.Pit, SpellId.Bridge, SpellId.Wall, SpellId.IceWall, SpellId.MetalWall, SpellId.ObsidianWall,
             SpellId.FlamePillar, SpellId.FirePillar, SpellId.IcePillar, SpellId.MetalPillar, SpellId.TaintedTree, SpellId.Nightshade,
             SpellId.Tree, SpellId.WoodWall, SpellId.SunOrb, SpellId.Sanctuary,
-            SpellId.Hop, SpellId.Flight
+            SpellId.Hop, SpellId.Flight, SpellId.Float
         };
 
         public static readonly SpellId[] RodKeys =

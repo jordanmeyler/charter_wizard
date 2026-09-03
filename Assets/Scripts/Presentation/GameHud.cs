@@ -15,7 +15,13 @@ namespace RuneMagic
         public const float LedgerWidth = 420f;
         public const float LedgerMaxHeight = 480f;
         const float LedgerRow = 58f;
-        const float ComposeDockHeight = 236f;
+        const float DraftSlotPreferred = 52f;
+        const float DraftSlotMin = 36f;
+        const float DraftSlotGap = 8f;
+        const float DraftSlotSide = 24f;
+        const float DraftRoleHeight = 18f;
+        const float DraftSlotTop = 30f;
+        const float DraftAfterSlots = 128f;
         static readonly Color CharterSuccess = new(0.28f, 0.82f, 0.42f);
         static readonly Color FreeSuccess = new(0.72f, 0.36f, 0.92f);
         static Texture2D _castIcon;
@@ -1504,7 +1510,7 @@ namespace RuneMagic
         void DrawRoomWeave(float top)
         {
             var tapestry = _director.Tapestry;
-            var dockTop = Screen.height - ComposeDockHeight - BarHeight;
+            var dockTop = Screen.height - ComposeDockHeight() - BarHeight;
             var height = Mathf.Max(72f, dockTop - top - 8f);
             var panel = new Rect(16, top, Screen.width - 32, height);
             DrawPanel(panel.x, panel.y, panel.width, panel.height);
@@ -1727,9 +1733,40 @@ namespace RuneMagic
             return new Rect(x, y, xMax - x, yMax - y);
         }
 
+        static float ComposeDockHeight()
+        {
+            MeasureDraftSlots(out var slot, out _, out _, out var rows);
+            return DraftSlotTop + rows * (slot + DraftRoleHeight + 4f) + DraftAfterSlots;
+        }
+
+        static void MeasureDraftSlots(out float slot, out float gap, out int columns, out int rows)
+        {
+            gap = DraftSlotGap;
+            var available = Mathf.Max(DraftSlotPreferred, Screen.width - DraftSlotSide * 2f);
+            slot = DraftSlotPreferred;
+            columns = Mathf.Max(1, Mathf.FloorToInt((available + gap) / (slot + gap)));
+            columns = Mathf.Min(columns, SpellComposer.MaxSlots);
+            if (columns < SpellComposer.MaxSlots)
+            {
+                var compact = (available - (SpellComposer.MaxSlots - 1) * gap) / SpellComposer.MaxSlots;
+                if (compact >= DraftSlotMin)
+                {
+                    slot = compact;
+                    columns = SpellComposer.MaxSlots;
+                }
+            }
+
+            rows = Mathf.CeilToInt(SpellComposer.MaxSlots / (float)columns);
+        }
+
         void DrawComposeDock()
         {
-            var dockHeight = ComposeDockHeight;
+            MeasureDraftSlots(out var slot, out _, out _, out var rows);
+            var slotsBlock = DraftSlotTop + rows * (slot + DraftRoleHeight + 4f);
+            var legendY = slotsBlock + 4f;
+            var previewY = legendY + 18f;
+            var actionsY = previewY + 24f;
+            var dockHeight = ComposeDockHeight();
             var dockTop = Screen.height - dockHeight - BarHeight;
             DrawPanel(0, dockTop, Screen.width, dockHeight);
 
@@ -1737,32 +1774,35 @@ namespace RuneMagic
             var accent = Label(16, FontStyle.Bold, new Color(0.9f, 0.82f, 0.55f));
             var legend = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
             GUI.Label(new Rect(24, dockTop + 8, 640, 20), "String", accent);
-            DrawDraftSlots(dockTop + 30);
-            GUI.Label(new Rect(24, dockTop + 108, Screen.width - 48, 18),
+            DrawDraftSlots(dockTop + DraftSlotTop);
+            GUI.Label(new Rect(24, dockTop + legendY, Screen.width - 48, 18),
                 "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
                 legend);
-            GUI.Label(new Rect(24, dockTop + 126, Screen.width - 48, 18),
+            GUI.Label(new Rect(24, dockTop + previewY, Screen.width - 48, 18),
                 _director.Composer.DescribeFree(_director.Attunement), body);
 
-            DrawCharterActions(dockTop + 150);
+            DrawCharterActions(dockTop + actionsY);
         }
 
         void DrawDraftSlots(float y)
         {
-            const float slot = 56f;
-            const float gap = 8f;
-            var startX = 24f;
+            MeasureDraftSlots(out var slot, out var gap, out var columns, out _);
             var role = Label(11, FontStyle.Bold, new Color(0.86f, 0.8f, 0.58f));
             role.alignment = TextAnchor.MiddleCenter;
             for (var i = 0; i < SpellComposer.MaxSlots; i++)
             {
-                var rect = new Rect(startX + i * (slot + gap), y, slot, slot);
+                var col = i % columns;
+                var row = i / columns;
+                var rect = new Rect(
+                    DraftSlotSide + col * (slot + gap),
+                    y + row * (slot + DraftRoleHeight + 4f),
+                    slot, slot);
                 if (i < _director.Composer.Count)
                 {
                     var index = i;
                     var rune = _director.Composer.Slots[i];
                     DrawRuneCard(rect, rune, () => _director.RemoveDraftFrom(index), true);
-                    GUI.Label(new Rect(rect.x - 4, rect.yMax + 1, rect.width + 8, 16),
+                    GUI.Label(new Rect(rect.x - 4, rect.yMax + 1, rect.width + 8, DraftRoleHeight),
                         RuneCatalog.StringRole(rune), role);
                 }
                 else

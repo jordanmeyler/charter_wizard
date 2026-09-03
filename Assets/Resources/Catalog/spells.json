@@ -2068,6 +2068,20 @@
       "target": "Single",
       "status": "Rooted",
       "statusSeconds": 5
+    },
+    {
+      "number": 129,
+      "id": "Float",
+      "book": "Cross",
+      "name": "Float",
+      "want": "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.",
+      "recipe": "Air · Mercury · Salt",
+      "via": "",
+      "form": "Self",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Float",
+      "target": "Self"
     }
   ]
 }
