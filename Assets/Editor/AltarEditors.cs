@@ -47,7 +47,7 @@ namespace RuneMagic
                 new GUIContent("Teach Recipe", "Pray the authored writing. Cast aims those runes."));
             EditorGUILayout.PropertyField(
                 _birth,
-                new GUIContent("Show Birth", "World display: sources = result (Fire · Air = Spark)."));
+                new GUIContent("Show Birth", "Pray the join on the same screen: sources = result (Fire · Air = Spark)."));
 
             if (_teach.boolValue)
             {
