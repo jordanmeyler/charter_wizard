@@ -652,7 +652,8 @@ namespace RuneMagic
         void RefreshChip()
         {
             var hidden = IsHidden;
-            var text = hidden ? string.Empty : Summary();
+            var onAdept = AdeptAvatar.IsAdept(this);
+            var text = hidden || onAdept ? string.Empty : Summary();
             if (_chip != null)
             {
                 _chip.text = text;
@@ -672,9 +673,10 @@ namespace RuneMagic
                 return;
             }
 
-            _sprite.color = text.Length == 0
-                ? _baseColor
-                : Color.Lerp(_baseColor, DominantTint(), 0.42f);
+            var affected = onAdept ? Summary().Length > 0 : text.Length > 0;
+            _sprite.color = affected
+                ? Color.Lerp(_baseColor, DominantTint(), 0.42f)
+                : _baseColor;
         }
 
         Color DominantTint()

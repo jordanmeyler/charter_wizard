@@ -18,6 +18,7 @@ namespace RuneMagic
         const float InfoPad = 12f;
         const float InfoInner = 16f;
         const float InfoHeader = 36f;
+        const float StatusRow = 18f;
         const float LedgerRow = 58f;
         const float DraftSlotPreferred = 52f;
         const float DraftSlotMin = 36f;
@@ -59,6 +60,7 @@ namespace RuneMagic
         bool _focusName;
         bool _ledgerCollapsed;
         bool _infoCollapsed;
+        readonly List<HudStatus> _hudStatuses = new();
         bool _revealing;
         PrayerWorking _revealed;
         readonly HashSet<string> _namedOffers = new();
@@ -400,13 +402,12 @@ namespace RuneMagic
             title.clipping = TextClipping.Clip;
             var body = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
             var lookStyle = Label(14, FontStyle.Italic, new Color(0.9f, 0.86f, 0.74f));
-            var statusStyle = Label(13, FontStyle.Italic, new Color(0.95f, 0.78f, 0.42f));
             var holdStyle = Label(13, FontStyle.Italic, new Color(0.82f, 0.68f, 0.95f));
 
             var look = _director.SightLine ?? string.Empty;
             var log = _director.LastLog ?? string.Empty;
-            var statuses = _director.PlayerStatuses();
             var holding = _director.ConcentrationLine();
+            CollectHudStatuses();
             var showLog = !_infoCollapsed
                 && !string.IsNullOrWhiteSpace(log)
                 && !string.Equals(log, look, System.StringComparison.Ordinal);
@@ -416,8 +417,7 @@ namespace RuneMagic
                 ? "Hold: " + holding
                 : string.Empty;
             var holdH = MeasureWrapped(holdStyle, holdText, innerW, 18f, 36f);
-            var statusH = MeasureWrapped(statusStyle, statuses, innerW, 18f, 40f);
-            var meterH = VitalMeterHeight();
+            var statusH = Mathf.Max(StatusRow, _hudStatuses.Count * StatusRow);
 
             var height = InfoHeader + 8f;
             if (lookH > 0f)
@@ -435,12 +435,7 @@ namespace RuneMagic
                 height += holdH + 2f;
             }
 
-            if (statusH > 0f)
-            {
-                height += statusH;
-            }
-
-            height += meterH;
+            height += statusH;
 
             _infoGui = new Rect(InfoPad, InfoPad, InfoWidth, height);
             DrawPanel(_infoGui.x, _infoGui.y, _infoGui.width, _infoGui.height);
@@ -456,6 +451,9 @@ namespace RuneMagic
                 head, title);
 
             var y = _infoGui.y + InfoHeader;
+            DrawHudStatuses(new Rect(_infoGui.x + InfoInner, y, innerW, statusH));
+            y += statusH + 4f;
+
             if (lookH > 0f)
             {
                 GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, lookH), look, lookStyle);
@@ -471,17 +469,105 @@ namespace RuneMagic
             if (holdH > 0f)
             {
                 GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, holdH), holdText, holdStyle);
-                y += holdH + 2f;
             }
 
-            if (statusH > 0f)
-            {
-                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, statusH), statuses, statusStyle);
-                y += statusH;
-            }
-
-            DrawVitalMeters(_infoGui.x + InfoInner, y);
             DrawInteractPrompt();
+        }
+
+        struct HudStatus
+        {
+            public string Label;
+            public Color Color;
+        }
+
+        void CollectHudStatuses()
+        {
+            _hudStatuses.Clear();
+            var flying = false;
+            var host = StatusHost.On(AdeptAvatar.Find());
+            if (host != null)
+            {
+                var active = host.Active;
+                for (var i = 0; i < active.Count; i++)
+                {
+                    var effect = active[i];
+                    if (effect == null || effect.Remaining <= 0f)
+                    {
+                        continue;
+                    }
+
+                    if (effect.Id == StatusId.Flying)
+                    {
+                        flying = true;
+                    }
+
+                    _hudStatuses.Add(new HudStatus
+                    {
+                        Label = StatusLabel(effect),
+                        Color = effect.Spec.Tint
+                    });
+                }
+            }
+
+            var adept = AdeptAvatar.Find();
+            if (adept != null && adept.IsFlying && !flying)
+            {
+                _hudStatuses.Add(new HudStatus
+                {
+                    Label = TitleStatus("flight"),
+                    Color = StatusSpec.Of(StatusId.Flying).Tint
+                });
+            }
+
+            if (adept != null && adept.IsFloating)
+            {
+                _hudStatuses.Add(new HudStatus
+                {
+                    Label = TitleStatus("floating"),
+                    Color = new Color(0.7f, 0.86f, 0.98f)
+                });
+            }
+
+            if (_hudStatuses.Count == 0)
+            {
+                _hudStatuses.Add(new HudStatus
+                {
+                    Label = "Everything's ok",
+                    Color = new Color(0.55f, 0.82f, 0.58f)
+                });
+            }
+        }
+
+        static string StatusLabel(StatusInstance effect)
+        {
+            var name = TitleStatus(effect.Spec.Name);
+            if (effect.Spec.NeedsConcentration || float.IsInfinity(effect.Remaining))
+            {
+                return name;
+            }
+
+            return $"{name} {effect.Remaining:0.0}";
+        }
+
+        static string TitleStatus(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+
+            return char.ToUpperInvariant(name[0]) + name.Substring(1);
+        }
+
+        void DrawHudStatuses(Rect view)
+        {
+            var row = StatusRow;
+            for (var i = 0; i < _hudStatuses.Count; i++)
+            {
+                var status = _hudStatuses[i];
+                var rect = new Rect(view.x, view.y + i * row, view.width, row);
+                GUI.Label(rect, status.Label, Label(13, FontStyle.Bold, status.Color));
+            }
         }
 
         static float MeasureWrapped(GUIStyle style, string text, float width, float min, float max)
@@ -492,28 +578,6 @@ namespace RuneMagic
             }
 
             return Mathf.Clamp(style.CalcHeight(new GUIContent(text), width), min, max);
-        }
-
-        static float VitalMeterHeight()
-        {
-            var host = StatusHost.On(AdeptAvatar.Find());
-            if (host == null)
-            {
-                return 0f;
-            }
-
-            var height = 0f;
-            if (host.Has(StatusId.Burning))
-            {
-                height += 16f;
-            }
-
-            if (host.Has(StatusId.Poisoned))
-            {
-                height += 16f;
-            }
-
-            return height;
         }
 
         void DrawLogBox(Rect view, string message, GUIStyle body)
@@ -605,39 +669,6 @@ namespace RuneMagic
             var minY = _infoGui.height > 1f ? _infoGui.yMax + 8f : 12f;
             rect.y = Mathf.Clamp(rect.y, minY, Screen.height - BarHeight - height - 12f);
             return true;
-        }
-
-        float DrawVitalMeters(float x, float y)
-        {
-            var host = StatusHost.On(AdeptAvatar.Find());
-            if (host == null)
-            {
-                return y;
-            }
-
-            y = DrawVitalMeter(x, y, host, StatusId.Burning, new Color(1f, 0.42f, 0.12f), "Burning");
-            y = DrawVitalMeter(x, y, host, StatusId.Poisoned, new Color(0.42f, 0.82f, 0.22f), "Poison");
-            return y;
-        }
-
-        float DrawVitalMeter(float x, float y, StatusHost host, StatusId id, Color color, string label)
-        {
-            if (host == null || !host.Has(id))
-            {
-                return y;
-            }
-
-            var left = host.MeterLeft(id);
-            var frac = host.MeterFraction(id);
-            var previous = GUI.color;
-            GUI.Label(new Rect(x, y, 90, 14), $"{label} {left:0.0}",
-                Label(12, FontStyle.Bold, color));
-            GUI.color = new Color(0.12f, 0.1f, 0.08f, 0.85f);
-            GUI.DrawTexture(new Rect(x + 92, y + 3, 200, 8), Texture2D.whiteTexture);
-            GUI.color = color;
-            GUI.DrawTexture(new Rect(x + 92, y + 3, 200f * frac, 8), Texture2D.whiteTexture);
-            GUI.color = previous;
-            return y + 16f;
         }
 
         void DrawCastLedger()
