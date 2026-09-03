@@ -17,6 +17,7 @@ namespace RuneMagic
         SerializedProperty _sources;
         SerializedProperty _verb;
         SerializedProperty _look;
+        SerializedProperty _radius;
 
         void OnEnable()
         {
@@ -29,6 +30,7 @@ namespace RuneMagic
             _sources = serializedObject.FindProperty("sources");
             _verb = serializedObject.FindProperty("verb");
             _look = serializedObject.FindProperty("look");
+            _radius = serializedObject.FindProperty("radius");
         }
 
         public override void OnInspectorGUI()
@@ -97,6 +99,14 @@ namespace RuneMagic
             EditorGUILayout.Space(6);
             EditorGUILayout.PropertyField(_verb);
             EditorGUILayout.PropertyField(_look);
+            if (_radius != null)
+            {
+                EditorGUILayout.PropertyField(
+                    _radius,
+                    new GUIContent(
+                        "Radius",
+                        "Pray reach. Transform or a parent prefab's scale multiplies this. The gold circle in the Scene is that range — no sprite is added."));
+            }
 
             serializedObject.ApplyModifiedProperties();
         }

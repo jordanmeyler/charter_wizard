@@ -4,10 +4,13 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// One teaching slab. Check Teach Recipe to pray a written
-    /// sentence. Uncheck Show Other Writing to teach only that
-    /// recipe. Check Show Birth to stand sources = the born mark
-    /// (Fire · Air = Spark). Recipe and birth can be on at once.
+    /// One teaching slab. An empty use volume — place it over
+    /// tiles or under a prefab group. Transform / parent scale
+    /// sizes the pray range (the gold circle). Check Teach Recipe
+    /// to pray a written sentence. Uncheck Show Other Writing to
+    /// teach only that recipe. Check Show Birth to stand sources
+    /// = the born mark (Fire · Air = Spark). Recipe and birth can
+    /// be on at once.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -45,6 +48,7 @@ namespace RuneMagic
         [Header("Use")]
         [SerializeField] string verb = "Pray";
         [SerializeField] string look = "a stone for prayer. The sentence waits.";
+        [Tooltip("Pray / look reach. Transform or parent scale multiplies this. The gold circle in the Scene is that range.")]
         [SerializeField] float radius = 1.15f;
         [Tooltip("Optional. Leave unset so tiles or the generated birth marks carry the look.")]
         [SerializeField] string spriteId;
@@ -68,11 +72,23 @@ namespace RuneMagic
         public bool ShowsBirth => showBirth;
 
         public Vector3 WorldOrigin => transform.position;
-        public Vector3 WorldPosition => transform.position + (showBirth ? Vector3.up * MarkHover : Vector3.zero);
-        public float LookRadius => showBirth
+        public Vector3 WorldPosition => showBirth
+            ? transform.TransformPoint(Vector3.up * MarkHover)
+            : transform.position;
+        public float LookRadius => LocalLookRadius * SizeScale;
+        public float InteractRadius => Mathf.Max(0.4f, radius) * SizeScale;
+        public float SizeScale
+        {
+            get
+            {
+                var scale = transform.lossyScale;
+                return Mathf.Max(0.01f, Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            }
+        }
+
+        float LocalLookRadius => showBirth
             ? PickRadius + 0.35f * (Sources != null ? Sources.Length : 0)
             : Mathf.Max(0.55f, radius);
-        public float InteractRadius => Mathf.Max(0.4f, radius);
         public bool CanLook => true;
         public bool CanInteract => teachRecipe;
         public string InteractVerb => string.IsNullOrWhiteSpace(_verb) ? "Pray" : _verb;
@@ -315,7 +331,7 @@ namespace RuneMagic
                 return false;
             }
 
-            var reach = 0.48f + extra;
+            var reach = (0.48f + extra) * SizeScale;
             var layout = Layout();
             for (var i = 0; i < layout.Marks.Length; i++)
             {
@@ -601,16 +617,22 @@ namespace RuneMagic
 
         void OnDrawGizmosSelected()
         {
-            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.85f);
-            Gizmos.DrawWireSphere(WorldPosition, Mathf.Max(0.4f, lookRadiusGizmo));
+            DrawRange(new Color(0.92f, 0.78f, 0.38f, 0.9f));
         }
 
         void OnDrawGizmos()
         {
-            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.35f);
-            Gizmos.DrawWireSphere(transform.position, 0.18f);
+            DrawRange(new Color(0.92f, 0.78f, 0.38f, 0.45f));
         }
 
-        float lookRadiusGizmo => showBirth ? LookRadius : Mathf.Max(0.4f, radius);
+        void DrawRange(Color color)
+        {
+            Gizmos.color = color;
+            Gizmos.DrawWireSphere(WorldPosition, UseRadius);
+            Gizmos.color = new Color(color.r, color.g, color.b, color.a * 0.7f);
+            Gizmos.DrawWireSphere(transform.position, 0.12f);
+        }
+
+        float UseRadius => teachRecipe ? InteractRadius : LookRadius;
     }
 }
