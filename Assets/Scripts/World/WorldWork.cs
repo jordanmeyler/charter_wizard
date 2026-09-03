@@ -15,6 +15,8 @@ namespace RuneMagic
         // must find floor or wall at each end, or they fall. Metal
         // hangs without a far bank. MaxWallLength stays the hard cap.
         public const int HopTiles = 4;
+        // Walkable airborne. Pits and water will not take the adept.
+        // Must not share hop's motor lock — Flight is the walk.
         public const float FlightSeconds = 10f;
         public const float TimeStopSeconds = 8f;
         public const int VeilRadius = 2;

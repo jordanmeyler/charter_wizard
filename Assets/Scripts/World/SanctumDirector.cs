@@ -1070,7 +1070,7 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Pits will not take you while it lasts.";
+                return "Click to keep the breath on you. Walk while it lasts — pits will not take you.";
             }
 
             if (WorldWork.IsTimeStop(spell))
@@ -1927,7 +1927,7 @@ namespace RuneMagic
             var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
             if (WorldWork.IsFlight(spell) && adept != null)
             {
-                adept.KeepAirborne(WorldWork.FlightSeconds);
+                adept.KeepFlying(WorldWork.FlightSeconds);
                 yield break;
             }
 
@@ -2580,7 +2580,14 @@ namespace RuneMagic
         {
             var player = PlayerTransform();
             var host = StatusHost.On(player);
-            return host != null ? host.Summary() : string.Empty;
+            var text = host != null ? host.Summary() : string.Empty;
+            var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
+            if (adept != null && adept.IsFlying)
+            {
+                text = string.IsNullOrEmpty(text) ? "flying" : text + " · flying";
+            }
+
+            return text;
         }
 
         public string ConcentrationLine()

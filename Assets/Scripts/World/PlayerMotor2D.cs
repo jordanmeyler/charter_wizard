@@ -46,6 +46,9 @@ namespace RuneMagic
                 _adept = GetComponent<AdeptAvatar>();
             }
 
+            // Hop is a scripted leap. Flight is walkable airborne and
+            // must not go through IsHopping, or WASD freezes for the
+            // whole Flight clock.
             if (_adept != null && _adept.IsHopping)
             {
                 Halt();
