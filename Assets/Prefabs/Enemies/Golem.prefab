@@ -49,9 +49,27 @@ MonoBehaviour:
   authoredId: golem
   spriteId: enemy-011
   portrait: {fileID: 281471234, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
-  idleFrames: []
-  attackFrames: []
-  resolveFrames: []
+  idleFrames:
+  - {fileID: 281471234, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - {fileID: -1404993862, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - {fileID: 1516322186, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - {fileID: 33913011, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - {fileID: 838016917, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  - {fileID: 881569558, guid: 180cdc0d254238e45a41685d454e49ee, type: 3}
+  attackFrames:
+  - {fileID: 1463772004, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  - {fileID: 948373634, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  - {fileID: -66214126, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  - {fileID: -532462040, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  - {fileID: 2073616383, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  - {fileID: 94782684, guid: cedcf7a0be03aad469ee7fcd67667c46, type: 3}
+  resolveFrames:
+  - {fileID: 1696909618, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
+  - {fileID: 1089726823, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
+  - {fileID: -1521102460, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
+  - {fileID: 1191521110, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
+  - {fileID: 417899572, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
+  - {fileID: 879960890, guid: 3c6b36b5464754d479d844a6658dc733, type: 3}
   resolveClip: 
   idleClip: enemy-011
   attackClip: 
@@ -125,4 +143,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1

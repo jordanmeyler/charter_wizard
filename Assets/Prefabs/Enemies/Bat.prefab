@@ -48,10 +48,31 @@ MonoBehaviour:
   authoredName: Bat
   authoredId: bat
   spriteId: enemy-009
-  portrait: {fileID: 0}
-  idleFrames: []
-  resolveFrames: []
+  portrait: {fileID: -1141823995, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  idleFrames:
+  - {fileID: -1141823995, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - {fileID: 281769993, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - {fileID: 459388001, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - {fileID: 491102278, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - {fileID: 359963335, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  - {fileID: -1747663412, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
+  attackFrames:
+  - {fileID: 1457934391, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  - {fileID: 1354546710, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  - {fileID: -1490828927, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  - {fileID: 557047510, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  - {fileID: 533711507, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  - {fileID: -1486456065, guid: 8f865eea2a2affb469aacdea0ed73154, type: 3}
+  resolveFrames:
+  - {fileID: 1613401188, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
+  - {fileID: -1303119457, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
+  - {fileID: 1776415897, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
+  - {fileID: 1722091106, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
+  - {fileID: -1959937124, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
+  - {fileID: -1261494410, guid: d300fb034ec3b4e40b7056e7c5264dbb, type: 3}
   resolveClip: 
+  idleClip: enemy-009
+  attackClip: 
   formula:
   - Air
   - Mercury
@@ -61,6 +82,7 @@ MonoBehaviour:
   authoredBlocking: 0
   grant: 
   attack: 
+  authoredAttack: 0
   authoredCastSeconds: 2
   cast: []
 --- !u!212 &750292442441765054
@@ -112,7 +134,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -1141823995, guid: ed9b0ead0213bd74d9f816df9909dc49, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -120,5 +142,5 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
-  m_SpriteSortPoint: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 1

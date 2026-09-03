@@ -48,10 +48,31 @@ MonoBehaviour:
   authoredName: Squire
   authoredId: squire
   spriteId: enemy-002
-  portrait: {fileID: 0}
-  idleFrames: []
-  resolveFrames: []
+  portrait: {fileID: -1540333166, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  idleFrames:
+  - {fileID: -1540333166, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - {fileID: -1776078451, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - {fileID: -373398418, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - {fileID: 1315668091, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - {fileID: -1012470217, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  - {fileID: -371512246, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
+  attackFrames:
+  - {fileID: 526245514, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  - {fileID: -1270463241, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  - {fileID: 629135605, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  - {fileID: 1766096818, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  - {fileID: -1543623697, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  - {fileID: 1939713566, guid: 857ee75ff53504d42b45fbdbdf00357a, type: 3}
+  resolveFrames:
+  - {fileID: -2121558672, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
+  - {fileID: -44308702, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
+  - {fileID: 1226436415, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
+  - {fileID: -187831253, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
+  - {fileID: -1520917122, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
+  - {fileID: -1420274338, guid: 78584dccd6a1cef4e9af4e5ae3b05bf5, type: 3}
   resolveClip: 
+  idleClip: enemy-002
+  attackClip: 
   formula:
   - Earth
   - Salt
@@ -61,6 +82,7 @@ MonoBehaviour:
   authoredBlocking: 1
   grant: 
   attack: golem
+  authoredAttack: 1
   authoredCastSeconds: 2
   cast: []
 --- !u!212 &13371646245139636
@@ -112,7 +134,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -1540333166, guid: 3b9e7da9b6b00ce4291c599e0f33753e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -120,5 +142,5 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
-  m_SpriteSortPoint: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 1

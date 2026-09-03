@@ -49,9 +49,27 @@ MonoBehaviour:
   authoredId: cultist
   spriteId: enemy-008
   portrait: {fileID: -943280823, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
-  idleFrames: []
-  attackFrames: []
-  resolveFrames: []
+  idleFrames:
+  - {fileID: -943280823, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - {fileID: -2099835632, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - {fileID: -1954208462, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - {fileID: 687549377, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - {fileID: -1346136786, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  - {fileID: 129807886, guid: 7e86fa3677c5ce14f91e01997e159049, type: 3}
+  attackFrames:
+  - {fileID: 1997469886, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  - {fileID: 1209582250, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  - {fileID: -1289062419, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  - {fileID: 602391762, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  - {fileID: -299034808, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  - {fileID: 143890090, guid: c3bc92c994f257e4db4fc2596118be10, type: 3}
+  resolveFrames:
+  - {fileID: -2097563540, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
+  - {fileID: 986328195, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
+  - {fileID: -1348895858, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
+  - {fileID: -1036824301, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
+  - {fileID: 1423451687, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
+  - {fileID: -501315481, guid: 71f324ba5ccdc524fa72e2b9d9a034b0, type: 3}
   resolveClip: 
   idleClip: enemy-008
   attackClip: 
@@ -125,4 +143,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1

@@ -50,8 +50,11 @@ MonoBehaviour:
   spriteId: ash-mite
   portrait: {fileID: 0}
   idleFrames: []
+  attackFrames: []
   resolveFrames: []
   resolveClip: 
+  idleClip: 
+  attackClip: 
   formula:
   - Fire
   - Salt
@@ -61,6 +64,7 @@ MonoBehaviour:
   authoredBlocking: 0
   grant: 
   attack: 
+  authoredAttack: 0
   authoredCastSeconds: 2
   cast: []
 --- !u!212 &335939898914356257
@@ -110,7 +114,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 12
   m_MaskInteraction: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -121,4 +125,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
