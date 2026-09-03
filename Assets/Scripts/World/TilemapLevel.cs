@@ -11,7 +11,8 @@ namespace RuneMagic
     /// Tiles children merge — each Floor stamp still counts. Walls you
     /// never stamp stay walls on a Walls layer. Cover is overlay.
     /// Environment Details is a detail on that cell, and may also carry
-    /// a Floor stamp if you want a second level to walk.
+    /// a Floor stamp if you want a second level to walk. Environment
+    /// Details lvl 2 is another detail layer — Play stacks it on top.
     /// </summary>
     public static class TilemapLevel
     {
@@ -20,7 +21,8 @@ namespace RuneMagic
         static readonly string[] CoverNames = { "cover", "covers", "covering", "coverings", "overlay", "overlays", "aura" };
         static readonly string[] DecorNames =
         {
-            "environment details", "enviroment details", "environment", "enviroment",
+            "environment details", "enviroment details", "enviromental details",
+            "environment", "enviroment", "enviromental",
             "decor", "decoration", "decorations", "prop", "props", "detail", "details"
         };
 
