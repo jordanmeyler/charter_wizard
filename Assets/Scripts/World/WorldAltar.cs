@@ -4,10 +4,14 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// One teaching slab. Check Teach Recipe to pray a written
-    /// sentence. Uncheck Show Other Writing to teach only that
-    /// recipe. Check Show Birth to stand sources = the born mark
-    /// (Fire · Air = Spark). Recipe and birth can be on at once.
+    /// One teaching slab. An empty use volume — dress the statue
+    /// with a Portrait, child sprites, or nearby tiles. Transform
+    /// scale sizes this volume, an authored look, and Show Birth
+    /// marks; painted tilemap tiles stay tile-sized. Check Teach
+    /// Recipe to pray a written sentence. Uncheck Show Other
+    /// Writing to teach only that recipe. Check Show Birth to
+    /// stand sources = the born mark (Fire · Air = Spark). Recipe
+    /// and birth can be on at once.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -68,11 +72,23 @@ namespace RuneMagic
         public bool ShowsBirth => showBirth;
 
         public Vector3 WorldOrigin => transform.position;
-        public Vector3 WorldPosition => transform.position + (showBirth ? Vector3.up * MarkHover : Vector3.zero);
-        public float LookRadius => showBirth
+        public Vector3 WorldPosition => showBirth
+            ? transform.TransformPoint(Vector3.up * MarkHover)
+            : transform.position;
+        public float LookRadius => LocalLookRadius * SizeScale;
+        public float InteractRadius => Mathf.Max(0.4f, radius) * SizeScale;
+        public float SizeScale
+        {
+            get
+            {
+                var scale = transform.lossyScale;
+                return Mathf.Max(0.01f, Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            }
+        }
+
+        float LocalLookRadius => showBirth
             ? PickRadius + 0.35f * (Sources != null ? Sources.Length : 0)
             : Mathf.Max(0.55f, radius);
-        public float InteractRadius => Mathf.Max(0.4f, radius);
         public bool CanLook => true;
         public bool CanInteract => teachRecipe;
         public string InteractVerb => string.IsNullOrWhiteSpace(_verb) ? "Pray" : _verb;
@@ -315,7 +331,7 @@ namespace RuneMagic
                 return false;
             }
 
-            var reach = 0.48f + extra;
+            var reach = (0.48f + extra) * SizeScale;
             var layout = Layout();
             for (var i = 0; i < layout.Marks.Length; i++)
             {
@@ -515,11 +531,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (showBirth)
-            {
-                ResolveBirth();
-                RefreshLook();
-            }
+            PreviewLook();
         }
 
         void OnValidate()
@@ -547,17 +559,34 @@ namespace RuneMagic
                 return;
             }
 
+            PreviewLook();
+        }
+#endif
+
+        void PreviewLook()
+        {
             ResolveBirth();
+            if (portrait != null || !string.IsNullOrEmpty(spriteId))
+            {
+                if (showBirth)
+                {
+                    RefreshLook();
+                    return;
+                }
+
+                AuthoringUtil.ApplyLook(gameObject, 3, spriteId, portrait, null, 1f);
+                ClearDisplay();
+                return;
+            }
+
             if (showBirth)
             {
                 RefreshLook();
+                return;
             }
-            else
-            {
-                ClearDisplay();
-            }
+
+            ClearDisplay();
         }
-#endif
 
         void OnDisable()
         {
@@ -601,16 +630,21 @@ namespace RuneMagic
 
         void OnDrawGizmosSelected()
         {
+            var prior = Gizmos.matrix;
+            Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.85f);
-            Gizmos.DrawWireSphere(WorldPosition, Mathf.Max(0.4f, lookRadiusGizmo));
+            var local = showBirth ? Vector3.up * MarkHover : Vector3.zero;
+            Gizmos.DrawWireSphere(local, Mathf.Max(0.4f, LocalLookRadius));
+            Gizmos.matrix = prior;
         }
 
         void OnDrawGizmos()
         {
+            var prior = Gizmos.matrix;
+            Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.35f);
-            Gizmos.DrawWireSphere(transform.position, 0.18f);
+            Gizmos.DrawWireSphere(Vector3.zero, 0.18f);
+            Gizmos.matrix = prior;
         }
-
-        float lookRadiusGizmo => showBirth ? LookRadius : Mathf.Max(0.4f, radius);
     }
 }

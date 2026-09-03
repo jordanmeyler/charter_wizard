@@ -17,6 +17,9 @@ namespace RuneMagic
         SerializedProperty _sources;
         SerializedProperty _verb;
         SerializedProperty _look;
+        SerializedProperty _radius;
+        SerializedProperty _spriteId;
+        SerializedProperty _portrait;
 
         void OnEnable()
         {
@@ -29,6 +32,9 @@ namespace RuneMagic
             _sources = serializedObject.FindProperty("sources");
             _verb = serializedObject.FindProperty("verb");
             _look = serializedObject.FindProperty("look");
+            _radius = serializedObject.FindProperty("radius");
+            _spriteId = serializedObject.FindProperty("spriteId");
+            _portrait = serializedObject.FindProperty("portrait");
         }
 
         public override void OnInspectorGUI()
@@ -97,6 +103,31 @@ namespace RuneMagic
             EditorGUILayout.Space(6);
             EditorGUILayout.PropertyField(_verb);
             EditorGUILayout.PropertyField(_look);
+            if (_radius != null)
+            {
+                EditorGUILayout.PropertyField(
+                    _radius,
+                    new GUIContent("Radius", "Pray / look reach. Transform scale multiplies this."));
+            }
+
+            EditorGUILayout.Space(6);
+            EditorGUILayout.LabelField("Look", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "This object is the use volume. Transform scale sizes the gold gizmo, the pray radius, a Portrait or Sprite Id, child sprites, and Show Birth marks. Painted Environment Details tiles live on the tilemap — they will not grow with this object. Parent a sprite (or set Portrait) if you want the statue to scale.",
+                MessageType.None);
+            if (_portrait != null)
+            {
+                EditorGUILayout.PropertyField(
+                    _portrait,
+                    new GUIContent("Portrait", "Optional statue sprite on this object. Scales with the Transform."));
+            }
+
+            if (_spriteId != null)
+            {
+                EditorGUILayout.PropertyField(
+                    _spriteId,
+                    new GUIContent("Sprite Id", "Catalog / atlas id if you would rather name a sprite than drag one."));
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
