@@ -1,111 +1,113 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace RuneMagic
 {
-    [CustomEditor(typeof(WorldInteract))]
-    public sealed class WorldInteractEditor : Editor
+    [CustomEditor(typeof(WorldAltar))]
+    public sealed class WorldAltarEditor : Editor
     {
-        int _catalogIndex;
+        SerializedProperty _teach;
+        SerializedProperty _birth;
+        SerializedProperty _recipe;
+        SerializedProperty _via;
+        SerializedProperty _result;
+        SerializedProperty _sources;
+        SerializedProperty _verb;
+        SerializedProperty _look;
+
+        void OnEnable()
+        {
+            _teach = serializedObject.FindProperty("teachRecipe");
+            _birth = serializedObject.FindProperty("showBirth");
+            _recipe = serializedObject.FindProperty("recipe");
+            _via = serializedObject.FindProperty("via");
+            _result = serializedObject.FindProperty("result");
+            _sources = serializedObject.FindProperty("sources");
+            _verb = serializedObject.FindProperty("verb");
+            _look = serializedObject.FindProperty("look");
+        }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.HelpBox(
-                "You do not type rune names. Load a written working, or Add marks on Recipe / Other writing. Those fields are at the top of this component.",
-                MessageType.Info);
-            DrawCatalogLoad();
-            EditorGUILayout.Space();
-            DrawPropertiesExcluding(serializedObject, "m_Script");
+            EditorGUILayout.PropertyField(
+                _teach,
+                new GUIContent("Teach Recipe", "Pray the authored writing. Cast aims those runes."));
+            EditorGUILayout.PropertyField(
+                _birth,
+                new GUIContent("Show Birth", "World display: sources = result (Fire · Air = Spark)."));
+
+            if (_teach.boolValue)
+            {
+                EditorGUILayout.Space(6);
+                EditorGUILayout.LabelField("Prayer", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(_recipe, new GUIContent("Recipe"));
+                EditorGUILayout.PropertyField(
+                    _via,
+                    new GUIContent("Via", "Other writing of the same working. Leave empty to use the catalog's other writing."));
+                DrawLoadWritings();
+            }
+
+            if (_birth.boolValue)
+            {
+                EditorGUILayout.Space(6);
+                EditorGUILayout.LabelField("Birth", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(
+                    _result,
+                    new GUIContent("Result", "Born rune, e.g. Spark. Sources fill from the catalog."));
+                EditorGUILayout.PropertyField(
+                    _sources,
+                    new GUIContent("Sources", "Leave empty to use the catalog parents of Result."));
+            }
+
+            if (!_teach.boolValue && !_birth.boolValue)
+            {
+                EditorGUILayout.HelpBox("Turn on Teach Recipe and/or Show Birth.", MessageType.Info);
+            }
+
+            EditorGUILayout.Space(6);
+            EditorGUILayout.PropertyField(_verb);
+            EditorGUILayout.PropertyField(_look);
+
             serializedObject.ApplyModifiedProperties();
         }
 
-        void DrawCatalogLoad()
+        void DrawLoadWritings()
         {
-            CatalogBook.EnsureLoaded();
-            var catalog = SpellCodex.All;
-            var labels = new string[catalog.Count + 1];
-            labels[0] = "(load a written working — fills the runes)";
-            for (var i = 0; i < catalog.Count; i++)
+            var names = new List<string> { "Load writings…" };
+            var entries = SpellCodex.All;
+            for (var i = 0; i < entries.Count; i++)
             {
-                var entry = catalog[i];
-                var line = entry.Name + "   " + WorkingNames.RunePhrase(entry.RecipeRunes);
-                if (entry.ViaRunes != null && entry.ViaRunes.Count > 0)
-                {
-                    line += "   /   " + WorkingNames.RunePhrase(entry.ViaRunes);
-                }
-
-                labels[i + 1] = line;
+                names.Add(entries[i].Name);
             }
 
-            EditorGUILayout.LabelField("Load writings", EditorStyles.boldLabel);
-            _catalogIndex = EditorGUILayout.Popup(_catalogIndex, labels);
-            EditorGUI.BeginDisabledGroup(_catalogIndex <= 0);
-            if (GUILayout.Button("Fill Recipe and Other writing from that working"))
+            var pick = EditorGUILayout.Popup("From catalog", 0, names.ToArray());
+            if (pick <= 0)
             {
-                var entry = catalog[_catalogIndex - 1];
-                RunePicker.WriteRunes(serializedObject.FindProperty("recipe"), entry.RecipeRunes);
-                RunePicker.WriteRunes(serializedObject.FindProperty("via"), entry.ViaRunes);
-                serializedObject.FindProperty("spell").stringValue = string.Empty;
+                return;
             }
 
-            EditorGUI.EndDisabledGroup();
-        }
-    }
-
-    [CustomEditor(typeof(ElementalAltar))]
-    public sealed class ElementalAltarEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            EditorGUILayout.HelpBox(
-                "Click the born mark. Sources fill from the birth table — Spark gives Fire · Air. You do not type them. Override Sources only for a different writing.",
-                MessageType.Info);
-
-            var resultProp = serializedObject.FindProperty("result");
-            var result = (RuneId)resultProp.intValue;
-            EditorGUILayout.LabelField("Result", RuneCatalog.NameOf(result));
-            if (ChainBook.TryBirth(result, out var birth) && birth.Count > 0)
-            {
-                EditorGUILayout.LabelField(
-                    "Birth  ·  " + WorkingNames.RunePhrase(birth) + "  =  " + RuneCatalog.NameOf(result),
-                    EditorStyles.miniLabel);
-            }
-
-            RunePicker.Draw(ref result);
-            if ((int)result != resultProp.intValue)
-            {
-                resultProp.intValue = (int)result;
-            }
-
-            EditorGUILayout.Space();
-            DrawPropertiesExcluding(serializedObject, "m_Script", "result");
-            if (serializedObject.ApplyModifiedProperties())
-            {
-                var altar = (ElementalAltar)target;
-                altar.Author((RuneId)resultProp.intValue, RunePicker.ReadRunes(serializedObject.FindProperty("sources")));
-            }
-
-            EditorGUILayout.Space();
-            if (GUILayout.Button("Snap to grid"))
-            {
-                var altar = (ElementalAltar)target;
-                Undo.RecordObject(altar.transform, "Snap elemental altar");
-                altar.transform.position = AuthoringUtil.Snap(altar.transform.position);
-            }
+            var entry = entries[pick - 1];
+            WriteRunes(_recipe, entry.RecipeRunes);
+            WriteRunes(_via, entry.ViaRunes);
+            serializedObject.ApplyModifiedProperties();
+            GUI.FocusControl(null);
         }
 
-        void OnSceneGUI()
+        static void WriteRunes(SerializedProperty list, IReadOnlyList<RuneId> runes)
         {
-            var altar = (ElementalAltar)target;
-            var snapped = AuthoringUtil.Snap(altar.transform.position);
-            snapped.z = 0f;
-            if (snapped != altar.transform.position)
+            list.ClearArray();
+            if (runes == null)
             {
-                Undo.RecordObject(altar.transform, "Snap elemental altar");
-                altar.transform.position = snapped;
+                return;
+            }
+
+            for (var i = 0; i < runes.Count; i++)
+            {
+                list.InsertArrayElementAtIndex(i);
+                list.GetArrayElementAtIndex(i).enumValueIndex = (int)runes[i];
             }
         }
     }

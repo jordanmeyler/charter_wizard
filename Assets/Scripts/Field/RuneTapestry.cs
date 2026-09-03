@@ -205,7 +205,7 @@ namespace RuneMagic
         static IRuneSource[] TeachingSources()
         {
             var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
-            var altars = Object.FindObjectsByType<ElementalAltar>(FindObjectsSortMode.None);
+            var altars = Object.FindObjectsByType<WorldAltar>(FindObjectsSortMode.None);
             if (altars == null || altars.Length == 0)
             {
                 return steles;

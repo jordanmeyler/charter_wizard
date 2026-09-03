@@ -228,7 +228,7 @@ namespace RuneMagic
                 case "altar":
                 case "pray":
                 case "interact":
-                    WorldInteract.Spawn(
+                    WorldAltar.Spawn(
                         world,
                         ParseRunes(prop.runes),
                         ParseRunes(prop.formula),
@@ -749,7 +749,7 @@ namespace RuneMagic
                 result = RuneId.Spark;
             }
 
-            ElementalAltar.Spawn(world, result, sources);
+            WorldAltar.SpawnBirth(world, result, sources);
         }
 
         static void PlaceLesson(Vector3 origin, RuneId[] runes, Vector3 dir)

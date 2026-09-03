@@ -4,71 +4,127 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// A teaching slab that shows how a wrought element is made.
-    /// Fire and Air stand on the left, an equals, then Spark.
-    /// Pick the born rune and the birth recipe fills in; override
-    /// Sources when you want a different writing.
+    /// One teaching slab. Check Teach Recipe to pray a written
+    /// sentence. Check Show Birth to stand sources = the born mark
+    /// (Fire · Air = Spark). Both can be on at once.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
-    public sealed class ElementalAltar : MonoBehaviour, IRuneSource, ILookable
+    [AddComponentMenu("Rune Magic/Altar")]
+    public sealed class WorldAltar : MonoBehaviour, ILookable, IInteractable, IRuneSource
     {
         const string DisplayChild = "Display";
         public const float MarkHover = 0.48f;
         public const float PickRadius = 0.85f;
         const float MarkStep = 0.55f;
 
-        [Header("Authoring")]
-        [Tooltip("The wrought mark this slab teaches. Spark fills Fire · Air.")]
+        [Header("What this slab teaches")]
+        [Tooltip("Pray shows a written recipe and Cast can aim it.")]
+        [SerializeField] bool teachRecipe = true;
+        [Tooltip("Stand the birth equation in the world: sources, an equals, then the born mark.")]
+        [SerializeField] bool showBirth;
+
+        [Header("Recipe")]
+        [Tooltip("The sentence prayer shows and Cast aims. Click marks and Add.")]
+        [RuneChain]
+        [SerializeField] RuneId[] recipe = System.Array.Empty<RuneId>();
+        [Tooltip("Optional second writing of the same working.")]
+        [RuneChain]
+        [SerializeField] RuneId[] via = System.Array.Empty<RuneId>();
+
+        [Header("Birth")]
+        [Tooltip("The wrought mark. Spark fills Fire · Air.")]
         [SerializeField] RuneId result = RuneId.Spark;
-        [Tooltip("Leave empty to use the birth recipe. Set marks to show another writing.")]
+        [Tooltip("Leave empty to use the birth recipe.")]
         [RuneChain]
         [SerializeField] RuneId[] sources = System.Array.Empty<RuneId>();
-        [Tooltip("Optional. Leave unset so the generated slab and marks carry the look.")]
-        [SerializeField] Sprite portrait;
+
+        [Header("Use")]
+        [SerializeField] string verb = "Pray";
+        [SerializeField] string look = "a stone for prayer. The sentence waits.";
+        [SerializeField] float radius = 1.15f;
+        [Tooltip("Optional. Leave unset so tiles or the generated birth marks carry the look.")]
         [SerializeField] string spriteId;
+        [SerializeField] Sprite portrait;
+        [HideInInspector]
+        [SerializeField] string spell;
+
+        bool _wired;
+        RuneId[] _recipe;
+        RuneId[] _via;
+        string _spell;
+        string _look;
+        string _verb;
+        Transform _picture;
+        float _born;
 
         public RuneId Result { get; private set; } = RuneId.Spark;
         public RuneId[] Sources { get; private set; } = System.Array.Empty<RuneId>();
-        bool _wired;
+        public bool TeachesRecipe => teachRecipe;
+        public bool ShowsBirth => showBirth;
 
-        public bool IsEmitting => Result != RuneId.None || (Sources != null && Sources.Length > 0);
         public Vector3 WorldOrigin => transform.position;
-        public Vector3 WorldPosition => transform.position + Vector3.up * MarkHover;
-        public float LookRadius => PickRadius + 0.35f * (Sources != null ? Sources.Length : 0);
-        public bool CanLook => IsEmitting;
-        public string LookText => Sight.OfBirth(Sources, Result);
+        public Vector3 WorldPosition => transform.position + (showBirth ? Vector3.up * MarkHover : Vector3.zero);
+        public float LookRadius => showBirth
+            ? PickRadius + 0.35f * (Sources != null ? Sources.Length : 0)
+            : Mathf.Max(0.55f, radius);
+        public float InteractRadius => Mathf.Max(0.4f, radius);
+        public bool CanLook => true;
+        public bool CanInteract => teachRecipe;
+        public string InteractVerb => string.IsNullOrWhiteSpace(_verb) ? "Pray" : _verb;
+        public string LookText => showBirth
+            ? Sight.OfBirth(Sources, Result)
+            : Sight.OfInteract(_look, InteractVerb);
+        public IReadOnlyList<RuneId> AuthoredRecipe => _recipe;
+        public IReadOnlyList<RuneId> AuthoredVia => _via;
+        public bool IsEmitting => showBirth && (Result != RuneId.None || PrayerWorking.HasMarks(Sources));
         public float VoiceRadius => 3.2f;
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
 
-        Transform _picture;
-        float _born;
+        public static WorldAltar Spawn(
+            Vector3 position,
+            IReadOnlyList<RuneId> recipe,
+            IReadOnlyList<RuneId> via = null,
+            string verb = "Pray",
+            string leftoverName = null)
+        {
+            var host = new GameObject("Altar");
+            host.SetActive(false);
+            host.transform.position = position;
+            var view = host.AddComponent<WorldAltar>();
+            view.teachRecipe = true;
+            view.showBirth = false;
+            view.recipe = PrayerWorking.Copy(recipe);
+            view.via = PrayerWorking.Copy(via);
+            view.verb = verb;
+            view.spell = leftoverName ?? string.Empty;
+            host.SetActive(true);
+            view.BindFromAuthoring();
+            return view;
+        }
 
-        public static ElementalAltar Spawn(
-            Vector3 origin,
+        public static WorldAltar SpawnBirth(
+            Vector3 position,
             RuneId result,
             IReadOnlyList<RuneId> sources = null)
         {
-            var host = new GameObject(NameOf(result));
-            host.transform.position = origin;
-            var altar = host.AddComponent<ElementalAltar>();
-            altar.result = result;
-            altar.sources = PrayerWorking.HasMarks(sources)
+            var host = new GameObject("Altar");
+            host.SetActive(false);
+            host.transform.position = position;
+            var view = host.AddComponent<WorldAltar>();
+            view.teachRecipe = false;
+            view.showBirth = true;
+            view.result = result;
+            view.sources = PrayerWorking.HasMarks(sources)
                 ? PrayerWorking.Copy(sources)
                 : System.Array.Empty<RuneId>();
-            altar.BindFromAuthoring();
-            return altar;
+            host.SetActive(true);
+            view.BindFromAuthoring();
+            return view;
         }
 
-        public static string NameOf(RuneId result)
-        {
-            return result == RuneId.None
-                ? "Elemental Altar"
-                : RuneCatalog.NameOf(result) + " Altar";
-        }
-
-        public static bool TryResolve(
+        public static bool TryBirth(
             RuneId result,
             IReadOnlyList<RuneId> authoredSources,
             out IReadOnlyList<RuneId> sources,
@@ -100,7 +156,7 @@ namespace RuneMagic
         public static bool TryPick(Vector3 world, out RuneId rune, float extra = 0.2f)
         {
             rune = RuneId.None;
-            var altars = Object.FindObjectsByType<ElementalAltar>(FindObjectsSortMode.None);
+            var altars = Object.FindObjectsByType<WorldAltar>(FindObjectsSortMode.None);
             var best = float.MaxValue;
             for (var i = 0; i < altars.Length; i++)
             {
@@ -117,40 +173,134 @@ namespace RuneMagic
 
         public void BindFromAuthoring()
         {
+            Bind();
+        }
+
+        public void EnsureWorking()
+        {
+            Bind();
+        }
+
+        public void Bind(
+            string spell,
+            string look,
+            string verb,
+            IReadOnlyList<RuneId> recipe,
+            IReadOnlyList<RuneId> via)
+        {
+            this.spell = spell;
+            this.look = look;
+            this.verb = verb;
+            this.recipe = PrayerWorking.Copy(recipe);
+            this.via = PrayerWorking.Copy(via);
+            teachRecipe = true;
+            Bind();
+        }
+
+        void Bind()
+        {
+            _spell = spell;
+            _look = look;
+            _verb = verb;
+            _recipe = PrayerWorking.Copy(recipe);
+            _via = PrayerWorking.Copy(via);
+            ResolveBirth();
+            if (!string.IsNullOrWhiteSpace(spriteId) || portrait != null)
+            {
+                AuthoringUtil.ApplyLook(gameObject, 3, spriteId, portrait, null, 1f);
+            }
+            else if (showBirth)
+            {
+                RefreshLook();
+            }
+
             if (_wired)
             {
                 return;
             }
 
-            Bind(result, sources);
-        }
-
-        public void Bind(RuneId born, IReadOnlyList<RuneId> authoredSources)
-        {
             _wired = true;
-            Author(born, authoredSources);
             _born = Time.time;
             Lookables.Register(this);
+            if (teachRecipe)
+            {
+                Interactables.Register(this);
+            }
         }
 
-        public void Author(RuneId born, IReadOnlyList<RuneId> authoredSources)
+        public void EnsureBound()
         {
-            TryResolve(born, authoredSources, out var resolved, out var shown);
-            result = born == RuneId.None ? shown : born;
+            Bind();
+        }
+
+        public void AuthorBirth(RuneId born, IReadOnlyList<RuneId> authoredSources)
+        {
+            result = born;
             sources = authoredSources != null && PrayerWorking.HasMarks(authoredSources)
                 ? PrayerWorking.Copy(authoredSources)
                 : System.Array.Empty<RuneId>();
+            ResolveBirth();
+            if (showBirth && portrait == null && string.IsNullOrEmpty(spriteId))
+            {
+                RefreshLook();
+            }
+        }
+
+        public void Interact(SanctumDirector director)
+        {
+            if (director == null || !teachRecipe)
+            {
+                return;
+            }
+
+            if (!PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out var working)
+                || !working.HasRecipe)
+            {
+                director.Log(GlyphView.Speak(
+                    "The altar is silent. No written sentence answers.",
+                    "The stone does not answer."));
+                return;
+            }
+
+            GameHud.RevealWorking(working);
+            director.Log(RevealLine(working));
+        }
+
+        public static string RevealLine(PrayerWorking working)
+        {
+            if (!working.HasRecipe)
+            {
+                return GlyphView.Speak(
+                    "A working is shown.",
+                    "A working is shown. Cast it, or leave it on the stone.");
+            }
+
+            var phrase = WorkingNames.RunePhrase(working.Recipe);
+            if (working.HasVia)
+            {
+                phrase += " — or " + WorkingNames.RunePhrase(working.Via);
+            }
+
+            var develop = working.Entry.Spell != SpellId.None
+                ? $"A working is shown. {phrase}. ({working.Entry.Name})"
+                : $"A working is shown. {phrase}.";
+            return GlyphView.Speak(
+                develop,
+                "A working is shown. Cast it, or leave it on the stone.");
+        }
+
+        void ResolveBirth()
+        {
+            TryBirth(result, sources, out var resolved, out var shown);
             Result = shown;
             Sources = PrayerWorking.Copy(resolved);
-            gameObject.name = NameOf(Result);
-            RefreshLook();
         }
 
         bool TryPickHere(Vector3 world, float extra, out RuneId rune, out float distance)
         {
             rune = RuneId.None;
             distance = float.MaxValue;
-            if (!IsEmitting)
+            if (!showBirth || !IsEmitting)
             {
                 return false;
             }
@@ -172,16 +322,14 @@ namespace RuneMagic
 
         void RefreshLook()
         {
-            if (Result == RuneId.None && (Sources == null || Sources.Length == 0))
+            ResolveBirth();
+            ClearDisplay();
+            if (!showBirth)
             {
-                TryResolve(result, sources, out var resolved, out var shown);
-                Result = shown;
-                Sources = PrayerWorking.Copy(resolved);
+                return;
             }
 
-            gameObject.name = NameOf(Result);
-            ClearDisplay();
-            if (HasAuthoredLook())
+            if (portrait != null || !string.IsNullOrEmpty(spriteId))
             {
                 AuthoringUtil.ApplyLook(gameObject, 5, spriteId, portrait, null, 1f);
                 return;
@@ -196,7 +344,7 @@ namespace RuneMagic
 
             var display = new GameObject(DisplayChild);
             display.transform.SetParent(transform, false);
-            var slab = new GameObject("Altar");
+            var slab = new GameObject("Slab");
             slab.transform.SetParent(display.transform, false);
             var baseView = slab.AddComponent<SpriteRenderer>();
             baseView.sprite = SpriteFactory.AltarBase();
@@ -349,18 +497,17 @@ namespace RuneMagic
             collider.radius = 0.48f;
         }
 
-        bool HasAuthoredLook()
-        {
-            return portrait != null || !string.IsNullOrEmpty(spriteId);
-        }
-
         void OnEnable()
         {
-            if (!Application.isPlaying)
+            if (Application.isPlaying)
             {
-                TryResolve(result, sources, out var resolved, out var shown);
-                Result = shown;
-                Sources = PrayerWorking.Copy(resolved);
+                Bind();
+                return;
+            }
+
+            if (showBirth)
+            {
+                ResolveBirth();
                 RefreshLook();
             }
         }
@@ -385,21 +532,27 @@ namespace RuneMagic
                 return;
             }
 
-            TryResolve(result, sources, out var resolved, out var shown);
-            Result = shown;
-            Sources = PrayerWorking.Copy(resolved);
-            RefreshLook();
+            ResolveBirth();
+            if (showBirth)
+            {
+                RefreshLook();
+            }
+            else
+            {
+                ClearDisplay();
+            }
         }
 #endif
 
         void OnDisable()
         {
             Lookables.Unregister(this);
+            Interactables.Unregister(this);
         }
 
         void LateUpdate()
         {
-            if (!Application.isPlaying)
+            if (!Application.isPlaying || !showBirth)
             {
                 return;
             }
@@ -431,12 +584,18 @@ namespace RuneMagic
             }
         }
 
-#if UNITY_EDITOR
         void OnDrawGizmosSelected()
         {
-            Gizmos.color = new Color(0.92f, 0.78f, 0.35f, 0.7f);
-            Gizmos.DrawWireSphere(WorldPosition, LookRadius);
+            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.85f);
+            Gizmos.DrawWireSphere(WorldPosition, Mathf.Max(0.4f, lookRadiusGizmo));
         }
-#endif
+
+        void OnDrawGizmos()
+        {
+            Gizmos.color = new Color(0.92f, 0.78f, 0.38f, 0.35f);
+            Gizmos.DrawWireSphere(transform.position, 0.18f);
+        }
+
+        float lookRadiusGizmo => showBirth ? LookRadius : Mathf.Max(0.4f, radius);
     }
 }

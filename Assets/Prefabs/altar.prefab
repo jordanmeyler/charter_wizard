@@ -43,9 +43,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a4c7e2d1f8b4a63b0d5c8e3a7f1b246, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldInteract
+  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldAltar
+  teachRecipe: 1
+  showBirth: 0
   recipe: []
   via: []
+  result: 5
+  sources: []
   verb: Commune
   look: A call for hunger given motion
   radius: 1.15

@@ -167,10 +167,10 @@ namespace RuneMagic
                 plaques[i].EnsureBound();
             }
 
-            var interacts = Object.FindObjectsByType<WorldInteract>(FindObjectsSortMode.None);
-            for (var i = 0; i < interacts.Length; i++)
+            var altars = Object.FindObjectsByType<WorldAltar>(FindObjectsSortMode.None);
+            for (var i = 0; i < altars.Length; i++)
             {
-                interacts[i].EnsureBound();
+                altars[i].EnsureBound();
             }
 
             var speeches = Object.FindObjectsByType<WorldSpeech>(FindObjectsSortMode.None);
@@ -195,12 +195,6 @@ namespace RuneMagic
             for (var i = 0; i < steles.Length; i++)
             {
                 steles[i].BindFromAuthoring();
-            }
-
-            var elemental = Object.FindObjectsByType<ElementalAltar>(FindObjectsSortMode.None);
-            for (var i = 0; i < elemental.Length; i++)
-            {
-                elemental[i].BindFromAuthoring();
             }
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
