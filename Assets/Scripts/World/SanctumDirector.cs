@@ -249,17 +249,7 @@ namespace RuneMagic
                 }
             }
 
-            if (Underfoot != null && Underfoot.HasMiasma && (adept == null || !adept.IsAirborne))
-            {
-                var host = StatusHost.On(player);
-                if (host == null || !host.Fends(Essence.Poison))
-                {
-                    PlacePlayer(player, _safePoint, "The breath is foul. Send air through it.");
-                    FieldReading = Tapestry != null ? Tapestry.Reading : string.Empty;
-                    return;
-                }
-            }
-            else if ((adept == null || !adept.IsAirborne)
+            if ((adept == null || !adept.IsAirborne)
                 && ((Underfoot != null && Underfoot.IsPoisonWater)
                     || WorldPhysics.MiasmaCloudAt(Grid, player.position)))
             {
@@ -1255,13 +1245,18 @@ namespace RuneMagic
 
         public void CastRevealed(CodexEntry entry)
         {
-            if (Busy || entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            CastRevealed(PrayerReveal.FromEntry(entry));
+        }
+
+        public void CastRevealed(PrayerWorking working)
+        {
+            if (Busy || !working.HasRecipe)
             {
                 return;
             }
 
-            var stance = entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
-            BeginAim(Composition.FromSequence(entry.RecipeRunes), stance, fromHeld: false);
+            var stance = working.Entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
+            BeginAim(Composition.FromSequence(working.Recipe), stance, fromHeld: false);
         }
 
         public void RenameKept(int index, string givenName)
@@ -2270,7 +2265,7 @@ namespace RuneMagic
                 var mark = new GameObject("AimMark");
                 _aimMark = mark.AddComponent<SpriteRenderer>();
                 _aimMark.sprite = SpriteFactory.TargetRing();
-                _aimMark.sortingOrder = 17;
+                DrawDepth.ApplyFx(_aimMark, 17);
             }
 
             if (_aimLine != null)
@@ -2284,7 +2279,7 @@ namespace RuneMagic
             _aimLine.widthMultiplier = 0.06f;
             _aimLine.numCapVertices = 4;
             _aimLine.useWorldSpace = true;
-            _aimLine.sortingOrder = 16;
+            DrawDepth.ApplyFx(_aimLine, 16);
             var shader = Shader.Find("Sprites/Default");
             if (shader != null)
             {
@@ -2379,7 +2374,7 @@ namespace RuneMagic
                 var ring = new GameObject("TargetRing");
                 _targetRing = ring.AddComponent<SpriteRenderer>();
                 _targetRing.sprite = SpriteFactory.TargetRing();
-                _targetRing.sortingOrder = 16;
+                DrawDepth.ApplyFx(_targetRing, 16);
             }
 
             var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused && Mode != PlayMode.Inventory &&
@@ -2926,7 +2921,7 @@ namespace RuneMagic
         bool TryWeaveAt(Vector3 world)
         {
             if (RuneStele.TryPick(world, out var rune) || RuneStringSource.TryPick(world, out rune) ||
-                CoverCatalog.TryPick(world, out rune))
+                ElementalAltar.TryPick(world, out rune) || CoverCatalog.TryPick(world, out rune))
             {
                 WeaveFromField(rune);
                 return true;

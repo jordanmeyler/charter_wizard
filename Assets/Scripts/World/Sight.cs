@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace RuneMagic
 {
     /// <summary>
@@ -83,7 +85,7 @@ namespace RuneMagic
 
             if (tile.HasMiasma)
             {
-                return "foul breath hanging on this tile. A cloud. Wind must take it.";
+                return "foul breath hanging on this tile. A cloud that holds the step. Wind must take it.";
             }
 
             if (tile.HasVine)
@@ -105,7 +107,7 @@ namespace RuneMagic
 
             if (tile.IsPoisonWater)
             {
-                return "poison water. Yield will wash it.";
+                return "poison water. Yield will wash it. Hunger lifts it as foul breath.";
             }
 
             var material = tile.Def.WorldMaterial;
@@ -150,6 +152,23 @@ namespace RuneMagic
             return "words you may " + use + ".";
         }
 
+        public static string OfBirth(IReadOnlyList<RuneId> sources, RuneId result)
+        {
+            if (result == RuneId.None)
+            {
+                return "a stone that has not yet learned a mark.";
+            }
+
+            if (sources == null || sources.Count == 0)
+            {
+                return OfRune(result);
+            }
+
+            return GlyphView.Speak(
+                WorkingNames.RunePhrase(sources) + " become " + RuneCatalog.NameOf(result) + ".",
+                "marks that join into another mark.");
+        }
+
         public static string OfInteract(string look, string verb)
         {
             if (!string.IsNullOrWhiteSpace(look))
@@ -159,6 +178,12 @@ namespace RuneMagic
 
             var use = string.IsNullOrWhiteSpace(verb) ? "Interact" : verb.Trim();
             return "a place you may " + use.ToLowerInvariant() + ".";
+        }
+
+        public static string InteractPrompt(string verb)
+        {
+            var use = string.IsNullOrWhiteSpace(verb) ? "interact" : verb.Trim();
+            return "Press E to " + use.ToLowerInvariant();
         }
 
         public static string OfCrystal() =>

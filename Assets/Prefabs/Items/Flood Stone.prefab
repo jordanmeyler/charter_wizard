@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: Yield given a floor.
+  look: yield given a floor.
 --- !u!212 &298882095007402394
 SpriteRenderer:
   serializedVersion: 2

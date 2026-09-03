@@ -12,8 +12,8 @@ namespace RuneMagic
     /// two holds can stand if the rest of the sentences do not share
     /// a rune. A fireball or a wall does not ask focus to let go.
     /// Burning is a contact meter. Poison is a slower meter that
-    /// stays until Light cleanses it. Other elemental work stands
-    /// on its own clock.
+    /// keeps its level off the slick until Light cleanses it.
+    /// Other elemental work stands on its own clock.
     /// </summary>
     public static class FocusLaw
     {

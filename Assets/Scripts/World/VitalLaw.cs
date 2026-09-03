@@ -20,9 +20,9 @@ namespace RuneMagic
     /// <summary>
     /// Burning and poison share one law: a named integrity clock.
     /// The clock only runs while the body still stands in matching
-    /// fire or foul. Step off that cover and the condition lifts —
-    /// you are no longer on fire, no longer poisoned. Sulphur work
-    /// does not use this — it stays until focus breaks.
+    /// fire or foul. Step off the fire and the burn lifts. Step off
+    /// the poison and the level stays until Light cleanses it.
+    /// Sulphur work does not use this — it stays until focus breaks.
     /// </summary>
     public static class VitalLaw
     {
@@ -30,6 +30,14 @@ namespace RuneMagic
         public const float AdeptPoisonSeconds = 14f;
         public const float FleshBurnSeconds = 6f;
         public const float FleshPoisonSeconds = 14f;
+        /// <summary>
+        /// How fast the poison meter runs while the body still
+        /// stands in that kind of foul. Liquid is the baseline.
+        /// Miasma is the higher work — it fills the same clock
+        /// about twice as fast, and it holds the step.
+        /// </summary>
+        public const float PoisonLiquidDrain = 1f;
+        public const float MiasmaPoisonDrain = 2f;
         public const float IceBurnSeconds = 4f;
         public const float EarthBurnSeconds = 12f;
         /// <summary>
@@ -170,19 +178,27 @@ namespace RuneMagic
 
         /// <summary>
         /// Hunger lifts off the fire. Poison does not — it stays
-        /// until Light cleanses it, and the clock still runs.
+        /// until Light cleanses it. The clock waits once the body
+        /// leaves the slick or the cloud.
         /// </summary>
         public static bool MeterEndsWithoutContact(StatusId id) =>
             id == StatusId.Burning;
 
         /// <summary>
-        /// Burning and poison only hold while the body still stands in
+        /// Poison keeps its level off the slick. The clock only
+        /// runs while foul still feeds it.
+        /// </summary>
+        public static bool MeterPausesWithoutContact(StatusId id) =>
+            id == StatusId.Poisoned;
+
+        /// <summary>
+        /// Burning and poison only run while the body still stands in
         /// that kind of walk or covering. Hunger needs live fire, a
         /// kindled hall, ember, or a stood flame — a painted fire mark
         /// at rest is not enough. Poison needs a poison slick underfoot,
         /// or a miasma cloud (the tile, a neighbour, or a hanging
-        /// veil). Leave the tile — or lift the feet — and the
-        /// condition resets.
+        /// veil). Leave the fire and the burn lifts. Leave the foul
+        /// and the poison clock waits.
         /// </summary>
         public static bool ContactFeeds(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
         {
@@ -229,6 +245,38 @@ namespace RuneMagic
 
         public static bool IsPoisonLiquidContact(WorldTile tile) =>
             tile != null && tile.IsPoisonWater;
+
+        /// <summary>
+        /// How fast a meter should run this frame. Burning is 1
+        /// while fire still feeds it (the host drops the condition
+        /// off the tile). Poison is 0 off the foul — the level
+        /// stays. Miasma fills faster than a liquid slick.
+        /// </summary>
+        public static float MeterDrainScale(StatusId id, WorldGrid grid, Vector3 world, bool airborne)
+        {
+            if (id == StatusId.Burning)
+            {
+                return 1f;
+            }
+
+            if (id != StatusId.Poisoned)
+            {
+                return 1f;
+            }
+
+            if (airborne)
+            {
+                return 0f;
+            }
+
+            if (WorldPhysics.MiasmaCloudAt(grid, world))
+            {
+                return MiasmaPoisonDrain;
+            }
+
+            var tile = grid != null ? grid.TileAtWorld(world) : null;
+            return IsPoisonLiquidContact(tile) ? PoisonLiquidDrain : 0f;
+        }
 
         public static float Seconds(StatusId id, CreatureNature nature, bool adept)
         {
@@ -567,15 +615,24 @@ namespace RuneMagic
                 || ContactFeeds(StatusId.Poisoned, null, default, true)
                 || ContactFeeds(StatusId.Frozen, null, default, true) == false)
             {
-                broken.Add("Meters lift when the feet leave the matching walk; timed clocks still lift");
+                broken.Add("Meters do not feed in the air; timed clocks still lift");
             }
 
             if (!MeterEndsWithoutContact(StatusId.Burning)
                 || MeterEndsWithoutContact(StatusId.Poisoned)
+                || !MeterPausesWithoutContact(StatusId.Poisoned)
+                || MeterPausesWithoutContact(StatusId.Burning)
                 || MeterEndsWithoutContact(StatusId.Frozen)
                 || MeterEndsWithoutContact(StatusId.Stunned))
             {
-                broken.Add("Burning lifts off the fire; poison stays until Light cleanses it");
+                broken.Add("Burning lifts off the fire; poison keeps its level until Light cleanses it");
+            }
+
+            if (MiasmaPoisonDrain <= PoisonLiquidDrain
+                || MeterDrainScale(StatusId.Poisoned, null, default, false) != 0f
+                || MeterDrainScale(StatusId.Poisoned, null, default, true) != 0f)
+            {
+                broken.Add("Miasma must fill poison faster than a liquid slick; empty ground must not run the clock");
             }
 
             if (IsFireContact(null) || IsPoisonLiquidContact(null) || IsChargeContact(null))
@@ -636,6 +693,24 @@ namespace RuneMagic
                 || !IsSpreadFuel(MaterialId.Stone, MaterialId.None, false, true))
             {
                 broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember hosts fire but is not fuel");
+            }
+
+            if (WorldWork.MiasmaWalkScale >= 1f
+                || WorldWork.MiasmaWalkScale <= 0f
+                || WorldWork.MiasmaWalkScale <= WorldWork.FloatWalkScale
+                || WorldWork.TerrainWalkScale(null, default, true, null) != 1f
+                || WorldWork.TerrainWalkScale(null, default, false, null) != 1f)
+            {
+                broken.Add("Miasma must slow the walk without stopping it; empty ground and the air walk full");
+            }
+
+            if (HungerOf(MaterialId.Acid) != HungerTinder
+                || MaterialCatalog.Of(MaterialId.Acid).Flammability <= 0.2f
+                || HungerOf(MaterialId.Miasma) != HungerNeutral
+                || MaterialCatalog.Of(MaterialId.Miasma).Flammability > 0f
+                || MaterialCatalog.Of(MaterialId.Miasma).BurnSeconds > 0f)
+            {
+                broken.Add("Poison slick must catch a little; miasma must refuse hunger");
             }
 
             if (HungerOf(MaterialId.Stone) != HungerNeutral

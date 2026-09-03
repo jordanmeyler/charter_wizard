@@ -196,8 +196,8 @@
     {
       "rune": "Miasma",
       "sources": [
-        "Cloud",
-        "Acid"
+        "Poison",
+        "Fire"
       ]
     },
     {
@@ -1336,9 +1336,9 @@
       "id": "Miasma",
       "book": "SeeHide",
       "name": "Miasma",
-      "want": "The hanging veil forced through acid. Foul breath.",
-      "recipe": "Cloud · Acid",
-      "via": "",
+      "want": "Hunger takes the grave of a plant. Foul breath that poisons faster, and holds the step.",
+      "recipe": "Water · Salt · Earth · Death · Fire",
+      "via": "Poison · Fire",
       "form": "Grow",
       "outcome": "Kill",
       "gate": "",

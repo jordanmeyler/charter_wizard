@@ -160,7 +160,7 @@ namespace RuneMagic
             glow.transform.localPosition = new Vector3(0f, -0.2f, 0f);
             var halo = glow.AddComponent<SpriteRenderer>();
             halo.sprite = SpriteFactory.Glow(new Color(0.78f, 0.55f, 1f, 0.85f));
-            halo.sortingOrder = 7;
+            halo.sortingOrder = DrawDepth.Glow;
 
             var sprite = player.AddComponent<SpriteRenderer>();
             sprite.sprite = AdeptStill();
@@ -168,6 +168,7 @@ namespace RuneMagic
             sprite.spriteSortPoint = SpriteSortPoint.Pivot;
             sprite.color = Color.white;
             player.AddComponent<AdeptAvatar>();
+            WorldYSort.On(player, DrawDepth.AdeptBias);
             BindAdeptAnimator(player);
 
             var statuses = player.AddComponent<StatusHost>();
@@ -207,6 +208,7 @@ namespace RuneMagic
                 sprite.spriteSortPoint = SpriteSortPoint.Pivot;
             }
 
+            WorldYSort.On(player, DrawDepth.AdeptBias);
             BindAdeptAnimator(player);
 
             var body = player.GetComponent<Rigidbody2D>();
@@ -243,7 +245,7 @@ namespace RuneMagic
                 glow.transform.localPosition = new Vector3(0f, -0.2f, 0f);
                 var halo = glow.AddComponent<SpriteRenderer>();
                 halo.sprite = SpriteFactory.Glow(new Color(0.78f, 0.55f, 1f, 0.85f));
-                halo.sortingOrder = 7;
+                halo.sortingOrder = DrawDepth.Glow;
             }
 
             if (camera != null)

@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: The spirit is motion.
+  look: the spirit is motion.
 --- !u!212 &394499118988741963
 SpriteRenderer:
   serializedVersion: 2

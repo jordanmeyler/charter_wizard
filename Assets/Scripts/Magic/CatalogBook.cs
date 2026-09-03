@@ -94,6 +94,41 @@ namespace RuneMagic
 
         public static IReadOnlyDictionary<string, CatalogItem> AllItems => Items;
 
+        /// <summary>
+        /// Re-read item rows from art.json without dropping baked sprites.
+        /// Editor windows call this after they write a description.
+        /// </summary>
+        public static void ReloadItems()
+        {
+            if (!_loaded)
+            {
+                EnsureLoaded();
+                return;
+            }
+
+            var asset = Resources.Load<TextAsset>("Catalog/art");
+            if (asset == null)
+            {
+                return;
+            }
+
+            var file = JsonUtility.FromJson<ArtFile>(asset.text);
+            if (file == null || file.items == null)
+            {
+                return;
+            }
+
+            Items.Clear();
+            for (var i = 0; i < file.items.Length; i++)
+            {
+                var item = file.items[i];
+                if (item != null && !string.IsNullOrEmpty(item.id))
+                {
+                    Items[item.id] = item;
+                }
+            }
+        }
+
         public static void EnsureLoaded()
         {
             if (_loaded)

@@ -383,6 +383,13 @@ namespace RuneMagic
                     SetString(interact, "verb", string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
                     SetString(interact, "spell", string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
                     SetString(interact, "look", prop.note);
+                    SetRunes(interact, "recipe", ParseStampRunes(prop.runes));
+                    SetRunes(interact, "via", ParseStampRunes(prop.formula));
+                    break;
+                case "elemental-altar":
+                case "join-altar":
+                case "birth-altar":
+                    host = StampElemental(prop);
                     break;
                 case "speech":
                 case "approach":
@@ -424,7 +431,7 @@ namespace RuneMagic
 
             host.transform.SetParent(parent, false);
             host.transform.position = world;
-            if (host.GetComponent<SpriteRenderer>() == null)
+            if (host.GetComponent<ElementalAltar>() == null && host.GetComponent<SpriteRenderer>() == null)
             {
                 host.AddComponent<SpriteRenderer>();
             }
@@ -484,6 +491,67 @@ namespace RuneMagic
             return PackEnemies.All[0];
         }
 
+        static GameObject StampElemental(MapProp prop)
+        {
+            var host = new GameObject("Elemental Altar");
+            var altar = host.AddComponent<ElementalAltar>();
+            var runes = ParseStampRunes(prop.runes);
+            var result = MapFile.ParseRune(prop.spell);
+            RuneId[] sources = null;
+            if (runes != null && runes.Length > 0)
+            {
+                if (result == RuneId.None)
+                {
+                    result = runes[runes.Length - 1];
+                    if (runes.Length > 1)
+                    {
+                        sources = new RuneId[runes.Length - 1];
+                        System.Array.Copy(runes, sources, sources.Length);
+                    }
+                }
+                else
+                {
+                    sources = runes;
+                }
+            }
+
+            if (result == RuneId.None)
+            {
+                result = RuneId.Spark;
+            }
+
+            altar.Author(result, sources);
+            return host;
+        }
+
+        static RuneId[] ParseStampRunes(string[] names)
+        {
+            return AuthoringUtil.ParseRunes(names);
+        }
+
+        static void SetRunes(Object target, string field, RuneId[] runes)
+        {
+            if (target == null || runes == null || runes.Length == 0)
+            {
+                return;
+            }
+
+            var so = new SerializedObject(target);
+            var property = so.FindProperty(field);
+            if (property == null || !property.isArray)
+            {
+                return;
+            }
+
+            property.arraySize = runes.Length;
+            for (var i = 0; i < runes.Length; i++)
+            {
+                property.GetArrayElementAtIndex(i).intValue = (int)runes[i];
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         static void SetString(Object target, string field, string value)
         {
             if (target == null || string.IsNullOrEmpty(value))
@@ -507,7 +575,7 @@ namespace RuneMagic
             {
                 if (behaviour is EncounterLock or WorldItem or WorldDecor or HintPlaque or WorldInteract or
                     WorldSpeech or TorchFixture or SocketGate or ChargeGate or WorldDoor or FreeCharm or
-                    SpawnCrystal or BarrierLock)
+                    SpawnCrystal or BarrierLock or ElementalAltar)
                 {
                     doomed.Add(behaviour.gameObject);
                 }

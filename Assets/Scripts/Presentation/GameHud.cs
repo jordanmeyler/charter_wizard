@@ -32,6 +32,11 @@ namespace RuneMagic
         Vector2 _packScroll;
         Vector2 _ledgerScroll;
         Vector2 _bookScroll;
+        Vector2 _speechScroll;
+        Vector2 _logScroll;
+        string _logged = string.Empty;
+        float _speechViewHeight;
+        float _speechInnerHeight;
         LedgerPage _ledgerPage;
         static Rect _ledgerGui;
         static Rect _interactGui;
@@ -49,7 +54,7 @@ namespace RuneMagic
         bool _focusName;
         bool _ledgerCollapsed;
         bool _revealing;
-        CodexEntry _revealed;
+        PrayerWorking _revealed;
         readonly HashSet<string> _namedOffers = new();
         bool _speaking;
         string _speechTitle = string.Empty;
@@ -135,7 +140,12 @@ namespace RuneMagic
 
         public static void RevealWorking(CodexEntry entry)
         {
-            _instance?.OpenReveal(entry);
+            _instance?.OpenReveal(PrayerReveal.FromEntry(entry));
+        }
+
+        public static void RevealWorking(PrayerWorking working)
+        {
+            _instance?.OpenReveal(working);
         }
 
         public static void OfferKeepLatest(Composition composition)
@@ -425,8 +435,38 @@ namespace RuneMagic
             }
 
             GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
-            GUI.Label(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
+            DrawLogBox(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
             DrawInteractPrompt();
+        }
+
+        void DrawLogBox(Rect view, string message, GUIStyle body)
+        {
+            if (view.height < 12f)
+            {
+                return;
+            }
+
+            if (message == null)
+            {
+                message = string.Empty;
+            }
+            if (!string.Equals(_logged, message, System.StringComparison.Ordinal))
+            {
+                _logged = message;
+                _logScroll = Vector2.zero;
+            }
+
+            var innerWidth = view.width - 16f;
+            var innerHeight = Mathf.Max(body.CalcHeight(new GUIContent(message), innerWidth), view.height);
+            if (innerHeight <= view.height + 1f)
+            {
+                GUI.Label(view, message, body);
+                return;
+            }
+
+            _logScroll = GUI.BeginScrollView(view, _logScroll, new Rect(0, 0, innerWidth, innerHeight));
+            GUI.Label(new Rect(0, 0, innerWidth, innerHeight), message, body);
+            GUI.EndScrollView();
         }
 
         void DrawInteractPrompt()
@@ -438,14 +478,55 @@ namespace RuneMagic
             }
 
             var verb = string.IsNullOrWhiteSpace(nearby.InteractVerb) ? "Interact" : nearby.InteractVerb;
-            var width = 176f;
-            var height = 48f;
-            var rect = new Rect(28, Screen.height - BarHeight - height - 16f, width, height);
-            _interactGui = rect;
-            if (DrawAction(rect, "E · " + verb, true, new Color(0.42f, 0.32f, 0.14f)))
+            var prompt = Sight.InteractPrompt(verb);
+            var ink = Label(16, FontStyle.Bold, new Color(0.98f, 0.9f, 0.62f));
+            ink.alignment = TextAnchor.MiddleCenter;
+            var width = Mathf.Clamp(ink.CalcSize(new GUIContent(prompt)).x + 36f, 220f, 420f);
+            var height = 40f;
+            if (!TryInteractPromptRect(nearby, width, height, out var rect))
             {
+                return;
+            }
+
+            _interactGui = rect;
+            DrawPanel(rect.x, rect.y, rect.width, rect.height);
+            var previous = GUI.color;
+            GUI.color = new Color(0.95f, 0.82f, 0.4f, 0.85f);
+            DrawFrame(rect, 1.5f);
+            GUI.color = previous;
+            GUI.Label(rect, prompt, ink);
+            var ev = Event.current;
+            if (ev != null && ev.type == EventType.MouseDown && ev.button == 0 && rect.Contains(ev.mousePosition))
+            {
+                ev.Use();
                 _director.UseNearbyInteract();
             }
+        }
+
+        static bool TryInteractPromptRect(IInteractable nearby, float width, float height, out Rect rect)
+        {
+            var cam = Camera.main;
+            Vector2 center;
+            if (cam != null)
+            {
+                var screen = cam.WorldToScreenPoint(nearby.WorldPosition + new Vector3(0f, 0.95f, 0f));
+                if (screen.z <= 0.05f)
+                {
+                    rect = default;
+                    return false;
+                }
+
+                center = new Vector2(screen.x, Screen.height - screen.y);
+            }
+            else
+            {
+                center = new Vector2(Screen.width * 0.5f, Screen.height - BarHeight - 40f);
+            }
+
+            rect = new Rect(center.x - width * 0.5f, center.y - height - 6f, width, height);
+            rect.x = Mathf.Clamp(rect.x, 12f, Screen.width - width - 12f);
+            rect.y = Mathf.Clamp(rect.y, 214f, Screen.height - BarHeight - height - 12f);
+            return true;
         }
 
         float DrawVitalMeters(float y)
@@ -919,9 +1000,9 @@ namespace RuneMagic
             _director.KeepRecent(0, string.Empty);
         }
 
-        void OpenReveal(CodexEntry entry)
+        void OpenReveal(PrayerWorking working)
         {
-            if (entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            if (!working.HasRecipe)
             {
                 return;
             }
@@ -931,7 +1012,7 @@ namespace RuneMagic
                 CloseNaming();
             }
 
-            _revealed = entry;
+            _revealed = working;
             _revealing = true;
             RevealingSpell = true;
             _director.PauseForNaming();
@@ -967,6 +1048,7 @@ namespace RuneMagic
             _speechSpeaker = speaker ?? string.Empty;
             _speechPages = lines.ToArray();
             _speechPage = 0;
+            ResetSpeechScroll();
             _speaking = true;
             ShowingSpeech = true;
             _director?.PauseForNaming();
@@ -980,6 +1062,7 @@ namespace RuneMagic
             _speechSpeaker = string.Empty;
             _speechPages = System.Array.Empty<string>();
             _speechPage = 0;
+            ResetSpeechScroll();
             _director?.ResumeFromNaming();
         }
 
@@ -990,13 +1073,40 @@ namespace RuneMagic
                 return;
             }
 
+            if (SpeechHasUnreadScroll())
+            {
+                ScrollSpeechPage();
+                return;
+            }
+
             if (_speechPage + 1 < _speechPages.Length)
             {
                 _speechPage++;
+                ResetSpeechScroll();
                 return;
             }
 
             CloseSpeech();
+        }
+
+        void ResetSpeechScroll()
+        {
+            _speechScroll = Vector2.zero;
+            _speechViewHeight = 0f;
+            _speechInnerHeight = 0f;
+        }
+
+        bool SpeechHasUnreadScroll()
+        {
+            return _speechInnerHeight > _speechViewHeight + 2f
+                && _speechScroll.y + _speechViewHeight < _speechInnerHeight - 6f;
+        }
+
+        void ScrollSpeechPage()
+        {
+            var step = Mathf.Max(48f, _speechViewHeight * 0.85f);
+            var max = Mathf.Max(0f, _speechInnerHeight - _speechViewHeight);
+            _speechScroll.y = Mathf.Min(_speechScroll.y + step, max);
         }
 
         bool TryNamingAttempt(out CastAttempt attempt)
@@ -1099,15 +1209,16 @@ namespace RuneMagic
 
         void DrawPrayerModal()
         {
-            if (_revealed.RecipeRunes == null || _revealed.RecipeRunes.Count == 0)
+            if (!_revealed.HasRecipe)
             {
                 CloseReveal();
                 return;
             }
 
+            var other = _revealed.HasVia;
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             const float width = 560f;
-            const float height = 348f;
+            var height = other ? 500f : 348f;
             var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
             var ev = Event.current;
             if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
@@ -1122,14 +1233,26 @@ namespace RuneMagic
             GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28),
                 GlyphView.Speak("A working is shown", "A working is shown"), title);
             GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 40),
-                GlyphView.IsDevelop
-                    ? $"{_revealed.Name} — {_revealed.Want}"
+                GlyphView.IsDevelop && _revealed.Entry.Spell != SpellId.None
+                    ? $"{_revealed.Entry.Name} — {_revealed.Entry.Want}"
                     : "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
                 body);
             GUI.Label(new Rect(modal.x + 24, modal.y + 88, modal.width - 48, 18),
-                "Each mark is labelled elemental, catalyst, or special.", legend);
+                other
+                    ? "The same working can be written more than one way."
+                    : "Each mark is labelled elemental, catalyst, or special.", legend);
 
-            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, 132), _revealed.RecipeRunes);
+            var recipeHeight = other ? 124f : 132f;
+            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, recipeHeight), _revealed.Recipe);
+            var buttonsY = modal.y + 268f;
+            if (other)
+            {
+                var or = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
+                or.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(new Rect(modal.x + 24, modal.y + 236, modal.width - 48, 18), "or", or);
+                DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 254, modal.width - 48, 124f), _revealed.Via);
+                buttonsY = modal.y + 394f;
+            }
 
             var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
             if (cancel)
@@ -1137,14 +1260,14 @@ namespace RuneMagic
                 ev.Use();
             }
 
-            if (DrawAction(new Rect(modal.x + 24, modal.y + 268, 148, 42), "Continue", true,
+            if (DrawAction(new Rect(modal.x + 24, buttonsY, 148, 42), "Continue", true,
                     new Color(0.22f, 0.22f, 0.26f)) || cancel)
             {
                 CloseReveal();
                 return;
             }
 
-            if (DrawAction(new Rect(modal.xMax - 172, modal.y + 268, 148, 42), "Cast", true,
+            if (DrawAction(new Rect(modal.xMax - 172, buttonsY, 148, 42), "Cast", true,
                     new Color(0.72f, 0.28f, 0.22f)))
             {
                 var shown = _revealed;
@@ -1167,7 +1290,11 @@ namespace RuneMagic
 
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             const float width = 560f;
-            var bodyHeight = Mathf.Clamp(48f + page.Length * 0.28f, 72f, 220f);
+            var body = Label(16, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
+            var textWidth = width - 66f;
+            var textHeight = Mathf.Max(body.CalcHeight(new GUIContent(page), textWidth), 1f);
+            var maxBody = Mathf.Clamp(Screen.height * 0.38f, 160f, 280f);
+            var bodyHeight = Mathf.Clamp(textHeight, 72f, maxBody);
             var speakerRow = !string.IsNullOrWhiteSpace(_speechSpeaker) ? 26f : 0f;
             var titleRow = !string.IsNullOrWhiteSpace(_speechTitle) ? 32f : 0f;
             var height = 118f + titleRow + speakerRow + bodyHeight;
@@ -1195,8 +1322,9 @@ namespace RuneMagic
                 y += speakerRow;
             }
 
-            var body = Label(16, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
-            GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, bodyHeight), page, body);
+            var bodyRect = new Rect(modal.x + 24, y, modal.width - 48, bodyHeight);
+            DrawSpeechBody(bodyRect, page, body, textWidth, textHeight);
+            HandleSpeechScrollKeys(ev);
 
             var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
             if (cancel)
@@ -1206,20 +1334,79 @@ namespace RuneMagic
                 return;
             }
 
-            var action = hasMore ? "Next" : "Continue";
+            var unread = SpeechHasUnreadScroll();
+            var action = unread ? "More" : hasMore ? "Next" : "Continue";
             if (DrawAction(new Rect(modal.xMax - 172, modal.yMax - 58, 148, 42), action, true,
                     new Color(0.42f, 0.32f, 0.14f)))
             {
                 AdvanceSpeech();
             }
 
-            if (_speechPages.Length > 1)
+            var mark = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
+            mark.alignment = TextAnchor.MiddleLeft;
+            var note = _speechPages.Length > 1
+                ? $"{_speechPage + 1} / {_speechPages.Length}"
+                : string.Empty;
+            if (unread)
             {
-                var mark = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
-                mark.alignment = TextAnchor.MiddleLeft;
-                GUI.Label(new Rect(modal.x + 24, modal.yMax - 50, 200, 28),
-                    $"{_speechPage + 1} / {_speechPages.Length}", mark);
+                note = string.IsNullOrEmpty(note) ? "Scroll for more" : note + "  ·  scroll";
             }
+
+            if (!string.IsNullOrEmpty(note))
+            {
+                GUI.Label(new Rect(modal.x + 24, modal.yMax - 50, 280, 28), note, mark);
+            }
+        }
+
+        void DrawSpeechBody(Rect view, string page, GUIStyle body, float textWidth, float textHeight)
+        {
+            _speechViewHeight = view.height;
+            _speechInnerHeight = textHeight;
+            if (textHeight <= view.height + 1f)
+            {
+                GUI.Label(view, page, body);
+                _speechScroll = Vector2.zero;
+                return;
+            }
+
+            _speechScroll = GUI.BeginScrollView(view, _speechScroll, new Rect(0, 0, textWidth, textHeight));
+            GUI.Label(new Rect(0, 0, textWidth, textHeight), page, body);
+            GUI.EndScrollView();
+        }
+
+        void HandleSpeechScrollKeys(Event ev)
+        {
+            if (ev == null || ev.type != EventType.KeyDown)
+            {
+                return;
+            }
+
+            var step = 0f;
+            if (ev.keyCode == KeyCode.DownArrow)
+            {
+                step = 32f;
+            }
+            else if (ev.keyCode == KeyCode.UpArrow)
+            {
+                step = -32f;
+            }
+            else if (ev.keyCode == KeyCode.PageDown)
+            {
+                step = Mathf.Max(48f, _speechViewHeight * 0.85f);
+            }
+            else if (ev.keyCode == KeyCode.PageUp)
+            {
+                step = -Mathf.Max(48f, _speechViewHeight * 0.85f);
+            }
+
+            if (Mathf.Approximately(step, 0f))
+            {
+                return;
+            }
+
+            ev.Use();
+            var max = Mathf.Max(0f, _speechInnerHeight - _speechViewHeight);
+            _speechScroll.y = Mathf.Clamp(_speechScroll.y + step, 0f, max);
         }
 
         void DrawRevealedRunes(Rect rect, IReadOnlyList<RuneId> runes)

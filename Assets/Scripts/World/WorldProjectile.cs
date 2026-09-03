@@ -54,7 +54,7 @@ namespace RuneMagic
             host.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             shot._renderer = host.AddComponent<SpriteRenderer>();
             shot._renderer.sprite = SpriteFactory.Named(LookOf(kind));
-            shot._renderer.sortingOrder = 18;
+            DrawDepth.ApplyFx(shot._renderer, 18);
             if (kind == ProjectileKind.Fireball)
             {
                 SpriteAnim.On(host, shot._renderer).Play("fireball-shot", 10f);
@@ -148,7 +148,7 @@ namespace RuneMagic
                 flash.transform.position = transform.position;
                 var renderer = flash.AddComponent<SpriteRenderer>();
                 renderer.sprite = SpriteFactory.Burst(color);
-                renderer.sortingOrder = 21;
+                DrawDepth.ApplyFx(renderer, 21);
                 flash.transform.localScale = Vector3.one * 0.85f;
                 Destroy(flash, 0.22f);
             }

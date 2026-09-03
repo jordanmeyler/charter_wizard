@@ -44,7 +44,7 @@ namespace RuneMagic
                 _baseColor = _sprite.color;
             }
 
-            _chip = WorldLabel.Attach(transform, "", chipOffset, new Color(0.95f, 0.82f, 0.55f), 13);
+            _chip = WorldLabel.Attach(transform, "", chipOffset, new Color(0.95f, 0.82f, 0.55f), DrawDepth.Chip);
             if (_chip != null)
             {
                 _chip.characterSize = 0.055f;
@@ -603,7 +603,15 @@ namespace RuneMagic
                     continue;
                 }
 
-                _effects[i].Remaining -= Time.deltaTime;
+                var drain = VitalLaw.MeterDrainScale(_effects[i].Id, grid, transform.position, airborne);
+                if (_effects[i].Spec.IsMeter
+                    && VitalLaw.MeterPausesWithoutContact(_effects[i].Id)
+                    && drain <= 0f)
+                {
+                    continue;
+                }
+
+                _effects[i].Remaining -= Time.deltaTime * Mathf.Max(0f, drain);
                 if (_effects[i].Remaining > 0f)
                 {
                     continue;

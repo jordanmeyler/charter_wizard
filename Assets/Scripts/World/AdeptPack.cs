@@ -156,6 +156,54 @@ namespace RuneMagic
             return string.Join(" · ", parts);
         }
 
+        public static void Audit(List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            var authored = AuthoringUtil.ResolveItem(
+                "fire-stone",
+                "Fire Stone",
+                "stone-fire",
+                null,
+                false,
+                null,
+                null,
+                null,
+                "a custom hunger.");
+            if (Sight.OfItem(authored) != "a custom hunger.")
+            {
+                broken.Add("An authored item Description must win over the catalog row");
+            }
+
+            if (LookText(authored) != Sight.YouSee("a custom hunger."))
+            {
+                broken.Add("The pack must show You see plus the item Description");
+            }
+
+            if (!CatalogBook.TryItem("fire-stone", out var fire) || string.IsNullOrEmpty(fire.look))
+            {
+                return;
+            }
+
+            var fallback = AuthoringUtil.ResolveItem(
+                "fire-stone",
+                "",
+                "",
+                null,
+                false,
+                null,
+                null,
+                "",
+                "");
+            if (Sight.OfItem(fallback) != fire.look)
+            {
+                broken.Add("An empty Description must use the catalog look");
+            }
+        }
+
         int IndexOf(string id)
         {
             if (string.IsNullOrEmpty(id))

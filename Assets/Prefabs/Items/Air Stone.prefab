@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: "Breath, that which will not stay."
+  look: "breath, that which will not stay."
 --- !u!212 &53115277970979202
 SpriteRenderer:
   serializedVersion: 2

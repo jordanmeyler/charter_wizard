@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: 
-  look: 
+  note: "Thought that turns the work. Life · Sulphur · Mercury is Charm."
+  look: "thought that turns the work — the wildcard. Charm reaches a living mind."
 --- !u!212 &403416793363831013
 SpriteRenderer:
   serializedVersion: 2

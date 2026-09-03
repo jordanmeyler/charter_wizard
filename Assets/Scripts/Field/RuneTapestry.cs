@@ -59,7 +59,7 @@ namespace RuneMagic
         {
             var view = FieldView.OnScreen();
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var extras = TeachingSources();
             var sequence = RoomSentence.Read(grid, locks, strings, view, extras);
             var seen = new List<RuneId>();
             for (var i = 0; i < sequence.Count; i++)
@@ -142,7 +142,7 @@ namespace RuneMagic
             _vicinityList.Clear();
 
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
-            var extras = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var extras = TeachingSources();
             var read = RoomSentence.Read(_grid, _locks, strings, view, extras);
             for (var i = 0; i < read.Count; i++)
             {
@@ -200,6 +200,34 @@ namespace RuneMagic
             }
 
             seen.Add(rune);
+        }
+
+        static IRuneSource[] TeachingSources()
+        {
+            var steles = Object.FindObjectsByType<RuneStele>(FindObjectsSortMode.None);
+            var altars = Object.FindObjectsByType<ElementalAltar>(FindObjectsSortMode.None);
+            if (altars == null || altars.Length == 0)
+            {
+                return steles;
+            }
+
+            if (steles == null || steles.Length == 0)
+            {
+                return altars;
+            }
+
+            var extras = new IRuneSource[steles.Length + altars.Length];
+            for (var i = 0; i < steles.Length; i++)
+            {
+                extras[i] = steles[i];
+            }
+
+            for (var i = 0; i < altars.Length; i++)
+            {
+                extras[steles.Length + i] = altars[i];
+            }
+
+            return extras;
         }
 
         static int Mod(int value, int modulus)

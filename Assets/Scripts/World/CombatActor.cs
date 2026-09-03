@@ -86,7 +86,7 @@ namespace RuneMagic
             _idleOrigin = transform.position;
             _castRecipe = RecipeOf(kind, castRecipe);
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
-                new Color(1f, 0.72f, 0.28f), 14);
+                new Color(1f, 0.72f, 0.28f), DrawDepth.CastChip);
             if (_castChip != null)
             {
                 _castChip.characterSize = 0.05f;
@@ -857,7 +857,9 @@ namespace RuneMagic
                 return true;
             }
 
-            var step = delta.normalized * (speed > 0f ? speed : _walk) * Time.deltaTime;
+            var pace = speed > 0f ? speed : _walk;
+            pace *= WorldWork.TerrainWalkScale(_grid, transform.position, false, _status);
+            var step = delta.normalized * pace * Time.deltaTime;
             var next = (Vector2)transform.position + step;
             if (Blocked(next))
             {
