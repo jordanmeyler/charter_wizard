@@ -195,9 +195,16 @@ namespace RuneMagic
 
                 var host = StatusHost.On(other);
                 var incoming = ElementalLaw.Of(_kind);
-                if (host != null && host.Fends(incoming))
+                var ward = host != null ? host.FendingName(incoming) : string.Empty;
+                if (string.IsNullOrEmpty(ward)
+                    && host != null
+                    && ElementalLaw.Carries(_kind, Essence.Physical))
                 {
-                    var ward = host.FendingName(incoming);
+                    ward = host.FendingName(Essence.Physical);
+                }
+
+                if (!string.IsNullOrEmpty(ward))
+                {
                     var note = _kind == ProjectileKind.Fireball
                         ? $"Hunger breaks on the {ward}."
                         : _kind == ProjectileKind.Wood

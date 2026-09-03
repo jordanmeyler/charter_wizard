@@ -139,7 +139,7 @@ namespace RuneMagic
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. Wind.", "Wind", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
             E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth. Over a pit it must join two floors, or it falls. Water takes mud, not a span.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar),
-            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams — break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams, arrows — break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Water breaks. You walk on yield.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Fire breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Air breaks. Fog and foul breath leave.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
@@ -1092,6 +1092,16 @@ namespace RuneMagic
                 || !ElementalLaw.WardsAgainst(Essence.Plant, Essence.Plant))
             {
                 broken.Add("A ward must turn its own element and the roots that constructed it, not the old opposite");
+            }
+
+            if (!StatusSpec.Of(StatusId.Stoneskin).BlocksPhysical
+                || !StatusSpec.Of(StatusId.StoneForm).BlocksPhysical
+                || !ElementalLaw.Carries(ProjectileKind.Wood, Essence.Plant)
+                || !ElementalLaw.Carries(ProjectileKind.Wood, Essence.Physical)
+                || !ElementalLaw.Carries(ProjectileKind.Arrow, Essence.Physical)
+                || ElementalLaw.Carries(ProjectileKind.Fireball, Essence.Physical))
+            {
+                broken.Add("A wooden shaft is plant and crushing; a rack arrow is crushing; a fireball is not");
             }
 
             if (SpellVerb.Of(SpellId.Grow).Tiles != TileVerb.Grow

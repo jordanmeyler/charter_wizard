@@ -87,8 +87,9 @@ To write a different sentence, fill **Cast recipe**. A wizard who writes
 `Plant · Salt · Mercury` looses a wood arrow instead of a fireball.
 `Spark · Mercury` still shows those marks; the flying body stays a
 fireball until we give bolt its own shot. An **Arrows** rack on the
-tilemap is crushing (Stoneskin). A written wood arrow is plant (Plant
-ward).
+tilemap is crushing (Stoneskin). A written wood arrow is plant *and*
+crushing — Plant ward or Stoneskin turns it. Vine and briar stay plant
+only.
 
 **Blocking** on a Golem is a solid body — you cannot walk through it.
 Wizards leave it off so you can step past while they write.

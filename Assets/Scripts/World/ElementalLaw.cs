@@ -103,6 +103,26 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// A wooden shaft is plant matter and a crushing missile.
+        /// Stoneskin and plant ward both turn it. A rack arrow is
+        /// only crushing. Vine and briar stay plant-only.
+        /// </summary>
+        public static bool Carries(ProjectileKind kind, Essence essence)
+        {
+            if (essence == Essence.None)
+            {
+                return false;
+            }
+
+            if (Of(kind) == essence)
+            {
+                return true;
+            }
+
+            return kind == ProjectileKind.Wood && essence == Essence.Physical;
+        }
+
         public static Essence Of(SpellId spell)
         {
             return Of(SpellVerb.Of(spell).Status);
