@@ -19,7 +19,7 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Sundered Heights** | Miasma on the floor | Wind (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The flaming hall** | Kindled floor, no water nearby | Flame ward (`Fire · Salt · Sulphur`); Douse if you fetch yield | First ward. Columns write the sentence at the mouth. |
-| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Lightning…) | Mercury sends. The same flame ward turns the shot. |
+| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Lightning…) | Mercury sends. The same flame ward turns the shot. |
 | **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Grow plant cover from the bank (Sprout, three tiles); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |
@@ -89,7 +89,7 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
 2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
 3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell. Select **Environment Details lvl 2** for props that sit on top of Environment Details. Hide Cover (or Environment Details) in **Tile Properties**, the **Rune Layers** Scene overlay, or the Hierarchy eye when you need to paint the tiles under it. **Cover-Fire** only marks hunger so the weave speaks Fire; **Aura-Fire** is a kindled hall.
-4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate / Electric Gate / Interact…` places objects. **Interact** (or **Altar**) is an empty use volume — parent tiles or child sprites for the statue, set `spell` (Fireball or `Fire · Mercury`) and `verb` (Pray). Pack enemies are under **Enemies**. Set catalog id and material (or formula, keys, sprite) on the Inspector. An Electric Gate opens when lightning or charge finds it. The grid is 16×16 (16 PPU).
+4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate / Electric Gate / Interact…` places objects. **Interact** (or **Altar**) is an empty use volume — parent tiles or child sprites for the statue, set `spell` (Fireball or `Fire · Mercury`) and `verb` (Pray). Pack enemies are under **Enemies**. Drag **Golem** or **Warden** from `Assets/Prefabs/Enemies`, then drag sliced sprites onto Portrait / Idle Frames / Attack Frames and set **Attack** (Golem slam or Wizard). See [`ENEMIES.md`](ENEMIES.md). An Electric Gate opens when lightning or charge finds it. The grid is 16×16 (16 PPU).
 
 Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
 
@@ -103,8 +103,9 @@ Sprite sheets: `Window → Rune Magic → Sprite Sheet`, or `Create → Rune Mag
 | Unity `Window → 2D → Tile Palette` | Paint Floor / Wall / Special tiles onto the scene Tilemap |
 | Unity `Window → Rune Magic → Sprite Sheet` | Slice a sheet into named clips |
 | Unity `Window → Rune Magic → Looks` | Assign sprites or a looping clip to a spell wall, bridge, leftover, or shot |
+| Unity `Window → Rune Magic → Bind Enemy Sprites` | Fill empty Golem / Warden / pack-enemy Portrait and attack frames from ElvGames |
 
-Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. The adept uses a Unity Animator on Hero_22. Spell-made walls, bridges, leftovers, and shots use a **Look** (`Create → Rune Magic → Look`) — drag Unity sprites onto Frames. Generated painters stay as a fallback. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
+Tiles come from the 16px Rogue Adventure sheets in `Assets/Resources/Sprites/Rogue/` (`TileAtlas` / `tiles.json`). Floors are stone, dirt, or water; ice, fire, and lightning are coverings. Pack enemies (`enemy-001` … `012`) drop from **GameObject → Rune Magic → Enemies**. Drag Unity slices onto Portrait / Idle Frames / Attack Frames — see [`ENEMIES.md`](ENEMIES.md). The adept uses a Unity Animator on Hero_22. Spell-made walls, bridges, leftovers, and shots use a **Look** (`Create → Rune Magic → Look`) — drag Unity sprites onto Frames. Generated painters stay as a fallback. See [`ART.md`](ART.md) and [`TILES.md`](TILES.md).
 
 ## Catalog — recipes, sprites, items
 
@@ -128,6 +129,8 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | --- | --- |
 | `Assets/Tiles/` | New tile brushes (material, kind, cover). Paint them on the scene Tilemap |
 | `Assets/Scenes/Main.unity` | The playable map — Grid, Tiles, Cover, and placed objects |
+| `Assets/Prefabs/Enemies` | Golem, Warden, and the other pack locks — drag into the scene |
+| `ENEMIES.md` | How to place them, connect sprites, and set slam / wizard attacks |
 | `FLOOR1.md` | Floor 1 design notes (the old JSON floor is leftover) |
 | `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if the Tilemap is empty |
 | `Assets/Scripts/World/MaterialCatalog.cs` | New materials, signatures, and tile paints |

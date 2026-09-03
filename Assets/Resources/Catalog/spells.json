@@ -976,7 +976,7 @@
       "id": "Stoneskin",
       "book": "Mind",
       "name": "Stoneskin",
-      "want": "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams — break.",
+      "want": "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams, arrows — break.",
       "recipe": "Earth · Salt · Sulphur",
       "via": "",
       "form": "Self",
@@ -2110,6 +2110,19 @@
       "gate": "",
       "work": "Teleport",
       "target": "Self"
+    },
+    {
+      "number": 132,
+      "id": "WoodArrow",
+      "book": "End",
+      "name": "Wood arrow",
+      "want": "A vegetable body given a shaft and sent. Wood flies.",
+      "recipe": "Water · Salt · Earth · Salt · Mercury",
+      "via": "Plant · Salt · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "WoodArrow"
     }
   ]
 }

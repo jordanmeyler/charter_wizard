@@ -244,11 +244,14 @@ namespace RuneMagic
         {
             EnsureTiles();
             var count = BindPackSprites();
+            var enemies = EnemyArtBind.BindPrefabs(onlyEmpty: true);
             EditorUtility.DisplayDialog(
                 "Pack sprites",
-                count + " tile brushes now use sliced ElvGames sprites.\n\n" +
+                count + " tile brushes now use sliced ElvGames sprites.\n" +
+                enemies + " enemy prefabs took idle / attack slices.\n\n" +
                 "Open Window → 2D → Tile Palette → Rune Palette.\n" +
-                "Select Map/Tiles, press F to frame the starter room, and paint.",
+                "Select Map/Tiles, press F to frame the starter room, and paint.\n" +
+                "Drag Golem or Warden from Assets/Prefabs/Enemies.",
                 "OK");
         }
 

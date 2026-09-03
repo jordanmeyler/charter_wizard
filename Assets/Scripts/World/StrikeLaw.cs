@@ -100,6 +100,7 @@ namespace RuneMagic
                 case SpellId.StormCall: return new Strike(5, StrikeKind.Spark);
                 case SpellId.SparkRain: return new Strike(3, StrikeKind.Spark);
                 case SpellId.HurledStone: return new Strike(3, StrikeKind.Earth);
+                case SpellId.WoodArrow: return new Strike(3, StrikeKind.Plant);
                 case SpellId.MetalRain: return new Strike(3, StrikeKind.Metal);
                 case SpellId.MetalPillar: return new Strike(3, StrikeKind.Metal);
                 case SpellId.Douse: return new Strike(2, StrikeKind.Water);
@@ -414,6 +415,15 @@ namespace RuneMagic
                 || Of(SpellId.Briar).Kind != StrikeKind.Plant)
             {
                 broken.Add("Living venom is stronger than the dead spray; briar is plant force 2");
+            }
+
+            if (Of(SpellId.WoodArrow).Power != 3
+                || Of(SpellId.WoodArrow).Kind != StrikeKind.Plant
+                || !Kills(SpellId.WoodArrow, flesh)
+                || Kills(SpellId.WoodArrow, stone)
+                || Kills(SpellId.WoodArrow, AffinityProfile.Of(CreatureNature.Plant)))
+            {
+                broken.Add("Wood arrow is the plant twin of hurled stone — power 3, drops flesh, not a golem or a plant");
             }
         }
     }

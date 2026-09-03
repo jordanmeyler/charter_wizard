@@ -23,7 +23,7 @@ namespace RuneMagic
             "floor-dirt", "floor-stone", "floor-water", "pit", "door", "door-open",
             "cover-ice", "cover-fire", "cover-vine",
             "tile-fire", "tile-wet", "tile-charge", "tile-grow", "tile-fog", "tile-poison",
-            "fireball-shot", "douse-shot", "arrow-shot", "fx-fire", "fx-ice", "fx-earth", "fx-lava"
+            "fireball-shot", "douse-shot", "arrow-shot", "wood-arrow-shot", "fx-fire", "fx-ice", "fx-earth", "fx-lava", "fx-plant"
         };
 
         [MenuItem("Window/Rune Magic/Looks")]

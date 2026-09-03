@@ -196,8 +196,10 @@ namespace RuneMagic
                     return "hunger drawn as a veil.";
                 case "fire-golem":
                     return "hunger stood up and given weight.";
+                case "golem":
                 case "stone-man":
                     return "rest given a body that walks.";
+                case "warden":
                 case "spirit-warden":
                     return "a watcher whose spirit is motion.";
                 case "ember-adept":

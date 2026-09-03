@@ -56,9 +56,16 @@ namespace RuneMagic
         {
             if (written != null && written.Count > 0)
             {
-                return Spell(kind == ProjectileKind.Arrow
-                    ? "Rest sent finds you."
-                    : "Hunger sent finds you.", written);
+                return Spell(kind == ProjectileKind.Wood
+                    ? "Wood sent finds you."
+                    : kind == ProjectileKind.Arrow
+                        ? "Rest sent finds you."
+                        : "Hunger sent finds you.", written);
+            }
+
+            if (kind == ProjectileKind.Wood)
+            {
+                return OfSpell(SpellId.WoodArrow, "A wooden shaft finds you.");
             }
 
             return kind == ProjectileKind.Arrow
@@ -76,6 +83,8 @@ namespace RuneMagic
 
             switch (spell)
             {
+                case SpellId.WoodArrow:
+                    return new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury };
                 case SpellId.HurledStone:
                     return new[] { RuneId.Earth, RuneId.Mercury };
                 case SpellId.FlamePillar:

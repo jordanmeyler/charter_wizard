@@ -38,7 +38,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 54 | **Wind** | Air · Mercury | Parallel to Fireball. Breath sent. The first air verb. |
 | 55 | **Earth-pillar** | Earth · Salt | Rest given a body. The first earth verb that *stands*. |
 | 31 | **Grow** | Water · Salt · Earth · Life · Mercury | Sprout sent. Plant cover at the mark. `Plant · Life · Mercury`. |
-| 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Earth and crushing — boulders, slams — break. |
+| 56 | **Stoneskin** | Earth · Salt · Sulphur | Earth ward. Earth and crushing — boulders, slams, arrows — break. |
 | 57 | **Water ward** | Water · Salt · Sulphur | Water breaks. You walk on yield. |
 | 58 | **Flame ward** | Fire · Salt · Sulphur | Fire breaks. Wear it against the wizard and a burning floor. |
 | 59 | **Wind ward** | Air · Salt · Sulphur | Air breaks. Fog and foul breath leave as you walk. |

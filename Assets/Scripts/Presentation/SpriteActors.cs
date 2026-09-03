@@ -91,6 +91,8 @@ namespace RuneMagic
                     return Cache(key, Frames(3, PaintFireball));
                 case "arrow-shot":
                     return Cache(key, Frames(1, _ => PaintArrowShot()));
+                case "wood-arrow-shot":
+                    return Cache(key, Frames(1, _ => PaintWoodArrowShot()));
                 case "tile-fire":
                     return Cache(key, Frames(3, PaintTileFire));
                 case "tile-wet":
@@ -687,6 +689,23 @@ namespace RuneMagic
                 canvas.Fill(24, 4, 6, 4, Color.white);
                 canvas.Fill(1, 3, 4, 6, new Color(0.85f, 0.45f, 0.15f));
                 canvas.Outline(new Color(0.2f, 0.1f, 0.05f));
+                return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
+            });
+        }
+
+        static Sprite PaintWoodArrowShot()
+        {
+            return Memo("actor-wood-arrow-v1", () =>
+            {
+                var canvas = new PixelCanvas(32, 12);
+                canvas.Clear(Clear);
+                var shaft = new Color(0.42f, 0.28f, 0.1f);
+                var head = new Color(0.28f, 0.52f, 0.18f);
+                canvas.Fill(2, 5, 22, 2, shaft);
+                canvas.Fill(22, 3, 8, 6, head);
+                canvas.Fill(24, 4, 6, 4, new Color(0.55f, 0.82f, 0.32f));
+                canvas.Fill(1, 3, 4, 6, new Color(0.22f, 0.58f, 0.22f));
+                canvas.Outline(new Color(0.12f, 0.22f, 0.08f));
                 return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
             });
         }

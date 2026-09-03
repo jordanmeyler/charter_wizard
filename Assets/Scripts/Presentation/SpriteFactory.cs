@@ -74,6 +74,7 @@ namespace RuneMagic
                 case "warden": return Warden();
                 case "spawn-crystal": return SpawnCrystalSprite();
                 case "arrow-shot": return ArrowShot();
+                case "wood-arrow-shot": return WoodArrowShot();
                 case "fireball-shot": return FireballShot();
                 case "tile-fire": return TileWash(new Color(1f, 0.4f, 0.08f, 0.7f));
                 case "tile-wet": return TileWash(new Color(0.25f, 0.55f, 0.95f, 0.55f));
@@ -1043,6 +1044,22 @@ namespace RuneMagic
                 canvas.Fill(22, 3, 8, 6, head);
                 canvas.Fill(24, 4, 6, 4, Color.white);
                 canvas.Fill(1, 3, 4, 6, new Color(0.85f, 0.45f, 0.15f));
+                return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
+            });
+        }
+
+        public static Sprite WoodArrowShot()
+        {
+            return Memo("wood-arrow-shot", () =>
+            {
+                var canvas = new PixelCanvas(32, 12);
+                canvas.Clear(Clear);
+                var shaft = new Color(0.42f, 0.28f, 0.1f);
+                var head = new Color(0.28f, 0.52f, 0.18f);
+                canvas.Fill(2, 5, 22, 2, shaft);
+                canvas.Fill(22, 3, 8, 6, head);
+                canvas.Fill(24, 4, 6, 4, new Color(0.55f, 0.82f, 0.32f));
+                canvas.Fill(1, 3, 4, 6, new Color(0.22f, 0.58f, 0.22f));
                 return canvas.ToSprite(24, new Vector2(0.8f, 0.5f));
             });
         }

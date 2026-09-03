@@ -91,6 +91,7 @@ namespace RuneMagic
                 case SpellId.BrilliantArc:
                 case SpellId.Blackout:
                 case SpellId.HurledStone:
+                case SpellId.WoodArrow:
                 case SpellId.DirtToss:
                 case SpellId.Gust:
                 case SpellId.Push:
@@ -1195,6 +1196,7 @@ namespace RuneMagic
                 case SpellId.CallGrowth:
                 case SpellId.Forest:
                 case SpellId.Vine:
+                case SpellId.WoodArrow:
                 case SpellId.Tree:
                 case SpellId.WoodWall:
                 case SpellId.Plantward:
@@ -1271,7 +1273,7 @@ namespace RuneMagic
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
                 || spell == SpellId.Gust || spell == SpellId.Push || spell == SpellId.Scald
-                || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.Douse
+                || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.WoodArrow || spell == SpellId.Douse
                 || spell == SpellId.IceSpear || spell == SpellId.LightningBolt
                 || spell == SpellId.BrilliantArc || spell == SpellId.Blackout
                 || spell == SpellId.Vine || spell == SpellId.Poison)

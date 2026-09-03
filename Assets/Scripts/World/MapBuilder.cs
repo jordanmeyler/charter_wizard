@@ -13,7 +13,7 @@ namespace RuneMagic
         {
             SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.WaterJet, SpellId.IcePillar, SpellId.IceWall,
             SpellId.LightningBolt, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt,
-            SpellId.HurledStone, SpellId.StonePillar, SpellId.Dread,
+            SpellId.HurledStone, SpellId.WoodArrow, SpellId.StonePillar, SpellId.Dread,
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
             SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
             SpellId.ChainLightning, SpellId.Thunderclap, SpellId.StormCall, SpellId.LavaFlood,

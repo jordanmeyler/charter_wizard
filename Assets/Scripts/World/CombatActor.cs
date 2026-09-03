@@ -64,6 +64,10 @@ namespace RuneMagic
         SanctumDirector _director;
         bool _pillarReply;
         ICarryable _carried;
+        Sprite[] _idleFrames;
+        Sprite[] _attackFrames;
+        string _idleClip = string.Empty;
+        string _attackClip = string.Empty;
         const float FetchReach = 1.15f;
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
@@ -103,6 +107,18 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Unity sprites on the EncounterLock win. Clip ids are the
+        /// fallback (pack enemy-011, or the generated fire-golem / warden).
+        /// </summary>
+        public void BindLooks(Sprite[] idleFrames, Sprite[] attackFrames, string idleClip, string attackClip)
+        {
+            _idleFrames = idleFrames;
+            _attackFrames = attackFrames;
+            _idleClip = idleClip ?? string.Empty;
+            _attackClip = attackClip ?? string.Empty;
+        }
+
         public void FeedOil()
         {
             if (_status == null || _status.Nature != CreatureNature.Fire)
@@ -126,6 +142,58 @@ namespace RuneMagic
             return _sight;
         }
 
+        ProjectileKind ShotKind()
+        {
+            if (WritesWood())
+            {
+                return ProjectileKind.Wood;
+            }
+
+            if (Kind == CombatKind.Archer)
+            {
+                return ProjectileKind.Wood;
+            }
+
+            return ProjectileKind.Fireball;
+        }
+
+        bool WritesWood()
+        {
+            if (_castRecipe == null)
+            {
+                return false;
+            }
+
+            var plant = false;
+            var mercury = false;
+            var life = false;
+            var death = false;
+            var fire = false;
+            for (var i = 0; i < _castRecipe.Length; i++)
+            {
+                switch (_castRecipe[i])
+                {
+                    case RuneId.Plant:
+                        plant = true;
+                        break;
+                    case RuneId.Mercury:
+                        mercury = true;
+                        break;
+                    case RuneId.Vita:
+                        life = true;
+                        break;
+                    case RuneId.Mors:
+                        death = true;
+                        break;
+                    case RuneId.Fire:
+                        fire = true;
+                        break;
+                }
+            }
+
+            return plant && mercury && !life && !death && !fire;
+        }
+
         static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
         {
             if (written != null && written.Length > 0)
@@ -138,7 +206,7 @@ namespace RuneMagic
                 case CombatKind.Wizard:
                     return new[] { RuneId.Fire, RuneId.Mercury };
                 case CombatKind.Archer:
-                    return new[] { RuneId.Earth, RuneId.Mercury };
+                    return new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury };
                 default:
                     return System.Array.Empty<RuneId>();
             }
@@ -308,7 +376,7 @@ namespace RuneMagic
 
             StepToward(prize.WorldPosition);
             ShowCast("fetches…");
-            _anim?.Play(IdleClip(), 5f);
+            PlayMotion(false, 5f);
         }
 
         ICarryable NearestPrize()
@@ -493,14 +561,14 @@ namespace RuneMagic
                     StepToward(mark.position);
                 }
 
-                _anim?.Play(IdleClip(), 5f);
+                PlayMotion(false, 5f);
                 ShowMindChip();
                 return;
             }
 
             _windup += Time.deltaTime;
             ShowCast(MindVerb());
-            _anim?.Play(Kind == CombatKind.Golem ? "fire-golem-slam" : IdleClip(), 6f);
+            PlayMotion(true, 6f);
             var wind = Mathf.Clamp01(_windup / CastSeconds);
             transform.localScale = new Vector3(_restScale.x * (1f + wind * 0.12f), _restScale.y * (1f - wind * 0.12f), 1f);
             if (_windup < CastSeconds)
@@ -510,7 +578,7 @@ namespace RuneMagic
 
             _windup = 0f;
             transform.localScale = _restScale;
-            _anim?.Play(IdleClip(), 5f);
+            PlayMotion(false, 5f);
             ClearCastChip();
             LandBlow(mark, player);
         }
@@ -558,7 +626,7 @@ namespace RuneMagic
                 ShowRunes();
             }
 
-            _anim?.Play(Kind == CombatKind.Archer ? "warden" : "warden-cast", 5f);
+            PlayMotion(true, 5f);
             if (_windup < CastSeconds)
             {
                 return;
@@ -566,7 +634,7 @@ namespace RuneMagic
 
             _casting = false;
             _windup = 0f;
-            _anim?.Play("warden", 4f);
+            PlayMotion(false, 4f);
             ClearCastChip();
             if (_pillarReply)
             {
@@ -575,9 +643,9 @@ namespace RuneMagic
                 return;
             }
 
-            var shot = Kind == CombatKind.Archer ? ProjectileKind.Arrow : ProjectileKind.Fireball;
+            var shot = ShotKind();
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Arrow ? 7.4f : 6.4f, this, ShotOf());
+            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Fireball ? 6.4f : 7.4f, this, ShotOf());
         }
 
         public static void NoticePlayerSpell(SpellId spell, Vector3 origin, Vector3 aim)
@@ -923,11 +991,73 @@ namespace RuneMagic
             ShowCast(StatusSpec.Of(mind).Name);
         }
 
+        void PlayMotion(bool attacking, float fps)
+        {
+            if (_anim == null)
+            {
+                return;
+            }
+
+            if (attacking)
+            {
+                if (_attackFrames != null && _attackFrames.Length > 0)
+                {
+                    var clip = string.IsNullOrEmpty(_attackClip) ? "attack" : _attackClip;
+                    if (_anim.Clip != clip)
+                    {
+                        _anim.Play(_attackFrames, fps, true, clip);
+                    }
+
+                    return;
+                }
+
+                var named = !string.IsNullOrEmpty(_attackClip) ? _attackClip : DefaultAttackClip();
+                if (!string.IsNullOrEmpty(named))
+                {
+                    _anim.Play(named, fps);
+                }
+
+                return;
+            }
+
+            if (_idleFrames != null && _idleFrames.Length > 0)
+            {
+                var clip = string.IsNullOrEmpty(_idleClip) ? "idle" : _idleClip;
+                if (_anim.Clip != clip)
+                {
+                    _anim.Play(_idleFrames, fps, true, clip);
+                }
+
+                return;
+            }
+
+            _anim.Play(!string.IsNullOrEmpty(_idleClip) ? _idleClip : IdleClip(), fps);
+        }
+
+        string DefaultAttackClip()
+        {
+            switch (Kind)
+            {
+                case CombatKind.Golem:
+                    return "fire-golem-slam";
+                case CombatKind.Wizard:
+                case CombatKind.Archer:
+                    return "warden-cast";
+                default:
+                    return IdleClip();
+            }
+        }
+
         string IdleClip()
         {
+            if (!string.IsNullOrEmpty(_idleClip))
+            {
+                return _idleClip;
+            }
+
             if (Kind == CombatKind.Golem)
             {
-                return "fire-golem";
+                return gameObject.name.ToLowerInvariant().Contains("stone") ? "stone-man" : "fire-golem";
             }
 
             if (Kind == CombatKind.Wizard || Kind == CombatKind.Archer)

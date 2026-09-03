@@ -350,7 +350,7 @@ Tile `Kind = Door` still works (list those cells on the Gate as **Door Cells**).
 | Place | Old puzzle job | Inspector |
 |---|---|---|
 | **Fire Stone** … | orbs — drag `Assets/Prefabs/Items` | already set |
-| **Mite** / **Enemy** | ice-thing, ash-mite, and the rest | formula, keys, sprite |
+| **Mite** / **Enemy** | ice-thing, ash-mite, and the rest | formula, keys, sprite. **Golem** / **Warden** — drag from `Prefabs/Enemies`, then Portrait / Idle Frames / Attack Frames and **Attack**. See [`ENEMIES.md`](ENEMIES.md). |
 | **Torch** | cold torch | keys |
 | **Rod** | storm rod | keys |
 | **Gate** | Gate of Elements | `requires` item ids, **Doors** |
@@ -412,7 +412,7 @@ Regenerate slices with `python3 Tools/build-rogue-atlas.py`.
 | `Rogue/RA_Sanctuary.png` | Ice cover, pillars, torches, altars |
 | `Rogue/RA_Jungle.png` | Moss, vines, plants, bushes |
 | `Rogue/RA_Atlantis.png` | Seals, lightning, charged props |
-| `Enemies/Enemy_001.png` … `012` | Placeable pack enemies (`enemy-001` …) |
+| `Enemies/Enemy_001.png` … `012` | Catalog fallback (`enemy-001` …). Prefer ElvGames slices on the prefab — [`ENEMIES.md`](ENEMIES.md). |
 
 Each tile is 16×16 at 16 PPU. Rects in `tiles.json` are Unity texture
 space: `x`, `y` from the **bottom-left**.

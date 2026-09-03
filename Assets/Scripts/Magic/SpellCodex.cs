@@ -75,7 +75,7 @@ namespace RuneMagic
     /// Written story-chains. 1–40 are the ordinary book (no Death).
     /// 41–50 are Death / Free. 51 is Time-stop (Charter).
     /// 121–128 are plant-cure, light orbs, and living venom.
-    /// 129 is Float. 130–131 are Blink and Teleport.
+    /// 129 is Float. 130–131 are Blink and Teleport. 132 is Wood arrow.
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -139,7 +139,7 @@ namespace RuneMagic
             E(53, SpellBook.Mind, SpellId.Command, "A standing body given a mind and sent. They obey.", "Command", "Salt · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(54, SpellBook.Weather, SpellId.Gust, "Breath sent. Wind.", "Wind", "Air · Mercury", "", "Shot", SpellOutcome.Neither),
             E(55, SpellBook.Cross, SpellId.EarthPillar, "Rest given a body. A column of earth. Over a pit it must join two floors, or it falls. Water takes mud, not a span.", "Earth-pillar", "Earth · Salt", "Stone", "Pillar", SpellOutcome.Neither, "", SpellId.StonePillar),
-            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams — break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
+            E(56, SpellBook.Mind, SpellId.Stoneskin, "Rest given a body, then the mind holds it on you. Earth and crushing — boulders, slams, arrows — break.", "Stoneskin", "Earth · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Water breaks. You walk on yield.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Fire breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Air breaks. Fog and foul breath leave.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
@@ -214,7 +214,8 @@ namespace RuneMagic
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
             E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
             E(130, SpellBook.Cross, SpellId.Blink, "That leap given the seed. You jump as the spark. A wall will not stop you.", "Blink", "Air · Salt · Air · Fire · Air", "Air · Salt · Air · Spark", "Self", SpellOutcome.Neither),
-            E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither)
+            E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither),
+            E(132, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -626,7 +627,8 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
                 || !WorldWork.StopsOnWalls(SpellId.Push)
                 || !WorldWork.StopsOnWalls(SpellId.LightningBolt)
-                || !WorldWork.StopsOnWalls(SpellId.Vine))
+                || !WorldWork.StopsOnWalls(SpellId.Vine)
+                || !WorldWork.StopsOnWalls(SpellId.WoodArrow))
             {
                 broken.Add("A flying shot must stop on a wall");
             }
@@ -649,6 +651,23 @@ namespace RuneMagic
             if (hurledExact.Count == 0 || hurledExact[0].Spell != SpellId.HurledStone)
             {
                 broken.Add("Earth · Salt · Mercury should be Hurled stone");
+            }
+
+            var wood = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury });
+            var woodExact = ChainBook.CollectExact(wood, SpellShape.None);
+            if (woodExact.Count == 0 || woodExact[0].Spell != SpellId.WoodArrow)
+            {
+                broken.Add("Plant · Salt · Mercury should be Wood arrow");
+            }
+
+            var woodRoots = Composition.FromSequence(new[]
+            {
+                RuneId.Water, RuneId.Salt, RuneId.Earth, RuneId.Salt, RuneId.Mercury
+            });
+            var woodFromRoots = ChainBook.CollectExact(woodRoots, SpellShape.None);
+            if (woodFromRoots.Count == 0 || woodFromRoots[0].Spell != SpellId.WoodArrow)
+            {
+                broken.Add("Water · Salt · Earth · Salt · Mercury should be Wood arrow");
             }
 
             var monsoon = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Mercury });
@@ -1006,9 +1025,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 131)
+            if (Entries.Length < 132)
             {
-                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, living venom, Float, Blink, and Teleport");
+                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, living venom, Float, Blink, Teleport, and Wood arrow");
             }
 
             var flight = Composition.FromSequence(new[]
@@ -1172,6 +1191,16 @@ namespace RuneMagic
                 || !ElementalLaw.WardsAgainst(Essence.Plant, Essence.Plant))
             {
                 broken.Add("A ward must turn its own element and the roots that constructed it, not the old opposite");
+            }
+
+            if (!StatusSpec.Of(StatusId.Stoneskin).BlocksPhysical
+                || !StatusSpec.Of(StatusId.StoneForm).BlocksPhysical
+                || !ElementalLaw.Carries(ProjectileKind.Wood, Essence.Plant)
+                || !ElementalLaw.Carries(ProjectileKind.Wood, Essence.Physical)
+                || !ElementalLaw.Carries(ProjectileKind.Arrow, Essence.Physical)
+                || ElementalLaw.Carries(ProjectileKind.Fireball, Essence.Physical))
+            {
+                broken.Add("A wooden shaft is plant and crushing; a rack arrow is crushing; a fireball is not");
             }
 
             if (SpellVerb.Of(SpellId.Grow).Tiles != TileVerb.Grow
