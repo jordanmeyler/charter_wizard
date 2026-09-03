@@ -7,61 +7,73 @@ namespace RuneMagic
     [CustomEditor(typeof(WorldInteract))]
     public sealed class WorldInteractEditor : Editor
     {
-        RuneId _recipePick = RuneId.Fire;
-        RuneId _viaPick = RuneId.Spark;
+        int _catalogIndex;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
             EditorGUILayout.HelpBox(
-                "Teach a recipe, not a name. Set the runes this slab shows. A second writing is for the same working said another way (Fire · Air · Mercury or Spark · Mercury). Leave Via empty to show the catalog's other chain when there is one. Dress the statue with tiles — this volume does not draw.",
+                "You do not type rune names. Load a written working, or Add marks on Recipe / Other writing. Those fields are at the top of this component.",
                 MessageType.Info);
-
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("verb"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("look"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("radius"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("portrait"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("spriteId"));
-
+            DrawCatalogLoad();
             EditorGUILayout.Space();
-            RunePicker.DrawSequence(
-                serializedObject.FindProperty("recipe"),
-                "Recipe",
-                "The sentence prayer shows and Cast aims.",
-                ref _recipePick);
-
-            EditorGUILayout.Space();
-            RunePicker.DrawSequence(
-                serializedObject.FindProperty("via"),
-                "Other writing",
-                "Optional. Another way to write the same working.",
-                ref _viaPick);
-
-            EditorGUILayout.Space();
-            var fallback = serializedObject.FindProperty("spell");
-            EditorGUILayout.PropertyField(fallback, new GUIContent(
-                "Fallback name",
-                "Used only when Recipe is empty. Prefer setting runes."));
-
+            DrawPropertiesExcluding(serializedObject, "m_Script");
             serializedObject.ApplyModifiedProperties();
+        }
+
+        void DrawCatalogLoad()
+        {
+            CatalogBook.EnsureLoaded();
+            var catalog = SpellCodex.All;
+            var labels = new string[catalog.Count + 1];
+            labels[0] = "(load a written working — fills the runes)";
+            for (var i = 0; i < catalog.Count; i++)
+            {
+                var entry = catalog[i];
+                var line = entry.Name + "   " + WorkingNames.RunePhrase(entry.RecipeRunes);
+                if (entry.ViaRunes != null && entry.ViaRunes.Count > 0)
+                {
+                    line += "   /   " + WorkingNames.RunePhrase(entry.ViaRunes);
+                }
+
+                labels[i + 1] = line;
+            }
+
+            EditorGUILayout.LabelField("Load writings", EditorStyles.boldLabel);
+            _catalogIndex = EditorGUILayout.Popup(_catalogIndex, labels);
+            EditorGUI.BeginDisabledGroup(_catalogIndex <= 0);
+            if (GUILayout.Button("Fill Recipe and Other writing from that working"))
+            {
+                var entry = catalog[_catalogIndex - 1];
+                RunePicker.WriteRunes(serializedObject.FindProperty("recipe"), entry.RecipeRunes);
+                RunePicker.WriteRunes(serializedObject.FindProperty("via"), entry.ViaRunes);
+                serializedObject.FindProperty("spell").stringValue = string.Empty;
+            }
+
+            EditorGUI.EndDisabledGroup();
         }
     }
 
     [CustomEditor(typeof(ElementalAltar))]
     public sealed class ElementalAltarEditor : Editor
     {
-        RuneId _sourcePick = RuneId.Fire;
-
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
             EditorGUILayout.HelpBox(
-                "Shows how an element is made: sources on the left, an equals, then the born mark. Pick Spark and Fire · Air fill in. Override Sources to show a different writing.",
+                "Click the born mark. Sources fill from the birth table — Spark gives Fire · Air. You do not type them. Override Sources only for a different writing.",
                 MessageType.Info);
 
             var resultProp = serializedObject.FindProperty("result");
             var result = (RuneId)resultProp.intValue;
             EditorGUILayout.LabelField("Result", RuneCatalog.NameOf(result));
+            if (ChainBook.TryBirth(result, out var birth) && birth.Count > 0)
+            {
+                EditorGUILayout.LabelField(
+                    "Birth  ·  " + WorkingNames.RunePhrase(birth) + "  =  " + RuneCatalog.NameOf(result),
+                    EditorStyles.miniLabel);
+            }
+
             RunePicker.Draw(ref result);
             if ((int)result != resultProp.intValue)
             {
@@ -69,19 +81,11 @@ namespace RuneMagic
             }
 
             EditorGUILayout.Space();
-            RunePicker.DrawSequence(
-                serializedObject.FindProperty("sources"),
-                "Sources",
-                "Leave empty to use the birth recipe (Fire · Air for Spark).",
-                ref _sourcePick);
-
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("portrait"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("spriteId"));
-
+            DrawPropertiesExcluding(serializedObject, "m_Script", "result");
             if (serializedObject.ApplyModifiedProperties())
             {
                 var altar = (ElementalAltar)target;
-                altar.Author((RuneId)resultProp.intValue, SourcesOf(serializedObject.FindProperty("sources")));
+                altar.Author((RuneId)resultProp.intValue, RunePicker.ReadRunes(serializedObject.FindProperty("sources")));
             }
 
             EditorGUILayout.Space();
@@ -103,22 +107,6 @@ namespace RuneMagic
                 Undo.RecordObject(altar.transform, "Snap elemental altar");
                 altar.transform.position = snapped;
             }
-        }
-
-        static RuneId[] SourcesOf(SerializedProperty array)
-        {
-            if (array == null || !array.isArray || array.arraySize == 0)
-            {
-                return System.Array.Empty<RuneId>();
-            }
-
-            var runes = new RuneId[array.arraySize];
-            for (var i = 0; i < array.arraySize; i++)
-            {
-                runes[i] = (RuneId)array.GetArrayElementAtIndex(i).intValue;
-            }
-
-            return runes;
         }
     }
 }

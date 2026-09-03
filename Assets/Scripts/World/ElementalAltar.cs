@@ -22,7 +22,8 @@ namespace RuneMagic
         [Tooltip("The wrought mark this slab teaches. Spark fills Fire · Air.")]
         [SerializeField] RuneId result = RuneId.Spark;
         [Tooltip("Leave empty to use the birth recipe. Set marks to show another writing.")]
-        [SerializeField] RuneId[] sources;
+        [RuneChain]
+        [SerializeField] RuneId[] sources = System.Array.Empty<RuneId>();
         [Tooltip("Optional. Leave unset so the generated slab and marks carry the look.")]
         [SerializeField] Sprite portrait;
         [SerializeField] string spriteId;

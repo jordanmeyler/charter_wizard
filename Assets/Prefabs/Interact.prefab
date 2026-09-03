@@ -44,9 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a4c7e2d1f8b4a63b0d5c8e3a7f1b246, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldInteract
+  recipe: []
+  via: []
   verb: Pray
-  spell: Fireball
   look: a stone for prayer. The sentence waits.
   radius: 1.15
   spriteId: 
   portrait: {fileID: 0}
+  spell: Fireball
