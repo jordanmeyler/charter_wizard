@@ -1424,6 +1424,9 @@
             "WoodWall",
             "Hop",
             "Flight",
+            "Float",
+            "Blink",
+            "Teleport",
             "HurledStone"
           ]
         },
