@@ -127,6 +127,9 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Altar", false, 27)]
         static void Altar() => SpawnInteract();
 
+        [MenuItem("GameObject/Rune Magic/Elemental Altar", false, 27)]
+        static void ElementalAltarItem() => Spawn("Elemental Altar", typeof(ElementalAltar));
+
         [MenuItem("GameObject/Rune Magic/Crystal", false, 28)]
         static void Crystal() => Spawn("Crystal", typeof(SpawnCrystal));
 
@@ -245,7 +248,8 @@ namespace RuneMagic
 
             var host = new GameObject(name);
             host.AddComponent(type);
-            if (type != typeof(WorldInteract) && host.GetComponent<SpriteRenderer>() == null)
+            if (type != typeof(WorldInteract) && type != typeof(ElementalAltar) &&
+                host.GetComponent<SpriteRenderer>() == null)
             {
                 host.AddComponent<SpriteRenderer>();
             }

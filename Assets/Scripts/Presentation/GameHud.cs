@@ -49,7 +49,7 @@ namespace RuneMagic
         bool _focusName;
         bool _ledgerCollapsed;
         bool _revealing;
-        CodexEntry _revealed;
+        PrayerWorking _revealed;
         readonly HashSet<string> _namedOffers = new();
         bool _speaking;
         string _speechTitle = string.Empty;
@@ -135,7 +135,12 @@ namespace RuneMagic
 
         public static void RevealWorking(CodexEntry entry)
         {
-            _instance?.OpenReveal(entry);
+            _instance?.OpenReveal(PrayerReveal.FromEntry(entry));
+        }
+
+        public static void RevealWorking(PrayerWorking working)
+        {
+            _instance?.OpenReveal(working);
         }
 
         public static void OfferKeepLatest(Composition composition)
@@ -919,9 +924,9 @@ namespace RuneMagic
             _director.KeepRecent(0, string.Empty);
         }
 
-        void OpenReveal(CodexEntry entry)
+        void OpenReveal(PrayerWorking working)
         {
-            if (entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            if (!working.HasRecipe)
             {
                 return;
             }
@@ -931,7 +936,7 @@ namespace RuneMagic
                 CloseNaming();
             }
 
-            _revealed = entry;
+            _revealed = working;
             _revealing = true;
             RevealingSpell = true;
             _director.PauseForNaming();
@@ -1099,15 +1104,16 @@ namespace RuneMagic
 
         void DrawPrayerModal()
         {
-            if (_revealed.RecipeRunes == null || _revealed.RecipeRunes.Count == 0)
+            if (!_revealed.HasRecipe)
             {
                 CloseReveal();
                 return;
             }
 
+            var other = _revealed.HasVia;
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             const float width = 560f;
-            const float height = 348f;
+            var height = other ? 500f : 348f;
             var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
             var ev = Event.current;
             if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
@@ -1122,14 +1128,26 @@ namespace RuneMagic
             GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28),
                 GlyphView.Speak("A working is shown", "A working is shown"), title);
             GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 40),
-                GlyphView.IsDevelop
-                    ? $"{_revealed.Name} — {_revealed.Want}"
+                GlyphView.IsDevelop && _revealed.Entry.Spell != SpellId.None
+                    ? $"{_revealed.Entry.Name} — {_revealed.Entry.Want}"
                     : "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
                 body);
             GUI.Label(new Rect(modal.x + 24, modal.y + 88, modal.width - 48, 18),
-                "Each mark is labelled elemental, catalyst, or special.", legend);
+                other
+                    ? "The same working can be written more than one way."
+                    : "Each mark is labelled elemental, catalyst, or special.", legend);
 
-            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, 132), _revealed.RecipeRunes);
+            var recipeHeight = other ? 124f : 132f;
+            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, recipeHeight), _revealed.Recipe);
+            var buttonsY = modal.y + 268f;
+            if (other)
+            {
+                var or = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
+                or.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(new Rect(modal.x + 24, modal.y + 236, modal.width - 48, 18), "or", or);
+                DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 254, modal.width - 48, 124f), _revealed.Via);
+                buttonsY = modal.y + 394f;
+            }
 
             var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
             if (cancel)
@@ -1137,14 +1155,14 @@ namespace RuneMagic
                 ev.Use();
             }
 
-            if (DrawAction(new Rect(modal.x + 24, modal.y + 268, 148, 42), "Continue", true,
+            if (DrawAction(new Rect(modal.x + 24, buttonsY, 148, 42), "Continue", true,
                     new Color(0.22f, 0.22f, 0.26f)) || cancel)
             {
                 CloseReveal();
                 return;
             }
 
-            if (DrawAction(new Rect(modal.xMax - 172, modal.y + 268, 148, 42), "Cast", true,
+            if (DrawAction(new Rect(modal.xMax - 172, buttonsY, 148, 42), "Cast", true,
                     new Color(0.72f, 0.28f, 0.22f)))
             {
                 var shown = _revealed;

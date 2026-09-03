@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RuneMagic
@@ -5,14 +6,19 @@ namespace RuneMagic
     /// <summary>
     /// Use volume. Put this on an empty GameObject and dress the
     /// statue with tiles or child sprites — the component does not
-    /// draw unless you assign a look. Prayer shows a written spell
-    /// with elemental / catalyst labels, then Cast or Continue.
+    /// draw unless you assign a look. Prayer shows the authored
+    /// recipe (and a second writing when the spell has one), then
+    /// Cast or Continue.
     /// </summary>
     public sealed class WorldInteract : MonoBehaviour, ILookable, IInteractable
     {
         [Header("Authoring")]
         [SerializeField] string verb = "Pray";
-        [Tooltip("Catalog name (Fireball) or a written chain (Fire · Mercury). Empty offers an unkept written spell.")]
+        [Tooltip("The sentence this altar teaches. Set the runes — names are not locked.")]
+        [SerializeField] RuneId[] recipe;
+        [Tooltip("Optional other writing of the same working (Spark · Mercury beside Fire · Air · Mercury). Leave empty to show the catalog's other chain when there is one.")]
+        [SerializeField] RuneId[] via;
+        [Tooltip("Leftover. A catalog name or written chain used only when Recipe is empty.")]
         [SerializeField] string spell;
         [SerializeField] string look = "a stone for prayer. The sentence waits.";
         [SerializeField] float radius = 1.15f;
@@ -21,6 +27,8 @@ namespace RuneMagic
         [SerializeField] Sprite portrait;
 
         bool _wired;
+        RuneId[] _recipe;
+        RuneId[] _via;
         string _spell;
         string _look;
         string _verb;
@@ -33,13 +41,27 @@ namespace RuneMagic
         public string InteractVerb => string.IsNullOrWhiteSpace(_verb) ? "Interact" : _verb;
         public string LookText => Sight.OfInteract(_look, InteractVerb);
         public string AuthoredSpell => _spell;
+        public IReadOnlyList<RuneId> AuthoredRecipe => _recipe;
+        public IReadOnlyList<RuneId> AuthoredVia => _via;
 
         public static WorldInteract Spawn(Vector3 position, string spell = "", string verb = "Pray")
+        {
+            return Spawn(position, null, null, verb, spell);
+        }
+
+        public static WorldInteract Spawn(
+            Vector3 position,
+            IReadOnlyList<RuneId> recipe,
+            IReadOnlyList<RuneId> via = null,
+            string verb = "Pray",
+            string spell = "")
         {
             var host = new GameObject(string.IsNullOrWhiteSpace(verb) ? "Interact" : verb);
             host.transform.position = position;
             var view = host.AddComponent<WorldInteract>();
-            view.spell = spell;
+            view.recipe = PrayerWorking.Copy(recipe);
+            view.via = PrayerWorking.Copy(via);
+            view.spell = spell ?? string.Empty;
             view.verb = verb;
             view.BindFromAuthoring();
             return view;
@@ -47,10 +69,20 @@ namespace RuneMagic
 
         public void BindFromAuthoring()
         {
-            Bind(spell, look, verb);
+            Bind(spell, look, verb, recipe, via);
         }
 
         public void Bind(string spell, string look, string verb)
+        {
+            Bind(spell, look, verb, recipe, via);
+        }
+
+        public void Bind(
+            string spell,
+            string look,
+            string verb,
+            IReadOnlyList<RuneId> recipe,
+            IReadOnlyList<RuneId> via)
         {
             if (_wired)
             {
@@ -61,6 +93,8 @@ namespace RuneMagic
             _spell = string.IsNullOrWhiteSpace(spell) ? this.spell : spell;
             _look = string.IsNullOrWhiteSpace(look) ? this.look : look;
             _verb = string.IsNullOrWhiteSpace(verb) ? this.verb : verb;
+            _recipe = PrayerWorking.Copy(recipe ?? this.recipe);
+            _via = PrayerWorking.Copy(via ?? this.via);
             if (!string.IsNullOrWhiteSpace(spriteId) || portrait != null)
             {
                 AuthoringUtil.ApplyLook(gameObject, 3, spriteId, portrait, null, 1f);
@@ -72,7 +106,7 @@ namespace RuneMagic
 
         public void EnsureBound()
         {
-            Bind(_spell ?? spell, _look ?? look, _verb ?? verb);
+            Bind(_spell ?? spell, _look ?? look, _verb ?? verb, _recipe ?? recipe, _via ?? via);
         }
 
         public void Interact(SanctumDirector director)
@@ -82,7 +116,8 @@ namespace RuneMagic
                 return;
             }
 
-            if (!PrayerReveal.TryResolve(_spell, director.Grimoire, out var entry))
+            if (!PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out var working)
+                || !working.HasRecipe)
             {
                 director.Log(GlyphView.Speak(
                     "The altar is silent. No written sentence answers.",
@@ -90,10 +125,31 @@ namespace RuneMagic
                 return;
             }
 
-            GameHud.RevealWorking(entry);
-            director.Log(GlyphView.Speak(
-                $"A working is shown. {entry.Name} — {WorkingNames.RunePhrase(entry.RecipeRunes)}.",
-                "A working is shown. Cast it, or leave it on the stone."));
+            GameHud.RevealWorking(working);
+            director.Log(RevealLine(working));
+        }
+
+        public static string RevealLine(PrayerWorking working)
+        {
+            if (!working.HasRecipe)
+            {
+                return GlyphView.Speak(
+                    "A working is shown.",
+                    "A working is shown. Cast it, or leave it on the stone.");
+            }
+
+            var phrase = WorkingNames.RunePhrase(working.Recipe);
+            if (working.HasVia)
+            {
+                phrase += " — or " + WorkingNames.RunePhrase(working.Via);
+            }
+
+            var develop = working.Entry.Spell != SpellId.None
+                ? $"A working is shown. {phrase}. ({working.Entry.Name})"
+                : $"A working is shown. {phrase}.";
+            return GlyphView.Speak(
+                develop,
+                "A working is shown. Cast it, or leave it on the stone.");
         }
 
         void OnDisable()

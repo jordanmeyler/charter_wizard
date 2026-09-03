@@ -228,9 +228,17 @@ namespace RuneMagic
                 case "altar":
                 case "pray":
                 case "interact":
-                    WorldInteract.Spawn(world,
-                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell,
-                        string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text);
+                    WorldInteract.Spawn(
+                        world,
+                        ParseRunes(prop.runes),
+                        ParseRunes(prop.formula),
+                        string.IsNullOrEmpty(prop.text) ? "Pray" : prop.text,
+                        string.IsNullOrEmpty(prop.spell) ? prop.note : prop.spell);
+                    break;
+                case "elemental-altar":
+                case "join-altar":
+                case "birth-altar":
+                    SpawnElemental(world, prop);
                     break;
                 case "speech":
                 case "sign":
@@ -713,6 +721,36 @@ namespace RuneMagic
 
         static string NameOf(MapProp prop, string fallback) =>
             string.IsNullOrEmpty(prop.displayName) ? fallback : prop.displayName;
+
+        static void SpawnElemental(Vector3 world, MapProp prop)
+        {
+            var runes = ParseRunes(prop.runes);
+            var result = MapFile.ParseRune(prop.spell);
+            RuneId[] sources = null;
+            if (runes != null && runes.Length > 0)
+            {
+                if (result == RuneId.None)
+                {
+                    result = runes[runes.Length - 1];
+                    if (runes.Length > 1)
+                    {
+                        sources = new RuneId[runes.Length - 1];
+                        System.Array.Copy(runes, sources, sources.Length);
+                    }
+                }
+                else
+                {
+                    sources = runes;
+                }
+            }
+
+            if (result == RuneId.None)
+            {
+                result = RuneId.Spark;
+            }
+
+            ElementalAltar.Spawn(world, result, sources);
+        }
 
         static void PlaceLesson(Vector3 origin, RuneId[] runes, Vector3 dir)
         {

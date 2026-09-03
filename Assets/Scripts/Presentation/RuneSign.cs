@@ -20,6 +20,15 @@ namespace RuneMagic
             return mark.transform;
         }
 
+        public static Transform MountEquals(Transform parent, Vector3 local, float scale = 0.7f)
+        {
+            var mark = Child(parent, "Equals", local, 8);
+            mark.sprite = SpriteFactory.JoinEquals();
+            mark.color = Color.white;
+            mark.transform.localScale = Vector3.one * scale;
+            return mark.transform;
+        }
+
         public static void MountAltar(Transform parent, RuneId rune)
         {
             var baseView = Child(parent, "Altar", Vector3.zero, 5);

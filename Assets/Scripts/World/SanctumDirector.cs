@@ -1255,13 +1255,18 @@ namespace RuneMagic
 
         public void CastRevealed(CodexEntry entry)
         {
-            if (Busy || entry.RecipeRunes == null || entry.RecipeRunes.Count == 0)
+            CastRevealed(PrayerReveal.FromEntry(entry));
+        }
+
+        public void CastRevealed(PrayerWorking working)
+        {
+            if (Busy || !working.HasRecipe)
             {
                 return;
             }
 
-            var stance = entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
-            BeginAim(Composition.FromSequence(entry.RecipeRunes), stance, fromHeld: false);
+            var stance = working.Entry.FreeOnly ? CastingStance.Free : CastingStance.Charter;
+            BeginAim(Composition.FromSequence(working.Recipe), stance, fromHeld: false);
         }
 
         public void RenameKept(int index, string givenName)
@@ -2926,7 +2931,7 @@ namespace RuneMagic
         bool TryWeaveAt(Vector3 world)
         {
             if (RuneStele.TryPick(world, out var rune) || RuneStringSource.TryPick(world, out rune) ||
-                CoverCatalog.TryPick(world, out rune))
+                ElementalAltar.TryPick(world, out rune) || CoverCatalog.TryPick(world, out rune))
             {
                 WeaveFromField(rune);
                 return true;

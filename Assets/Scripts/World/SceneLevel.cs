@@ -197,6 +197,12 @@ namespace RuneMagic
                 steles[i].BindFromAuthoring();
             }
 
+            var elemental = Object.FindObjectsByType<ElementalAltar>(FindObjectsSortMode.None);
+            for (var i = 0; i < elemental.Length; i++)
+            {
+                elemental[i].BindFromAuthoring();
+            }
+
             var strings = Object.FindObjectsByType<RuneStringSource>(FindObjectsSortMode.None);
             for (var i = 0; i < strings.Length; i++)
             {

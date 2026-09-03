@@ -93,6 +93,8 @@ namespace RuneMagic
                 case "nature-mind":
                 case "nature-sulphur": return NatureOf(RuneId.Sulphur);
                 case "altar": return AltarBase();
+                case "equals":
+                case "join-equals": return JoinEquals();
                 case "inscription": return FloorCarve();
                 case "plaque": return Plaque();
                 case "pit": return Pit();
@@ -1125,6 +1127,22 @@ namespace RuneMagic
                 canvas.Fill(8, 4, 24, 3, dark);
                 canvas.Highlight(6, 15, 10, 1, 0.2f);
                 return canvas.ToSprite(32, new Vector2(0.5f, 0.15f));
+            });
+        }
+
+        public static Sprite JoinEquals()
+        {
+            return Memo("join-equals", () =>
+            {
+                var canvas = new PixelCanvas(20, 16);
+                canvas.Clear(Clear);
+                var ink = new Color(0.92f, 0.82f, 0.5f);
+                var shade = new Color(0.42f, 0.34f, 0.16f, 0.85f);
+                canvas.FillRounded(2, 3, 16, 3, 1, shade);
+                canvas.FillRounded(2, 10, 16, 3, 1, shade);
+                canvas.FillRounded(3, 4, 14, 2, 1, ink);
+                canvas.FillRounded(3, 11, 14, 2, 1, ink);
+                return canvas.ToSprite(20);
             });
         }
 
