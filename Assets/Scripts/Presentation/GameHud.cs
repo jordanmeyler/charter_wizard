@@ -14,6 +14,10 @@ namespace RuneMagic
         public const float BarHeight = 96f;
         public const float LedgerWidth = 420f;
         public const float LedgerMaxHeight = 480f;
+        public const float InfoWidth = 400f;
+        const float InfoPad = 12f;
+        const float InfoInner = 16f;
+        const float InfoHeader = 36f;
         const float LedgerRow = 58f;
         const float DraftSlotPreferred = 52f;
         const float DraftSlotMin = 36f;
@@ -39,6 +43,7 @@ namespace RuneMagic
         float _speechInnerHeight;
         LedgerPage _ledgerPage;
         static Rect _ledgerGui;
+        static Rect _infoGui;
         static Rect _interactGui;
         static GameHud _instance;
         enum NameTarget
@@ -53,6 +58,7 @@ namespace RuneMagic
         string _namingText = string.Empty;
         bool _focusName;
         bool _ledgerCollapsed;
+        bool _infoCollapsed;
         bool _revealing;
         PrayerWorking _revealed;
         readonly HashSet<string> _namedOffers = new();
@@ -178,17 +184,17 @@ namespace RuneMagic
                 return true;
             }
 
-            if (mouse.x <= 560f && mouse.y >= Screen.height - 196f)
-            {
-                return true;
-            }
-
             if (mode == PlayMode.Charter)
             {
                 return true;
             }
 
             var gui = new Vector2(mouse.x, Screen.height - mouse.y);
+            if (_infoGui.width > 1f && _infoGui.Contains(gui))
+            {
+                return true;
+            }
+
             if (_ledgerGui.width > 1f && _ledgerGui.Contains(gui))
             {
                 return true;
@@ -205,6 +211,7 @@ namespace RuneMagic
         void OnGUI()
         {
             _ledgerGui = default;
+            _infoGui = default;
             _interactGui = default;
             EditingName = _nameTarget != NameTarget.None && _namingIndex >= 0;
             RevealingSpell = _revealing;
@@ -346,7 +353,7 @@ namespace RuneMagic
             var width = Mathf.Min(720f, Mathf.Max(280f, right - 24f));
             var height = markRow ? 88f : 64f;
             var y = _director.Mode == PlayMode.Exploring || _director.Mode == PlayMode.Aiming
-                ? 216f
+                ? (_infoGui.height > 1f ? _infoGui.yMax + 12f : 56f)
                 : 92f;
             var x = ledgerOpen ? 16f : (Screen.width - width) * 0.5f;
             var panel = new Rect(x, y, width, height);
@@ -387,56 +394,123 @@ namespace RuneMagic
 
         void DrawWorldChrome()
         {
-            DrawPanel(12, 12, 560, 196);
-            var title = Label(22, FontStyle.Bold, Color.white);
-            var body = Label(15, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
-            var look = Label(15, FontStyle.Italic, new Color(0.9f, 0.86f, 0.74f));
+            var innerW = InfoWidth - InfoInner * 2f;
+            var title = Label(15, FontStyle.Bold, Color.white);
+            title.wordWrap = false;
+            title.clipping = TextClipping.Clip;
+            var body = Label(14, FontStyle.Normal, new Color(0.88f, 0.9f, 0.95f));
+            var lookStyle = Label(14, FontStyle.Italic, new Color(0.9f, 0.86f, 0.74f));
+            var statusStyle = Label(13, FontStyle.Italic, new Color(0.95f, 0.78f, 0.42f));
+            var holdStyle = Label(13, FontStyle.Italic, new Color(0.82f, 0.68f, 0.95f));
 
-            GUI.Label(new Rect(28, 18, 400, 26), "Rune Magic", title);
-            GUI.Label(new Rect(28, 44, 400, 22), RoomLine(), body);
-            if (_director.NearbyInteract != null)
-            {
-                var verb = string.IsNullOrWhiteSpace(_director.NearbyInteract.InteractVerb)
-                    ? "Use"
-                    : _director.NearbyInteract.InteractVerb;
-                if (DrawAction(new Rect(348, 40, 74, 26), verb, true, new Color(0.42f, 0.32f, 0.14f)))
-                {
-                    _director.UseNearbyInteract();
-                }
-            }
-
-            if (DrawAction(new Rect(430, 40, 58, 26), "Look", true, new Color(0.32f, 0.28f, 0.18f)))
-            {
-                _director.OpenInventory();
-            }
-
-            if (DrawAction(new Rect(492, 40, 58, 26), "Yield", true, new Color(0.38f, 0.16f, 0.16f)))
-            {
-                _director.YieldSelf();
-            }
-
-            var y = 70f;
+            var look = _director.SightLine ?? string.Empty;
+            var log = _director.LastLog ?? string.Empty;
             var statuses = _director.PlayerStatuses();
-            if (!string.IsNullOrEmpty(statuses))
-            {
-                GUI.Label(new Rect(28, y, 510, 20), "On you: " + statuses,
-                    Label(14, FontStyle.Italic, new Color(0.95f, 0.78f, 0.42f)));
-                y += 22f;
-            }
-
-            y = DrawVitalMeters(y);
-
             var holding = _director.ConcentrationLine();
-            if (!string.IsNullOrEmpty(holding))
+            var showLog = !_infoCollapsed
+                && !string.IsNullOrWhiteSpace(log)
+                && !string.Equals(log, look, System.StringComparison.Ordinal);
+            var lookH = _infoCollapsed ? 0f : MeasureWrapped(lookStyle, look, innerW, 18f, 54f);
+            var logH = showLog ? MeasureWrapped(body, log, innerW, 18f, 40f) : 0f;
+            var holdH = !_infoCollapsed && !string.IsNullOrEmpty(holding) ? 20f : 0f;
+            var statusH = !string.IsNullOrEmpty(statuses) ? 20f : 0f;
+            var meterH = VitalMeterHeight();
+
+            var height = InfoHeader + 8f;
+            if (lookH > 0f)
             {
-                GUI.Label(new Rect(28, y, 510, 20), "Concentrating: " + holding,
-                    Label(14, FontStyle.Italic, new Color(0.82f, 0.68f, 0.95f)));
-                y += 22f;
+                height += lookH + 4f;
             }
 
-            GUI.Label(new Rect(28, y, 510, 44), _director.SightLine, look);
-            DrawLogBox(new Rect(28, y + 46, 510, 196 - y - 54), _director.LastLog, body);
+            if (logH > 0f)
+            {
+                height += logH + 4f;
+            }
+
+            if (holdH > 0f)
+            {
+                height += holdH + 2f;
+            }
+
+            if (statusH > 0f)
+            {
+                height += statusH;
+            }
+
+            height += meterH;
+
+            _infoGui = new Rect(InfoPad, InfoPad, InfoWidth, height);
+            DrawPanel(_infoGui.x, _infoGui.y, _infoGui.width, _infoGui.height);
+
+            var collapse = new Rect(_infoGui.xMax - 36, _infoGui.y + 6, 28, 24);
+            if (DrawTab(collapse, _infoCollapsed ? "+" : "–", _infoCollapsed))
+            {
+                _infoCollapsed = !_infoCollapsed;
+            }
+
+            var head = _infoCollapsed ? look : RoomLine();
+            GUI.Label(new Rect(_infoGui.x + InfoInner, _infoGui.y + 6, innerW - 32, 24),
+                head, title);
+
+            var y = _infoGui.y + InfoHeader;
+            if (lookH > 0f)
+            {
+                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, lookH), look, lookStyle);
+                y += lookH + 4f;
+            }
+
+            if (logH > 0f)
+            {
+                DrawLogBox(new Rect(_infoGui.x + InfoInner, y, innerW, logH), log, body);
+                y += logH + 4f;
+            }
+
+            if (holdH > 0f)
+            {
+                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, holdH), holding, holdStyle);
+                y += holdH + 2f;
+            }
+
+            if (statusH > 0f)
+            {
+                GUI.Label(new Rect(_infoGui.x + InfoInner, y, innerW, statusH), statuses, statusStyle);
+                y += statusH;
+            }
+
+            DrawVitalMeters(_infoGui.x + InfoInner, y);
             DrawInteractPrompt();
+        }
+
+        static float MeasureWrapped(GUIStyle style, string text, float width, float min, float max)
+        {
+            if (string.IsNullOrWhiteSpace(text) || style == null)
+            {
+                return 0f;
+            }
+
+            return Mathf.Clamp(style.CalcHeight(new GUIContent(text), width), min, max);
+        }
+
+        static float VitalMeterHeight()
+        {
+            var host = StatusHost.On(AdeptAvatar.Find());
+            if (host == null)
+            {
+                return 0f;
+            }
+
+            var height = 0f;
+            if (host.Has(StatusId.Burning))
+            {
+                height += 16f;
+            }
+
+            if (host.Has(StatusId.Poisoned))
+            {
+                height += 16f;
+            }
+
+            return height;
         }
 
         void DrawLogBox(Rect view, string message, GUIStyle body)
@@ -525,11 +599,12 @@ namespace RuneMagic
 
             rect = new Rect(center.x - width * 0.5f, center.y - height - 6f, width, height);
             rect.x = Mathf.Clamp(rect.x, 12f, Screen.width - width - 12f);
-            rect.y = Mathf.Clamp(rect.y, 214f, Screen.height - BarHeight - height - 12f);
+            var minY = _infoGui.height > 1f ? _infoGui.yMax + 8f : 12f;
+            rect.y = Mathf.Clamp(rect.y, minY, Screen.height - BarHeight - height - 12f);
             return true;
         }
 
-        float DrawVitalMeters(float y)
+        float DrawVitalMeters(float x, float y)
         {
             var host = StatusHost.On(AdeptAvatar.Find());
             if (host == null)
@@ -537,12 +612,12 @@ namespace RuneMagic
                 return y;
             }
 
-            y = DrawVitalMeter(y, host, StatusId.Burning, new Color(1f, 0.42f, 0.12f), "Burning");
-            y = DrawVitalMeter(y, host, StatusId.Poisoned, new Color(0.42f, 0.82f, 0.22f), "Poison");
+            y = DrawVitalMeter(x, y, host, StatusId.Burning, new Color(1f, 0.42f, 0.12f), "Burning");
+            y = DrawVitalMeter(x, y, host, StatusId.Poisoned, new Color(0.42f, 0.82f, 0.22f), "Poison");
             return y;
         }
 
-        float DrawVitalMeter(float y, StatusHost host, StatusId id, Color color, string label)
+        float DrawVitalMeter(float x, float y, StatusHost host, StatusId id, Color color, string label)
         {
             if (host == null || !host.Has(id))
             {
@@ -552,12 +627,12 @@ namespace RuneMagic
             var left = host.MeterLeft(id);
             var frac = host.MeterFraction(id);
             var previous = GUI.color;
-            GUI.Label(new Rect(28, y, 90, 14), $"{label} {left:0.0}",
+            GUI.Label(new Rect(x, y, 90, 14), $"{label} {left:0.0}",
                 Label(12, FontStyle.Bold, color));
             GUI.color = new Color(0.12f, 0.1f, 0.08f, 0.85f);
-            GUI.DrawTexture(new Rect(120, y + 3, 200, 8), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x + 92, y + 3, 200, 8), Texture2D.whiteTexture);
             GUI.color = color;
-            GUI.DrawTexture(new Rect(120, y + 3, 200f * frac, 8), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x + 92, y + 3, 200f * frac, 8), Texture2D.whiteTexture);
             GUI.color = previous;
             return y + 16f;
         }
@@ -2188,7 +2263,7 @@ namespace RuneMagic
             }
 
             GUI.Label(new Rect(620, y + 16, Mathf.Max(120f, Screen.width - 1320f), 64),
-                "WASD · Space Charter · E Interact · F Cast · X Free · R Store · I Pack · Esc Pause · F1 " +
+                "WASD · Space Charter · E Interact · F Cast · X Free · R Store · I Pack · K Yield · Esc Pause · F1 " +
                 (GlyphView.IsDevelop ? "Play" : "Develop"),
                 hint);
 
