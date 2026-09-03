@@ -86,7 +86,7 @@ namespace RuneMagic
             _idleOrigin = transform.position;
             _castRecipe = RecipeOf(kind, castRecipe);
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
-                new Color(1f, 0.72f, 0.28f), 14);
+                new Color(1f, 0.72f, 0.28f), DrawDepth.CastChip);
             if (_castChip != null)
             {
                 _castChip.characterSize = 0.05f;

@@ -22,7 +22,7 @@ namespace RuneMagic
             glow._pulse = pulse;
             glow._renderer = host.AddComponent<SpriteRenderer>();
             glow._renderer.sprite = SpriteFactory.Glow(color);
-            glow._renderer.sortingOrder = 2;
+            glow._renderer.sortingOrder = DrawDepth.Glow;
             return glow;
         }
 

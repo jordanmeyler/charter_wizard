@@ -44,7 +44,7 @@ namespace RuneMagic
                 _baseColor = _sprite.color;
             }
 
-            _chip = WorldLabel.Attach(transform, "", chipOffset, new Color(0.95f, 0.82f, 0.55f), 13);
+            _chip = WorldLabel.Attach(transform, "", chipOffset, new Color(0.95f, 0.82f, 0.55f), DrawDepth.Chip);
             if (_chip != null)
             {
                 _chip.characterSize = 0.055f;

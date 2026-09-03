@@ -466,7 +466,7 @@ namespace RuneMagic
             glow.transform.localScale = Vector3.one * scale;
             var renderer = glow.AddComponent<SpriteRenderer>();
             renderer.sprite = SpriteFactory.Glow(look.Glow);
-            renderer.sortingOrder = 17;
+            DrawDepth.ApplyFx(renderer, 17);
             renderer.color = look.Glow;
             var pulse = glow.AddComponent<SpellLight>();
             pulse.Bind(look.Glow, look.LightStrength, lifetime);
@@ -729,7 +729,7 @@ namespace RuneMagic
             renderer.material = look.Additive ? AdditiveMaterial() : AlphaMaterial();
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.alignment = ParticleSystemRenderSpace.View;
-            renderer.sortingOrder = order;
+            DrawDepth.ApplyFx(renderer, order);
             renderer.trailMaterial = look.Additive ? AdditiveMaterial() : AlphaMaterial();
             var texture = look.Family == ElementFamily.Ice || look.Family == ElementFamily.Plant
                 ? ShardTexture()

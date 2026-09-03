@@ -2270,7 +2270,7 @@ namespace RuneMagic
                 var mark = new GameObject("AimMark");
                 _aimMark = mark.AddComponent<SpriteRenderer>();
                 _aimMark.sprite = SpriteFactory.TargetRing();
-                _aimMark.sortingOrder = 17;
+                DrawDepth.ApplyFx(_aimMark, 17);
             }
 
             if (_aimLine != null)
@@ -2284,7 +2284,7 @@ namespace RuneMagic
             _aimLine.widthMultiplier = 0.06f;
             _aimLine.numCapVertices = 4;
             _aimLine.useWorldSpace = true;
-            _aimLine.sortingOrder = 16;
+            DrawDepth.ApplyFx(_aimLine, 16);
             var shader = Shader.Find("Sprites/Default");
             if (shader != null)
             {
@@ -2379,7 +2379,7 @@ namespace RuneMagic
                 var ring = new GameObject("TargetRing");
                 _targetRing = ring.AddComponent<SpriteRenderer>();
                 _targetRing.sprite = SpriteFactory.TargetRing();
-                _targetRing.sortingOrder = 16;
+                DrawDepth.ApplyFx(_targetRing, 16);
             }
 
             var show = LockAlive(CurrentTarget) && Mode != PlayMode.Paused && Mode != PlayMode.Inventory &&

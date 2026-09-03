@@ -332,7 +332,7 @@ namespace RuneMagic
                 puff.transform.localScale = Vector3.one * 1.35f;
                 var renderer = puff.AddComponent<SpriteRenderer>();
                 renderer.sprite = SpriteFactory.Glow(look.Mist);
-                renderer.sortingOrder = 13;
+                DrawDepth.ApplyFx(renderer, 13);
                 renderer.color = look.Mist;
                 puff.AddComponent<SpellLight>().Bind(look.Mist, 0.18f, 0f);
             }

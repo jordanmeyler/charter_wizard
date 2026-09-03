@@ -125,8 +125,9 @@ namespace RuneMagic
             if (encounter.TryGetComponent<SpriteRenderer>(out var renderer) && portrait.objectReferenceValue is Sprite still)
             {
                 renderer.sprite = still;
-                renderer.sortingOrder = 12;
+                renderer.sortingOrder = DrawDepth.Body;
                 renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+                WorldYSort.On(encounter.gameObject);
             }
 
             return true;
