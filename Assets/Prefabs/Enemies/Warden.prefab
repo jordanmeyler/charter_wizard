@@ -49,27 +49,9 @@ MonoBehaviour:
   authoredId: warden
   spriteId: enemy-012
   portrait: {fileID: 483199733, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  idleFrames:
-  - {fileID: 483199733, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  - {fileID: 1105839274, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  - {fileID: 1841236476, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  - {fileID: 109105086, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  - {fileID: 668090547, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  - {fileID: 1635963623, guid: afe9b093330f4c2428203eb52a8a7ead, type: 3}
-  attackFrames:
-  - {fileID: 777155719, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  - {fileID: -598700584, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  - {fileID: 1019371813, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  - {fileID: -88078397, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  - {fileID: 936693169, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  - {fileID: -1621173652, guid: 1e6c86a02b53b1942bada4c60ce9690b, type: 3}
-  resolveFrames:
-  - {fileID: 1861143320, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
-  - {fileID: 1039951099, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
-  - {fileID: -1687826127, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
-  - {fileID: -1717147039, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
-  - {fileID: -1832500680, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
-  - {fileID: 968940242, guid: 565e7d125d406df4fae75bca779e854b, type: 3}
+  idleFrames: []
+  attackFrames: []
+  resolveFrames: []
   resolveClip: 
   idleClip: enemy-012
   attackClip: 
