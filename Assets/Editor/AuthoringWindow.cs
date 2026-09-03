@@ -46,7 +46,7 @@ namespace RuneMagic
             EditorGUILayout.HelpBox(
                 "Build the map like a normal Unity 2D tilemap, then drop objects on it.\n\n" +
                 "1. Tiles live in Assets/Tiles (Floor / Wall / Special / Cover). Create tile palette if the Rune Palette is missing.\n" +
-                "2. Main already has a Map (Grid + Tiles + Environment Details + Environment Details lvl 2 + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Interactables are GameObjects, not a tile layer. Drop Altar on an empty object and dress it with tiles. Check Teach Recipe so prayer shows a writing; uncheck Show Other Writing to teach only that formula (Earth-pillar without Stone). Check Show Birth for Fire · Air = Spark. Both can be on. Drop Speech on a Gate for a one-shot approach window, or Sign / Talk for Read and Talk.\n" +
+                "2. Main already has a Map (Grid + Tiles + Environment Details + Environment Details lvl 2 + Cover). Extra Floor / Walls / Coverings children are fine — Play merges them. A cell is floor only if you stamp Kind = Floor or paint a Floor brush. Interactables are GameObjects, not a tile layer. Drop Altar on an empty object over tiles or in a prefab group — do not generate default art. Check Teach Recipe so prayer shows a writing; uncheck Show Other Writing to teach only that formula (Earth-pillar without Stone). Check Show Birth so prayer shows Fire · Air = Spark on the same screen. Both can be on. Drop Speech on a Gate for a one-shot approach window, or Sign / Talk for Read and Talk.\n" +
                 "3. Window → 2D → Tile Palette → open Rune Palette. Select Tiles and paint. Select Environment Details for plants and furniture. Select Environment Details lvl 2 for a second stack on those cells. Select Cover for ice / fire / aura. Hide a layer in Tile Properties, the Rune Layers Scene overlay, or the Hierarchy eye so you can paint the tiles under it.\n" +
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details or lvl 2, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
@@ -126,7 +126,7 @@ namespace RuneMagic
             DrawPlace("Speech", "WorldSpeech — approach window, plays once");
             DrawPlace("Sign", "WorldSpeech — E Read opens a text window");
             DrawPlace("Talk", "WorldSpeech — E Talk opens a text window");
-            DrawPlace("Altar", "WorldAltar — Teach Recipe (uncheck Show Other Writing for one formula) and/or Show Birth");
+            DrawPlace("Altar", "WorldAltar — Teach Recipe and/or Show Birth; both pray a screen, no world art");
             DrawPlace("Crystal", "SpawnCrystal — death / Yield return");
             DrawPlace("Charm", "FreeCharm — teaches Fire · Mercury");
             DrawPlace("Rune", "RuneStringSource — a written sentence in the field");

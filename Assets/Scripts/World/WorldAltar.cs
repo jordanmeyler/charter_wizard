@@ -7,10 +7,9 @@ namespace RuneMagic
     /// One teaching slab. An empty use volume — place it over
     /// tiles or under a prefab group. Transform / parent scale
     /// sizes the pray range (the gold circle). Check Teach Recipe
-    /// to pray a written sentence. Uncheck Show Other Writing to
-    /// teach only that recipe. Check Show Birth to stand sources
-    /// = the born mark (Fire · Air = Spark). Recipe and birth can
-    /// be on at once.
+    /// to pray a written sentence. Check Show Birth to pray the
+    /// join (sources = the born mark) on the same screen. Neither
+    /// draws marks in the world.
     /// </summary>
     [ExecuteAlways]
     [SelectionBase]
@@ -18,14 +17,11 @@ namespace RuneMagic
     public sealed class WorldAltar : MonoBehaviour, ILookable, IInteractable, IRuneSource
     {
         const string DisplayChild = "Display";
-        public const float MarkHover = 0.48f;
-        public const float PickRadius = 0.85f;
-        const float MarkStep = 0.55f;
 
         [Header("What this slab teaches")]
         [Tooltip("Pray shows a written recipe and Cast can aim it.")]
         [SerializeField] bool teachRecipe = true;
-        [Tooltip("Stand the birth equation in the world: sources, an equals, then the born mark.")]
+        [Tooltip("Pray shows the join: sources = the born mark (Fire · Air = Spark).")]
         [SerializeField] bool showBirth;
 
         [Header("Recipe")]
@@ -50,7 +46,7 @@ namespace RuneMagic
         [SerializeField] string look = "a stone for prayer. The sentence waits.";
         [Tooltip("Pray / look reach. Transform or parent scale multiplies this. The gold circle in the Scene is that range.")]
         [SerializeField] float radius = 1.15f;
-        [Tooltip("Optional. Leave unset so tiles or the generated birth marks carry the look.")]
+        [Tooltip("Optional. Leave unset so tiles or grouped prefabs carry the look.")]
         [SerializeField] string spriteId;
         [SerializeField] Sprite portrait;
         [HideInInspector]
@@ -63,19 +59,14 @@ namespace RuneMagic
         string _spell;
         string _look;
         string _verb;
-        Transform _picture;
-        float _born;
-
         public RuneId Result { get; private set; } = RuneId.Spark;
         public RuneId[] Sources { get; private set; } = System.Array.Empty<RuneId>();
         public bool TeachesRecipe => teachRecipe;
         public bool ShowsBirth => showBirth;
 
         public Vector3 WorldOrigin => transform.position;
-        public Vector3 WorldPosition => showBirth
-            ? transform.TransformPoint(Vector3.up * MarkHover)
-            : transform.position;
-        public float LookRadius => LocalLookRadius * SizeScale;
+        public Vector3 WorldPosition => transform.position;
+        public float LookRadius => Mathf.Max(0.55f, radius) * SizeScale;
         public float InteractRadius => Mathf.Max(0.4f, radius) * SizeScale;
         public float SizeScale
         {
@@ -86,19 +77,16 @@ namespace RuneMagic
             }
         }
 
-        float LocalLookRadius => showBirth
-            ? PickRadius + 0.35f * (Sources != null ? Sources.Length : 0)
-            : Mathf.Max(0.55f, radius);
         public bool CanLook => true;
-        public bool CanInteract => teachRecipe;
+        public bool CanInteract => teachRecipe || showBirth;
         public string InteractVerb => string.IsNullOrWhiteSpace(_verb) ? "Pray" : _verb;
-        public string LookText => showBirth
+        public string LookText => showBirth && !teachRecipe
             ? Sight.OfBirth(Sources, Result)
             : Sight.OfInteract(_look, InteractVerb);
         public IReadOnlyList<RuneId> AuthoredRecipe => _recipe;
         public IReadOnlyList<RuneId> AuthoredVia => _via;
         public bool ShowsOtherWriting => _showOtherWriting;
-        public bool IsEmitting => showBirth && (Result != RuneId.None || PrayerWorking.HasMarks(Sources));
+        public bool IsEmitting => false;
         public float VoiceRadius => 3.2f;
         public float VoiceWeight => 1.8f;
         public RuneSourceKind SourceKind => RuneSourceKind.String;
@@ -231,13 +219,10 @@ namespace RuneMagic
             _via = PrayerWorking.Copy(via);
             _showOtherWriting = showOtherWriting;
             ResolveBirth();
+            ClearDisplay();
             if (!string.IsNullOrWhiteSpace(spriteId) || portrait != null)
             {
                 AuthoringUtil.ApplyLook(gameObject, 3, spriteId, portrait, null, 1f);
-            }
-            else if (showBirth)
-            {
-                RefreshLook();
             }
 
             if (_wired)
@@ -246,9 +231,8 @@ namespace RuneMagic
             }
 
             _wired = true;
-            _born = Time.time;
             Lookables.Register(this);
-            if (teachRecipe)
+            if (teachRecipe || showBirth)
             {
                 Interactables.Register(this);
             }
@@ -266,21 +250,34 @@ namespace RuneMagic
                 ? PrayerWorking.Copy(authoredSources)
                 : System.Array.Empty<RuneId>();
             ResolveBirth();
-            if (showBirth && portrait == null && string.IsNullOrEmpty(spriteId))
-            {
-                RefreshLook();
-            }
+            ClearDisplay();
         }
 
         public void Interact(SanctumDirector director)
         {
-            if (director == null || !teachRecipe)
+            if (director == null || !CanInteract)
             {
                 return;
             }
 
-            if (!PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out var working, _showOtherWriting)
-                || !working.HasRecipe)
+            var working = default(PrayerWorking);
+            var taught = false;
+            if (teachRecipe
+                && PrayerReveal.TryResolve(_recipe, _via, _spell, director.Grimoire, out working, _showOtherWriting)
+                && working.HasRecipe)
+            {
+                taught = true;
+            }
+
+            if (showBirth && (Result != RuneId.None || PrayerWorking.HasMarks(Sources)))
+            {
+                working = taught
+                    ? PrayerReveal.WithBirth(working, Sources, Result)
+                    : PrayerReveal.BirthOnly(Sources, Result);
+                taught = true;
+            }
+
+            if (!taught || !working.HasContent)
             {
                 director.Log(GlyphView.Speak(
                     "The altar is silent. No written sentence answers.",
@@ -294,6 +291,14 @@ namespace RuneMagic
 
         public static string RevealLine(PrayerWorking working)
         {
+            if (working.HasBirth && !working.HasRecipe)
+            {
+                var join = BirthPhrase(working);
+                return GlyphView.Speak(
+                    "A join is shown. " + join + ".",
+                    "A join is shown. The marks become another mark.");
+            }
+
             if (!working.HasRecipe)
             {
                 return GlyphView.Speak(
@@ -307,12 +312,26 @@ namespace RuneMagic
                 phrase += " — or " + WorkingNames.RunePhrase(working.Via);
             }
 
+            if (working.HasBirth)
+            {
+                phrase += " — " + BirthPhrase(working);
+            }
+
             var develop = working.Entry.Spell != SpellId.None
                 ? $"A working is shown. {phrase}. ({working.Entry.Name})"
                 : $"A working is shown. {phrase}.";
             return GlyphView.Speak(
                 develop,
                 "A working is shown. Cast it, or leave it on the stone.");
+        }
+
+        static string BirthPhrase(PrayerWorking working)
+        {
+            var sources = WorkingNames.RunePhrase(working.BirthSources);
+            var born = working.BirthResult == RuneId.None
+                ? "a mark"
+                : RuneCatalog.NameOf(working.BirthResult);
+            return string.IsNullOrEmpty(sources) ? born : sources + " become " + born;
         }
 
         void ResolveBirth()
@@ -326,169 +345,11 @@ namespace RuneMagic
         {
             rune = RuneId.None;
             distance = float.MaxValue;
-            if (!showBirth || !IsEmitting)
-            {
-                return false;
-            }
-
-            var reach = (0.48f + extra) * SizeScale;
-            var layout = Layout();
-            for (var i = 0; i < layout.Marks.Length; i++)
-            {
-                var gap = Vector2.Distance(world, transform.TransformPoint(layout.Marks[i].Local));
-                if (gap <= reach && gap < distance)
-                {
-                    distance = gap;
-                    rune = layout.Marks[i].Rune;
-                }
-            }
-
-            return rune != RuneId.None;
-        }
-
-        void RefreshLook()
-        {
-            ResolveBirth();
-            ClearDisplay();
-            if (!showBirth)
-            {
-                return;
-            }
-
-            if (portrait != null || !string.IsNullOrEmpty(spriteId))
-            {
-                AuthoringUtil.ApplyLook(gameObject, 5, spriteId, portrait, null, 1f);
-                return;
-            }
-
-            var host = GetComponent<SpriteRenderer>();
-            if (host != null)
-            {
-                host.enabled = false;
-                host.sprite = null;
-            }
-
-            var display = new GameObject(DisplayChild);
-            display.transform.SetParent(transform, false);
-            var slab = new GameObject("Slab");
-            slab.transform.SetParent(display.transform, false);
-            var baseView = slab.AddComponent<SpriteRenderer>();
-            baseView.sprite = SpriteFactory.AltarBase();
-            baseView.color = Color.white;
-            baseView.sortingOrder = 5;
-            var layout = Layout();
-            slab.transform.localScale = new Vector3(Mathf.Max(1f, layout.Width / 1.15f), 1f, 1f);
-
-            for (var i = 0; i < layout.Marks.Length; i++)
-            {
-                var mark = layout.Marks[i];
-                var view = RuneSign.MountMark(display.transform, mark.Rune, MarkHover, mark.Rune == Result ? 0.95f : 0.82f);
-                view.localPosition = mark.Local;
-                AddPick(view);
-                RuneSign.NamePlate(view, mark.Rune, new Vector3(0f, -0.42f, 0f));
-                if (mark.Rune == Result)
-                {
-                    _picture = view;
-                }
-            }
-
-            if (layout.HasEquals)
-            {
-                RuneSign.MountEquals(display.transform, layout.EqualsLocal, 0.72f);
-            }
-
-            var glow = SpriteFactory.HasNature(Result)
-                ? Color.Lerp(RunePalette.Of(Result), Color.white, 0.15f)
-                : new Color(0.9f, 0.82f, 0.55f);
-            FixtureGlow.Attach(display.transform, new Color(glow.r, glow.g, glow.b, 0.5f), 1.55f, 0.12f);
-        }
-
-        readonly struct MarkAt
-        {
-            public MarkAt(RuneId rune, Vector3 local)
-            {
-                Rune = rune;
-                Local = local;
-            }
-
-            public RuneId Rune { get; }
-            public Vector3 Local { get; }
-        }
-
-        readonly struct AltarLayout
-        {
-            public AltarLayout(MarkAt[] marks, Vector3 equalsLocal, bool hasEquals, float width)
-            {
-                Marks = marks;
-                EqualsLocal = equalsLocal;
-                HasEquals = hasEquals;
-                Width = width;
-            }
-
-            public MarkAt[] Marks { get; }
-            public Vector3 EqualsLocal { get; }
-            public bool HasEquals { get; }
-            public float Width { get; }
-        }
-
-        AltarLayout Layout()
-        {
-            var count = 0;
-            if (Sources != null)
-            {
-                for (var i = 0; i < Sources.Length; i++)
-                {
-                    if (Sources[i] != RuneId.None)
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            var hasResult = Result != RuneId.None;
-            var hasEquals = count > 0 && hasResult;
-            var slots = count + (hasEquals ? 1 : 0) + (hasResult ? 1 : 0);
-            if (slots == 0)
-            {
-                return new AltarLayout(System.Array.Empty<MarkAt>(), Vector3.zero, false, MarkStep);
-            }
-
-            var marks = new MarkAt[count + (hasResult ? 1 : 0)];
-            var width = (slots - 1) * MarkStep;
-            var x = -width * 0.5f;
-            var written = 0;
-            if (Sources != null)
-            {
-                for (var i = 0; i < Sources.Length; i++)
-                {
-                    if (Sources[i] == RuneId.None)
-                    {
-                        continue;
-                    }
-
-                    marks[written++] = new MarkAt(Sources[i], new Vector3(x, MarkHover, 0f));
-                    x += MarkStep;
-                }
-            }
-
-            var equalsLocal = Vector3.zero;
-            if (hasEquals)
-            {
-                equalsLocal = new Vector3(x, MarkHover, 0f);
-                x += MarkStep;
-            }
-
-            if (hasResult)
-            {
-                marks[written] = new MarkAt(Result, new Vector3(x, MarkHover, 0f));
-            }
-
-            return new AltarLayout(marks, equalsLocal, hasEquals, width + MarkStep);
+            return false;
         }
 
         void ClearDisplay()
         {
-            _picture = null;
             var child = transform.Find(DisplayChild);
             if (child == null)
             {
@@ -506,23 +367,6 @@ namespace RuneMagic
             }
         }
 
-        static void AddPick(Transform mark)
-        {
-            if (mark == null)
-            {
-                return;
-            }
-
-            var collider = mark.GetComponent<CircleCollider2D>();
-            if (collider == null)
-            {
-                collider = mark.gameObject.AddComponent<CircleCollider2D>();
-            }
-
-            collider.isTrigger = true;
-            collider.radius = 0.48f;
-        }
-
         void OnEnable()
         {
             if (Application.isPlaying)
@@ -531,11 +375,8 @@ namespace RuneMagic
                 return;
             }
 
-            if (showBirth)
-            {
-                ResolveBirth();
-                RefreshLook();
-            }
+            ResolveBirth();
+            ClearDisplay();
         }
 
         void OnValidate()
@@ -564,14 +405,7 @@ namespace RuneMagic
             }
 
             ResolveBirth();
-            if (showBirth)
-            {
-                RefreshLook();
-            }
-            else
-            {
-                ClearDisplay();
-            }
+            ClearDisplay();
         }
 #endif
 
@@ -579,16 +413,6 @@ namespace RuneMagic
         {
             Lookables.Unregister(this);
             Interactables.Unregister(this);
-        }
-
-        void LateUpdate()
-        {
-            if (!Application.isPlaying || !showBirth)
-            {
-                return;
-            }
-
-            RuneSign.Pulse(_picture, Result, Time.time - _born, 0.95f);
         }
 
         public void Collect(List<RuneId> buffer)
@@ -633,6 +457,6 @@ namespace RuneMagic
             Gizmos.DrawWireSphere(transform.position, 0.12f);
         }
 
-        float UseRadius => teachRecipe ? InteractRadius : LookRadius;
+        float UseRadius => InteractRadius;
     }
 }

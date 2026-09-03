@@ -1,6 +1,8 @@
 # Rune Magic — Design Reference
 
-*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.24. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+*A 2D puzzle-RPG where the player perceives the runic substrate of reality and composes spells from it. The correct spell (or combination) instantly resolves an encounter — combat is a lock-and-key puzzle, not a damage race. Living source of truth. Version 0.25. Spell catalog: [`SPELLS.md`](SPELLS.md). World materials: [`MATERIALS.md`](MATERIALS.md). First floor: [`FLOOR1.md`](FLOOR1.md). Eleven basic runes; joins are wrought runes. Primordials later.*
+
+**Do not generate pictures in the world by default.** The scene already has tiles and authored sprites. Do not spawn slabs, rune marks, glows, nature pictures, or other default art on the page. When something must be shown — a recipe, a join, a speech — pop a HUD screen. Only put generated art in the world when we ask for it and work it out together.
 
 ---
 
@@ -235,7 +237,7 @@ A **recent-cast strip** (last twenty-five) sits on the Charter and the world, wi
 
 A **WorldAltar** is an empty use volume. Place it on a GameObject and dress the statue with tiles. Check **Teach Recipe** and set the **recipe runes** — names are not locked, and the same working can be written more than one way. **E** or the Interact button prays: the game shows that recipe (and the other writing when there is one) with elemental / catalyst labels. Uncheck **Show Other Writing** to teach only the Recipe — Earth-pillar then stays `Earth · Salt` and does not also show Stone. Cast aims the shown chain (it counts in Recent); Continue leaves it.
 
-Check **Show Birth** to teach a join on the same slab. Sources stand on the left, an equals, then the born mark — Fire and Air, then Spark. Pick the result and the birth recipe fills in; override Sources to show a different writing. The marks speak into the Charter. Both checks can be on at once.
+Check **Show Birth** to teach a join on the same slab. **E** prays the same screen as a recipe: sources, an equals, then the born mark — Fire and Air become Spark. Pick the result and the birth recipe fills in; override Sources to show a different writing. Both checks can be on at once. The altar does not draw that equation in the world.
 
 A **WorldSpeech** is a written window. **Approach** pops it when the adept walks in — drop it on a Gate for a greeting that plays once. **Interact** uses the same E / verb button: **Read** a sign, **Talk** to a figure. Extra pages click through; a conversation tree can replace that later. Time holds while the window is up. Esc closes it; E / Space / Enter / Continue advances.
 

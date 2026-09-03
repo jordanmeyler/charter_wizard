@@ -6,9 +6,9 @@ namespace RuneMagic
     /// <summary>
     /// Something the adept can use in the world — pray, read a sign,
     /// talk, pull a lever. Lookables only fill the info box; this is
-    /// the Interact button. Drop <see cref="WorldAltar"/> or
-    /// <see cref="WorldSpeech"/> on an empty object so tiles or child
-    /// sprites can carry the look.
+        /// the Interact button. Drop <see cref="WorldAltar"/> or
+        /// <see cref="WorldSpeech"/> on an empty object over tiles or
+        /// a prefab group. Do not generate default world art.
     /// </summary>
     public interface IInteractable
     {

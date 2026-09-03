@@ -12,19 +12,27 @@ namespace RuneMagic
         public PrayerWorking(
             CodexEntry entry,
             IReadOnlyList<RuneId> recipe,
-            IReadOnlyList<RuneId> via)
+            IReadOnlyList<RuneId> via,
+            IReadOnlyList<RuneId> birthSources = null,
+            RuneId birthResult = RuneId.None)
         {
             Entry = entry;
             Recipe = recipe ?? System.Array.Empty<RuneId>();
             Via = via ?? System.Array.Empty<RuneId>();
+            BirthSources = birthSources ?? System.Array.Empty<RuneId>();
+            BirthResult = birthResult;
         }
 
         public CodexEntry Entry { get; }
         public IReadOnlyList<RuneId> Recipe { get; }
         public IReadOnlyList<RuneId> Via { get; }
+        public IReadOnlyList<RuneId> BirthSources { get; }
+        public RuneId BirthResult { get; }
 
         public bool HasRecipe => HasMarks(Recipe);
         public bool HasVia => HasMarks(Via) && !WorkingNames.SameComposition(Recipe, Via);
+        public bool HasBirth => BirthResult != RuneId.None || HasMarks(BirthSources);
+        public bool HasContent => HasRecipe || HasBirth;
 
         public static bool HasMarks(IReadOnlyList<RuneId> runes)
         {
@@ -152,6 +160,29 @@ namespace RuneMagic
         public static PrayerWorking FromEntry(CodexEntry entry)
         {
             return Shown(entry, true);
+        }
+
+        public static PrayerWorking BirthOnly(IReadOnlyList<RuneId> sources, RuneId result)
+        {
+            return new PrayerWorking(
+                default,
+                System.Array.Empty<RuneId>(),
+                System.Array.Empty<RuneId>(),
+                PrayerWorking.Copy(sources),
+                result);
+        }
+
+        public static PrayerWorking WithBirth(
+            PrayerWorking working,
+            IReadOnlyList<RuneId> sources,
+            RuneId result)
+        {
+            return new PrayerWorking(
+                working.Entry,
+                working.Recipe,
+                working.Via,
+                PrayerWorking.Copy(sources),
+                result);
         }
 
         static PrayerWorking Shown(CodexEntry entry, bool showOther)
