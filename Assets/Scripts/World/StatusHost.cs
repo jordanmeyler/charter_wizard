@@ -603,7 +603,15 @@ namespace RuneMagic
                     continue;
                 }
 
-                _effects[i].Remaining -= Time.deltaTime;
+                var drain = VitalLaw.MeterDrainScale(_effects[i].Id, grid, transform.position, airborne);
+                if (_effects[i].Spec.IsMeter
+                    && VitalLaw.MeterPausesWithoutContact(_effects[i].Id)
+                    && drain <= 0f)
+                {
+                    continue;
+                }
+
+                _effects[i].Remaining -= Time.deltaTime * Mathf.Max(0f, drain);
                 if (_effects[i].Remaining > 0f)
                 {
                     continue;

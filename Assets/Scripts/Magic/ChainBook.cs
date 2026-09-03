@@ -62,7 +62,7 @@ namespace RuneMagic
             SetBirth(RuneId.Acid, RuneId.Steam, RuneId.Metal);
             SetBirth(RuneId.Plasma, RuneId.Flame, RuneId.Lightning);
             SetBirth(RuneId.Oil, RuneId.Plant, RuneId.Fire, RuneId.Earth);
-            SetBirth(RuneId.Miasma, RuneId.Cloud, RuneId.Acid);
+            SetBirth(RuneId.Miasma, RuneId.Poison, RuneId.Fire);
             SetBirth(RuneId.Aether, RuneId.Lumen, RuneId.Umbra);
             SetBirth(RuneId.DarkCrystal, RuneId.Crystal, RuneId.Umbra, RuneId.Mors);
 

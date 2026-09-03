@@ -104,7 +104,8 @@ namespace RuneMagic
         /// A fireball or a wall does not.
         /// Burning and poison are meters: they run while the body
         /// still stands in that fire or foul, then empty is ash or death.
-        /// Leave the cover and the condition resets.
+        /// Leave the fire and the burn lifts. Leave the poison and
+        /// the level stays until Light cleanses it.
         /// </summary>
         public bool NeedsConcentration => IsStance || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;

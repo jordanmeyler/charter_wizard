@@ -14,7 +14,7 @@ namespace RuneMagic
     /// timber walk swaps to leftover dirt (look and stamp). Vine
     /// cover speaks Plant — Vine is a spell, not a rune.
     /// Wither cover is what withholding leaves; it speaks Death.
-    /// Miasma is Cloud · Acid, a hanging fog wind must take.
+    /// Miasma is Poison · Fire, a hanging fog wind must take.
     /// Poison is a liquid slick yield washes. Fog is the Cloud veil.
     /// </summary>
     public static class CoverCatalog

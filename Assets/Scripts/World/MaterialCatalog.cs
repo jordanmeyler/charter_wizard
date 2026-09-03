@@ -415,10 +415,10 @@ namespace RuneMagic
                     RuneId.Plant, RuneId.Fire, RuneId.Earth, RuneId.Oil),
 
                 new WorldMaterial(MaterialId.Miasma, "miasma",
-                    "The hanging veil forced through acid. Foul breath on the floor.",
+                    "Hunger taking the grave of a plant. Foul breath on the floor. It will not catch.",
                     RuneId.Miasma, MaterialPaint.Miasma,
                     new Color(0.28f, 0.42f, 0.12f), new Color(0.22f, 0.32f, 0.1f), false,
-                    RuneId.Cloud, RuneId.Acid, RuneId.Miasma),
+                    RuneId.Poison, RuneId.Fire, RuneId.Miasma),
 
                 new WorldMaterial(MaterialId.Wardstone, "wardstone",
                     "Rest given a body, then the mind holds it. Mostly spell-proof.",
@@ -471,12 +471,12 @@ namespace RuneMagic
             Flag(MaterialId.Rain, -1.1f, 0.7f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchRain, VitalLaw.ConductRain);
             Flag(MaterialId.Snow, -0.65f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchIce, VitalLaw.ConductPoor);
             Flag(MaterialId.Glacier, -0.9f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchGlacier, VitalLaw.ConductPoor);
-            Flag(MaterialId.Acid, 0.15f, 0.45f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductAcid);
+            Flag(MaterialId.Acid, 0.45f, 0.45f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerTinder, VitalLaw.QuenchDry, VitalLaw.ConductAcid);
             Flag(MaterialId.Water, -1.6f, 1.25f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchWater, VitalLaw.ConductWater);
             Flag(MaterialId.Plant, 1.1f, -1.1f, VitalLaw.PlantBurnSeconds, VitalLaw.HungerPlant, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
             Flag(MaterialId.Dirt, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
             Flag(MaterialId.Oil, 2.2f, -0.25f, VitalLaw.OilBurnSeconds, VitalLaw.HungerOil, VitalLaw.QuenchDry, VitalLaw.ConductInsulator);
-            Flag(MaterialId.Miasma, 0.1f, 0f, VitalLaw.TinderBurnSeconds, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
+            Flag(MaterialId.Miasma, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
             Flag(MaterialId.Wardstone, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);
             Flag(MaterialId.Aegis, 0f, 1.1f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductVein);
             Flag(MaterialId.Fire, 0f, 0f, 0f, VitalLaw.HungerNeutral, VitalLaw.QuenchDry, VitalLaw.ConductPoor);

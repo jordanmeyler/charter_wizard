@@ -857,7 +857,9 @@ namespace RuneMagic
                 return true;
             }
 
-            var step = delta.normalized * (speed > 0f ? speed : _walk) * Time.deltaTime;
+            var pace = speed > 0f ? speed : _walk;
+            pace *= WorldWork.TerrainWalkScale(_grid, transform.position, false, _status);
+            var step = delta.normalized * pace * Time.deltaTime;
             var next = (Vector2)transform.position + step;
             if (Blocked(next))
             {

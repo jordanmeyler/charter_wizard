@@ -49,6 +49,7 @@ namespace RuneMagic
             Add(RuneId.Ash, RuneId.Earth, RuneId.Oil, BlendKind.Stable, "Pressed vegetable hunger given rest. Ash · Earth → Oil.");
             Add(RuneId.Plant, RuneId.Mors, RuneId.Poison, BlendKind.Stable, "The vegetable body, then the grave. Plant · Death → Poison.");
             Add(RuneId.Flame, RuneId.Lightning, RuneId.Plasma, BlendKind.Violent, "Witchfire joined to the bolt. Flame · Lightning → Plasma.");
+            Add(RuneId.Poison, RuneId.Fire, RuneId.Miasma, BlendKind.Violent, "Hunger takes the grave of a plant. Poison · Fire → Miasma.");
             Add(RuneId.Cloud, RuneId.Acid, RuneId.Miasma, BlendKind.Violent, "The hanging veil forced through acid. Cloud · Acid → Miasma.");
             Add(RuneId.Crystal, RuneId.Umbra, RuneId.DarkCrystal, BlendKind.Stable, "Crystal withheld. Dark-crystal is Free masonry.");
         }

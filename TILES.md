@@ -179,18 +179,19 @@ stays. A burned item spends the cell under it the same way.
 ### 2. Air — miasma, then the air stone
 
 Miasma is not a wall. It is airborne poison fog — a cloud with
-a wider reach than a slick. Walking in the thick of it throws
-you back to the last safe floor. Standing beside it still
-counts as contact. **Wind** (`Air · Mercury`) or Gale clears
-it. **Poison** is a different cover: a liquid on the walk.
-It needs contact, and **yield** (Douse / Rain / Water-jet)
-washes it. Do not stamp poison when you mean miasma.
+a wider reach than a slick. Walking in it **slows** the step
+and fills poison faster than a liquid slick. Standing beside
+it still counts as contact. **Wind** (`Air · Mercury`) or Gale
+clears it. **Poison** is a different cover: a liquid on the
+walk. It needs contact, and **yield** (Douse / Rain / Water-jet)
+washes it. Hunger on that slick lifts it as miasma. Do not
+stamp poison when you mean miasma.
 
 1. Select **Tiles** so you can see the air room.
 2. Tile Properties: uncheck Kind. On **Cover** (or **Write onto
    Cover layer**), pick the **Miasma** mark. Material =
    `Miasma` on that layer is the same stamp. The cell speaks
-   Cloud · Acid · Miasma. Miasma is see-through by default
+   Poison · Fire · Miasma. Miasma is see-through by default
    (about 40%). Check **Opacity** and drag the slider if you
    want it thinner or more solid.
 3. Click (or drag) the floor you want fouled — the path to the
@@ -200,7 +201,7 @@ washes it. Do not stamp poison when you mean miasma.
 4. Drag `Assets/Prefabs/Items/Air Stone` onto the far side of the fog.
 5. Optional: `GameObject → Rune Magic → Fog` on those cells if
    you want a named lock Wind can target. Painted Cover-Miasma
-   already throws you back and vents when air is sent.
+   already slows the walk, fills poison faster, and vents when air is sent.
 
 ### 3. Earth — pits and the drop
 
@@ -272,7 +273,7 @@ leftover dirt (look and Earth). It does not draw ash over the
 tile you placed. Masonry stays. Cover-Ash and spell leftovers
 may still sit on a tile. Click any spoken cover — fire, ice,
 ash — to draw that rune.
-Miasma is Cloud · Acid, Fog is Cloud. A kindled hall is the
+Miasma is Poison · Fire, Fog is Cloud. A kindled hall is the
 **Aura-Fire** brush.
 
 1. Select **Cover** in the Hierarchy.
@@ -474,7 +475,7 @@ Each spoken cover uses the same generated mark as that rune.
 | `water` | Water | Cavern water tile | Water |
 | `vine` | Plant · Water · Salt · Earth | Jungle vines | Plant |
 | `ash` | Ash · Fire · Plant | Scorched rock over the tile | Ash |
-| `miasma` | Miasma · Cloud · Acid | Airborne poison fog. Wind must take it. Wider than a slick. | Miasma |
+| `miasma` | Miasma · Poison · Fire | Airborne poison fog. Wind must take it. Wider than a slick. Holds the step. | Miasma |
 | `poison` | Poison · Plant · Death | Liquid slick. Contact only; yield washes it. | Poison |
 | `fog` | Cloud · Air · Water | Cloud veil | Cloud |
 | `cracks` | — (look only) | Crypt cracks | — |

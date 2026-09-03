@@ -84,6 +84,13 @@ namespace RuneMagic
                 speed *= WorldWork.FloatWalkScale;
             }
 
+            var grid = _director != null ? _director.Grid : null;
+            speed *= WorldWork.TerrainWalkScale(
+                grid,
+                _body.position,
+                _adept != null && _adept.IsAirborne,
+                host);
+
             _body.MovePosition(_body.position + input * speed * Time.fixedDeltaTime);
         }
 

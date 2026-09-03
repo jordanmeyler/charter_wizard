@@ -23,9 +23,29 @@ namespace RuneMagic
         // Hang without logos. Weak walk. Wind, vine, and a jet of yield carry you.
         public const float FloatSeconds = 12f;
         public const float FloatWalkScale = 0.2f;
+        /// <summary>
+        /// Miasma holds the step. It does not throw the body back.
+        /// Thick enough that plants are not needed to keep prey in
+        /// the cloud while the faster poison clock runs.
+        /// </summary>
+        public const float MiasmaWalkScale = 0.4f;
         public const float FloatDriftTiles = 3.4f;
         public const float TimeStopSeconds = 8f;
         public const int VeilRadius = 2;
+
+        /// <summary>
+        /// Walk scale from the ground itself. Float already applied
+        /// its own cut. A wind ward or gale-form turns the cloud.
+        /// </summary>
+        public static float TerrainWalkScale(WorldGrid grid, Vector3 world, bool airborne, StatusHost host)
+        {
+            if (airborne || (host != null && host.Fends(Essence.Poison)))
+            {
+                return 1f;
+            }
+
+            return WorldPhysics.MiasmaCloudAt(grid, world) ? MiasmaWalkScale : 1f;
+        }
 
         public static bool IsHop(SpellId spell) =>
             spell == SpellId.Hop;
