@@ -75,6 +75,7 @@ namespace RuneMagic
     /// Written story-chains. 1–40 are the ordinary book (no Death).
     /// 41–50 are Death / Free. 51 is Time-stop (Charter).
     /// 121–128 are plant-cure, light orbs, and living venom.
+    /// 129 is Float.
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -210,7 +211,8 @@ namespace RuneMagic
             E(125, SpellBook.Grave, SpellId.Spore, "The grave of a plant given breath and sent. A spore. Foul breath that poisons what it crosses.", "Spore", "Water · Salt · Earth · Death · Air · Mercury", "Poison · Air · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
-            E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain)
+            E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
+            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -990,9 +992,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 128)
+            if (Entries.Length < 129)
             {
-                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, and living venom");
+                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, living venom, and Float");
             }
 
             var flight = Composition.FromSequence(new[]
@@ -1003,6 +1005,13 @@ namespace RuneMagic
             if (flightExact.Count == 0 || flightExact[0].Spell != SpellId.Flight)
             {
                 broken.Add("Air · Animus · Air · Mercury · Salt should be Flight");
+            }
+
+            var hover = Composition.FromSequence(new[] { RuneId.Air, RuneId.Mercury, RuneId.Salt });
+            var hoverExact = ChainBook.CollectExact(hover, SpellShape.None);
+            if (hoverExact.Count == 0 || hoverExact[0].Spell != SpellId.Float)
+            {
+                broken.Add("Air · Mercury · Salt should be Float");
             }
 
             if (!TryGet(SpellId.TimeStop, out var timeStop) || timeStop.FreeOnly)

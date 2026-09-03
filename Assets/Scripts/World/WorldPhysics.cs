@@ -120,7 +120,7 @@ namespace RuneMagic
                 return SpellShape.Pillar;
             }
 
-            if (WorldWork.IsHop(spell) || WorldWork.IsFlight(spell) || SpellVerb.Of(spell).Target == SpellTarget.Self)
+            if (WorldWork.IsAirborneWork(spell) || SpellVerb.Of(spell).Target == SpellTarget.Self)
             {
                 return SpellShape.Self;
             }

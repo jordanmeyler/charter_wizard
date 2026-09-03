@@ -78,7 +78,13 @@ namespace RuneMagic
                 }
             }
 
-            _body.MovePosition(_body.position + input * moveSpeed * Time.fixedDeltaTime);
+            var speed = moveSpeed;
+            if (_adept != null && _adept.Drifts)
+            {
+                speed *= WorldWork.FloatWalkScale;
+            }
+
+            _body.MovePosition(_body.position + input * speed * Time.fixedDeltaTime);
         }
 
         static Vector2 ReadMove()

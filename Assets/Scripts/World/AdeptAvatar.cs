@@ -26,6 +26,7 @@ namespace RuneMagic
 
         float _hopUntil;
         float _flightUntil;
+        float _floatUntil;
         float _stillUntil;
         float _flameStand;
         SpriteRenderer _sprite;
@@ -46,11 +47,12 @@ namespace RuneMagic
         /// </summary>
         public bool IsHopping => Time.time < _hopUntil;
         public bool IsFlying => Time.time < _flightUntil;
+        public bool IsFloating => Time.time < _floatUntil;
         public bool Flies
         {
             get
             {
-                if (IsFlying)
+                if (IsFlying || IsFloating)
                 {
                     return true;
                 }
@@ -61,6 +63,27 @@ namespace RuneMagic
                 }
 
                 return _status != null && _status.Flies;
+            }
+        }
+        /// <summary>
+        /// Float hangs without logos. WASD is a crawl. Flight and
+        /// cloud-form still walk.
+        /// </summary>
+        public bool Drifts
+        {
+            get
+            {
+                if (!IsFloating || IsFlying)
+                {
+                    return false;
+                }
+
+                if (_status == null)
+                {
+                    _status = GetComponent<StatusHost>();
+                }
+
+                return _status == null || !_status.Flies;
             }
         }
         public bool IsAirborne => IsHopping || Flies;
@@ -96,6 +119,16 @@ namespace RuneMagic
             _flightUntil = Mathf.Max(_flightUntil, Time.time + seconds);
         }
 
+        public void KeepFloating(float seconds)
+        {
+            if (seconds <= 0f)
+            {
+                return;
+            }
+
+            _floatUntil = Mathf.Max(_floatUntil, Time.time + seconds);
+        }
+
         public void HoldWorld(float seconds)
         {
             if (seconds <= 0f)
@@ -115,6 +148,7 @@ namespace RuneMagic
         {
             _hopUntil = 0f;
             _flightUntil = 0f;
+            _floatUntil = 0f;
             _stillUntil = 0f;
             _flameStand = 0f;
             _casting = false;
@@ -298,7 +332,7 @@ namespace RuneMagic
                 }
 
                 _anim?.Play(clip, fps);
-                var bob = moving || IsHopping || IsFlying || aiming
+                var bob = moving || IsHopping || IsFlying || IsFloating || aiming
                     ? 1f
                     : 1f + Mathf.Sin(Time.time * 2.4f) * 0.018f;
                 transform.localScale = new Vector3(_restScale.x, _restScale.y * bob, _restScale.z);
