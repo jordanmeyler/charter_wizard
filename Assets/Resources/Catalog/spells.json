@@ -450,7 +450,7 @@
       "id": "IcePillar",
       "book": "Cross",
       "name": "Ice-pillar",
-      "want": "Hard water asked to rest as a column. Over a pit it must join two floors, or it falls. On water it freezes without banks. It will thaw.",
+      "want": "Hard water asked to rest as a column. Over a pit it must join two floors, or it falls. On water it freezes the pool around it without banks, the same ice sheet as ice-spear. It will thaw.",
       "recipe": "Water · Earth · Salt · Earth",
       "via": "Ice · Salt · Earth",
       "form": "Pillar",

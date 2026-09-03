@@ -129,6 +129,7 @@ namespace RuneMagic
 
         public bool HasWaterCover =>
             !HasAshCover
+            && !HasIceCover
             && (Material == MaterialId.Water
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase));
@@ -1043,7 +1044,7 @@ namespace RuneMagic
 
             if (IsDeepWater)
             {
-                BecomeWalkable(MaterialId.Ice, conjured: true);
+                SealWaterForIce();
                 PaintIceCover();
                 Wet = Mathf.Min(Wet, 0.15f);
                 RefreshFx();
@@ -1062,8 +1063,23 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Yield keeps its picture. Ice is the same cover sheen
+        /// ice-shot leaves — not a new ice floor or column.
+        /// A pit must become a walk so the drop trigger does not fire.
+        /// </summary>
+        void SealWaterForIce()
+        {
+            if (Kind != TileKind.Pit)
+            {
+                return;
+            }
+
+            AuthorKind(TileKind.Floor, Material == MaterialId.None ? MaterialId.Water : Material);
+        }
+
+        /// <summary>
         /// Hard water on this cell. Water becomes the same ice sheet
-        /// ice-wall uses. A dry walk takes that same cover sheen.
+        /// ice-shot and ice-wall use. A dry walk takes that same cover sheen.
         /// </summary>
         public bool LayIce()
         {
