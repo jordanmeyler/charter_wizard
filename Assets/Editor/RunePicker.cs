@@ -24,38 +24,25 @@ namespace RuneMagic
                 return;
             }
 
-            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+            if (!string.IsNullOrEmpty(title))
+            {
+                EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+            }
+
             if (!string.IsNullOrEmpty(hint))
             {
                 EditorGUILayout.HelpBox(hint, MessageType.None);
             }
 
+            EditorGUILayout.LabelField(
+                array.arraySize == 0
+                    ? "No marks yet — pick one and Add."
+                    : WorkingNames.RunePhrase(ReadRunes(array)),
+                EditorStyles.miniLabel);
+            DrawChain(array);
             EditorGUILayout.BeginHorizontal();
-            for (var i = 0; i < array.arraySize; i++)
-            {
-                var slot = array.GetArrayElementAtIndex(i);
-                var rune = (RuneId)slot.intValue;
-                var label = rune == RuneId.None ? "—" : RuneCatalog.NameOf(rune);
-                if (GUILayout.Button(label, GUILayout.Height(22)))
-                {
-                    array.DeleteArrayElementAtIndex(i);
-                    break;
-                }
-            }
-
-            if (array.arraySize == 0)
-            {
-                GUILayout.Label("(empty)", EditorStyles.miniLabel);
-            }
-
-            EditorGUILayout.EndHorizontal();
-            if (array.arraySize > 0)
-            {
-                EditorGUILayout.LabelField("Click a mark to remove it.", EditorStyles.miniLabel);
-            }
-
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add " + RuneCatalog.NameOf(pick)))
+            pick = (RuneId)EditorGUILayout.EnumPopup(pick);
+            if (GUILayout.Button("Add " + RuneCatalog.NameOf(pick), GUILayout.Width(140)))
             {
                 var at = array.arraySize;
                 array.arraySize = at + 1;
@@ -68,7 +55,62 @@ namespace RuneMagic
             }
 
             EditorGUILayout.EndHorizontal();
-            RunePicker.Draw(ref pick);
+        }
+
+        public static void WriteRunes(SerializedProperty array, System.Collections.Generic.IReadOnlyList<RuneId> runes)
+        {
+            if (array == null || !array.isArray)
+            {
+                return;
+            }
+
+            var copy = PrayerWorking.Copy(runes);
+            array.arraySize = copy.Length;
+            for (var i = 0; i < copy.Length; i++)
+            {
+                array.GetArrayElementAtIndex(i).intValue = (int)copy[i];
+            }
+        }
+
+        public static RuneId[] ReadRunes(SerializedProperty array)
+        {
+            if (array == null || !array.isArray || array.arraySize == 0)
+            {
+                return System.Array.Empty<RuneId>();
+            }
+
+            var runes = new RuneId[array.arraySize];
+            for (var i = 0; i < array.arraySize; i++)
+            {
+                runes[i] = (RuneId)array.GetArrayElementAtIndex(i).intValue;
+            }
+
+            return runes;
+        }
+
+        static void DrawChain(SerializedProperty array)
+        {
+            const float chip = 40f;
+            var count = Mathf.Max(1, array.arraySize);
+            var area = GUILayoutUtility.GetRect(count * (chip + 4f), chip + 4f);
+            if (array.arraySize == 0)
+            {
+                EditorGUI.LabelField(area, "(empty)");
+                return;
+            }
+
+            for (var i = 0; i < array.arraySize; i++)
+            {
+                var rune = (RuneId)array.GetArrayElementAtIndex(i).intValue;
+                var rect = new Rect(area.x + i * (chip + 4f), area.y, chip, chip);
+                EditorGUI.DrawRect(rect, RunePalette.Card(rune, true));
+                RuneMark.DrawGui(rect, rune, RunePalette.MarkInk(rune));
+                if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
+                {
+                    array.DeleteArrayElementAtIndex(i);
+                    break;
+                }
+            }
         }
 
         static readonly TileCover[] LookOnly = { TileCover.Cracks, TileCover.Seal };

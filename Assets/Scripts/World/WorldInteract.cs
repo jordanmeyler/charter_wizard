@@ -12,19 +12,22 @@ namespace RuneMagic
     /// </summary>
     public sealed class WorldInteract : MonoBehaviour, ILookable, IInteractable
     {
-        [Header("Authoring")]
+        [Header("Recipe runes")]
+        [Tooltip("The sentence this altar teaches. Click marks and Add — do not type names.")]
+        [RuneChain]
+        [SerializeField] RuneId[] recipe = System.Array.Empty<RuneId>();
+        [Tooltip("Optional second writing of the same working. Leave empty to show the catalog's other chain.")]
+        [RuneChain]
+        [SerializeField] RuneId[] via = System.Array.Empty<RuneId>();
+        [Header("Use")]
         [SerializeField] string verb = "Pray";
-        [Tooltip("The sentence this altar teaches. Set the runes — names are not locked.")]
-        [SerializeField] RuneId[] recipe;
-        [Tooltip("Optional other writing of the same working (Spark · Mercury beside Fire · Air · Mercury). Leave empty to show the catalog's other chain when there is one.")]
-        [SerializeField] RuneId[] via;
-        [Tooltip("Leftover. A catalog name or written chain used only when Recipe is empty.")]
-        [SerializeField] string spell;
         [SerializeField] string look = "a stone for prayer. The sentence waits.";
         [SerializeField] float radius = 1.15f;
         [Tooltip("Optional. Leave unset so painted tiles or child sprites carry the look.")]
         [SerializeField] string spriteId;
         [SerializeField] Sprite portrait;
+        [Tooltip("Leftover. A catalog name used only when Recipe is empty.")]
+        [SerializeField] string spell;
 
         bool _wired;
         RuneId[] _recipe;
