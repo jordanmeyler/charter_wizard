@@ -88,7 +88,8 @@ namespace RuneMagic
             _grant = grantItem;
 
             var art = string.IsNullOrEmpty(spriteId) ? "ash-mite" : spriteId;
-            _renderer = AuthoringUtil.ApplyLook(gameObject, 12, art, portrait, idleFrames, FpsFor(art));
+            _renderer = AuthoringUtil.ApplyLook(gameObject, DrawDepth.Body, art, portrait, idleFrames, FpsFor(art));
+            WorldYSort.On(gameObject);
             var anim = SpriteAnim.On(gameObject, _renderer);
             anim.FreezeWhenWorldHeld = true;
             if (GetComponentInChildren<FixtureGlow>() == null)
@@ -107,7 +108,7 @@ namespace RuneMagic
             _rest = transform.position;
 
             WorldLabel.Attach(transform, displayName, new Vector3(0f, 0.85f, 0f),
-                new Color(1f, 0.7f, 0.35f));
+                new Color(1f, 0.7f, 0.35f), DrawDepth.Name);
 
             _status = AuthoringUtil.GetOrAdd<StatusHost>(gameObject);
             _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
@@ -351,8 +352,9 @@ namespace RuneMagic
         void PreviewLook()
         {
             var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            renderer.sortingOrder = 12;
+            renderer.sortingOrder = DrawDepth.Body;
             renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            WorldYSort.On(gameObject);
             if (idleFrames != null && idleFrames.Length > 0 && idleFrames[0] != null)
             {
                 renderer.sprite = idleFrames[0];

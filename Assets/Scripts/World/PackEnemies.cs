@@ -116,6 +116,7 @@ namespace RuneMagic
                 host.AddComponent<SpriteRenderer>();
             }
 
+            WorldYSort.On(host);
             return encounter;
         }
     }

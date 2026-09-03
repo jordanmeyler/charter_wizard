@@ -450,6 +450,7 @@ namespace RuneMagic
             {
                 sprite.sprite = sprites[0];
                 sprite.sortingOrder = 20;
+                WorldYSort.On(prefab, DrawDepth.AdeptBias);
             }
 
             EditorUtility.SetDirty(prefab);

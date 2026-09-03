@@ -62,7 +62,7 @@ namespace RuneMagic
                 flash.transform.position = origin;
                 var renderer = flash.AddComponent<SpriteRenderer>();
                 renderer.sprite = SpriteFactory.Burst(new Color(0.55f, 0.52f, 0.58f, 0.7f));
-                renderer.sortingOrder = 21;
+                DrawDepth.ApplyFx(renderer, 21);
                 flash.transform.localScale = Vector3.one * 0.7f;
                 Object.Destroy(flash, 0.28f);
             }
@@ -145,7 +145,7 @@ namespace RuneMagic
             child.transform.localScale = scale;
             var renderer = child.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
-            renderer.sortingOrder = order;
+            DrawDepth.ApplyFx(renderer, order);
             return renderer;
         }
 
@@ -365,7 +365,7 @@ namespace RuneMagic
                         flash.transform.position = impact;
                         var renderer = flash.AddComponent<SpriteRenderer>();
                         renderer.sprite = SpriteFactory.Burst(_look.Core);
-                        renderer.sortingOrder = 21;
+                        DrawDepth.ApplyFx(renderer, 21);
                         flash.transform.localScale = Vector3.one * 1.4f * _potency;
                         Destroy(flash, 0.28f);
                     }
