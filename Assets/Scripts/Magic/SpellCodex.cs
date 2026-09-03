@@ -75,7 +75,7 @@ namespace RuneMagic
     /// Written story-chains. 1–40 are the ordinary book (no Death).
     /// 41–50 are Death / Free. 51 is Time-stop (Charter).
     /// 121–128 are plant-cure, light orbs, and living venom.
-    /// 129 is Float.
+    /// 129 is Float. 130–131 are Blink and Teleport.
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -212,7 +212,9 @@ namespace RuneMagic
             E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
-            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither)
+            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
+            E(130, SpellBook.Cross, SpellId.Blink, "The seed going, then stood on you. You jump as the spark. A wall will not stop you.", "Blink", "Fire · Air · Mercury · Salt", "Spark · Mercury · Salt", "Self", SpellOutcome.Neither),
+            E(131, SpellBook.Cross, SpellId.Teleport, "The seed is withheld, then shown, going, stood on you. You leave and arrive anywhere you can see.", "Teleport", "Fire · Air · Dark · Light · Mercury · Salt", "Spark · Dark · Light · Mercury · Salt", "Self", SpellOutcome.Neither)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -664,10 +666,12 @@ namespace RuneMagic
             if (WorldWork.StopsOnWalls(SpellId.Melt)
                 || WorldWork.StopsOnWalls(SpellId.Rain)
                 || WorldWork.StopsOnWalls(SpellId.Hop)
+                || WorldWork.StopsOnWalls(SpellId.Blink)
+                || WorldWork.StopsOnWalls(SpellId.Teleport)
                 || WorldWork.StopsOnWalls(SpellId.Wall)
                 || WorldWork.StopsOnWalls(SpellId.Wither))
             {
-                broken.Add("Remote, hop, and stood work must not be treated as flying shots");
+                broken.Add("Remote, hop, blink, teleport, and stood work must not be treated as flying shots");
             }
 
             if (!ChainBook.TryBirth(RuneId.Plant, out var plantBirth)
@@ -1002,9 +1006,9 @@ namespace RuneMagic
                 broken.Add("Oil puddle, Oil geyser, and Oil slick must be written in the developer book");
             }
 
-            if (Entries.Length < 129)
+            if (Entries.Length < 131)
             {
-                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, living venom, and Float");
+                broken.Add("The written book must keep every catalog spell, including wolfsbane, the light orbs, living venom, Float, Blink, and Teleport");
             }
 
             var flight = Composition.FromSequence(new[]
@@ -1022,6 +1026,59 @@ namespace RuneMagic
             if (hoverExact.Count == 0 || hoverExact[0].Spell != SpellId.Float)
             {
                 broken.Add("Air · Mercury · Salt should be Float");
+            }
+
+            var blink = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury, RuneId.Salt });
+            var blinkExact = ChainBook.CollectExact(blink, SpellShape.None);
+            if (blinkExact.Count == 0 || blinkExact[0].Spell != SpellId.Blink)
+            {
+                broken.Add("Fire · Air · Mercury · Salt should be Blink");
+            }
+
+            var blinkVia = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury, RuneId.Salt });
+            var blinkViaExact = ChainBook.CollectExact(blinkVia, SpellShape.None);
+            if (blinkViaExact.Count == 0 || blinkViaExact[0].Spell != SpellId.Blink)
+            {
+                broken.Add("Spark · Mercury · Salt should be Blink");
+            }
+
+            var boltStill = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury });
+            var boltStillExact = ChainBook.CollectExact(boltStill, SpellShape.None);
+            if (boltStillExact.Count == 0 || boltStillExact[0].Spell != SpellId.LightningBolt)
+            {
+                broken.Add("Spark · Mercury should stay Lightning, not fill toward Blink");
+            }
+
+            var teleport = Composition.FromSequence(new[]
+            {
+                RuneId.Fire, RuneId.Air, RuneId.Umbra, RuneId.Lumen, RuneId.Mercury, RuneId.Salt
+            });
+            var teleportExact = ChainBook.CollectExact(teleport, SpellShape.None);
+            if (teleportExact.Count == 0 || teleportExact[0].Spell != SpellId.Teleport)
+            {
+                broken.Add("Fire · Air · Dark · Light · Mercury · Salt should be Teleport");
+            }
+
+            var teleportVia = Composition.FromSequence(new[]
+            {
+                RuneId.Spark, RuneId.Umbra, RuneId.Lumen, RuneId.Mercury, RuneId.Salt
+            });
+            var teleportViaExact = ChainBook.CollectExact(teleportVia, SpellShape.None);
+            if (teleportViaExact.Count == 0 || teleportViaExact[0].Spell != SpellId.Teleport)
+            {
+                broken.Add("Spark · Dark · Light · Mercury · Salt should be Teleport");
+            }
+
+            if (WorldWork.StopsOnWalls(SpellId.Blink) || WorldWork.StopsOnWalls(SpellId.Teleport))
+            {
+                broken.Add("Blink and Teleport must not be treated as flying shots");
+            }
+
+            if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Blink)
+                || FocusLaw.Breaks(StatusId.Charmed, SpellId.Teleport)
+                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Blink))
+            {
+                broken.Add("Blink and Teleport must not drop a hold — they are not focus sentences");
             }
 
             if (!TryGet(SpellId.TimeStop, out var timeStop) || timeStop.FreeOnly)

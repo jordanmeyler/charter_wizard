@@ -15,6 +15,8 @@ namespace RuneMagic
         // must find floor or wall at each end, or they fall. Metal
         // hangs without a far bank. MaxWallLength stays the hard cap.
         public const int HopTiles = 4;
+        // Spark-jump. Same reach as hop, but a wall will not stop you.
+        public const int BlinkTiles = 4;
         // Walkable airborne. Pits and water will not take the adept.
         // Must not share hop's motor lock — Flight is the walk.
         public const float FlightSeconds = 10f;
@@ -33,6 +35,15 @@ namespace RuneMagic
 
         public static bool IsFloat(SpellId spell) =>
             spell == SpellId.Float;
+
+        public static bool IsBlink(SpellId spell) =>
+            spell == SpellId.Blink;
+
+        public static bool IsTeleport(SpellId spell) =>
+            spell == SpellId.Teleport;
+
+        public static bool IsRelocate(SpellId spell) =>
+            IsBlink(spell) || IsTeleport(spell);
 
         public static bool IsAirborneWork(SpellId spell) =>
             IsHop(spell) || IsFlight(spell) || IsFloat(spell);
@@ -171,7 +182,7 @@ namespace RuneMagic
             IsPillar(spell);
 
         public static bool LeavesGapsWhenCrossing(SpellId spell) =>
-            IsAirborneWork(spell);
+            IsAirborneWork(spell) || IsRelocate(spell);
 
         public static bool IsSightVeil(SpellId spell)
         {
@@ -692,6 +703,16 @@ namespace RuneMagic
             if (IsHop(spell) || IsFlight(spell))
             {
                 return string.Empty;
+            }
+
+            if (IsBlink(spell))
+            {
+                return "The seed jumps you. A wall will not stop you.";
+            }
+
+            if (IsTeleport(spell))
+            {
+                return "The seed is withheld and shown. You stand where you can see.";
             }
 
             if (IsTimeStop(spell))
@@ -1676,6 +1697,136 @@ namespace RuneMagic
             }
 
             return WorldGrid.Center(land.x, land.y);
+        }
+
+        /// <summary>
+        /// Short spark-jump. Click a landing within <see cref="BlinkTiles"/>.
+        /// A wall does not stop you. Water, lava, and a pit will not take you.
+        /// </summary>
+        public static Vector3 BlinkLanding(WorldGrid grid, Vector3 origin, Vector3 requested, Vector2 facing)
+        {
+            var aim = requested;
+            aim.z = 0f;
+            var delta = aim - origin;
+            delta.z = 0f;
+            if (delta.sqrMagnitude < 0.36f)
+            {
+                var step = facing.sqrMagnitude > 0.01f ? facing : Vector2.right;
+                delta = new Vector3(step.x, step.y, 0f);
+            }
+
+            if (delta.magnitude > BlinkTiles)
+            {
+                delta = delta.normalized * BlinkTiles;
+            }
+
+            return RelocateLanding(grid, origin, origin + delta, origin, BlinkTiles, default);
+        }
+
+        /// <summary>
+        /// Full-screen relocate. Click anywhere the camera can see.
+        /// A wall does not stop you. Water, lava, and a pit will not take you.
+        /// </summary>
+        public static Vector3 TeleportLanding(WorldGrid grid, Vector3 origin, Vector3 requested, Rect view)
+        {
+            var aim = requested;
+            aim.z = 0f;
+            if (view.width > 0f && view.height > 0f)
+            {
+                aim.x = Mathf.Clamp(aim.x, view.xMin + 0.05f, view.xMax - 0.05f);
+                aim.y = Mathf.Clamp(aim.y, view.yMin + 0.05f, view.yMax - 0.05f);
+            }
+
+            var reach = view.width > 0f
+                ? Mathf.CeilToInt(Mathf.Max(view.width, view.height))
+                : 24;
+            return RelocateLanding(grid, origin, aim, origin, reach, view);
+        }
+
+        static Vector3 RelocateLanding(
+            WorldGrid grid,
+            Vector3 origin,
+            Vector3 requested,
+            Vector3 fallback,
+            int reach,
+            Rect view)
+        {
+            var dest = CoordOf(requested);
+            if (grid == null)
+            {
+                return WorldGrid.Center(dest.x, dest.y);
+            }
+
+            var start = CoordOf(origin);
+            if (IsSafeStand(grid, dest) && WithinRelocate(start, dest, reach, view))
+            {
+                return WorldGrid.Center(dest.x, dest.y);
+            }
+
+            var best = start;
+            var found = IsSafeStand(grid, start);
+            var bestScore = found ? RelocateScore(dest, start) : int.MaxValue;
+            var radius = Mathf.Max(1, Mathf.Min(reach, 8));
+            for (var dy = -radius; dy <= radius; dy++)
+            {
+                for (var dx = -radius; dx <= radius; dx++)
+                {
+                    var cell = new Vector2Int(dest.x + dx, dest.y + dy);
+                    if (!WithinRelocate(start, cell, reach, view) || !IsSafeStand(grid, cell))
+                    {
+                        continue;
+                    }
+
+                    var score = RelocateScore(dest, cell);
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                        best = cell;
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                return fallback;
+            }
+
+            return WorldGrid.Center(best.x, best.y);
+        }
+
+        static bool WithinRelocate(Vector2Int start, Vector2Int cell, int reach, Rect view)
+        {
+            var chebyshev = Mathf.Max(Mathf.Abs(cell.x - start.x), Mathf.Abs(cell.y - start.y));
+            if (chebyshev > reach)
+            {
+                return false;
+            }
+
+            if (view.width <= 0f || view.height <= 0f)
+            {
+                return true;
+            }
+
+            return FieldView.ContainsTile(view, cell.x, cell.y);
+        }
+
+        static int RelocateScore(Vector2Int dest, Vector2Int cell)
+        {
+            var dx = cell.x - dest.x;
+            var dy = cell.y - dest.y;
+            return dx * dx + dy * dy;
+        }
+
+        static bool IsSafeStand(WorldGrid grid, Vector2Int cell)
+        {
+            if (grid == null)
+            {
+                return true;
+            }
+
+            var tile = grid.Get(cell);
+            return tile != null && tile.IsSafeStand && !BlocksCell(cell, tile);
         }
 
         public const float PushTiles = 3.2f;

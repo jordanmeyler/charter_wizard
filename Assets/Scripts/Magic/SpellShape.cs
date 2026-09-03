@@ -57,7 +57,7 @@ namespace RuneMagic
 
         public static readonly FormationDef Self = new(
             SpellShape.Self, "Self", "keep it on you",
-            "Click to confirm. The spell stays on the caster. Recast a worn hold to let it go. Hop still asks for a landing.", 4.8f, 2.4f);
+            "Click to confirm. The spell stays on the caster. Recast a worn hold to let it go. Hop, Blink, and Teleport still ask for a landing.", 4.8f, 2.4f);
 
         static readonly FormationDef[] AllDefs = { Shot, Pillar, Spread, Remote, Self };
 
@@ -180,7 +180,7 @@ namespace RuneMagic
                 case SpellShape.Remote:
                     return IsAny(material, RuneId.Air, RuneId.Spark, RuneId.Steam);
                 case SpellShape.Self:
-                    return material == RuneId.Air;
+                    return material == RuneId.Air || material == RuneId.Spark;
                 default:
                     return false;
             }
@@ -262,6 +262,8 @@ namespace RuneMagic
                     return IsAny(material, RuneId.Air, RuneId.Earth, RuneId.Water);
                 case SpellShape.Shot:
                     return material == RuneId.Fire;
+                case SpellShape.Self:
+                    return material == RuneId.Spark;
                 default:
                     return false;
             }

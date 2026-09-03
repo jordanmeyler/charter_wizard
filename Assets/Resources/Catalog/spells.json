@@ -2082,6 +2082,34 @@
       "gate": "",
       "work": "Float",
       "target": "Self"
+    },
+    {
+      "number": 130,
+      "id": "Blink",
+      "book": "Cross",
+      "name": "Blink",
+      "want": "The seed going, then stood on you. You jump as the spark. A wall will not stop you.",
+      "recipe": "Fire · Air · Mercury · Salt",
+      "via": "Spark · Mercury · Salt",
+      "form": "Self",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Blink",
+      "target": "Self"
+    },
+    {
+      "number": 131,
+      "id": "Teleport",
+      "book": "Cross",
+      "name": "Teleport",
+      "want": "The seed is withheld, then shown, going, stood on you. You leave and arrive anywhere you can see.",
+      "recipe": "Fire · Air · Dark · Light · Mercury · Salt",
+      "via": "Spark · Dark · Light · Mercury · Salt",
+      "form": "Self",
+      "outcome": "Neither",
+      "gate": "",
+      "work": "Teleport",
+      "target": "Self"
     }
   ]
 }

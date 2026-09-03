@@ -151,6 +151,8 @@ namespace RuneMagic
         Nightshade,
         Briar,
         Float,
+        Blink,
+        Teleport,
         // Aliases of earlier ids. Keep these last so they do not
         // reset the next unique values.
         DarkCrystal = GraveIce
@@ -219,6 +221,8 @@ namespace RuneMagic
             Register(RuneId.Anima, RuneId.Salt, SpellShape.Spread, SpellId.Chorus, "Chorus", "Compressed. Catalog: Anima · Salt. Care given a body around the feet. The work opens to many.");
 
             Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent.");
+            Register(RuneId.Spark, RuneId.Mercury, SpellShape.Self, SpellId.Blink, "Blink", "Compressed. Catalog: Spark · Mercury · Salt. The seed going, then stood on you. A short jump. Walls will not stop you.");
+            Register(RuneId.Spark, RuneId.Umbra, SpellShape.Self, SpellId.Teleport, "Teleport", "Compressed. Catalog: Spark · Dark · Light · Mercury · Salt. The seed withheld, shown, going, stood. Anywhere you can see.");
             Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury when the bolt already stands.");
             Register(RuneId.Spark, RuneId.Salt, SpellShape.Spread, SpellId.LiveFloor, "Live-floor", "Charged ground around the caster.");
             Register(RuneId.Spark, RuneId.Sulphur, SpellShape.Remote, SpellId.Jolt, "Jolt", "Stun placed at a point.");

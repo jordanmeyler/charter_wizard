@@ -290,6 +290,8 @@ namespace RuneMagic
                 case SpellId.Hop:
                 case SpellId.Flight:
                 case SpellId.Float:
+                case SpellId.Blink:
+                case SpellId.Teleport:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.None, 0f, TileVerb.None);
                 default:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
