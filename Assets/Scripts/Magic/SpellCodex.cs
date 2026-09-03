@@ -420,6 +420,22 @@ namespace RuneMagic
                 broken.Add("An altar birth must show Fire · Air becoming Spark");
             }
 
+            var birthOnly = PrayerReveal.BirthOnly(sparkSources, spark);
+            if (!birthOnly.HasBirth
+                || birthOnly.HasRecipe
+                || birthOnly.BirthResult != RuneId.Spark
+                || !WorkingNames.SameComposition(birthOnly.BirthSources, new[] { RuneId.Fire, RuneId.Air })
+                || !WorldAltar.RevealLine(birthOnly).Contains("become"))
+            {
+                broken.Add("A birth altar must pray the join on a screen, not stand it in the world");
+            }
+
+            var recipeAndBirth = PrayerReveal.WithBirth(byRunes, sparkSources, spark);
+            if (!recipeAndBirth.HasRecipe || !recipeAndBirth.HasBirth)
+            {
+                broken.Add("An altar can pray a recipe and a birth on the same screen");
+            }
+
             if (!PrayerReveal.TryUnkept(unnamed, out var next)
                 || WorkingNames.SameComposition(next.RecipeRunes, new[] { RuneId.Fire, RuneId.Mercury }))
             {

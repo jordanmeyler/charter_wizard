@@ -3,6 +3,12 @@
 Maps are Unity Tilemaps. You paint them in the Scene view. Play bakes
 each `WorldPaintTile` into a live `WorldTile`.
 
+**Do not generate pictures in the world by default.** Tiles and
+authored sprites already carry the look. Do not spawn slabs, rune
+marks, glows, or other default art on the page. Prayer, joins, and
+speech pop a HUD screen. Only put generated art in the world when
+we ask for it and work it out together.
+
 ## Authoring
 
 1. Open `Assets/Scenes/Main.unity`. The scene already has **Map** (a
@@ -238,8 +244,9 @@ Recipe** and set the recipe runes (and an optional second
 writing). Prayer shows that sentence; Cast or Continue. Uncheck
 **Show Other Writing** to teach only the Recipe — Earth-pillar
 is then `Earth · Salt`, not also Stone. **E** uses it. Check
-**Show Birth** to stand how a join is made: sources on the
-left, an equals, then the born mark. Both can be on.
+**Show Birth** to pray the join on the same screen: sources,
+an equals, then the born mark. Both can be on. The altar does
+not draw that equation in the world.
 
 A **Speech** (`WorldSpeech`) is a text window. Add the
 component to a Gate (or an empty volume next to it), set

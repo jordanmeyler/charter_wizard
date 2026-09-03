@@ -1002,7 +1002,7 @@ namespace RuneMagic
 
         void OpenReveal(PrayerWorking working)
         {
-            if (!working.HasRecipe)
+            if (!working.HasContent)
             {
                 return;
             }
@@ -1209,16 +1209,33 @@ namespace RuneMagic
 
         void DrawPrayerModal()
         {
-            if (!_revealed.HasRecipe)
+            if (!_revealed.HasContent)
             {
                 CloseReveal();
                 return;
             }
 
+            var recipe = _revealed.HasRecipe;
             var other = _revealed.HasVia;
+            var birth = _revealed.HasBirth;
             DrawVeil(new Color(0.02f, 0.02f, 0.05f, 0.78f));
             const float width = 560f;
-            var height = other ? 500f : 348f;
+            var height = 200f;
+            if (recipe)
+            {
+                height += 148f;
+            }
+
+            if (other)
+            {
+                height += 152f;
+            }
+
+            if (birth)
+            {
+                height += recipe ? 168f : 148f;
+            }
+
             var modal = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f - 24f, width, height);
             var ev = Event.current;
             if (ev != null && ev.type == EventType.MouseDown && !modal.Contains(ev.mousePosition))
@@ -1231,29 +1248,62 @@ namespace RuneMagic
             var body = Label(14, FontStyle.Normal, new Color(0.82f, 0.84f, 0.9f));
             var legend = Label(12, FontStyle.Italic, new Color(0.7f, 0.72f, 0.8f));
             GUI.Label(new Rect(modal.x + 24, modal.y + 16, modal.width - 48, 28),
-                GlyphView.Speak("A working is shown", "A working is shown"), title);
+                recipe
+                    ? GlyphView.Speak("A working is shown", "A working is shown")
+                    : GlyphView.Speak("A join is shown", "A join is shown"), title);
             GUI.Label(new Rect(modal.x + 24, modal.y + 46, modal.width - 48, 40),
-                GlyphView.IsDevelop && _revealed.Entry.Spell != SpellId.None
+                recipe && GlyphView.IsDevelop && _revealed.Entry.Spell != SpellId.None
                     ? $"{_revealed.Entry.Name} — {_revealed.Entry.Want}"
-                    : "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
+                    : birth && !recipe
+                        ? GlyphView.Speak(
+                            "These marks become one.",
+                            "These marks become one.")
+                        : "Elemental is a material. Catalyst is mind, body, or soul. Special is anima, animus, aether, life, or death.",
                 body);
             GUI.Label(new Rect(modal.x + 24, modal.y + 88, modal.width - 48, 18),
-                other
-                    ? "The same working can be written more than one way."
-                    : "Each mark is labelled elemental, catalyst, or special.", legend);
+                birth && !recipe
+                    ? "Sources on the left. The born mark on the right."
+                    : other
+                        ? "The same working can be written more than one way."
+                        : "Each mark is labelled elemental, catalyst, or special.", legend);
 
-            var recipeHeight = other ? 124f : 132f;
-            DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 112, modal.width - 48, recipeHeight), _revealed.Recipe);
-            var buttonsY = modal.y + 268f;
+            var y = modal.y + 112f;
+            if (recipe)
+            {
+                var recipeHeight = other || birth ? 124f : 132f;
+                DrawRevealedRunes(new Rect(modal.x + 24, y, modal.width - 48, recipeHeight), _revealed.Recipe);
+                y += recipeHeight + 8f;
+            }
+
             if (other)
             {
                 var or = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
                 or.alignment = TextAnchor.MiddleCenter;
-                GUI.Label(new Rect(modal.x + 24, modal.y + 236, modal.width - 48, 18), "or", or);
-                DrawRevealedRunes(new Rect(modal.x + 24, modal.y + 254, modal.width - 48, 124f), _revealed.Via);
-                buttonsY = modal.y + 394f;
+                GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, 18), "or", or);
+                y += 20f;
+                DrawRevealedRunes(new Rect(modal.x + 24, y, modal.width - 48, 124f), _revealed.Via);
+                y += 132f;
             }
 
+            if (birth)
+            {
+                if (recipe)
+                {
+                    var join = Label(13, FontStyle.Italic, new Color(0.86f, 0.8f, 0.58f));
+                    join.alignment = TextAnchor.MiddleCenter;
+                    GUI.Label(new Rect(modal.x + 24, y, modal.width - 48, 18),
+                        GlyphView.Speak("these marks become", "these marks become"), join);
+                    y += 20f;
+                }
+
+                DrawBirthEquation(
+                    new Rect(modal.x + 24, y, modal.width - 48, 124f),
+                    _revealed.BirthSources,
+                    _revealed.BirthResult);
+                y += 132f;
+            }
+
+            var buttonsY = y + 8f;
             var cancel = ev != null && ev.type == EventType.KeyDown && ev.keyCode == KeyCode.Escape;
             if (cancel)
             {
@@ -1267,7 +1317,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (DrawAction(new Rect(modal.xMax - 172, buttonsY, 148, 42), "Cast", true,
+            if (recipe && DrawAction(new Rect(modal.xMax - 172, buttonsY, 148, 42), "Cast", true,
                     new Color(0.72f, 0.28f, 0.22f)))
             {
                 var shown = _revealed;
@@ -1407,6 +1457,81 @@ namespace RuneMagic
             ev.Use();
             var max = Mathf.Max(0f, _speechInnerHeight - _speechViewHeight);
             _speechScroll.y = Mathf.Clamp(_speechScroll.y + step, 0f, max);
+        }
+
+        void DrawBirthEquation(Rect rect, IReadOnlyList<RuneId> sources, RuneId result)
+        {
+            var previous = GUI.color;
+            GUI.color = new Color(0.08f, 0.08f, 0.1f, 0.7f);
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = previous;
+
+            var count = 0;
+            if (sources != null)
+            {
+                for (var i = 0; i < sources.Count; i++)
+                {
+                    if (sources[i] != RuneId.None)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            var hasResult = result != RuneId.None;
+            var slots = count + (count > 0 && hasResult ? 1 : 0) + (hasResult ? 1 : 0);
+            if (slots == 0)
+            {
+                return;
+            }
+
+            const float gap = 10f;
+            var mark = Mathf.Min(56f, (rect.width - 24f - (slots - 1) * gap) / slots);
+            var start = rect.x + (rect.width - (mark * slots + gap * (slots - 1))) * 0.5f;
+            var y = rect.y + 16f;
+            var role = Label(11, FontStyle.Bold, new Color(0.86f, 0.8f, 0.58f));
+            role.alignment = TextAnchor.UpperCenter;
+            var caption = Label(11, FontStyle.Normal, new Color(0.78f, 0.8f, 0.88f));
+            caption.alignment = TextAnchor.UpperCenter;
+            var x = start;
+            if (sources != null)
+            {
+                for (var i = 0; i < sources.Count; i++)
+                {
+                    if (sources[i] == RuneId.None)
+                    {
+                        continue;
+                    }
+
+                    DrawRevealedMark(new Rect(x, y, mark, mark), sources[i], role, caption);
+                    x += mark + gap;
+                }
+            }
+
+            if (count > 0 && hasResult)
+            {
+                var equals = Label(28, FontStyle.Bold, new Color(0.92f, 0.86f, 0.62f));
+                equals.alignment = TextAnchor.MiddleCenter;
+                GUI.Label(new Rect(x, y, mark, mark), "=", equals);
+                x += mark + gap;
+            }
+
+            if (hasResult)
+            {
+                DrawRevealedMark(new Rect(x, y, mark, mark), result, role, caption);
+            }
+        }
+
+        void DrawRevealedMark(Rect slot, RuneId rune, GUIStyle role, GUIStyle caption)
+        {
+            DrawMiniMark(slot, rune);
+            GUI.Label(new Rect(slot.x - 8, slot.yMax + 2, slot.width + 16, 16),
+                RuneCatalog.StringRole(rune), role);
+            if (GlyphView.IsDevelop)
+            {
+                GUI.Label(new Rect(slot.x - 8, slot.yMax + 16, slot.width + 16, 16),
+                    RuneCatalog.NameOf(rune), caption);
+            }
         }
 
         void DrawRevealedRunes(Rect rect, IReadOnlyList<RuneId> runes)
