@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: "Rest, that which remains."
-  look: "rest, that which remains."
+  note: Rest, that which remains.
+  look: rest, that which remains.
 --- !u!212 &1143714396680796549
 SpriteRenderer:
   serializedVersion: 2

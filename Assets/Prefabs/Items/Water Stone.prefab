@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: "Yield, that which becomes what holds it."
-  look: "yield, that which becomes what holds it."
+  note: Yield, that which becomes what holds it.
+  look: yield, that which becomes what holds it.
 --- !u!212 &236733516198451887
 SpriteRenderer:
   serializedVersion: 2

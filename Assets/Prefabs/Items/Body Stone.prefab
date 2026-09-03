@@ -58,8 +58,8 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: "Material given form, salt of the earth."
-  look: "material given form, salt of the earth."
+  note: Material given form, salt of the earth.
+  look: material given form, salt of the earth.
 --- !u!212 &623496280007998424
 SpriteRenderer:
   serializedVersion: 2
