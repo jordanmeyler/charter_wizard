@@ -1523,6 +1523,11 @@ namespace RuneMagic
             if (HoldsPlant && !IsPoisonedPlant)
             {
                 PoisonPlant();
+                if (IsBurning || LiveFire || Fire > 0.05f)
+                {
+                    BurnPoisonToMiasma();
+                }
+
                 return;
             }
 
