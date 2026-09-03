@@ -959,7 +959,9 @@ namespace RuneMagic
             {
                 var origin = CasterPosition();
                 _spanStart = SpellFormations.ClampPoint(SpellShape.Remote, origin, worldPoint);
-                AimHint = "Start is set. Click the far end. Across a pit it is a span; on the floor it is a barrier.";
+                AimHint = WorldWork.IsGustWall(SpellCodex.WorkOf(PendingSpell))
+                    ? "Start is set. Click the far end. They blow that way."
+                    : "Start is set. Click the far end. Across a pit it is a span; on the floor it is a barrier.";
                 Log("The near end is marked. Click the far end, or Esc to withhold.");
                 return;
             }
@@ -1106,7 +1108,9 @@ namespace RuneMagic
 
             if (WorldWork.NeedsSpan(spell))
             {
-                return spell == SpellId.IceWall
+                return WorldWork.IsGustWall(spell)
+                    ? "Click the near end, then the far end. A wall of air stands on that line and blows them toward the far end."
+                    : spell == SpellId.IceWall
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide and must find floor or wall at each end, or it falls. Ice freezes water without banks. Fire thaws ice."
                     : spell == SpellId.MetalWall
                     ? "Click the near end, then the far end. Across a pit the span is two tiles wide. Iron needs no far rest, and it will stand on water."
@@ -1819,7 +1823,7 @@ namespace RuneMagic
                     {
                         var work = SpellCodex.WorkOf(outcome.Spell);
                         FocusLaw.Release(AdeptAvatar.Find(), work, composition, SpellVerb.Of(work, shape).Status);
-                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency, composition);
+                        var impact = SpellImpact.Apply(Grid, _locks, work, shape, origin, aim, outcome.Potency, composition, spanFrom);
                         impactNote = impact.Note;
                         if (impact.Locks.Count > 0)
                         {
@@ -1877,7 +1881,16 @@ namespace RuneMagic
                             workNote = FirstNote(flavor, workNote);
                         }
 
-                        if (WorldWork.IsPush(work))
+                        if (WorldWork.IsGustWall(work))
+                        {
+                            var start = spanFrom ?? origin;
+                            var shoved = GustCorridor.Blow(Grid, start, aim) > 0
+                                ? "A wall of air finds them. They blow toward the far end."
+                                : string.Empty;
+                            workNote = FirstNote(shoved, workNote);
+                            GustCorridor.Lay(Grid, start, aim);
+                        }
+                        else if (WorldWork.IsPush(work))
                         {
                             var shoved = ShoveHits(impact.Locks, target, origin, work);
                             workNote = FirstNote(shoved, workNote);

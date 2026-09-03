@@ -294,7 +294,7 @@ namespace RuneMagic
             Register(RuneId.Cloud, RuneId.Ash, SpellShape.Remote, SpellId.AshRain, "Ash rain", "Compressed. Catalog: Cloud · Ash · Mercury.");
             Register(RuneId.Cloud, RuneId.Plant, SpellShape.Remote, SpellId.PlantRain, "Plant rain", "Compressed. Catalog: Cloud · Plant · Mercury.");
             Register(RuneId.Cloud, RuneId.Mors, SpellShape.Remote, SpellId.DeathCloud, "Death-cloud", "Compressed. Catalog: Cloud · Dark · Death · Animus · Mercury.");
-            Register(RuneId.Air, RuneId.Salt, SpellShape.Pillar, SpellId.AirWall, "Air-wall", "Compressed. Catalog: Air · Salt · Air · Mercury. A wall of wind.");
+            Register(RuneId.Air, RuneId.Salt, SpellShape.Pillar, SpellId.AirWall, "Air-wall", "Compressed. Catalog: Air · Salt · Air · Mercury. A wall of air. They blow toward the far end.");
             Register(RuneId.Glacier, RuneId.Mercury, SpellShape.Shot, SpellId.Glacier, "Glacier", "Compressed. Catalog: Ice · Animus · Ice · Mercury.");
             Register(RuneId.Lumen, RuneId.Mercury, SpellShape.Self, SpellId.Cleanse, "Cleanse", "Compressed. Catalog: Light · Salt · Water · Mercury.");
             Register(RuneId.Lumen, RuneId.Vita, SpellShape.Pillar, SpellId.SunOrb, "Sun-orb", "Compressed. Catalog: Light · Life · Salt. Shown waking, given a body.");

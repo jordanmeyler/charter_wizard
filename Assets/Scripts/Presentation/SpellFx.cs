@@ -98,6 +98,11 @@ namespace RuneMagic
                 shape = SpellShape.Remote;
             }
 
+            if (WorldWork.IsGustWall(spell))
+            {
+                shape = SpellShape.Shot;
+            }
+
             _mid = Vector3.Lerp(_from, _to, 0.45f) + new Vector3(0f, 0.35f, 0f);
             if (shape == SpellShape.Self)
             {

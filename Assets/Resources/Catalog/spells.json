@@ -1845,7 +1845,7 @@
       "id": "AirWall",
       "book": "Weather",
       "name": "Air-wall",
-      "want": "Breath given a body, more breath, sent as a span. A wall of wind. They go.",
+      "want": "The hop sent as a gust. Click start and stop. A wall of air blows them that way.",
       "recipe": "Air · Salt · Air · Mercury",
       "via": "",
       "form": "Pillar",

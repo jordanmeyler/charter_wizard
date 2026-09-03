@@ -969,6 +969,28 @@ namespace RuneMagic
                 broken.Add("Sprout must grow a three-tile plant cover from the feet; Grow and Wolfsbane do the same at range");
             }
 
+            if (WorldWork.IsPush(SpellId.AirWall)
+                || !WorldWork.IsGustWall(SpellId.AirWall)
+                || !WorldWork.NeedsSpan(SpellId.AirWall))
+            {
+                broken.Add("Air-wall must be a start-to-stop gust, not a shove from the caster");
+            }
+
+            var gustStart = new Vector3(2f, 2f, 0f);
+            var gustStop = new Vector3(8f, 2f, 0f);
+            var gustBody = new Vector3(3f, 2f, 0f);
+            var gustLand = WorldWork.GustLanding(null, gustStart, gustStop, gustBody, 3f);
+            if (Vector2.Distance(gustLand, new Vector3(6f, 2f, 0f)) > 0.25f)
+            {
+                broken.Add("A gust wall must blow along the span toward the far end");
+            }
+
+            if (!WorldWork.OnGustSpan(new Vector3(5f, 2.4f, 0f), gustStart, gustStop)
+                || WorldWork.OnGustSpan(new Vector3(5f, 6f, 0f), gustStart, gustStop))
+            {
+                broken.Add("A gust wall occupies the start-to-stop line, not the whole room");
+            }
+
             MatterLaw.Audit(broken);
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);

@@ -55,8 +55,14 @@ namespace RuneMagic
             spell == SpellId.Push
             || spell == SpellId.Gale
             || spell == SpellId.Gust
-            || spell == SpellId.AirWall
             || spell == SpellId.Sandstorm;
+
+        /// <summary>
+        /// A start-to-stop wall of air. Bodies on the line blow toward the far end.
+        /// Items stay put for now.
+        /// </summary>
+        public static bool IsGustWall(SpellId spell) =>
+            spell == SpellId.AirWall;
 
         public static bool IsSkyStrike(SpellId spell) =>
             spell == SpellId.LightningStrike;
@@ -739,6 +745,11 @@ namespace RuneMagic
             if (!string.IsNullOrEmpty(blown))
             {
                 notes.Add(blown);
+            }
+
+            if (IsGustWall(spell) && notes.Count == 0)
+            {
+                notes.Add("A wall of air stands. They blow toward the far end.");
             }
 
             if (LaysVeil(spell))
@@ -1951,6 +1962,32 @@ namespace RuneMagic
 
             delta.Normalize();
             var dest = (Vector2)body + delta * tiles;
+            return WalkLanding(grid, body, dest, tiles);
+        }
+
+        /// <summary>Along the gust wall, toward <paramref name="stop"/>. Stops at the first blocked tile.</summary>
+        public static Vector3 GustLanding(WorldGrid grid, Vector3 start, Vector3 stop, Vector3 body, float tiles)
+        {
+            tiles = Mathf.Max(0.1f, tiles);
+            var along = (Vector2)(stop - start);
+            if (along.sqrMagnitude < 0.04f)
+            {
+                along = Vector2.right;
+            }
+
+            along.Normalize();
+            var dest = (Vector2)body + along * tiles;
+            return WalkLanding(grid, body, dest, tiles);
+        }
+
+        /// <summary>On the start-to-stop line, or one tile beside it (the wall has thickness).</summary>
+        public static bool OnGustSpan(Vector3 at, Vector3 start, Vector3 stop)
+        {
+            return CellVolume.SegmentDistance(start, stop, at) <= WorldPhysics.GustWidth + 0.35f;
+        }
+
+        static Vector3 WalkLanding(WorldGrid grid, Vector3 body, Vector3 dest, float tiles)
+        {
             if (grid == null)
             {
                 return dest;
