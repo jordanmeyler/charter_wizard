@@ -17,6 +17,60 @@ namespace RuneMagic
             Draw(RuneCatalog.PlaceableRunes(), ref current);
         }
 
+        public static void DrawSequence(SerializedProperty array, string title, string hint, ref RuneId pick)
+        {
+            if (array == null || !array.isArray)
+            {
+                return;
+            }
+
+            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+            if (!string.IsNullOrEmpty(hint))
+            {
+                EditorGUILayout.HelpBox(hint, MessageType.None);
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            for (var i = 0; i < array.arraySize; i++)
+            {
+                var slot = array.GetArrayElementAtIndex(i);
+                var rune = (RuneId)slot.intValue;
+                var label = rune == RuneId.None ? "—" : RuneCatalog.NameOf(rune);
+                if (GUILayout.Button(label, GUILayout.Height(22)))
+                {
+                    array.DeleteArrayElementAtIndex(i);
+                    break;
+                }
+            }
+
+            if (array.arraySize == 0)
+            {
+                GUILayout.Label("(empty)", EditorStyles.miniLabel);
+            }
+
+            EditorGUILayout.EndHorizontal();
+            if (array.arraySize > 0)
+            {
+                EditorGUILayout.LabelField("Click a mark to remove it.", EditorStyles.miniLabel);
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add " + RuneCatalog.NameOf(pick)))
+            {
+                var at = array.arraySize;
+                array.arraySize = at + 1;
+                array.GetArrayElementAtIndex(at).intValue = (int)pick;
+            }
+
+            if (array.arraySize > 0 && GUILayout.Button("Clear", GUILayout.Width(64)))
+            {
+                array.arraySize = 0;
+            }
+
+            EditorGUILayout.EndHorizontal();
+            RunePicker.Draw(ref pick);
+        }
+
         static readonly TileCover[] LookOnly = { TileCover.Cracks, TileCover.Seal };
 
         public static void DrawCover(ref TileCover current)

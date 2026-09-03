@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace RuneMagic
 {
     /// <summary>
@@ -148,6 +150,23 @@ namespace RuneMagic
 
             var use = string.IsNullOrWhiteSpace(verb) ? "read" : verb.Trim().ToLowerInvariant();
             return "words you may " + use + ".";
+        }
+
+        public static string OfBirth(IReadOnlyList<RuneId> sources, RuneId result)
+        {
+            if (result == RuneId.None)
+            {
+                return "a stone that has not yet learned a mark.";
+            }
+
+            if (sources == null || sources.Count == 0)
+            {
+                return OfRune(result);
+            }
+
+            return GlyphView.Speak(
+                WorkingNames.RunePhrase(sources) + " become " + RuneCatalog.NameOf(result) + ".",
+                "marks that join into another mark.");
         }
 
         public static string OfInteract(string look, string verb)

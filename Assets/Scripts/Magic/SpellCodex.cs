@@ -360,6 +360,44 @@ namespace RuneMagic
                 broken.Add("Prayer must show a written spell and label elemental and catalyst marks");
             }
 
+            if (!PrayerReveal.TryResolve(new[] { RuneId.Fire, RuneId.Mercury }, null, "Fireball", null, out var byRunes)
+                || byRunes.Entry.Spell != SpellId.Fireball
+                || !WorkingNames.SameComposition(byRunes.Recipe, new[] { RuneId.Fire, RuneId.Mercury }))
+            {
+                broken.Add("A prayer altar must teach the authored recipe, not the catalog name");
+            }
+
+            if (!PrayerReveal.TryResolve(new[] { RuneId.Spark, RuneId.Mercury }, null, string.Empty, null, out var viaForm)
+                || viaForm.Entry.Spell != SpellId.LightningBolt
+                || !WorkingNames.SameComposition(viaForm.Recipe, new[] { RuneId.Spark, RuneId.Mercury })
+                || !viaForm.HasVia
+                || !WorkingNames.SameComposition(viaForm.Via, ChainBook.Parse("Fire · Air · Mercury")))
+            {
+                broken.Add("A prayer altar must show another writing of the same working");
+            }
+
+            if (!PrayerReveal.TryResolve(
+                    new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury },
+                    new[] { RuneId.Spark, RuneId.Mercury },
+                    string.Empty,
+                    null,
+                    out var authoredBoth)
+                || !WorkingNames.SameComposition(authoredBoth.Via, new[] { RuneId.Spark, RuneId.Mercury })
+                || WorkingNames.SameComposition(authoredBoth.Via, ChainBook.Parse("Lightning · Mercury")))
+            {
+                broken.Add("A prayer altar must keep an authored second writing");
+            }
+
+            if (!ElementalAltar.TryResolve(RuneId.Spark, null, out var sparkSources, out var spark)
+                || spark != RuneId.Spark
+                || sparkSources == null
+                || sparkSources.Count != 2
+                || sparkSources[0] != RuneId.Fire
+                || sparkSources[1] != RuneId.Air)
+            {
+                broken.Add("An elemental altar must show Fire · Air becoming Spark");
+            }
+
             if (!PrayerReveal.TryUnkept(unnamed, out var next)
                 || WorkingNames.SameComposition(next.RecipeRunes, new[] { RuneId.Fire, RuneId.Mercury }))
             {

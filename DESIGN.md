@@ -233,7 +233,9 @@ World altars do not teach by writing FIRE. They put the **mark beside a picture*
 
 A **recent-cast strip** (last twenty-five) sits on the Charter and the world, with a **Grimoire** tab beside it. ○ the sentence held; ✕ it fizzled. Charter leaves the marks. Free blocks them — wild work is not written down. With **Add new spells** on, a working that holds is written in the book without a name — rename it later. Off: Keep a recipe yourself from Recent. Bookmarks (highlighting pages you care about) come later; unnamed auto-keep is the way to leave the rest unhighlighted.
 
-A **WorldInteract** is an empty use volume. Place it on a GameObject and dress the statue with tiles. **E** or the Interact button prays: the game shows a written spell with elemental / catalyst labels. Cast aims that working (it counts in Recent); Continue leaves it.
+A **WorldInteract** is an empty use volume. Place it on a GameObject and dress the statue with tiles. Set the **recipe runes** — names are not locked, and the same working can be written more than one way. **E** or the Interact button prays: the game shows that recipe (and the other writing when there is one) with elemental / catalyst labels. Cast aims the shown chain (it counts in Recent); Continue leaves it.
+
+An **ElementalAltar** teaches a join. Sources stand on the left, an equals, then the born mark — Fire and Air, then Spark. Pick the result and the birth recipe fills in; override Sources to show a different writing. The marks speak into the Charter.
 
 A **WorldSpeech** is a written window. **Approach** pops it when the adept walks in — drop it on a Gate for a greeting that plays once. **Interact** uses the same E / verb button: **Read** a sign, **Talk** to a figure. Extra pages click through; a conversation tree can replace that later. Time holds while the window is up. Esc closes it; E / Space / Enter / Continue advances.
 
