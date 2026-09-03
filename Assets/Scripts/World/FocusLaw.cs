@@ -238,18 +238,18 @@ namespace RuneMagic
                 broken.Add("Focus must hold charm and sleep");
             }
 
-            if (!StatusSpec.RecastDismisses(StatusId.CloudForm)
-                || !StatusSpec.RecastDismisses(StatusId.Flameward)
-                || !StatusSpec.RecastDismisses(StatusId.Watershield)
-                || !StatusSpec.RecastDismisses(StatusId.Stoneskin)
-                || !StatusSpec.RecastDismisses(StatusId.Charmed)
-                || !StatusSpec.RecastDismisses(StatusId.Sleeping)
-                || !StatusSpec.RecastDismisses(StatusId.Veiled)
-                || !StatusSpec.RecastDismisses(StatusId.Flying)
-                || StatusSpec.RecastDismisses(StatusId.Burning)
-                || StatusSpec.RecastDismisses(StatusId.Frozen)
-                || StatusSpec.RecastDismisses(StatusId.Poisoned)
-                || StatusSpec.RecastDismisses(StatusId.Stunned))
+            if (!StatusSpec.Of(StatusId.CloudForm).RecastDismisses
+                || !StatusSpec.Of(StatusId.Flameward).RecastDismisses
+                || !StatusSpec.Of(StatusId.Watershield).RecastDismisses
+                || !StatusSpec.Of(StatusId.Stoneskin).RecastDismisses
+                || !StatusSpec.Of(StatusId.Charmed).RecastDismisses
+                || !StatusSpec.Of(StatusId.Sleeping).RecastDismisses
+                || !StatusSpec.Of(StatusId.Veiled).RecastDismisses
+                || !StatusSpec.Of(StatusId.Flying).RecastDismisses
+                || StatusSpec.Of(StatusId.Burning).RecastDismisses
+                || StatusSpec.Of(StatusId.Frozen).RecastDismisses
+                || StatusSpec.Of(StatusId.Poisoned).RecastDismisses
+                || StatusSpec.Of(StatusId.Stunned).RecastDismisses)
             {
                 broken.Add("Recasting lets go of a ward, form, flight, veil, or mind hold — not a meter or frost");
             }

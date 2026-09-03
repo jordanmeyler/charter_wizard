@@ -224,9 +224,6 @@ namespace RuneMagic
                 || id == StatusId.Frozen
                 || id == StatusId.Charmed;
         }
-
-        public static bool RecastDismisses(StatusId id) =>
-            Of(id).RecastDismisses;
     }
 
     public sealed class StatusInstance

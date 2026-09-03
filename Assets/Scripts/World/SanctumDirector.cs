@@ -1092,7 +1092,7 @@ namespace RuneMagic
             }
 
             var verb = SpellVerb.Of(spell);
-            if (StatusSpec.RecastDismisses(verb.Status))
+            if (StatusSpec.Of(verb.Status).RecastDismisses)
             {
                 return verb.Target == SpellTarget.Self
                     ? "Click to wear it. Recast the same sentence to let it go."
