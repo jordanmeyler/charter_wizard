@@ -4,12 +4,13 @@ namespace RuneMagic
 {
     /// <summary>
     /// A linear rune string. Materials fold left to right; the last aspect
-    /// sets form. Eight slots is the present ceiling.
+    /// sets form. Sixteen slots hold the long written recipes — grove-form,
+    /// cloud-form, the metal and oil walls — as well as shorter sentences.
     /// Charter Cast and Free Cast are separate actions, not a stance toggle.
     /// </summary>
     public sealed class SpellComposer
     {
-        public const int MaxSlots = 8;
+        public const int MaxSlots = 16;
 
         readonly List<RuneId> _slots = new();
 
@@ -30,7 +31,7 @@ namespace RuneMagic
 
             if (IsFull)
             {
-                note = "The string is full. Eight runes is the present ceiling.";
+                note = $"The string is full. {MaxSlots} runes is the present ceiling.";
                 return false;
             }
 
