@@ -268,9 +268,30 @@ namespace RuneMagic
             || HasPoisonCover;
 
         /// <summary>
-        /// Plant, oil, timber, or other fuel a rest flame can light
-        /// on this cell. Fire cover and rest-fire walks are the
-        /// source, not catchable fuel.
+        /// Walk, a timber / plant detail, or oil this cell can leftover.
+        /// A covering on stone is not this.
+        /// </summary>
+        public bool HasWalkFuel =>
+            !HasAshCover
+            && !IsFireFloor
+            && (VitalLaw.CanBurn(Material)
+                || HasPlantishDetail
+                || (HasOil && !IsGeyser));
+
+        /// <summary>
+        /// Fuel a rest flame lights on a neighbor at rest: a plant /
+        /// vine covering. Floors, walls, oil, and details stay at rest
+        /// until that covering wicks into them.
+        /// </summary>
+        public bool HasRestCatchFuel =>
+            !HasAshCover && HasPlantCover;
+
+        /// <summary>
+        /// Plant, oil, timber, or other fuel this cell can burn.
+        /// Rest fire on a neighbor uses <see cref="HasRestCatchFuel"/>
+        /// — only a covering catches; the walk and wall stay. A spell
+        /// still takes the floor. Fire cover and rest-fire walks are
+        /// the source, not catchable fuel.
         /// </summary>
         public bool HasCatchableFuel
         {
@@ -281,11 +302,7 @@ namespace RuneMagic
                     return false;
                 }
 
-                if (HasVine
-                    || HasPlantCover
-                    || (HasOil && !IsGeyser)
-                    || HasPlantishDetail
-                    || HasPoisonCover
+                if (HasRestCatchFuel
                     || (VitalLaw.CanBurn(Material) && !IsFireFloor))
                 {
                     return true;
@@ -444,6 +461,11 @@ namespace RuneMagic
         /// halls, and painted cover stay still until work finds them.
         /// </summary>
         public bool LiveFire { get; private set; }
+        /// <summary>
+        /// Rest fire lit a covering. Spend the cover; leave the walk
+        /// and wall underneath. A later spell Ignite clears this.
+        /// </summary>
+        public bool CoverOnlyBurn { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
@@ -777,7 +799,8 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 for the 7+ walk — at rest it still lights fuel beside it.
+        /// stays 0 for the 7+ walk — at rest it still lights adjacent
+        /// covers, not floors or walls.
         /// </summary>
         public int Hunger
         {
@@ -831,6 +854,7 @@ namespace RuneMagic
         /// source (10). A covering a spell left on that walk is the
         /// fuel — the floor stays rest. Only a strong source (7+)
         /// walks fire, onto equal-or-weaker fuel, out to its own reach.
+        /// A burning plant covering still wicks adjacent wood and oil.
         /// </summary>
         public int FirePotency
         {
@@ -1349,10 +1373,11 @@ namespace RuneMagic
             Fire = 0f;
             Kindled = false;
             LiveFire = false;
+            CoverOnlyBurn = false;
             RefreshFx();
         }
 
-        public void Ignite(float amount, bool live = true)
+        public void Ignite(float amount, bool live = true, bool coverOnly = false)
         {
             if (Kind == TileKind.Pit && Material != MaterialId.Water)
             {
@@ -1370,6 +1395,7 @@ namespace RuneMagic
                 Fire = 0f;
                 Kindled = false;
                 LiveFire = false;
+                CoverOnlyBurn = false;
                 RefreshFx();
                 return;
             }
@@ -1380,11 +1406,13 @@ namespace RuneMagic
             if (amount > 0f && live && Fire > 0.05f)
             {
                 LiveFire = true;
+                CoverOnlyBurn = coverOnly;
             }
 
             if (Fire <= 0.01f)
             {
                 LiveFire = false;
+                CoverOnlyBurn = false;
             }
 
             if ((Fire > 0.05f) != spoke)
@@ -2133,6 +2161,7 @@ namespace RuneMagic
         public void EndSpellFire()
         {
             LiveFire = false;
+            CoverOnlyBurn = false;
             if (Kindled)
             {
                 KeepKindled();
@@ -2226,6 +2255,21 @@ namespace RuneMagic
         /// </summary>
         public void BurnOut()
         {
+            if (CoverOnlyBurn)
+            {
+                CoverOnlyBurn = false;
+                _overlayBurn = 0f;
+                if (HasPlantCover)
+                {
+                    PaintCover(TileCover.None);
+                }
+
+                Fire = 0f;
+                LiveFire = false;
+                RefreshFx();
+                return;
+            }
+
             if (IsFireFloor || HasEmber || HasFireCover)
             {
                 SpendOverlayFuel();

@@ -64,10 +64,11 @@ namespace RuneMagic
         /// Burn seconds stay their own 1–5 clock.
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
         /// 1–2     Tinder — dust / fire cover (2). 1 is open. Fire cover
-        ///         stays and lights fuel beside it; dust is catch-only.
+        ///         stays and lights adjacent covers; dust is catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
         /// 5–6     Plant — living plant (6). Catches from a strong
-        ///         source. Does not run. 5 is free for later fuel.
+        ///         source. The walk does not run. A burning plant
+        ///         covering wicks adjacent wood and oil.
         /// 7–8     Timber — wood (8). A strong source: fire may walk
         ///         to equal-or-weaker fuel out to hunger − 6. 7 is
         ///         free for brush.
@@ -88,8 +89,9 @@ namespace RuneMagic
         /// <summary>
         /// How far a live source may walk, in Chebyshev tiles.
         /// Strong sources use the grade directly: reach = hunger − 6
-        /// (timber 8 → 2, oil / hall 10 → 4). Weaker fuel only feeds
-        /// a vine wick on the next tile.
+        /// (timber 8 → 2, oil / hall 10 → 4). Weaker fuel does not
+        /// run a field. A burning plant covering still wicks the
+        /// next tile onto wood, oil, and other fuel.
         /// </summary>
         public static int CatchReach(int sourceHunger)
         {
@@ -244,8 +246,9 @@ namespace RuneMagic
         /// <summary>
         /// Spoken covers that feed the burn meter on contact, and
         /// that stay as a rest flame. Fire cover is hunger on the
-        /// walk. Ember is coals. At rest they light flammable fuel
-        /// on or beside the cell.
+        /// walk. Ember is coals. At rest they light adjacent covers.
+        /// Floors, walls, and details stay at rest until a spell
+        /// starts hunger.
         /// </summary>
         public static bool CoverFeedsBurn(TileCover cover) =>
             cover == TileCover.Fire || cover == TileCover.Ember;
@@ -381,6 +384,23 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Fuel a rest flame lights at rest: a covering (vine / plant).
+        /// Floors, walls, oil, and details do not catch from rest fire
+        /// itself. A burning covering then wicks into wood and oil.
+        /// </summary>
+        public static bool IsRestCatchFuel(
+            MaterialId walk,
+            MaterialId detail = MaterialId.None,
+            bool vine = false,
+            bool oil = false)
+        {
+            _ = walk;
+            _ = detail;
+            _ = oil;
+            return vine;
+        }
+
+        /// <summary>
         /// Catalog hunger for a material. Set it on
         /// <c>MaterialCatalog.Flag(..., hunger)</c> when you add a body.
         /// </summary>
@@ -487,17 +507,23 @@ namespace RuneMagic
         /// <see cref="CatchReach"/> (the hunger grade itself). The
         /// world also requires the target to touch fuel toward the
         /// source — fire does not leap a stone gap. Weaker fuel does
-        /// not walk fire. A vine wick takes any adjacent live flame.
-        /// Neutral never catches here.
+        /// not walk fire. A vine covering takes any adjacent live
+        /// flame, and a burning plant covering wicks adjacent wood,
+        /// oil, and other fuel. Neutral never catches here.
         /// </summary>
-        public static bool CanIgnite(int sourceHunger, int targetHunger, int chebyshev, bool vineWick)
+        public static bool CanIgnite(
+            int sourceHunger,
+            int targetHunger,
+            int chebyshev,
+            bool vineWick,
+            bool coverWick = false)
         {
             if (targetHunger <= HungerNeutral || chebyshev <= 0)
             {
                 return false;
             }
 
-            if (vineWick && chebyshev == 1)
+            if ((vineWick || coverWick) && chebyshev == 1)
             {
                 return true;
             }
@@ -656,7 +682,7 @@ namespace RuneMagic
                 || CoverFeedsBurn(TileCover.Ash)
                 || CoverFeedsBurn(TileCover.Poison))
             {
-                broken.Add("Fire cover and ember must burn who stands on them and light fuel beside them; ice, ash, and poison must not");
+                broken.Add("Fire cover and ember must burn who stands on them and light adjacent covers; ice, ash, and poison must not");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
@@ -715,6 +741,22 @@ namespace RuneMagic
                 broken.Add("Neighbor fire only takes timber, oil, plant, or a wick — ember hosts fire but is not fuel; plant on rest fire is the covering");
             }
 
+            if (IsRestCatchFuel(MaterialId.Plant)
+                || IsRestCatchFuel(MaterialId.Grove)
+                || IsRestCatchFuel(MaterialId.Moss)
+                || IsRestCatchFuel(MaterialId.Timber)
+                || IsRestCatchFuel(MaterialId.Fire)
+                || IsRestCatchFuel(MaterialId.Stone)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
+                || !IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
+            {
+                broken.Add("Rest fire lights adjacent covers only — floors, walls, details, and oil stay at rest");
+            }
+
             if (WorldWork.MiasmaWalkScale >= 1f
                 || WorldWork.MiasmaWalkScale <= 0f
                 || WorldWork.MiasmaWalkScale <= WorldWork.FloatWalkScale
@@ -757,9 +799,13 @@ namespace RuneMagic
                 || !CanIgnite(HungerOil, HungerOil, 1, false)
                 || !CanIgnite(HungerOil, HungerPlant, 3, false)
                 || CanIgnite(HungerTimber, HungerPlant, 3, false)
-                || !CanIgnite(HungerTinder, HungerPlant, 1, true))
+                || !CanIgnite(HungerTinder, HungerPlant, 1, true)
+                || CanIgnite(HungerPlant, HungerTimber, 1, false)
+                || !CanIgnite(HungerPlant, HungerTimber, 1, false, true)
+                || !CanIgnite(HungerPlant, HungerOil, 1, false, true)
+                || CanIgnite(HungerPlant, HungerTimber, 2, false, true))
             {
-                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; it does not leap a gap");
+                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil");
             }
 
             if (QuenchOf(MaterialId.Stone) != QuenchDry

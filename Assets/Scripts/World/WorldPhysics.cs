@@ -885,9 +885,12 @@ namespace RuneMagic
                 || !VitalLaw.CanIgnite(timber.Hunger, timber.Hunger, 1, false)
                 || !VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 2, false)
                 || !VitalLaw.CanIgnite(oil.Hunger, timber.Hunger, 1, false)
-                || VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 3, false))
+                || VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 3, false)
+                || VitalLaw.CanIgnite(plant.Hunger, timber.Hunger, 1, false)
+                || !VitalLaw.CanIgnite(plant.Hunger, timber.Hunger, 1, false, true)
+                || !VitalLaw.CanIgnite(plant.Hunger, oil.Hunger, 1, false, true))
             {
-                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach");
+                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil");
             }
 
             var mud = MaterialCatalog.Of(MaterialId.Mud);
@@ -916,6 +919,15 @@ namespace RuneMagic
                 || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
                 broken.Add("Hunger must not run onto empty or neutral ground; ember hosts fire but is not fuel; plant on rest fire is the wick");
+            }
+
+            if (VitalLaw.IsRestCatchFuel(MaterialId.Plant)
+                || VitalLaw.IsRestCatchFuel(MaterialId.Timber)
+                || VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
+                || VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
+                || !VitalLaw.IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false))
+            {
+                broken.Add("Rest fire lights adjacent covers only — floors, walls, details, and oil stay at rest");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
