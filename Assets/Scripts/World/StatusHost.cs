@@ -36,8 +36,13 @@ namespace RuneMagic
 
         public void Bind(CreatureNature nature, Vector3 chipOffset)
         {
+            Bind(nature, chipOffset, AffinityProfile.Of(nature));
+        }
+
+        public void Bind(CreatureNature nature, Vector3 chipOffset, AffinityProfile profile)
+        {
             Nature = nature;
-            Profile = AffinityProfile.Of(nature);
+            Profile = profile;
             _sprite = GetComponent<SpriteRenderer>();
             if (_sprite != null)
             {

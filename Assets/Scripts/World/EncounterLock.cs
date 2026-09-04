@@ -47,11 +47,31 @@ namespace RuneMagic
         [SerializeField] string grant;
         [Tooltip("Legacy string. The Attack dropdown writes this.")]
         [SerializeField] string attack;
-        [Tooltip("Golem slams in reach. Wizard writes a 2s fireball. Archer looses a shot. None only wanders.")]
+        [Tooltip("Legacy fallback if Attacks is empty. Golem slams. Wizard writes a fireball. Archer looses a shot.")]
         [SerializeField] CombatKind authoredAttack;
         [SerializeField] float authoredCastSeconds = 2f;
         [Tooltip("Marks shown over a caster's head. Empty Wizard writes Fire · Mercury.")]
         [SerializeField] string[] cast;
+        [Tooltip("Auto follows Attack: Golem holds ground, Wizard / Archer stand and write.")]
+        [SerializeField] CombatMode authoredMode;
+        [Tooltip("Slam reach. 0 uses 1.25.")]
+        [SerializeField] float closeRange;
+        [Tooltip("Mid-band ceiling. 0 uses 4.5.")]
+        [SerializeField] float midRange;
+        [Tooltip("Long-band / sight. 0 uses 8.2.")]
+        [SerializeField] float longRange;
+        [Tooltip("Close, mid, and long strikes. Empty falls back to Attack.")]
+        [SerializeField] CombatSlot[] attacks;
+        [Tooltip("First matching if/then wins. Wall → flame-pillar is the Mixed Court default when this list is empty.")]
+        [SerializeField] CombatGambit[] gambits;
+        [Tooltip("Auto reads the Id (golem is earth, warden is mind).")]
+        [SerializeField] AuthoredNature authoredNature;
+        [SerializeField] bool customDefense;
+        [SerializeField] int authoredDefense = 2;
+        [SerializeField] bool customPush;
+        [SerializeField] int authoredPushResist = 1;
+        [SerializeField] StrikeAffinity[] strikeAffinities;
+        [SerializeField] StatusAffinity[] statusAffinities;
 
         SpriteRenderer _renderer;
         Vector3 _rest;
@@ -117,7 +137,8 @@ namespace RuneMagic
                 new Color(1f, 0.7f, 0.35f), DrawDepth.Name);
 
             _status = AuthoringUtil.GetOrAdd<StatusHost>(gameObject);
-            _status.Bind(NatureOf(formulaId, ensouled), new Vector3(0f, 1.28f, 0f));
+            var nature = CombatBook.NatureOf(authoredNature, formulaId, ensouled);
+            _status.Bind(nature, new Vector3(0f, 1.28f, 0f), BuildProfile(nature));
             _status.OnFatal = id =>
             {
                 if (Resolved || !VitalLaw.IsMeter(id))
@@ -129,9 +150,98 @@ namespace RuneMagic
                     VitalLaw.FatalNote(id, DisplayName, false));
             };
             var kind = CombatOf(authoredAttack, formulaId, attack);
+            var plan = CombatBook.PlanFrom(
+                kind,
+                authoredMode,
+                closeRange,
+                midRange,
+                longRange,
+                attacks,
+                gambits,
+                castSeconds > 0f ? castSeconds : authoredCastSeconds,
+                castRecipe);
             var combat = AuthoringUtil.GetOrAdd<CombatActor>(gameObject);
-            combat.Bind(kind, castSeconds > 0f ? castSeconds : 2f, FindFirstObjectByType<WorldGrid>(), castRecipe);
-            combat.BindLooks(IdleForCombat(), attackFrames, IdleClipName(art, kind), AttackClipName(kind));
+            combat.Bind(plan, FindFirstObjectByType<WorldGrid>());
+            combat.BindLooks(IdleForCombat(), attackFrames, IdleClipName(art, plan.Kind), AttackClipName(plan.Kind));
+        }
+
+        AffinityProfile BuildProfile(CreatureNature nature)
+        {
+            var row = AffinityProfile.Of(nature);
+            if (!customDefense && !customPush
+                && (strikeAffinities == null || strikeAffinities.Length == 0)
+                && (statusAffinities == null || statusAffinities.Length == 0))
+            {
+                return row;
+            }
+
+            return row.WithOverrides(
+                customDefense ? authoredDefense : (int?)null,
+                customPush ? authoredPushResist : (int?)null,
+                strikeAffinities,
+                statusAffinities);
+        }
+
+        public void AuthorCustom()
+        {
+            authoredName = "Custom";
+            authoredId = "custom";
+            spriteId = "enemy-001";
+            formula = new[] { "Earth", "Salt", "Life" };
+            authoredAttack = CombatKind.Golem;
+            attack = "golem";
+            authoredMode = CombatMode.Hunt;
+            authoredNature = AuthoredNature.Flesh;
+            authoredBlocking = true;
+            authoredCastSeconds = 0.85f;
+            closeRange = CombatBook.DefaultClose;
+            midRange = CombatBook.DefaultMid;
+            longRange = CombatBook.DefaultLong;
+            attacks = new[] { CombatBook.SlamSlot() };
+            gambits = System.Array.Empty<CombatGambit>();
+        }
+
+        public void SeedAttacksFromKind()
+        {
+            var kind = CombatOf(authoredAttack, authoredId, attack);
+            attacks = CombatBook.SlotsFromKind(kind, AuthoringUtil.ParseRunes(cast), authoredCastSeconds);
+            CombatBook.FillEmptyRecipes(attacks);
+        }
+
+        public void LoadNatureDefaults()
+        {
+            var nature = CombatBook.NatureOf(authoredNature, authoredId, authoredEnsouled);
+            if (authoredNature == AuthoredNature.Auto)
+            {
+                authoredNature = CombatBook.AuthoredOf(nature);
+            }
+
+            var row = AffinityProfile.Of(nature);
+            customDefense = true;
+            authoredDefense = row.Defense;
+            customPush = true;
+            authoredPushResist = row.PushResist;
+            strikeAffinities = new StrikeAffinity[CombatBook.TunableStrikes.Length];
+            for (var i = 0; i < CombatBook.TunableStrikes.Length; i++)
+            {
+                var kind = CombatBook.TunableStrikes[i];
+                strikeAffinities[i] = new StrikeAffinity
+                {
+                    Kind = kind,
+                    Affinity = row.Strike(kind)
+                };
+            }
+
+            statusAffinities = new StatusAffinity[CombatBook.TunableStatuses.Length];
+            for (var i = 0; i < CombatBook.TunableStatuses.Length; i++)
+            {
+                var id = CombatBook.TunableStatuses[i];
+                statusAffinities[i] = new StatusAffinity
+                {
+                    Status = id,
+                    Affinity = row.Status(id)
+                };
+            }
         }
 
         public void ApplyPack(PackEnemies.Spec spec)
@@ -254,26 +364,6 @@ namespace RuneMagic
             }
         }
 
-        static CreatureNature NatureOf(string formulaId, bool ensouled)
-        {
-            switch ((formulaId ?? string.Empty).ToLowerInvariant())
-            {
-                case "fire-golem":
-                case "ash-mite":
-                    return CreatureNature.Fire;
-                case "ice-thing":
-                    return CreatureNature.Ice;
-                case "golem":
-                case "stone-man":
-                    return CreatureNature.Earth;
-                case "warden":
-                case "spirit-warden":
-                    return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
-                default:
-                    return ensouled ? CreatureNature.Mind : CreatureNature.Flesh;
-            }
-        }
-
         static float FpsFor(string spriteId)
         {
             switch ((spriteId ?? string.Empty).ToLowerInvariant())
@@ -331,6 +421,15 @@ namespace RuneMagic
             if (authoredAttack != CombatKind.None)
             {
                 attack = PackEnemies.AttackName(authoredAttack);
+            }
+
+            CombatBook.FillEmptyRecipes(attacks);
+            if (gambits != null)
+            {
+                for (var i = 0; i < gambits.Length; i++)
+                {
+                    CombatBook.FillFromSpell(gambits[i]);
+                }
             }
 
             if (Application.isPlaying)

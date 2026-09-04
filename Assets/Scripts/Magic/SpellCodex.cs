@@ -949,6 +949,7 @@ namespace RuneMagic
             FocusLaw.Audit(broken);
             VitalLaw.Audit(broken);
             StrikeLaw.Audit(broken);
+            CombatBook.Audit(broken);
             SpellGrammar.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 

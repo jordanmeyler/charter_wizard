@@ -19,7 +19,8 @@ The body sits on the 16×16 grid. One cell is one tile.
 
 | Prefab | Id | Attack | What Play does |
 |---|---|---|---|
-| **Golem** | `golem` | Golem | Slams anyone in reach. Hop or Stoneskin survives it. Earth body. |
+| **Custom** | `custom` | Hunt + slam | Blank body. Mode, slots, gambits, and resistances are yours. |
+| **Golem** | `golem` | Golem | Holds ground and slams anyone in reach. Hop or Stoneskin survives it. Earth body. |
 | **Warden** | `warden` | Wizard | Writes a fireball for two seconds and commits facing when the sentence starts. Ensouled. |
 | **Cultist** | `cultist` | Wizard | Same strike as the Warden. Another robe if you want two casters. |
 | **Mite** | `ash-mite` | None | Blank lock. Set formula / attack yourself. |
@@ -67,9 +68,32 @@ Do not assign the unsliced strips under `Assets/Resources/Sprites/Enemies`
 to Portrait — those are the catalog fallback, 16 PPU, and they read as
 two tiles tall. The ElvGames slices are 32 PPU and sit on one cell.
 
-## Set the attack
+## Mind, ranges, and attack slots
 
-On the same Inspector, **Attack**:
+The same Inspector now has a mind. **Mode** and **Attacks** are how
+you write a new body without new C#.
+
+| Mode | What Play does |
+|---|---|
+| **Auto** | Follows Attack. Golem holds ground. Wizard / Archer stand and write. None wanders. |
+| **Hunt** | Close the gap and use the slot that matches the range. |
+| **Guard** | Hold the tile. Strike if a slot can reach. |
+| **Skirmish** | Keep mid or long. Back off if you step in. |
+| **Caster** | Stand and write when a shot or pillar can reach. |
+| **Wander** | Walk the room. Gambits can still fire. |
+
+**Close / Mid / Long** are the bands (defaults 1.25 / 4.5 / 8.2). A
+slot listed as Close slams inside slam reach. Mid and Long write a
+sentence. Distance picks the matching band first, then any slot that
+can still reach.
+
+**Attacks** is a list. Add slam, fireball, arrow, or flame-pillar with
+the buttons, or pick **Attack / spell** on a slot. Picking a spell
+fills **Recipe** from the book (`Fireball` writes `Fire · Mercury`,
+`Flame-pillar` writes `Fire · Salt · Earth`). Leave the spell on None
+and write the runes yourself.
+
+Empty **Attacks** still uses the old **Attack** dropdown:
 
 | Attack | Strike | Cast seconds | Empty Cast recipe |
 |---|---|---|---|
@@ -80,39 +104,56 @@ On the same Inspector, **Attack**:
 
 A wizard shows the marks they are writing over their head. Raise a wall
 to break the shot, hop over it, get behind them, or wear a flame ward
-(`Fire · Salt · Sulphur`). In the Mixed Court a fire wizard answers a
-wall with a flame-pillar.
-
-To write a different sentence, fill **Cast recipe**. A wizard who writes
-`Plant · Salt · Mercury` looses a wood arrow instead of a fireball.
-`Spark · Mercury` still shows those marks; the flying body stays a
-fireball until we give bolt its own shot. An **Arrows** rack on the
-tilemap is crushing (Stoneskin). A written wood arrow is plant *and*
-crushing — Plant ward or Stoneskin turns it. Vine and briar stay plant
-only.
+(`Fire · Salt · Sulphur`).
 
 **Blocking** on a Golem is a solid body — you cannot walk through it.
 Wizards leave it off so you can step past while they write.
 
+## Gambits
+
+First matching if/then wins, the way FF12 wrote gambits.
+
+`If the player raises a wall, then write flame-pillar.` That is the
+Mixed Court lesson. A fire wizard with an empty gambit list still
+does it there. Add the same row on any enemy if you want it everywhere.
+
+Other whens: they cast a named spell, they are close / mid / long,
+an ally is nearby, this body has a status, the mark has a status.
+**Then spell** fills runes the same way an attack slot does. **Once**
+spends the row after it fires.
+
+## Nature and resistances
+
+**Nature** Auto still reads the Id (`golem` is earth, `fire-golem` is
+fire, an ensouled `warden` is mind). Set Nature yourself if the Id
+should not decide the body.
+
+**Load nature defaults into affinities** writes defense, push resist,
+and the strike / status columns (0 immune … 5 ruin-weak). Change a
+column without rewriting the rest of the row. A stone golem that also
+ignores hunger is Defense 4 with Fire set to 0.
+
 ## Add another enemy
 
-Yes — duplicate a prefab. No new C# for a new body.
+Yes — no new C# for a new body.
 
-1. Duplicate **Golem** or **Warden** in `Assets/Prefabs/Enemies`.
+1. `GameObject → Rune Magic → Enemies → Custom`, or duplicate
+   **Golem** / **Warden** in `Assets/Prefabs/Enemies`.
 2. Change **Name** / **Id**. `golem` is earth. `fire-golem` is fire.
-   `warden` is an ensouled watcher.
+   `warden` is an ensouled watcher. Or set **Nature** directly.
 3. Drag another ElvGames facing, or **Fill empty frames from pack**
-   after you set **Sprite Id**.
-4. Set **Attack**, **Formula**, **Cast recipe**, **Ensouled**,
-   **Blocking**, **Grant**.
+   after you set **Sprite Id**. **Start from a pack body** copies a
+   pack name / formula / frames onto this lock.
+4. Set **Mode**, **Attacks**, **Gambits**, **Formula**, **Ensouled**,
+   **Blocking**, **Grant**, and resistances.
 5. Drop the new prefab in the room.
 
 `GameObject → Rune Magic → Mite` is the same component with no pack
 art. Set Sprite Id or drag frames yourself.
 
-A new *kind* of strike (not slam / fireball / wood arrow) still needs
-a `CombatKind` or a `SpellId`. A new wood archer does not — set Attack
-to **Archer**, or set a Wizard's Cast recipe to `Plant · Salt · Mercury`.
+A new wood archer does not need new C# — add a Long **Wood arrow**
+slot, or set Attack to **Archer**. A body that slams in close and
+answers a wall with a flame-pillar is two slots and one gambit.
 
 ## Animation — frames on the prefab, not a controller
 

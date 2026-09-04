@@ -92,6 +92,7 @@ namespace RuneMagic
             DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
             DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant. Prefer Enemies/Golem or Warden.");
             EditorGUILayout.Space();
+            DrawPlace("Custom", "Blank EncounterLock with Hunt, a close slam, and editable resistances. Dress it in the Inspector.");
             EditorGUILayout.LabelField("Pack enemies", EditorStyles.boldLabel);
             for (var i = 0; i < PackEnemies.All.Length; i++)
             {
@@ -313,6 +314,7 @@ namespace RuneMagic
                 WriteStone(Stones[i]);
             }
 
+            WriteCustom();
             for (var i = 0; i < PackEnemies.All.Length; i++)
             {
                 WriteEnemy(PackEnemies.All[i]);
@@ -351,6 +353,26 @@ namespace RuneMagic
 
             so.ApplyModifiedPropertiesWithoutUndo();
             PrefabUtility.SaveAsPrefabAsset(host, path);
+            DestroyImmediate(host);
+        }
+
+        static void WriteCustom()
+        {
+            if (LoadPrefab("Custom") != null)
+            {
+                return;
+            }
+
+            if (!AssetDatabase.IsValidFolder(PrefabFolder + "/Enemies"))
+            {
+                AssetDatabase.CreateFolder("Assets/Prefabs", "Enemies");
+            }
+
+            var host = new GameObject("Custom");
+            var encounter = host.AddComponent<EncounterLock>();
+            encounter.AuthorCustom();
+            host.AddComponent<SpriteRenderer>();
+            PrefabUtility.SaveAsPrefabAsset(host, $"{PrefabFolder}/Enemies/Custom.prefab");
             DestroyImmediate(host);
         }
 
