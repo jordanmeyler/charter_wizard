@@ -63,7 +63,8 @@ namespace RuneMagic
         /// One 0–10 hunger grade. Catch and spread use this range.
         /// Burn seconds stay their own 1–5 clock.
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
-        /// 1–2     Tinder — dust / fire cover (2). 1 is open. Catch-only.
+        /// 1–2     Tinder — dust / fire cover (2). 1 is open. Fire cover
+        ///         stays and lights fuel beside it; dust is catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
         /// 5–6     Plant — living plant (6). Catches from a strong
         ///         source. Does not run. 5 is free for later fuel.
@@ -241,8 +242,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Spoken covers that feed the burn meter on contact.
-        /// Fire cover is hunger on the walk. Ember is coals.
+        /// Spoken covers that feed the burn meter on contact, and
+        /// that stay as a rest flame. Fire cover is hunger on the
+        /// walk. Ember is coals. At rest they light flammable fuel
+        /// on or beside the cell.
         /// </summary>
         public static bool CoverFeedsBurn(TileCover cover) =>
             cover == TileCover.Fire || cover == TileCover.Ember;
@@ -653,7 +656,7 @@ namespace RuneMagic
                 || CoverFeedsBurn(TileCover.Ash)
                 || CoverFeedsBurn(TileCover.Poison))
             {
-                broken.Add("Fire cover and ember must feed the burn meter; ice, ash, and poison must not");
+                broken.Add("Fire cover and ember must burn who stands on them and light fuel beside them; ice, ash, and poison must not");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
