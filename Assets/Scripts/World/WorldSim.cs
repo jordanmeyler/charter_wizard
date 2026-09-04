@@ -14,7 +14,9 @@ namespace RuneMagic
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover stays and, at
-    /// rest, lights flammable fuel on or beside it. Charge uses a
+    /// rest, lights adjacent covers. A burning plant covering
+    /// wicks adjacent wood and oil. Floors and walls stay at rest
+    /// until that covering or a spell starts hunger. Charge uses a
     /// 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
@@ -264,11 +266,12 @@ namespace RuneMagic
         }
 
         // Rest fire (Floor-Fire, lava, a hearth), ember, and fire
-        // cover stay without a spell. At rest they light flammable
-        // fuel on the cell or beside it. Neutral stone stays dark.
-        // A spell or a catching overlay can still walk further using
-        // Hunger. Ember and fire cover stay. When the overlay is
-        // gone rest fire goes dark again — unless the hall is kindled.
+        // cover stay without a spell. The room is at rest: they
+        // light adjacent covers (vine / plant). Floors, walls,
+        // oil, and details stay dark until that covering wicks
+        // into them, or a spell starts hunger.
+        // Ember and fire cover stay. When the overlay is gone rest
+        // fire goes dark again — unless the hall is kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -307,8 +310,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A rest flame lights catchable fuel on its own cell and on
-        /// the four tiles beside it. It does not leap a stone gap.
+        /// A rest flame lights a covering on its own cell, and
+        /// adjacent plant / vine covers. Floors, walls, oil, and
+        /// details stay at rest until that covering wicks into them.
+        /// A spell that starts hunger can still run into those walks.
         /// </summary>
         void CatchRestFuel(WorldTile tile)
         {
@@ -317,7 +322,11 @@ namespace RuneMagic
                 return;
             }
 
-            if (tile.HasCatchableFuel && !tile.LiveFire)
+            if (tile.HasRestCatchFuel && !tile.LiveFire)
+            {
+                tile.Ignite(0.55f, live: true, coverOnly: !tile.HasWalkFuel);
+            }
+            else if (tile.HasCatchableFuel && !tile.LiveFire)
             {
                 tile.Ignite(0.55f);
             }
@@ -326,13 +335,13 @@ namespace RuneMagic
             for (var n = 0; n < neighbors.Count; n++)
             {
                 var other = neighbors[n];
-                if (!AcceptsFireSpread(other) || !other.HasCatchableFuel)
+                if (!AcceptsFireSpread(other) || !other.HasRestCatchFuel)
                 {
                     continue;
                 }
 
                 var fuel = other.Flammability > 0f ? other.Flammability : 0.85f;
-                other.Ignite(fuel);
+                other.Ignite(fuel, live: true, coverOnly: !other.HasWalkFuel);
             }
         }
 
@@ -441,6 +450,7 @@ namespace RuneMagic
                 return;
             }
 
+            var coverWick = tile.HasPlantCover || tile.CoverOnlyBurn;
             _grid.ForEachInChebyshev(tile.Coord, VitalLaw.CatchReach(potency), (other, dist) =>
             {
                 if (!AcceptsFireSpread(other))
@@ -449,7 +459,7 @@ namespace RuneMagic
                 }
 
                 if (!other.ConductsFire
-                    && !VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
+                    && !VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasPlantCover, coverWick))
                 {
                     return;
                 }
@@ -460,7 +470,8 @@ namespace RuneMagic
                 }
 
                 var fuel = other.Flammability > 0f ? other.Flammability : 1.2f;
-                other.Ignite(fuel);
+                var coverOnly = tile.CoverOnlyBurn && other.HasRestCatchFuel && !other.HasWalkFuel;
+                other.Ignite(fuel, live: true, coverOnly: coverOnly);
             });
         }
 

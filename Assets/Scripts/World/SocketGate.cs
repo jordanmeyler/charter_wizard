@@ -13,6 +13,8 @@ namespace RuneMagic
     [SelectionBase]
     public sealed class SocketGate : MonoBehaviour, ISpellLock, IRuneSource
     {
+        public const float ApproachRadius = 2.1f;
+
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
         public SpellId[] AcceptedKeys { get; private set; } = System.Array.Empty<SpellId>();
@@ -59,8 +61,11 @@ namespace RuneMagic
         WorldGrid _grid;
         WorldDoor[] _objectDoors;
         Vector2Int[] _doors;
+        readonly List<Vector2Int> _reach = new();
+        readonly List<Vector3> _doorWorlds = new();
         float _pulse;
         bool _wired;
+        bool _volumeReady;
         SpriteRenderer _renderer;
 
         bool HasAuthoredArt =>
@@ -105,12 +110,18 @@ namespace RuneMagic
             }
 
             ApplyPlayLook(spriteId);
+            EnsureVolume();
         }
 
         public void BindFromAuthoring(WorldGrid grid)
         {
             if (_wired)
             {
+                if (grid != null)
+                {
+                    _grid = grid;
+                }
+
                 return;
             }
 
@@ -132,15 +143,16 @@ namespace RuneMagic
 
         public string FormulaText()
         {
-            if (_requires == null || _requires.Length == 0)
+            var needed = RequiredIds();
+            if (needed == null || needed.Length == 0)
             {
                 return "empty sockets";
             }
 
-            var parts = new string[_requires.Length];
-            for (var i = 0; i < _requires.Length; i++)
+            var parts = new string[needed.Length];
+            for (var i = 0; i < needed.Length; i++)
             {
-                parts[i] = Pretty(_requires[i]);
+                parts[i] = Pretty(needed[i]);
             }
 
             return string.Join(" · ", parts);
@@ -194,19 +206,118 @@ namespace RuneMagic
             _renderer.enabled = false;
         }
 
-        void OpenDoors()
+        WorldDoor[] LinkedDoors()
         {
-            var opened = false;
-            if (_objectDoors != null)
+            if (_objectDoors != null && _objectDoors.Length > 0)
             {
-                for (var i = 0; i < _objectDoors.Length; i++)
+                return _objectDoors;
+            }
+
+            return doors;
+        }
+
+        string[] RequiredIds()
+        {
+            var source = requires != null && requires.Length > 0 ? requires : _requires;
+            if (source == null || source.Length == 0)
+            {
+                return System.Array.Empty<string>();
+            }
+
+            var count = 0;
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(source[i]))
                 {
-                    if (_objectDoors[i] == null)
+                    count++;
+                }
+            }
+
+            if (count == source.Length)
+            {
+                return source;
+            }
+
+            var trimmed = new string[count];
+            var write = 0;
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(source[i]))
+                {
+                    continue;
+                }
+
+                trimmed[write++] = source[i];
+            }
+
+            return trimmed;
+        }
+
+        bool PlayerAtLock(Vector3 player)
+        {
+            _reach.Clear();
+            _doorWorlds.Clear();
+            var objectDoors = LinkedDoors();
+            WorldDoor.GatherLockCells(transform.position, objectDoors, _doors ?? doorCells, _reach);
+            if (objectDoors != null)
+            {
+                for (var i = 0; i < objectDoors.Length; i++)
+                {
+                    if (objectDoors[i] == null)
                     {
                         continue;
                     }
 
-                    _objectDoors[i].Open();
+                    _doorWorlds.Add(objectDoors[i].transform.position);
+                }
+            }
+
+            return PlayerReaches(player, transform.position, _doorWorlds, _reach);
+        }
+
+        /// <summary>
+        /// Standing at the lock, or at a linked door — even when the
+        /// lock object sits several tiles off the leaf.
+        /// </summary>
+        public static bool PlayerReaches(
+            Vector3 player,
+            Vector3 origin,
+            IList<Vector3> doorWorlds,
+            IList<Vector2Int> cells)
+        {
+            if (Vector2.Distance(player, origin) <= WorldDoor.AutoLinkRadius)
+            {
+                return true;
+            }
+
+            if (doorWorlds != null)
+            {
+                for (var i = 0; i < doorWorlds.Count; i++)
+                {
+                    if (Vector2.Distance(player, doorWorlds[i]) <= WorldDoor.AutoLinkRadius)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return CellVolume.DistanceTo(player, origin, cells) <= ApproachRadius;
+        }
+
+        void OpenDoors()
+        {
+            var opened = false;
+            var objectDoors = LinkedDoors();
+            if (objectDoors != null)
+            {
+                for (var i = 0; i < objectDoors.Length; i++)
+                {
+                    if (objectDoors[i] == null)
+                    {
+                        continue;
+                    }
+
+                    objectDoors[i].Open();
                     opened = true;
                 }
             }
@@ -215,7 +326,7 @@ namespace RuneMagic
             {
                 for (var i = 0; i < _doors.Length; i++)
                 {
-                    _grid.Get(_doors[i])?.OpenDoor();
+                    _grid.Get(_doors[i])?.YieldToLeaf();
                     opened = true;
                 }
             }
@@ -249,6 +360,54 @@ namespace RuneMagic
             return copy;
         }
 
+        void EnsureVolume()
+        {
+            if (_volumeReady || !Application.isPlaying)
+            {
+                return;
+            }
+
+            _volumeReady = true;
+            var hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
+            hit.isTrigger = true;
+            hit.radius = Mathf.Max(1.2f, ApproachRadius * 0.75f);
+        }
+
+        void TrySeat()
+        {
+            if (Resolved)
+            {
+                return;
+            }
+
+            if (_director == null)
+            {
+                _director = FindFirstObjectByType<SanctumDirector>();
+            }
+
+            if (_director == null || _director.Pack == null)
+            {
+                return;
+            }
+
+            if (!_director.Pack.HasAll(RequiredIds()))
+            {
+                return;
+            }
+
+            _director.TurnLock(this);
+        }
+
+        void OnTriggerStay2D(Collider2D other)
+        {
+            if (!Application.isPlaying || Resolved || !AdeptAvatar.IsAdept(other))
+            {
+                return;
+            }
+
+            TrySeat();
+        }
+
         void Update()
         {
             if (!Application.isPlaying)
@@ -261,34 +420,20 @@ namespace RuneMagic
                 return;
             }
 
+            EnsureVolume();
             if (pulse && !HasAuthoredArt)
             {
                 _pulse += Time.deltaTime;
                 transform.localScale = Vector3.one * (1f + Mathf.Sin(_pulse * 2.4f) * 0.04f);
             }
 
-            if (_director == null)
-            {
-                _director = FindFirstObjectByType<SanctumDirector>();
-            }
-
-            if (_director == null || _director.Pack == null || _director.Busy)
-            {
-                return;
-            }
-
             var player = AdeptAvatar.Find();
-            if (player == null || Vector2.Distance(player.transform.position, transform.position) > 2.1f)
+            if (player == null || !PlayerAtLock(player.transform.position))
             {
                 return;
             }
 
-            if (!_director.Pack.HasAll(_requires))
-            {
-                return;
-            }
-
-            _director.TurnLock(this);
+            TrySeat();
         }
 
         static string Pretty(string id)
