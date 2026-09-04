@@ -260,6 +260,21 @@
       "height": 16
     },
     {
+      "id": "wall-ice",
+      "kind": "wall",
+      "note": "Ice wall. Same sanctuary face as Cover-Ice / ice-shot freeze.",
+      "pivot": "0.5,0.5",
+      "col": 0,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "source": "Sprites/Rogue/RA_Sanctuary",
+      "x": 32,
+      "y": 320,
+      "width": 16,
+      "height": 16
+    },
+    {
       "id": "wall-cave",
       "kind": "wall",
       "note": "Cave wall.",
@@ -712,7 +727,7 @@
     {
       "id": "cover-ice",
       "kind": "cover",
-      "note": "Ice over stone.",
+      "note": "Ice over stone. Same sanctuary ice as Floor-Ice / Cover-Ice.",
       "pivot": "0.5,0.5",
       "col": 0,
       "row": 0,
@@ -720,7 +735,7 @@
       "h": 1,
       "source": "Sprites/Rogue/RA_Sanctuary",
       "x": 0,
-      "y": 80,
+      "y": 336,
       "width": 16,
       "height": 16
     },
@@ -734,8 +749,8 @@
       "w": 1,
       "h": 1,
       "source": "Sprites/Rogue/RA_Sanctuary",
-      "x": 32,
-      "y": 80,
+      "x": 16,
+      "y": 336,
       "width": 16,
       "height": 16
     },
@@ -1221,6 +1236,10 @@
     {
       "id": "lightning-rod",
       "tile": "lightning-pillar"
+    },
+    {
+      "id": "pillar-ice",
+      "tile": "wall-ice"
     },
     {
       "id": "ice-block",
