@@ -64,8 +64,7 @@ namespace RuneMagic
         /// Burn seconds stay their own 1–5 clock.
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
         /// 1–2     Tinder — dust / fire cover (2). 1 is open. Fire cover
-        ///         stays and lights overlay fuel beside it, not a
-        ///         plant walk; dust is catch-only.
+        ///         stays and lights adjacent covers; dust is catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
         /// 5–6     Plant — living plant (6). Catches from a strong
         ///         source. Does not run. 5 is free for later fuel.
@@ -245,9 +244,9 @@ namespace RuneMagic
         /// <summary>
         /// Spoken covers that feed the burn meter on contact, and
         /// that stay as a rest flame. Fire cover is hunger on the
-        /// walk. Ember is coals. At rest they light overlay fuel
-        /// on or beside the cell — covers, oil, details — not a
-        /// plant or timber walk.
+        /// walk. Ember is coals. At rest they light adjacent covers.
+        /// Floors, walls, and details stay at rest until a spell
+        /// starts hunger.
         /// </summary>
         public static bool CoverFeedsBurn(TileCover cover) =>
             cover == TileCover.Fire || cover == TileCover.Ember;
@@ -383,11 +382,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Fuel a rest flame lights at rest: a covering, oil, or a
-        /// plant / timber detail. Floor-Plant, Floor-Grove, Floor-Moss,
-        /// and Floor-Timber are not this — they catch when a spell
-        /// starts hunger, then burn out. Rest fire does not walk a
-        /// field onto those walks.
+        /// Fuel a rest flame lights at rest: a covering (vine / plant).
+        /// The room stays at rest — floors, walls, oil, and details
+        /// do not catch until a spell starts hunger.
         /// </summary>
         public static bool IsRestCatchFuel(
             MaterialId walk,
@@ -395,15 +392,10 @@ namespace RuneMagic
             bool vine = false,
             bool oil = false)
         {
-            // The walk itself — Floor-Plant, timber, moss, grove — is
-            // ignored. Those catch when a spell starts hunger.
             _ = walk;
-            if (HungerOf(detail) > HungerNeutral)
-            {
-                return true;
-            }
-
-            return vine || oil;
+            _ = detail;
+            _ = oil;
+            return vine;
         }
 
         /// <summary>
@@ -682,7 +674,7 @@ namespace RuneMagic
                 || CoverFeedsBurn(TileCover.Ash)
                 || CoverFeedsBurn(TileCover.Poison))
             {
-                broken.Add("Fire cover and ember must burn who stands on them and light fuel beside them; ice, ash, and poison must not");
+                broken.Add("Fire cover and ember must burn who stands on them and light adjacent covers; ice, ash, and poison must not");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
@@ -747,13 +739,14 @@ namespace RuneMagic
                 || IsRestCatchFuel(MaterialId.Timber)
                 || IsRestCatchFuel(MaterialId.Fire)
                 || IsRestCatchFuel(MaterialId.Stone)
-                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
-                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber)
+                || IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
                 || !IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
-                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
-                || !IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false))
+                || !IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
             {
-                broken.Add("Rest fire lights adjacent covers, oil, and details — not a plant or timber walk");
+                broken.Add("Rest fire lights adjacent covers only — floors, walls, details, and oil stay at rest");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f

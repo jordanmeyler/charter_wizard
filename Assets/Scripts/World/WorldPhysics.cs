@@ -920,11 +920,11 @@ namespace RuneMagic
 
             if (VitalLaw.IsRestCatchFuel(MaterialId.Plant)
                 || VitalLaw.IsRestCatchFuel(MaterialId.Timber)
-                || !VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
-                || !VitalLaw.IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
-                || !VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true))
+                || VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
+                || VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
+                || !VitalLaw.IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false))
             {
-                broken.Add("Rest fire lights adjacent covers, oil, and details — not a plant or timber walk");
+                broken.Add("Rest fire lights adjacent covers only — floors, walls, details, and oil stay at rest");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

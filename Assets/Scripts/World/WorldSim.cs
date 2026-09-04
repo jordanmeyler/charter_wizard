@@ -14,8 +14,8 @@ namespace RuneMagic
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover stays and, at
-    /// rest, lights overlay fuel on or beside it — not a plant walk.
-    /// Charge uses a
+    /// rest, lights adjacent covers. Floors and walls stay at rest
+    /// until a spell starts hunger. Charge uses a
     /// 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
@@ -265,13 +265,11 @@ namespace RuneMagic
         }
 
         // Rest fire (Floor-Fire, lava, a hearth), ember, and fire
-        // cover stay without a spell. At rest they light overlay
-        // fuel on the cell or beside it — vine, oil, a bush / table.
-        // They do not light a plant or timber walk beside them.
-        // Neutral stone stays dark. A spell that starts hunger can
-        // still run into those walks. Ember and fire cover stay.
-        // When the overlay is gone rest fire goes dark again —
-        // unless the hall is kindled.
+        // cover stay without a spell. The room is at rest: they
+        // light adjacent covers (vine / plant). Floors, walls,
+        // oil, and details stay dark until a spell starts hunger.
+        // Ember and fire cover stay. When the overlay is gone rest
+        // fire goes dark again — unless the hall is kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -310,11 +308,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A rest flame lights catchable fuel on its own cell, and
-        /// overlay fuel on the four tiles beside it — covers, oil,
-        /// bushes, tables. It does not light a plant or timber walk
-        /// beside it, and it does not leap a stone gap. A spell that
-        /// starts hunger can still run into those walks.
+        /// A rest flame lights a covering on its own cell, and
+        /// adjacent plant / vine covers. Floors, walls, oil, and
+        /// details stay at rest. A spell that starts hunger can
+        /// still run into those walks.
         /// </summary>
         void CatchRestFuel(WorldTile tile)
         {
@@ -323,7 +320,11 @@ namespace RuneMagic
                 return;
             }
 
-            if (tile.HasCatchableFuel && !tile.LiveFire)
+            if (tile.HasRestCatchFuel && !tile.LiveFire)
+            {
+                tile.Ignite(0.55f, live: true, coverOnly: true);
+            }
+            else if (tile.HasCatchableFuel && !tile.LiveFire)
             {
                 tile.Ignite(0.55f);
             }
@@ -338,7 +339,7 @@ namespace RuneMagic
                 }
 
                 var fuel = other.Flammability > 0f ? other.Flammability : 0.85f;
-                other.Ignite(fuel);
+                other.Ignite(fuel, live: true, coverOnly: true);
             }
         }
 
@@ -454,8 +455,13 @@ namespace RuneMagic
                     return;
                 }
 
+                if (tile.CoverOnlyBurn && !other.HasRestCatchFuel && !other.ConductsFire)
+                {
+                    return;
+                }
+
                 if (!other.ConductsFire
-                    && !VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasVine))
+                    && !VitalLaw.CanIgnite(potency, other.Hunger, dist, other.HasPlantCover))
                 {
                     return;
                 }
@@ -466,7 +472,7 @@ namespace RuneMagic
                 }
 
                 var fuel = other.Flammability > 0f ? other.Flammability : 1.2f;
-                other.Ignite(fuel);
+                other.Ignite(fuel, live: true, coverOnly: tile.CoverOnlyBurn);
             });
         }
 

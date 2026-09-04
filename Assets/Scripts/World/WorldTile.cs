@@ -268,20 +268,18 @@ namespace RuneMagic
             || HasPoisonCover;
 
         /// <summary>
-        /// Fuel a rest flame lights on a neighbor at rest: vine /
-        /// plant cover, oil, a poison slick, or a bush / table.
-        /// Floor-Plant and the other vegetable walks are not this.
+        /// Fuel a rest flame lights on a neighbor at rest: a plant /
+        /// vine covering. Floors, walls, oil, and details stay at rest.
         /// </summary>
         public bool HasRestCatchFuel =>
-            !HasAshCover && (HasOverlayFuel || HasPlantCover);
+            !HasAshCover && HasPlantCover;
 
         /// <summary>
-        /// Plant, oil, timber, or other fuel a rest flame can light
-        /// on this cell. Includes a plant walk under fire cover so
-        /// that covering burns the fuel it sits on. Neighbors use
-        /// <see cref="HasRestCatchFuel"/> — rest fire does not walk
-        /// onto a plant floor beside it. Fire cover and rest-fire
-        /// walks are the source, not catchable fuel.
+        /// Plant, oil, timber, or other fuel this cell can burn.
+        /// Rest fire on a neighbor uses <see cref="HasRestCatchFuel"/>
+        /// — only a covering catches; the walk and wall stay. A spell
+        /// still takes the floor. Fire cover and rest-fire walks are
+        /// the source, not catchable fuel.
         /// </summary>
         public bool HasCatchableFuel
         {
@@ -451,6 +449,11 @@ namespace RuneMagic
         /// halls, and painted cover stay still until work finds them.
         /// </summary>
         public bool LiveFire { get; private set; }
+        /// <summary>
+        /// Rest fire lit a covering. Spend the cover; leave the walk
+        /// and wall underneath. A later spell Ignite clears this.
+        /// </summary>
+        public bool CoverOnlyBurn { get; private set; }
         public int Growth => _growth;
         public bool IsBurning => Fire > 0.35f;
         public bool HasFog => Fog > 0.2f;
@@ -784,8 +787,8 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 for the 7+ walk — at rest it still lights overlay
-        /// fuel beside it, not a plant walk.
+        /// stays 0 for the 7+ walk — at rest it still lights adjacent
+        /// covers, not floors or walls.
         /// </summary>
         public int Hunger
         {
@@ -1357,10 +1360,11 @@ namespace RuneMagic
             Fire = 0f;
             Kindled = false;
             LiveFire = false;
+            CoverOnlyBurn = false;
             RefreshFx();
         }
 
-        public void Ignite(float amount, bool live = true)
+        public void Ignite(float amount, bool live = true, bool coverOnly = false)
         {
             if (Kind == TileKind.Pit && Material != MaterialId.Water)
             {
@@ -1378,6 +1382,7 @@ namespace RuneMagic
                 Fire = 0f;
                 Kindled = false;
                 LiveFire = false;
+                CoverOnlyBurn = false;
                 RefreshFx();
                 return;
             }
@@ -1388,11 +1393,13 @@ namespace RuneMagic
             if (amount > 0f && live && Fire > 0.05f)
             {
                 LiveFire = true;
+                CoverOnlyBurn = coverOnly;
             }
 
             if (Fire <= 0.01f)
             {
                 LiveFire = false;
+                CoverOnlyBurn = false;
             }
 
             if ((Fire > 0.05f) != spoke)
@@ -2141,6 +2148,7 @@ namespace RuneMagic
         public void EndSpellFire()
         {
             LiveFire = false;
+            CoverOnlyBurn = false;
             if (Kindled)
             {
                 KeepKindled();
@@ -2234,6 +2242,21 @@ namespace RuneMagic
         /// </summary>
         public void BurnOut()
         {
+            if (CoverOnlyBurn)
+            {
+                CoverOnlyBurn = false;
+                _overlayBurn = 0f;
+                if (HasPlantCover)
+                {
+                    PaintCover(TileCover.None);
+                }
+
+                Fire = 0f;
+                LiveFire = false;
+                RefreshFx();
+                return;
+            }
+
             if (IsFireFloor || HasEmber || HasFireCover)
             {
                 SpendOverlayFuel();
