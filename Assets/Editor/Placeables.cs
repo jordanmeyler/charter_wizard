@@ -52,6 +52,9 @@ namespace RuneMagic
         [MenuItem("GameObject/Rune Magic/Enemy", false, 22)]
         static void Enemy() => SpawnEnemy(PackEnemies.All[0]);
 
+        [MenuItem("GameObject/Rune Magic/Enemies/Custom", false, 39)]
+        static void EnemyCustom() => SpawnCustom();
+
         [MenuItem("GameObject/Rune Magic/Enemies/Shade", false, 40)]
         static void EnemyShade() => SpawnEnemy(PackEnemies.All[0]);
 
@@ -153,6 +156,30 @@ namespace RuneMagic
 
         [MenuItem("GameObject/Rune Magic/Flame Hall", false, 36)]
         static void Hall() => Spawn("Flame Hall", typeof(FlameHall));
+
+        static void SpawnCustom()
+        {
+            if (AuthoringWindow.TryPlace("Custom"))
+            {
+                return;
+            }
+
+            var world = AuthoringUtil.Snap(SceneView.lastActiveSceneView != null
+                ? SceneView.lastActiveSceneView.pivot
+                : Vector3.zero);
+            var host = new GameObject("Custom");
+            host.transform.position = world;
+            var encounter = host.AddComponent<EncounterLock>();
+            encounter.AuthorCustom();
+            if (host.GetComponent<SpriteRenderer>() == null)
+            {
+                host.AddComponent<SpriteRenderer>();
+            }
+
+            WorldYSort.On(host);
+            Undo.RegisterCreatedObjectUndo(host, "Create Custom");
+            Selection.activeGameObject = host;
+        }
 
         static void SpawnEnemy(PackEnemies.Spec spec)
         {

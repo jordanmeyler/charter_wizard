@@ -31,7 +31,8 @@ namespace RuneMagic
             WorldGrid grid,
             float speed = 7.2f,
             CombatActor source = null,
-            ShotAllegiance allegiance = ShotAllegiance.Hostile)
+            ShotAllegiance allegiance = ShotAllegiance.Hostile,
+            RuneId[] recipe = null)
         {
             if (direction.sqrMagnitude < 0.0001f)
             {
@@ -46,9 +47,11 @@ namespace RuneMagic
             shot._kind = kind;
             shot._source = source;
             shot._allegiance = allegiance;
-            shot._recipe = source != null && source.CastRecipe != null && source.CastRecipe.Length > 0
-                ? source.CastRecipe
-                : DefaultRecipe(kind);
+            shot._recipe = recipe != null && recipe.Length > 0
+                ? recipe
+                : source != null && source.CastRecipe != null && source.CastRecipe.Length > 0
+                    ? source.CastRecipe
+                    : DefaultRecipe(kind);
             shot._velocity = direction * speed;
             var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             host.transform.rotation = Quaternion.Euler(0f, 0f, angle);

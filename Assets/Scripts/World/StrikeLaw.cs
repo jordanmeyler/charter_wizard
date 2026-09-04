@@ -486,6 +486,53 @@ namespace RuneMagic
             return new AffinityProfile(CreatureNature.Undead, Defense, PushResist, strike, Copy(_status), true);
         }
 
+        /// <summary>
+        /// Inspector overrides sit on top of a nature row. Empty lists
+        /// leave that column as the nature wrote it.
+        /// </summary>
+        public AffinityProfile WithOverrides(
+            int? defense,
+            int? pushResist,
+            StrikeAffinity[] strikes,
+            StatusAffinity[] statuses)
+        {
+            var nextDefense = defense.HasValue
+                ? Clamp(defense.Value, StrikeLaw.DefenseMin, StrikeLaw.DefenseMax)
+                : Defense;
+            var nextPush = pushResist.HasValue
+                ? Clamp(pushResist.Value, 0, 6)
+                : PushResist;
+            var strike = Copy(_strike);
+            var status = Copy(_status);
+            if (strikes != null)
+            {
+                for (var i = 0; i < strikes.Length; i++)
+                {
+                    if (strikes[i] == null || strikes[i].Kind == StrikeKind.None)
+                    {
+                        continue;
+                    }
+
+                    Set(strike, strikes[i].Kind, Clamp(strikes[i].Affinity, StrikeLaw.AffinityImmune, StrikeLaw.AffinityMax));
+                }
+            }
+
+            if (statuses != null)
+            {
+                for (var i = 0; i < statuses.Length; i++)
+                {
+                    if (statuses[i] == null || statuses[i].Status == StatusId.None)
+                    {
+                        continue;
+                    }
+
+                    Set(status, statuses[i].Status, Clamp(statuses[i].Affinity, StrikeLaw.AffinityImmune, StrikeLaw.AffinityMax));
+                }
+            }
+
+            return new AffinityProfile(Nature, nextDefense, nextPush, strike, status, Undead);
+        }
+
         public static AffinityProfile Of(CreatureNature nature)
         {
             switch (nature)
@@ -674,6 +721,16 @@ namespace RuneMagic
             }
 
             return dest;
+        }
+
+        static int Clamp(int value, int min, int max)
+        {
+            if (value < min)
+            {
+                return min;
+            }
+
+            return value > max ? max : value;
         }
     }
 }
