@@ -1016,6 +1016,7 @@ namespace RuneMagic
             TileSprite.Audit(broken);
             RoomSentence.Audit(broken);
             AdeptPack.Audit(broken);
+            WorldDoor.Audit(broken);
         }
 
         static List<Vector2Int> CellsAlong(WorldGrid grid, Vector3 from, Vector3 to, float width)
