@@ -154,6 +154,7 @@ namespace RuneMagic
         Blink,
         Teleport,
         WoodArrow,
+        SparkShot,
         // Aliases of earlier ids. Keep these last so they do not
         // reset the next unique values.
         DarkCrystal = GraveIce
@@ -221,10 +222,10 @@ namespace RuneMagic
             Register(RuneId.Anima, RuneId.Mercury, SpellShape.Spread, SpellId.Balm, "Balm", "Compressed. Catalog: Anima · Mercury. Care sent. It heals.");
             Register(RuneId.Anima, RuneId.Salt, SpellShape.Spread, SpellId.Chorus, "Chorus", "Compressed. Catalog: Anima · Salt. Care given a body around the feet. The work opens to many.");
 
-            Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent.");
+            Register(RuneId.Spark, RuneId.Mercury, SpellShape.Shot, SpellId.SparkShot, "Spark shot", "Compressed. Catalog: Fire · Air · Mercury. Hunger given breath and sent. A sting.");
             Register(RuneId.Spark, RuneId.Salt, SpellShape.Self, SpellId.Blink, "Blink", "Compressed. Catalog: Air · Salt · Air · Spark. The hop given the seed. A short jump. Walls will not stop you.");
             Register(RuneId.Spark, RuneId.Lumen, SpellShape.Self, SpellId.Teleport, "Teleport", "Compressed. Catalog: Air · Salt · Air · Spark · Light. The spark-leap shown. Anywhere you can see.");
-            Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury when the bolt already stands.");
+            Register(RuneId.Lightning, RuneId.Mercury, SpellShape.Shot, SpellId.LightningBolt, "Lightning bolt", "Compressed. Catalog: Lightning · Mercury. The seed stretched through more breath, then sent.");
             Register(RuneId.Spark, RuneId.Salt, SpellShape.Spread, SpellId.LiveFloor, "Live-floor", "Charged ground around the caster.");
             Register(RuneId.Spark, RuneId.Sulphur, SpellShape.Remote, SpellId.Jolt, "Jolt", "Stun placed at a point.");
             Register(RuneId.Spark, RuneId.Lumen, SpellShape.Shot, SpellId.BrilliantArc, "Brilliant-arc", "Spark with Light riding it.");

@@ -12,7 +12,7 @@ namespace RuneMagic
         public static readonly SpellId[] MiteKeys =
         {
             SpellId.Fireball, SpellId.FlamePillar, SpellId.FirePillar, SpellId.WaterJet, SpellId.IcePillar, SpellId.IceWall,
-            SpellId.LightningBolt, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt,
+            SpellId.SparkShot, SpellId.LightningBolt, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt,
             SpellId.HurledStone, SpellId.WoodArrow, SpellId.StonePillar, SpellId.Dread,
             SpellId.Gale, SpellId.Scald, SpellId.ScatterDust,
             SpellId.SunLance, SpellId.Drive, SpellId.BrilliantArc,
@@ -39,7 +39,7 @@ namespace RuneMagic
 
         public static readonly SpellId[] RodKeys =
         {
-            SpellId.LightningBolt, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout,
+            SpellId.LightningBolt, SpellId.SparkShot, SpellId.LightningStrike, SpellId.LiveFloor, SpellId.Jolt, SpellId.BrilliantArc, SpellId.Blackout,
             SpellId.ChainLightning, SpellId.StormCall, SpellId.Thunderclap
         };
 

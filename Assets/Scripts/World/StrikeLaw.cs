@@ -92,6 +92,7 @@ namespace RuneMagic
                 case SpellId.LavaFlood: return new Strike(4, StrikeKind.Lava);
                 case SpellId.LavaRain: return new Strike(4, StrikeKind.Lava);
                 case SpellId.EmberRain: return new Strike(3, StrikeKind.Fire);
+                case SpellId.SparkShot: return new Strike(3, StrikeKind.Spark);
                 case SpellId.LightningBolt: return new Strike(4, StrikeKind.Spark);
                 case SpellId.LightningStrike: return new Strike(5, StrikeKind.Spark);
                 case SpellId.ChainLightning: return new Strike(4, StrikeKind.Spark);
@@ -298,9 +299,11 @@ namespace RuneMagic
                 broken.Add("Fireball must be power 3 Fire");
             }
 
-            if (Of(SpellId.LightningBolt).Power != 4 || Of(SpellId.LightningStrike).Power != 5)
+            if (Of(SpellId.SparkShot).Power != 3
+                || Of(SpellId.LightningBolt).Power != 4
+                || Of(SpellId.LightningStrike).Power != 5)
             {
-                broken.Add("Lightning is 4; lightning strike is 5");
+                broken.Add("Spark shot is 3; lightning bolt is 4; lightning strike is 5");
             }
 
             if (Of(SpellId.Witchfire).Power != WitchfirePower || Of(SpellId.Glacier).Power != GlacierPower)
@@ -321,13 +324,14 @@ namespace RuneMagic
             var stone = AffinityProfile.Of(CreatureNature.Earth);
             if (stone.Defense != 4
                 || Kills(SpellId.Fireball, stone)
+                || Kills(SpellId.SparkShot, stone)
                 || Kills(SpellId.LightningBolt, stone)
                 || !Kills(SpellId.LightningStrike, stone)
                 || !Kills(SpellId.Witchfire, stone)
                 || !Kills(SpellId.LavaPillar, stone)
                 || !Kills(SpellId.MetalRain, stone))
             {
-                broken.Add("A stone golem takes a fireball and a bolt; strike, witchfire, lava, and metal drop it");
+                broken.Add("A stone golem takes a fireball, a spark shot, and a bolt; strike, witchfire, lava, and metal drop it");
             }
 
             if (AffinityOf(stone, StrikeKind.Witchfire) != AffinityNormal)

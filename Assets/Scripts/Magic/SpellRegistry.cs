@@ -32,6 +32,12 @@ namespace RuneMagic
                 return SpellId.Gust;
             }
 
+            if (key.Equals("lightning", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Remember(key, SpellId.LightningBolt);
+                return SpellId.LightningBolt;
+            }
+
             if (key.Equals("vinerise", System.StringComparison.OrdinalIgnoreCase)
                 || key.Equals("grow", System.StringComparison.OrdinalIgnoreCase))
             {

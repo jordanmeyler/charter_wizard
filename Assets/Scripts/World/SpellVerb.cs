@@ -102,6 +102,8 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Stunned, 1.2f, TileVerb.Charge);
                 case SpellId.LavaFlood:
                     return new SpellVerb(SpellTarget.Area, 2.6f, StatusId.Burning, 4f, TileVerb.Ignite);
+                case SpellId.SparkShot:
+                    return new SpellVerb(SpellTarget.Single, 0f, StatusId.Stunned, 1.4f, TileVerb.Charge);
                 case SpellId.LightningBolt:
                 case SpellId.BrilliantArc:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.Stunned, 2.2f, TileVerb.Charge);
