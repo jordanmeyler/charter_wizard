@@ -110,7 +110,8 @@ namespace RuneMagic
                 case MaterialId.Snow:
                 case MaterialId.Glacier:
                     Add(ids, "pillar-ice");
-                    Add(ids, "ice-fountain");
+                    Add(ids, "wall-ice");
+                    Add(ids, "cover-ice");
                     break;
                 case MaterialId.Timber:
                     Add(ids, "pillar-timber");
@@ -226,6 +227,9 @@ namespace RuneMagic
             if (!Contains(Bridge(MaterialId.Stone), "bridge")
                 || !Contains(Bridge(MaterialId.Ice), "bridge-ice")
                 || !Contains(Column(MaterialId.Ice), "pillar-ice")
+                || !Contains(Column(MaterialId.Ice), "wall-ice")
+                || !Contains(Column(MaterialId.Ice), "cover-ice")
+                || Contains(Column(MaterialId.Ice), "ice-fountain")
                 || !Contains(Column(MaterialId.Fire), "fire-pillar")
                 || !Contains(Column(MaterialId.Hearth), "flame-pillar")
                 || !Contains(Column(MaterialId.Lava), "lava-pillar")
