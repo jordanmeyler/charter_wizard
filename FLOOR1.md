@@ -49,6 +49,8 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 64 | **Freeze** | Water · Earth · Sulphur | Hard water held as a condition. They freeze. |
 | 65 | **Snowstorm** | Air · Water · Water · Earth · Air · Mercury | Driven snow. They freeze. |
 | 66 | **Push** | Air · Salt · Mercury | Breath given a body and sent. Wind that pushes the person. |
+| 7 | **Spark shot** | Fire · Air · Mercury | The seed sent. `Spark · Mercury`. A sting. Walls stop it. |
+| 133 | **Lightning bolt** | Fire · Air · Air · Mercury | The seed stretched and sent. `Lightning · Mercury`. A bolt. Walls stop it. |
 | 67 | **Lightning strike** | Fire · Air · Salt · Air · Mercury | A spark given form from the air, falling from the sky. |
 | 68 | **Charm** | Life · Sulphur · Mercury | A living mind is reached. They fetch nearby prizes and fight what you have marked. |
 | 69 | **Swamp** | Earth · Water · Mercury · Salt | A watery swamp from your feet. Rest meeting yield, going, then stood. |
@@ -133,7 +135,7 @@ The north walk to the Gallery of Force is a **kindled hall**. Hunger holds the f
 
 ### Spirit Sanctum (Mercury) · "The Gallery of Force"
 **Lesson:** element + Mercury = an attack — the element hurled, projected.
-- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **flame ward** (`Fire · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Fire-pillar, Flame-pillar, Douse, Hurled stone, Lightning, Lightning strike, Ice-spear, Wind, Gale…). A fire-pillar or flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — hunger still finds rest. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
+- **Signature:** a beginner **wizard**. They spend **two seconds** writing a fireball and commit the facing when the sentence starts. Raise a wall to break the shot, hop over it, get behind them, or wear a **flame ward** (`Fire · Salt · Sulphur`) and walk through the hunger. Then unmake them with a standing flame or any sent element (Fireball, Fire-pillar, Flame-pillar, Douse, Hurled stone, Spark shot, Lightning bolt, Lightning strike, Ice-spear, Wind, Gale…). A fire-pillar or flame-pillar raised on their tile burns them. A bolt will not pass a wall; a strike from the sky will. Stoneskin will not save you — hunger still finds rest. Constructs and mind-work do not turn this lock. The room labels Mercury and Fire so a send can be written here.
 - **Stone:** drops when the warden falls.
 
 ### Mind Sanctum (Sulphur) · "The Silent Court"
@@ -162,7 +164,7 @@ A **four-tile pit** splits the room wall-to-wall — too wide to hop. Columns wr
 A **water channel** cuts the room wall-to-wall. Yield has no floor — walking in drowns you. Columns write **Ice · Salt · Earth** (Ice-pillar). Ice-wall or Ice-spear also ask that water to stand. Walk the ice. The **flood stone** sits past the water.
 
 ### Spark Cell · "The Seed of Charge" — *the join as a rune*
-Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury`), or write Fire · Air · Mercury. A **charge veil** holds the **spark stone**. Lightning unmakes the veil. The live rod still waits in the plate.
+Vein and metal already hold Spark. Columns write **Fire · Air · Spark**. The Charter shows Spark as itself; Fire and Air are strewn through the weave. Click Spark for the easy send (`Spark · Mercury` — Spark shot), or write Fire · Air · Mercury. Stretch the seed with more breath (`Spark · Air · Mercury`, or `Lightning · Mercury` if the bolt already stands) for Lightning bolt. A **charge veil** holds the **spark stone**. Spark shot or Lightning bolt unmakes the veil. The live rod still waits in the plate.
 
 ### Arena · "The Mixed Court" — *many bodies, two kinds of send*
 Two **golems** slam. An **ember adept** writes Fire · Mercury over their head and sends a fireball. Wall the shots and they write Fire · Salt · Earth — the floor takes that hunger for a breath, then a column stands. A **bolt adept** writes Spark · Mercury. An **arrow adept** writes Earth · Salt · Mercury and looses a shot. Unmake them as you like — the room is the lesson, not a required stone.
@@ -205,7 +207,7 @@ Three sockets: Grove, Flood, Spark. Insert them → the floor opens.
 | `join-foyer` | The Wrought Cross | Spark, Plant, Water labelled. Open courts. |
 | `grove-court` | The Living Thicket | Columns write Sprout. Plant cover three tiles from the bank. Grove stone on the far bank. |
 | `cistern` | The Cistern | Columns write Ice-pillar. Water drowns. Ice freezes it. Flood stone past the water. |
-| `spark-cell` | The Seed of Charge | Columns write Fire · Air · Spark. Lightning drops the charge veil. Spark stone behind it. |
+| `spark-cell` | The Seed of Charge | Columns write Fire · Air · Spark. Spark shot or Lightning bolt drops the charge veil. Spark stone behind it. |
 | `arena` | The Mixed Court | Melee and ranged. Casters show their marks. Wall the ember adept and the floor hungers, then a flame-pillar stands. |
 | `door-iii` | Gate of Joins | Three join stones. The floor ends. |
 

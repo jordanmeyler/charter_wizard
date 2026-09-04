@@ -947,7 +947,8 @@ namespace RuneMagic
                 broken.Add("Darkness must withhold sight even when the floor is cloaked");
             }
 
-            if (!WorldWork.IsChargeWork(SpellId.LightningBolt)
+            if (!WorldWork.IsChargeWork(SpellId.SparkShot)
+                || !WorldWork.IsChargeWork(SpellId.LightningBolt)
                 || !WorldWork.IsChargeWork(SpellId.LightningStrike)
                 || !WorldWork.IsChargeWork(SpellId.LiveFloor)
                 || WorldWork.IsChargeWork(SpellId.Fireball)
@@ -956,7 +957,7 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.LiveFloor).Status != StatusId.Stunned
                 || WorldWork.IsFireWork(SpellId.LiveFloor))
             {
-                broken.Add("A bolt, strike, and live-floor must be charge work; live-floor must stun, not ignite");
+                broken.Add("A spark shot, bolt, strike, and live-floor must be charge work; live-floor must stun, not ignite");
             }
 
             if (SpellVerb.Of(SpellId.Sprout).Radius != PlantLaw.GrowRadius

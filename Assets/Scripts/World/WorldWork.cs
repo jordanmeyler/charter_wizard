@@ -107,6 +107,7 @@ namespace RuneMagic
                 case SpellId.WaterJet:
                 case SpellId.Douse:
                 case SpellId.IceSpear:
+                case SpellId.SparkShot:
                 case SpellId.LightningBolt:
                 case SpellId.BrilliantArc:
                 case SpellId.Blackout:
@@ -298,13 +299,14 @@ namespace RuneMagic
             MatterLaw.HeatOf(spell) >= Heat.Fire;
 
         /// <summary>
-        /// Hunger given breath — a bolt, a strike, live-floor, jolt.
-        /// Charge gates and rods take this work.
+        /// Hunger given breath — a spark shot, a bolt, a strike,
+        /// live-floor, jolt. Charge gates and rods take this work.
         /// </summary>
         public static bool IsChargeWork(SpellId spell)
         {
             switch (spell)
             {
+                case SpellId.SparkShot:
                 case SpellId.LightningBolt:
                 case SpellId.LightningStrike:
                 case SpellId.LiveFloor:
@@ -1303,7 +1305,7 @@ namespace RuneMagic
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
                 || spell == SpellId.Gust || spell == SpellId.Push || spell == SpellId.Scald
                 || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.WoodArrow || spell == SpellId.Douse
-                || spell == SpellId.IceSpear || spell == SpellId.LightningBolt
+                || spell == SpellId.IceSpear || spell == SpellId.SparkShot || spell == SpellId.LightningBolt
                 || spell == SpellId.BrilliantArc || spell == SpellId.Blackout
                 || spell == SpellId.Vine || spell == SpellId.Poison)
             {

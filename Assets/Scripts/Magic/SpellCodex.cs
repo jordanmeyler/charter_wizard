@@ -76,6 +76,7 @@ namespace RuneMagic
     /// 41–50 are Death / Free. 51 is Time-stop (Charter).
     /// 121–128 are plant-cure, light orbs, and living venom.
     /// 129 is Float. 130–131 are Blink and Teleport. 132 is Wood arrow.
+    /// 133 is Lightning bolt (Spark shot is 7).
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -90,7 +91,7 @@ namespace RuneMagic
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
             E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),
-            E(7, SpellBook.End, SpellId.LightningBolt, "Hunger given breath and sent. A bolt, not a body.", "Lightning", "Fire · Air · Mercury", "Lightning · Mercury", "Shot", SpellOutcome.Kill),
+            E(7, SpellBook.End, SpellId.SparkShot, "Hunger given breath and sent. A sting, the start of an arc.", "Spark shot", "Fire · Air · Mercury", "Spark · Mercury", "Shot", SpellOutcome.Kill),
             E(8, SpellBook.End, SpellId.ChainLightning, "That bolt finds yield given a body. The pool is what dies.", "Chain", "Fire · Air · Mercury · Water · Salt", "Lightning · Mercury · Water · Salt", "Remote", SpellOutcome.Kill),
             E(9, SpellBook.Hold, SpellId.LiveFloor, "The seed given a body around your feet. They cannot step.", "Live-floor", "Fire · Air · Salt", "Spark · Salt", "Grow", SpellOutcome.Kill),
             E(10, SpellBook.Hold, SpellId.Jolt, "The bolt, turned by Sulphur, reaches a mind.", "Jolt", "Fire · Air · Sulphur · Mercury", "Spark · Sulphur · Mercury", "Remote", SpellOutcome.Restrain),
@@ -215,7 +216,8 @@ namespace RuneMagic
             E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
             E(130, SpellBook.Cross, SpellId.Blink, "That leap given the seed. You jump as the spark. A wall will not stop you.", "Blink", "Air · Salt · Air · Fire · Air", "Air · Salt · Air · Spark", "Self", SpellOutcome.Neither),
             E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither),
-            E(132, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill)
+            E(132, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill),
+            E(133, SpellBook.End, SpellId.LightningBolt, "The seed stretched through more breath and sent. A bolt, a path, not a body.", "Lightning bolt", "Fire · Air · Air · Mercury", "Lightning · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -368,7 +370,7 @@ namespace RuneMagic
             }
 
             if (!PrayerReveal.TryResolve(new[] { RuneId.Spark, RuneId.Mercury }, null, string.Empty, null, out var viaForm)
-                || viaForm.Entry.Spell != SpellId.LightningBolt
+                || viaForm.Entry.Spell != SpellId.SparkShot
                 || !WorkingNames.SameComposition(viaForm.Recipe, new[] { RuneId.Spark, RuneId.Mercury })
                 || !viaForm.HasVia
                 || !WorkingNames.SameComposition(viaForm.Via, ChainBook.Parse("Fire · Air · Mercury")))
@@ -561,11 +563,39 @@ namespace RuneMagic
                 broken.Add("Free should unscramble Mercury · Fire into Fireball");
             }
 
-            var lightning = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury });
+            var sparkShot = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Mercury });
+            var sparkExact = ChainBook.CollectExact(sparkShot, SpellShape.None);
+            if (sparkExact.Count == 0 || sparkExact[0].Spell != SpellId.SparkShot)
+            {
+                broken.Add("Fire · Air · Mercury should be Spark shot");
+            }
+
+            var sparkVia = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury });
+            var sparkViaExact = ChainBook.CollectExact(sparkVia, SpellShape.None);
+            if (sparkViaExact.Count == 0 || sparkViaExact[0].Spell != SpellId.SparkShot)
+            {
+                broken.Add("Spark · Mercury should be Spark shot");
+            }
+
+            var lightning = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Air, RuneId.Air, RuneId.Mercury });
             var bolt = ChainBook.CollectExact(lightning, SpellShape.None);
             if (bolt.Count == 0 || bolt[0].Spell != SpellId.LightningBolt)
             {
-                broken.Add("Fire · Air · Mercury should be Lightning");
+                broken.Add("Fire · Air · Air · Mercury should be Lightning bolt");
+            }
+
+            var lightningVia = Composition.FromSequence(new[] { RuneId.Lightning, RuneId.Mercury });
+            var lightningViaExact = ChainBook.CollectExact(lightningVia, SpellShape.None);
+            if (lightningViaExact.Count == 0 || lightningViaExact[0].Spell != SpellId.LightningBolt)
+            {
+                broken.Add("Lightning · Mercury should be Lightning bolt");
+            }
+
+            var lightningFromSpark = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Air, RuneId.Mercury });
+            var lightningFromSparkExact = ChainBook.CollectExact(lightningFromSpark, SpellShape.None);
+            if (lightningFromSparkExact.Count == 0 || lightningFromSparkExact[0].Spell != SpellId.LightningBolt)
+            {
+                broken.Add("Spark · Air · Mercury should be Lightning bolt");
             }
 
             var hop = Composition.FromSequence(new[] { RuneId.Air, RuneId.Salt, RuneId.Air });
@@ -712,6 +742,7 @@ namespace RuneMagic
                 || !WorldWork.StopsOnWalls(SpellId.Douse)
                 || !WorldWork.StopsOnWalls(SpellId.Gust)
                 || !WorldWork.StopsOnWalls(SpellId.Push)
+                || !WorldWork.StopsOnWalls(SpellId.SparkShot)
                 || !WorldWork.StopsOnWalls(SpellId.LightningBolt)
                 || !WorldWork.StopsOnWalls(SpellId.Vine)
                 || !WorldWork.StopsOnWalls(SpellId.WoodArrow))
@@ -949,6 +980,7 @@ namespace RuneMagic
             FocusLaw.Audit(broken);
             VitalLaw.Audit(broken);
             StrikeLaw.Audit(broken);
+            CombatBook.Audit(broken);
             SpellGrammar.Audit(broken);
             RuneCatalog.AuditLedger(broken);
 
@@ -1189,11 +1221,18 @@ namespace RuneMagic
                 broken.Add("Air · Salt · Air · Mercury should stay Air-wall");
             }
 
-            var boltStill = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury });
+            var sparkStill = Composition.FromSequence(new[] { RuneId.Spark, RuneId.Mercury });
+            var sparkStillExact = ChainBook.CollectExact(sparkStill, SpellShape.None);
+            if (sparkStillExact.Count == 0 || sparkStillExact[0].Spell != SpellId.SparkShot)
+            {
+                broken.Add("Spark · Mercury should stay Spark shot, not become Blink");
+            }
+
+            var boltStill = Composition.FromSequence(new[] { RuneId.Lightning, RuneId.Mercury });
             var boltStillExact = ChainBook.CollectExact(boltStill, SpellShape.None);
             if (boltStillExact.Count == 0 || boltStillExact[0].Spell != SpellId.LightningBolt)
             {
-                broken.Add("Spark · Mercury should stay Lightning, not become Blink");
+                broken.Add("Lightning · Mercury should stay Lightning bolt, not become Spark shot");
             }
 
             var teleport = Composition.FromSequence(new[]

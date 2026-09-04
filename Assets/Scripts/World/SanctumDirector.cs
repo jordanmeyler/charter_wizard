@@ -1840,10 +1840,7 @@ namespace RuneMagic
                     try
                     {
                         workNote = WorldWork.Apply(Grid, work, outcome.Material, origin, workFrom, aim, shape);
-                        if (work == SpellId.Wall)
-                        {
-                            CombatActor.NoticePlayerSpell(work, origin, aim);
-                        }
+                        CombatActor.NoticePlayerSpell(work, origin, aim);
                     }
                     catch (System.Exception exception)
                     {

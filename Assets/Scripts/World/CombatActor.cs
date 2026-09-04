@@ -18,21 +18,15 @@ namespace RuneMagic
     }
 
     /// <summary>
-    /// A lock that can strike back. Golems slam. Wizards write a sentence
-    /// and send it. A beginner fireball takes two seconds.
-    /// In the Mixed Court a fire mage answers a wall with a stood flame.
+    /// A lock that can strike back. Slots cover close, mid, and long.
+    /// Modes hold, hunt, or keep distance. Gambits answer the room
+    /// the way a fire mage answers a wall with a stood flame.
     /// Mind ailments rewrite who they hunt, and whether they stand still.
     /// </summary>
     public sealed class CombatActor : MonoBehaviour
     {
-        static readonly RuneId[] FlamePillarRecipe =
-        {
-            RuneId.Fire,
-            RuneId.Salt,
-            RuneId.Earth
-        };
-
         public CombatKind Kind { get; private set; }
+        public CombatMode Mode { get; private set; }
         public float CastSeconds { get; private set; } = 2f;
         public Vector2 Facing { get; private set; } = Vector2.left;
         public RuneId[] CastRecipe => _castRecipe;
@@ -62,7 +56,14 @@ namespace RuneMagic
         float _confusedUntil;
         Transform _confusedMark;
         SanctumDirector _director;
-        bool _pillarReply;
+        CombatPlan _plan;
+        CombatSlot _active;
+        CombatGambit _pending;
+        bool[] _gambitSpent = System.Array.Empty<bool>();
+        float _close = CombatBook.DefaultClose;
+        float _mid = CombatBook.DefaultMid;
+        float _long = CombatBook.DefaultLong;
+        float _actionSeconds = 2f;
         ICarryable _carried;
         Sprite[] _idleFrames;
         Sprite[] _attackFrames;
@@ -72,8 +73,20 @@ namespace RuneMagic
 
         public void Bind(CombatKind kind, float castSeconds, WorldGrid grid, RuneId[] castRecipe = null)
         {
-            Kind = kind;
-            CastSeconds = Mathf.Max(0.35f, castSeconds);
+            Bind(CombatBook.PlanFromLegacy(kind, castSeconds, castRecipe), grid);
+        }
+
+        public void Bind(CombatPlan plan, WorldGrid grid)
+        {
+            _plan = plan ?? CombatBook.PlanFromLegacy(CombatKind.None, 2f, null);
+            Kind = _plan.Kind;
+            Mode = _plan.Mode;
+            CastSeconds = Mathf.Max(0.35f, _plan.CastSeconds);
+            _close = _plan.CloseRange;
+            _mid = _plan.MidRange;
+            _long = _plan.LongRange;
+            _reach = _close;
+            _sight = _long;
             _grid = grid;
             _lock = GetComponent<ISpellLock>();
             _status = GetComponent<StatusHost>();
@@ -84,26 +97,15 @@ namespace RuneMagic
             _restScale = transform.localScale;
             _oilBulk = 0f;
             _idleOrigin = transform.position;
-            _castRecipe = RecipeOf(kind, castRecipe);
+            _castRecipe = FirstRecipe(_plan);
+            _gambitSpent = _plan.Gambits != null && _plan.Gambits.Length > 0
+                ? new bool[_plan.Gambits.Length]
+                : System.Array.Empty<bool>();
             _castChip = WorldLabel.Attach(transform, "", new Vector3(0f, 1.62f, 0f),
                 new Color(1f, 0.72f, 0.28f), DrawDepth.CastChip);
             if (_castChip != null)
             {
                 _castChip.characterSize = 0.05f;
-            }
-
-            if (kind == CombatKind.Golem || kind == CombatKind.None)
-            {
-                _reach = 1.25f;
-                if (kind == CombatKind.Golem || castSeconds <= 2.01f)
-                {
-                    CastSeconds = Mathf.Max(0.7f, castSeconds <= 2.01f ? 0.85f : castSeconds);
-                }
-            }
-
-            if (kind == CombatKind.Archer)
-            {
-                CastSeconds = Mathf.Max(0.45f, castSeconds <= 2.01f ? 1.15f : castSeconds);
             }
         }
 
@@ -128,7 +130,7 @@ namespace RuneMagic
 
             _oilBulk = Mathf.Min(1.6f, _oilBulk + 0.35f);
             _restScale = Vector3.one * (1f + _oilBulk * 0.45f);
-            _reach = 1.25f + _oilBulk * 0.55f;
+            _reach = _close + _oilBulk * 0.55f;
             transform.localScale = _restScale;
         }
 
@@ -139,77 +141,37 @@ namespace RuneMagic
                 return 0.35f;
             }
 
-            return _sight;
+            return _long > 0.05f ? _long : _sight;
         }
 
-        ProjectileKind ShotKind()
+        static RuneId[] FirstRecipe(CombatPlan plan)
         {
-            if (WritesWood())
+            if (plan?.Slots == null)
             {
-                return ProjectileKind.Wood;
+                return System.Array.Empty<RuneId>();
             }
 
-            if (Kind == CombatKind.Archer)
+            for (var i = 0; i < plan.Slots.Length; i++)
             {
-                return ProjectileKind.Wood;
-            }
-
-            return ProjectileKind.Fireball;
-        }
-
-        bool WritesWood()
-        {
-            if (_castRecipe == null)
-            {
-                return false;
-            }
-
-            var plant = false;
-            var mercury = false;
-            var life = false;
-            var death = false;
-            var fire = false;
-            for (var i = 0; i < _castRecipe.Length; i++)
-            {
-                switch (_castRecipe[i])
+                var slot = plan.Slots[i];
+                if (slot == null)
                 {
-                    case RuneId.Plant:
-                        plant = true;
-                        break;
-                    case RuneId.Mercury:
-                        mercury = true;
-                        break;
-                    case RuneId.Vita:
-                        life = true;
-                        break;
-                    case RuneId.Mors:
-                        death = true;
-                        break;
-                    case RuneId.Fire:
-                        fire = true;
-                        break;
+                    continue;
+                }
+
+                var runes = CombatBook.ParseRecipe(slot.Recipe);
+                if (runes != null && runes.Length > 0)
+                {
+                    return runes;
+                }
+
+                if (slot.Spell != SpellId.None)
+                {
+                    return CombatBook.RecipeOf(slot.Spell);
                 }
             }
 
-            return plant && mercury && !life && !death && !fire;
-        }
-
-        static RuneId[] RecipeOf(CombatKind kind, RuneId[] written)
-        {
-            if (written != null && written.Length > 0)
-            {
-                return written;
-            }
-
-            switch (kind)
-            {
-                case CombatKind.Wizard:
-                    return new[] { RuneId.Fire, RuneId.Mercury };
-                case CombatKind.Archer:
-                    return new[] { RuneId.Plant, RuneId.Salt, RuneId.Mercury };
-                default:
-                    return System.Array.Empty<RuneId>();
-            }
+            return System.Array.Empty<RuneId>();
         }
 
         void Update()
@@ -246,7 +208,9 @@ namespace RuneMagic
             }
 
             var mind = _status != null ? _status.MindAilment : StatusId.None;
-            if (mind == StatusId.None && Kind == CombatKind.None)
+            if (mind == StatusId.None && Kind == CombatKind.None && Mode == CombatMode.Wander
+                && (_plan == null || _plan.Slots == null || _plan.Slots.Length == 0)
+                && (_plan == null || _plan.Gambits == null || _plan.Gambits.Length == 0))
             {
                 TickIdle();
                 return;
@@ -303,13 +267,242 @@ namespace RuneMagic
                 Face(toMark);
             }
 
-            if (Kind == CombatKind.Wizard || Kind == CombatKind.Archer)
+            var slot = PickSlot(distance, mark);
+            if (slot != null)
             {
-                TickCaster(mark, toMark, distance);
+                BeginAction(slot);
+                if (slot.Strike == CombatStrike.Slam)
+                {
+                    TickMelee(mark, player, distance, chase);
+                    return;
+                }
+
+                TickRanged(mark, toMark, distance, slot);
                 return;
             }
 
-            TickMelee(mark, player, distance, chase);
+            CancelWindup();
+            MoveForMode(mark, distance, chase);
+        }
+
+        void BeginAction(CombatSlot slot)
+        {
+            if (slot == null)
+            {
+                return;
+            }
+
+            if (!SameAction(_active, slot))
+            {
+                CancelWindup();
+            }
+
+            _active = slot;
+            var runes = CombatBook.ParseRecipe(slot.Recipe);
+            if (runes == null || runes.Length == 0)
+            {
+                runes = slot.Spell != SpellId.None
+                    ? CombatBook.RecipeOf(slot.Spell)
+                    : System.Array.Empty<RuneId>();
+            }
+
+            _castRecipe = runes;
+            _actionSeconds = CombatBook.SecondsOf(slot, CastSeconds);
+        }
+
+        static bool SameAction(CombatSlot a, CombatSlot b)
+        {
+            if (a == null || b == null)
+            {
+                return a == b;
+            }
+
+            return a.Strike == b.Strike && a.Spell == b.Spell && a.Range == b.Range;
+        }
+
+        CombatSlot PickSlot(float distance, Transform mark)
+        {
+            var gambit = MatchGambit(distance, mark);
+            if (gambit != null)
+            {
+                return CombatBook.SlotFromGambit(gambit);
+            }
+
+            var slots = _plan != null ? _plan.Slots : null;
+            if (slots == null || slots.Length == 0)
+            {
+                return null;
+            }
+
+            var band = CombatBook.BandOf(distance, _close, _mid, _long);
+            CombatSlot bandMatch = null;
+            CombatSlot usable = null;
+            for (var i = 0; i < slots.Length; i++)
+            {
+                var slot = slots[i];
+                if (slot == null)
+                {
+                    continue;
+                }
+
+                var strike = slot.Strike;
+                if (strike == CombatStrike.None && slot.Spell != SpellId.None)
+                {
+                    strike = CombatBook.StrikeOf(slot.Spell);
+                }
+
+                if (strike == CombatStrike.None)
+                {
+                    continue;
+                }
+
+                if (slot.Range == band)
+                {
+                    bandMatch ??= slot;
+                }
+
+                var max = CombatBook.MaxOf(slot.Range, _close, _mid, _long);
+                if (distance <= max + 0.15f)
+                {
+                    usable ??= slot;
+                }
+            }
+
+            return bandMatch ?? usable;
+        }
+
+        CombatGambit MatchGambit(float distance, Transform mark)
+        {
+            if (_pending != null)
+            {
+                return _pending;
+            }
+
+            var gambits = _plan != null ? _plan.Gambits : null;
+            if (gambits == null)
+            {
+                return null;
+            }
+
+            for (var i = 0; i < gambits.Length; i++)
+            {
+                if (i < _gambitSpent.Length && _gambitSpent[i])
+                {
+                    continue;
+                }
+
+                var gambit = gambits[i];
+                if (gambit == null || !Matches(gambit, distance, mark))
+                {
+                    continue;
+                }
+
+                if (gambit.Once && i < _gambitSpent.Length)
+                {
+                    _gambitSpent[i] = true;
+                }
+
+                return gambit;
+            }
+
+            return null;
+        }
+
+        bool Matches(CombatGambit gambit, float distance, Transform mark)
+        {
+            var band = CombatBook.BandOf(distance, _close, _mid, _long);
+            switch (gambit.When)
+            {
+                case GambitWhen.Always:
+                    return true;
+                case GambitWhen.InCloseRange:
+                    return band == CombatRange.Close;
+                case GambitWhen.InMidRange:
+                    return band == CombatRange.Mid;
+                case GambitWhen.InLongRange:
+                    return band == CombatRange.Long && distance <= _long;
+                case GambitWhen.AllyNearby:
+                    var ally = NearestLock(includeCharmed: true);
+                    return ally != null && Vector2.Distance(transform.position, ally.position) <= _mid;
+                case GambitWhen.SelfHasStatus:
+                    return _status != null && gambit.WhenStatus != StatusId.None && _status.Has(gambit.WhenStatus);
+                case GambitWhen.TargetHasStatus:
+                    var host = mark != null ? StatusHost.On(mark) : null;
+                    return host != null && gambit.WhenStatus != StatusId.None && host.Has(gambit.WhenStatus);
+                default:
+                    return false;
+            }
+        }
+
+        void MoveForMode(Transform mark, float distance, bool chase)
+        {
+            var mode = _plan != null ? _plan.Mode : Mode;
+            if (!chase && (mode == CombatMode.Guard || mode == CombatMode.Caster))
+            {
+                PlayMotion(false, 5f);
+                ShowMindChip();
+                return;
+            }
+
+            if (!chase && mode == CombatMode.Wander)
+            {
+                Wander();
+                return;
+            }
+
+            if (!chase && mode == CombatMode.Skirmish)
+            {
+                var prefer = PreferredDistance();
+                var away = (Vector2)(transform.position - mark.position);
+                if (distance < prefer - 0.6f && away.sqrMagnitude > 0.01f)
+                {
+                    Face(away);
+                    StepToward(transform.position + (Vector3)away.normalized);
+                }
+                else if (distance > prefer + 0.6f)
+                {
+                    StepToward(mark.position);
+                }
+
+                PlayMotion(false, 5f);
+                ShowMindChip();
+                return;
+            }
+
+            if (distance > _reach + 0.15f)
+            {
+                StepToward(mark.position);
+            }
+
+            PlayMotion(false, 5f);
+            ShowMindChip();
+        }
+
+        float PreferredDistance()
+        {
+            var slots = _plan != null ? _plan.Slots : null;
+            if (slots != null)
+            {
+                for (var i = 0; i < slots.Length; i++)
+                {
+                    if (slots[i] == null)
+                    {
+                        continue;
+                    }
+
+                    if (slots[i].Range == CombatRange.Long)
+                    {
+                        return (_mid + _long) * 0.5f;
+                    }
+
+                    if (slots[i].Range == CombatRange.Mid)
+                    {
+                        return (_close + _mid) * 0.5f;
+                    }
+                }
+            }
+
+            return _mid;
         }
 
         void TickCharm(AdeptAvatar player)
@@ -552,26 +745,24 @@ namespace RuneMagic
 
         void TickMelee(Transform mark, AdeptAvatar player, float distance, bool chase)
         {
-            if (distance > _reach + 0.15f)
+            var reach = _active != null
+                ? CombatBook.MaxOf(_active.Range, _close, _mid, _long)
+                : _reach;
+            if (distance > reach + 0.15f)
             {
                 _windup = 0f;
                 transform.localScale = _restScale;
-                if (chase)
-                {
-                    StepToward(mark.position);
-                }
-
-                PlayMotion(false, 5f);
-                ShowMindChip();
+                MoveForMode(mark, distance, chase);
                 return;
             }
 
             _windup += Time.deltaTime;
             ShowCast(MindVerb());
             PlayMotion(true, 6f);
-            var wind = Mathf.Clamp01(_windup / CastSeconds);
+            var need = _actionSeconds > 0.35f ? _actionSeconds : CastSeconds;
+            var wind = Mathf.Clamp01(_windup / need);
             transform.localScale = new Vector3(_restScale.x * (1f + wind * 0.12f), _restScale.y * (1f - wind * 0.12f), 1f);
-            if (_windup < CastSeconds)
+            if (_windup < need)
             {
                 return;
             }
@@ -580,6 +771,7 @@ namespace RuneMagic
             transform.localScale = _restScale;
             PlayMotion(false, 5f);
             ClearCastChip();
+            FinishPending();
             LandBlow(mark, player);
         }
 
@@ -599,11 +791,12 @@ namespace RuneMagic
             Director()?.TurnLock(_lock);
         }
 
-        void TickCaster(Transform mark, Vector2 toMark, float distance)
+        void TickRanged(Transform mark, Vector2 toMark, float distance, CombatSlot slot)
         {
+            var reach = CombatBook.MaxOf(slot.Range, _close, _mid, _long);
             if (!_casting)
             {
-                if (distance > SightNow())
+                if (distance > Mathf.Max(reach, SightNow()) + 0.15f)
                 {
                     return;
                 }
@@ -613,8 +806,9 @@ namespace RuneMagic
                 _committed = toMark.sqrMagnitude > 0.01f ? toMark.normalized : Facing;
             }
 
+            var need = _actionSeconds > 0.35f ? _actionSeconds : CastSeconds;
             _windup += Time.deltaTime;
-            var left = Mathf.Max(0f, CastSeconds - _windup);
+            var left = Mathf.Max(0f, need - _windup);
             var mind = _status != null ? _status.MindAilment : StatusId.None;
             if (mind != StatusId.None)
             {
@@ -627,7 +821,7 @@ namespace RuneMagic
             }
 
             PlayMotion(true, 5f);
-            if (_windup < CastSeconds)
+            if (_windup < need)
             {
                 return;
             }
@@ -636,39 +830,31 @@ namespace RuneMagic
             _windup = 0f;
             PlayMotion(false, 4f);
             ClearCastChip();
-            if (_pillarReply)
+            FinishPending();
+            var strike = slot.Strike == CombatStrike.None ? CombatBook.StrikeOf(slot.Spell) : slot.Strike;
+            var aim = mark != null ? mark.position : transform.position + (Vector3)_committed;
+            if (strike == CombatStrike.Pillar)
             {
-                var aim = mark != null ? mark.position : transform.position + (Vector3)_committed;
-                EnemyPillar.Cast(_grid, transform.position, aim, SpellId.FlamePillar, this, ShotOf());
+                var spell = slot.Spell != SpellId.None ? slot.Spell : SpellId.FlamePillar;
+                EnemyPillar.Cast(_grid, transform.position, aim, spell, this, ShotOf(), _castRecipe);
                 return;
             }
 
-            var shot = ShotKind();
+            var shot = CombatBook.ShotKind(slot.Spell, _castRecipe);
             var origin = transform.position + (Vector3)(_committed * 0.45f);
-            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Fireball ? 6.4f : 7.4f, this, ShotOf());
+            WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Fireball ? 6.4f : 7.4f, this, ShotOf(), _castRecipe);
         }
 
         public static void NoticePlayerSpell(SpellId spell, Vector3 origin, Vector3 aim)
         {
-            if (spell != SpellId.Wall)
+            if (spell == SpellId.None)
             {
                 return;
             }
 
             var director = Object.FindFirstObjectByType<SanctumDirector>();
-            if (director == null)
-            {
-                return;
-            }
-
-            var here = director.RoomAt(origin);
-            var there = director.RoomAt(aim);
-            var room = IsMixedCourt(here) ? here : IsMixedCourt(there) ? there : null;
-            if (room == null)
-            {
-                return;
-            }
-
+            var here = director != null ? director.RoomAt(origin) : null;
+            var there = director != null ? director.RoomAt(aim) : null;
             var found = Object.FindObjectsByType<CombatActor>(FindObjectsSortMode.None);
             for (var i = 0; i < found.Length; i++)
             {
@@ -678,24 +864,89 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (!room.Contains(actor.transform.position))
+                if (!SameRoom(director, actor, here, there, origin, aim))
                 {
                     continue;
                 }
 
-                actor.AnswerWall();
+                actor.NoticeSpell(spell);
+            }
+        }
+
+        static bool SameRoom(
+            SanctumDirector director,
+            CombatActor actor,
+            RoomInfo here,
+            RoomInfo there,
+            Vector3 origin,
+            Vector3 aim)
+        {
+            if (director == null || (here == null && there == null))
+            {
+                return Vector2.Distance(actor.transform.position, origin) <= 12f
+                    || Vector2.Distance(actor.transform.position, aim) <= 12f;
+            }
+
+            var room = director.RoomAt(actor.transform.position);
+            return room != null && (room == here || room == there);
+        }
+
+        void NoticeSpell(SpellId spell)
+        {
+            var gambits = _plan != null ? _plan.Gambits : null;
+            if (gambits != null)
+            {
+                for (var i = 0; i < gambits.Length; i++)
+                {
+                    if (i < _gambitSpent.Length && _gambitSpent[i])
+                    {
+                        continue;
+                    }
+
+                    var gambit = gambits[i];
+                    if (gambit == null)
+                    {
+                        continue;
+                    }
+
+                    var wall = gambit.When == GambitWhen.PlayerRaisesWall && spell == SpellId.Wall;
+                    var cast = gambit.When == GambitWhen.PlayerCasts
+                        && (gambit.WhenSpell == SpellId.None || gambit.WhenSpell == spell);
+                    if (!wall && !cast)
+                    {
+                        continue;
+                    }
+
+                    _pending = gambit;
+                    if (gambit.Once && i < _gambitSpent.Length)
+                    {
+                        _gambitSpent[i] = true;
+                    }
+
+                    CancelWindup();
+                    var who = _lock != null ? _lock.DisplayName : "They";
+                    var then = CombatBook.NameOf(gambit.ThenSpell, gambit.ThenStrike);
+                    Director()?.Log(spell == SpellId.Wall && gambit.ThenSpell == SpellId.FlamePillar
+                        ? $"The wall stands. {who} writes hunger and asks it to rest."
+                        : $"{who} answers. They write {then}.");
+                    return;
+                }
+            }
+
+            if (spell == SpellId.Wall)
+            {
+                AnswerWall();
             }
         }
 
         void AnswerWall()
         {
-            if (_pillarReply || !WritesFire())
+            if (_pending != null || !WritesFire() || !InMixedCourt())
             {
                 return;
             }
 
-            _pillarReply = true;
-            _castRecipe = FlamePillarRecipe;
+            _pending = CombatBook.WallToFlamePillar();
             CancelWindup();
             var who = _lock != null ? _lock.DisplayName : "The adept";
             Director()?.Log($"The wall stands. {who} writes hunger and asks it to rest.");
@@ -703,19 +954,25 @@ namespace RuneMagic
 
         bool WritesFire()
         {
-            if (Kind != CombatKind.Wizard || _castRecipe == null)
+            if (Kind != CombatKind.Wizard)
             {
                 return false;
             }
 
-            for (var i = 0; i < _castRecipe.Length; i++)
+            if (CombatBook.WritesFire(_castRecipe))
             {
-                if (_castRecipe[i] == RuneId.Spark)
-                {
-                    return false;
-                }
+                return true;
+            }
 
-                if (_castRecipe[i] == RuneId.Fire)
+            var slots = _plan != null ? _plan.Slots : null;
+            if (slots == null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < slots.Length; i++)
+            {
+                if (slots[i] != null && CombatBook.WritesFire(CombatBook.ParseRecipe(slots[i].Recipe)))
                 {
                     return true;
                 }
@@ -724,9 +981,15 @@ namespace RuneMagic
             return false;
         }
 
-        static bool IsMixedCourt(RoomInfo room)
+        bool InMixedCourt()
         {
+            var room = Director()?.RoomAt(transform.position);
             return room != null && (room.Id == "arena" || room.Name == "The Mixed Court");
+        }
+
+        void FinishPending()
+        {
+            _pending = null;
         }
 
         void LandBlow(Transform mark, AdeptAvatar player)
@@ -952,7 +1215,8 @@ namespace RuneMagic
 
         string MindVerb()
         {
-            var ranged = Kind == CombatKind.Wizard || Kind == CombatKind.Archer;
+            var ranged = Kind == CombatKind.Wizard || Kind == CombatKind.Archer
+                || (_active != null && CombatBook.IsRanged(_active.Strike));
             if (_status == null)
             {
                 return ranged ? "casting…" : "slam…";

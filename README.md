@@ -21,12 +21,12 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Sundered Heights** | Miasma on the floor | Wind (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The flaming hall** | Kindled floor, no water nearby | Flame ward (`Fire · Salt · Sulphur`); Douse if you fetch yield | First ward. Columns write the sentence at the mouth. |
-| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Lightning…) | Mercury sends. The same flame ward turns the shot. |
+| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Spark shot, Lightning bolt…) | Mercury sends. The same flame ward turns the shot. |
 | **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Grow plant cover from the bank (Sprout, three tiles); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |
 | **The Cistern** | A drowning channel | Ice-pillar / Ice-wall / Ice-spear freezes the water; columns write Ice · Salt · Earth | Water drowns. Ice is a floor. |
-| **The Seed of Charge** | A charge veil, a live rod | Lightning or Spark · Mercury drops the veil; columns write Fire · Air · Spark | The join is a rune when it already stands. |
+| **The Seed of Charge** | A charge veil, a live rod | Spark shot (`Spark · Mercury`) or Lightning bolt (`Lightning · Mercury`) drops the veil; columns write Fire · Air · Spark | The join is a rune when it already stands. |
 | **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. Wall the ember adept and they stand a flame-pillar; the floor hungers first. |
 | **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
 
@@ -40,7 +40,7 @@ Douse, Command, Wind, and Earth-pillar are new ordinary sentences written for th
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Salt · Earth · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
-| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
+| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Spark shot is Fire · Air · Mercury. Lightning bolt is Fire · Air · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
 | Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Earth · Water. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
@@ -91,7 +91,7 @@ Spells are single-target, area, or self. Status chips name what holds on you and
 1. Tiles are already in `Assets/Tiles/Floor`, `Wall`, `Special`, and `Cover`. `Create → Rune Magic → Map Tile` adds a new brush; set material, kind, cover, and aura on the Inspector.
 2. `Assets/Scenes/Main.unity` already has **Map** (Grid + Tiles + Cover). `GameObject → Rune Magic → Painted Map` adds another if you want a second room.
 3. `Window → 2D → Tile Palette`, open **Rune Palette**, select the `Tiles` object, and paint. Select **Cover** to stamp ice / fire / lightning / aura on top of a walk cell. Select **Environment Details lvl 2** for props that sit on top of Environment Details. Hide Cover (or Environment Details) in **Tile Properties**, the **Rune Layers** Scene overlay, or the Hierarchy eye when you need to paint the tiles under it. **Cover-Fire** burns who stands on it, lights flammable fuel on or beside it, and puts Fire in the weave; **Aura-Fire** is a kindled hall.
-4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate / Electric Gate / Altar…` places objects. **Altar** is an empty use volume — place it over tiles or under a prefab group. Check **Teach Recipe** for prayer (recipe runes + `verb`), uncheck **Show Other Writing** to hide the catalog’s second writing, **Show Birth** to pray a join (Fire · Air = Spark) on the same screen, or both. Do not generate default art on the page; authored sprites and tiles carry the look. Pack enemies are under **Enemies**. Drag **Golem** or **Warden** from `Assets/Prefabs/Enemies`, then drag sliced sprites onto Portrait / Idle Frames / Attack Frames and set **Attack** (Golem slam or Wizard). See [`ENEMIES.md`](ENEMIES.md). An Electric Gate opens when lightning or charge finds it. The grid is 16×16 (16 PPU).
+4. `GameObject → Rune Magic → Item / Decor / Enemy / Torch / Gate / Electric Gate / Altar…` places objects. **Altar** is an empty use volume — place it over tiles or under a prefab group. Check **Teach Recipe** for prayer (recipe runes + `verb`), uncheck **Show Other Writing** to hide the catalog’s second writing, **Show Birth** to pray a join (Fire · Air = Spark) on the same screen, or both. Do not generate default art on the page; authored sprites and tiles carry the look. Pack enemies are under **Enemies**. Drag **Golem** or **Warden** from `Assets/Prefabs/Enemies`, or start from **Custom**. Dress Portrait / Idle Frames / Attack Frames, then set **Mode**, **Attacks** (close / mid / long — a spell fills its runes), **Gambits**, and resistances. See [`ENEMIES.md`](ENEMIES.md). An Electric Gate opens when lightning or charge finds it. The grid is 16×16 (16 PPU).
 
 Play bakes the Tilemap into the live grid. JSON floors are leftover and are not loaded. See [`TILES.md`](TILES.md).
 
@@ -132,7 +132,7 @@ A new recipe needs a **recipe** sentence and a **work** effect (`Fireball`, `Hop
 | `Assets/Tiles/` | New tile brushes (material, kind, cover). Paint them on the scene Tilemap |
 | `Assets/Scenes/Main.unity` | The playable map — Grid, Tiles, Cover, and placed objects |
 | `Assets/Prefabs/Enemies` | Golem, Warden, and the other pack locks — drag into the scene |
-| `ENEMIES.md` | How to place them, connect sprites, and set slam / wizard attacks |
+| `ENEMIES.md` | How to place them, connect sprites, and write modes / slots / gambits |
 | `FLOOR1.md` | Floor 1 design notes (the old JSON floor is leftover) |
 | `Assets/Scripts/World/SanctumLayout.cs` | Coded fallback if the Tilemap is empty |
 | `Assets/Scripts/World/MaterialCatalog.cs` | New materials, signatures, and tile paints |

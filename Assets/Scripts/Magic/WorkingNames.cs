@@ -5,8 +5,8 @@ namespace RuneMagic
     /// <summary>
     /// Player-facing names for workings. A spell is the exact rune
     /// string that was written — Spark is not Fire · Air, even when
-    /// both join the same thing. Catalog titles (Fireball, Lightning)
-    /// stay in the written book. The world only says the runes, or a
+    /// both join the same thing. Catalog titles (Fireball, Spark shot,
+    /// Lightning bolt) stay in the written book. The world only says the runes, or a
     /// name the adept saved for that same composition.
     /// </summary>
     public sealed class WorkingNames

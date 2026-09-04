@@ -300,16 +300,16 @@
     },
     {
       "number": 7,
-      "id": "LightningBolt",
+      "id": "SparkShot",
       "book": "End",
-      "name": "Lightning",
-      "want": "Hunger given breath and sent. A bolt, not a body.",
+      "name": "Spark shot",
+      "want": "Hunger given breath and sent. A sting, the start of an arc.",
       "recipe": "Fire · Air · Mercury",
-      "via": "Lightning · Mercury",
+      "via": "Spark · Mercury",
       "form": "Shot",
       "outcome": "Kill",
       "gate": "",
-      "work": "LightningBolt"
+      "work": "SparkShot"
     },
     {
       "number": 8,
@@ -2123,6 +2123,19 @@
       "outcome": "Kill",
       "gate": "",
       "work": "WoodArrow"
+    },
+    {
+      "number": 133,
+      "id": "LightningBolt",
+      "book": "End",
+      "name": "Lightning bolt",
+      "want": "The seed stretched through more breath and sent. A bolt, a path, not a body.",
+      "recipe": "Fire · Air · Air · Mercury",
+      "via": "Lightning · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "LightningBolt"
     }
   ]
 }

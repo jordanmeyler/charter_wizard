@@ -23,13 +23,16 @@ namespace RuneMagic
         GameObject _linger;
         bool _done;
 
+        RuneId[] _recipe = System.Array.Empty<RuneId>();
+
         public static void Cast(
             WorldGrid grid,
             Vector3 origin,
             Vector3 target,
             SpellId spell,
             CombatActor source,
-            ShotAllegiance allegiance)
+            ShotAllegiance allegiance,
+            RuneId[] recipe = null)
         {
             if (spell == SpellId.None)
             {
@@ -38,7 +41,7 @@ namespace RuneMagic
 
             var host = new GameObject("EnemyPillar");
             var strike = host.AddComponent<EnemyPillar>();
-            strike.Begin(grid, origin, target, spell, source, allegiance);
+            strike.Begin(grid, origin, target, spell, source, allegiance, recipe);
         }
 
         void Begin(
@@ -47,7 +50,8 @@ namespace RuneMagic
             Vector3 target,
             SpellId spell,
             CombatActor source,
-            ShotAllegiance allegiance)
+            ShotAllegiance allegiance,
+            RuneId[] recipe)
         {
             _grid = grid;
             _origin = origin;
@@ -55,16 +59,18 @@ namespace RuneMagic
             _spell = spell;
             _source = source;
             _allegiance = allegiance;
+            _recipe = recipe ?? System.Array.Empty<RuneId>();
             _left = TelegraphSeconds;
+            var element = CombatBook.ElementOf(spell, _recipe);
             _tile = grid != null ? grid.TileAtWorld(target) : null;
             if (_tile != null)
             {
                 _target = _tile.transform.position;
-                _tile.BeginTelegraph(WorldWork.MaterialFor(RuneId.Fire, spell));
+                _tile.BeginTelegraph(WorldWork.MaterialFor(element, spell));
             }
 
             transform.position = _target;
-            var look = ElementLook.For(RuneId.Fire, spell);
+            var look = ElementLook.For(element, spell);
             _glow = gameObject.AddComponent<SpriteRenderer>();
             _glow.sprite = SpriteFactory.Glow(look.Glow);
             _glow.color = look.Glow;
@@ -174,14 +180,22 @@ namespace RuneMagic
             }
 
             var host = StatusHost.On(player);
-            if (host != null && host.Fends(Essence.Fire))
+            var incoming = ElementalLaw.Of(_spell);
+            if (incoming == Essence.None)
             {
-                director?.Log($"Hunger stands, and breaks on the {host.FendingName(Essence.Fire)}.");
+                incoming = Essence.Fire;
+            }
+
+            if (host != null && host.Fends(incoming))
+            {
+                director?.Log($"The column stands, and breaks on the {host.FendingName(incoming)}.");
                 return true;
             }
 
-            director?.KillPlayer(DeathCause.OfSpell(SpellId.FlamePillar,
-                "A column of hunger finds you."));
+            director?.KillPlayer(DeathCause.OfSpell(_spell,
+                _spell == SpellId.FlamePillar || _spell == SpellId.FirePillar
+                    ? "A column of hunger finds you."
+                    : "A column finds you."));
             return false;
         }
 

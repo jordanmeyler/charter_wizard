@@ -503,7 +503,7 @@ namespace RuneMagic
         /// -1 means the player string is not those runes.
         /// Raise FillBudget later and this same count still decides the fit.
         /// Free may also ignore order when counting fills, so Mercury · Air
-        /// can still become Lightning if the budget covers Fire.
+        /// can still become Spark shot if the budget covers Fire.
         /// </summary>
         public static int FillsNeeded(IReadOnlyList<RuneId> player, CodexEntry entry)
         {
