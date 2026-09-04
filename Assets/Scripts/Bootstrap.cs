@@ -107,22 +107,29 @@ namespace RuneMagic
         static Camera PrepareCamera()
         {
             var cam = Camera.main;
-            if (cam == null)
+            if (cam != null)
             {
-                var cameraObject = new GameObject("Main Camera");
-                cam = cameraObject.AddComponent<Camera>();
-                cameraObject.AddComponent<AudioListener>();
-                try
+                if (cam.GetComponent<FollowCamera2D>() == null)
                 {
-                    cameraObject.tag = "MainCamera";
+                    cam.gameObject.AddComponent<FollowCamera2D>();
                 }
-                catch (System.Exception)
-                {
-                }
+
+                return cam;
+            }
+
+            var cameraObject = new GameObject("Main Camera");
+            cam = cameraObject.AddComponent<Camera>();
+            cameraObject.AddComponent<AudioListener>();
+            try
+            {
+                cameraObject.tag = "MainCamera";
+            }
+            catch (System.Exception)
+            {
             }
 
             cam.orthographic = true;
-            cam.orthographicSize = 5.4f;
+            cam.orthographicSize = 8f;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.04f, 0.045f, 0.07f);
             cam.nearClipPlane = 0.1f;
@@ -132,13 +139,7 @@ namespace RuneMagic
             // northern prop hid the one standing south of it.
             cam.transparencySortMode = TransparencySortMode.CustomAxis;
             cam.transparencySortAxis = new Vector3(0f, -1f, 0f);
-
-            var follow = cam.GetComponent<FollowCamera2D>();
-            if (follow == null)
-            {
-                follow = cam.gameObject.AddComponent<FollowCamera2D>();
-            }
-            follow.damp = 8f;
+            cameraObject.AddComponent<FollowCamera2D>();
             return cam;
         }
 
@@ -218,9 +219,8 @@ namespace RuneMagic
                 body.gravityScale = 0f;
                 body.freezeRotation = true;
                 body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                body.interpolation = RigidbodyInterpolation2D.Interpolate;
             }
-
-            body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
             if (player.GetComponent<CircleCollider2D>() == null)
             {
@@ -252,7 +252,6 @@ namespace RuneMagic
             {
                 var follow = camera.GetComponent<FollowCamera2D>() ?? camera.gameObject.AddComponent<FollowCamera2D>();
                 follow.Target = player.transform;
-                follow.damp = 8f;
             }
 
             if (player.transform.position.sqrMagnitude < 0.01f)
@@ -286,13 +285,18 @@ namespace RuneMagic
                 return;
             }
 
+            var animator = player.GetComponent<Animator>();
+            if (animator != null && animator.runtimeAnimatorController != null)
+            {
+                return;
+            }
+
             var controller = Resources.Load<RuntimeAnimatorController>(AdeptAvatar.AnimatorResource);
             if (controller == null)
             {
                 return;
             }
 
-            var animator = player.GetComponent<Animator>();
             if (animator == null)
             {
                 animator = player.AddComponent<Animator>();

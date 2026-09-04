@@ -339,11 +339,9 @@ namespace RuneMagic
 
         void ApplyEditorLook()
         {
-            _renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            _renderer.sortingOrder = 8;
+            _renderer = AuthoringUtil.KeepRenderer(gameObject, 8);
             if (hideLook)
             {
-                _renderer.sprite = null;
                 _renderer.enabled = false;
                 return;
             }
@@ -362,8 +360,7 @@ namespace RuneMagic
                 return;
             }
 
-            _renderer.sprite = null;
-            _renderer.enabled = false;
+            _renderer.enabled = _renderer.sprite != null;
         }
 
         void OnDrawGizmosSelected()
