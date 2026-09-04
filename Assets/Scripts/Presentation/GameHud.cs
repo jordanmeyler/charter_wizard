@@ -2617,16 +2617,16 @@ namespace RuneMagic
             switch (_bookPage)
             {
                 case BookPage.Runes:
-                    DrawBookPage(view, MeasureRuneBook(view.width), DrawRuneBook);
+                    DrawBookPage(view, MeasureRuneBook, DrawRuneBook);
                     break;
                 case BookPage.Spells:
-                    DrawBookPage(view, MeasureSpellBook(view.width), DrawSpellBook);
+                    DrawBookPage(view, MeasureSpellBook, DrawSpellBook);
                     break;
                 case BookPage.World:
-                    DrawBookPage(view, MeasureWorldBook(view.width), DrawWorldBook);
+                    DrawBookPage(view, MeasureWorldBook, DrawWorldBook);
                     break;
                 default:
-                    DrawBookPage(view, MeasureWorkingsBook(view.width), DrawWorkingsBook);
+                    DrawBookPage(view, MeasureWorkingsBook, DrawWorkingsBook);
                     break;
             }
         }
@@ -2728,29 +2728,33 @@ namespace RuneMagic
 
         float DrawRuneFilters(Rect view)
         {
-            var chip = 34f;
+            var chipH = 32f;
             var gap = 6f;
             var allW = 52f;
             var x = view.x;
             var y = view.y;
-            if (DrawTab(new Rect(x, y + 1f, allW, chip), "All", _bookFilter == RuneId.None))
+            if (DrawTab(new Rect(x, y, allW, chipH), "All", _bookFilter == RuneId.None))
             {
                 _bookFilter = RuneId.None;
                 _pauseScroll = Vector2.zero;
             }
 
             x += allW + gap;
+            var nameStyle = Label(12, FontStyle.Bold, new Color(0.9f, 0.88f, 0.78f));
+            nameStyle.alignment = TextAnchor.MiddleLeft;
             var runes = GrimoireQuery.FilterRunes;
             for (var i = 0; i < runes.Length; i++)
             {
-                if (x + chip > view.xMax)
+                var rune = runes[i];
+                var label = RuneCatalog.NameOf(rune);
+                var chipW = Mathf.Clamp(nameStyle.CalcSize(new GUIContent(label)).x + 36f, 68f, 110f);
+                if (x + chipW > view.xMax)
                 {
                     x = view.x;
-                    y += chip + 6f;
+                    y += chipH + 6f;
                 }
 
-                var rune = runes[i];
-                var rect = new Rect(x, y, chip, chip);
+                var rect = new Rect(x, y, chipW, chipH);
                 var on = _bookFilter == rune;
                 var previous = GUI.color;
                 GUI.color = on
@@ -2762,34 +2766,24 @@ namespace RuneMagic
                     : new Color(0.55f, 0.56f, 0.62f, 0.7f);
                 DrawFrame(rect, on ? 2f : 1f);
                 GUI.color = previous;
-                DrawMiniMark(new Rect(rect.x + 5f, rect.y + 5f, 24f, 24f), rune, true);
+                DrawMiniMark(new Rect(rect.x + 5f, rect.y + 4f, 24f, 24f), rune, true);
+                GUI.Label(new Rect(rect.x + 30f, rect.y, rect.width - 34f, chipH), label, nameStyle);
                 if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
                 {
                     _bookFilter = on ? RuneId.None : rune;
                     _pauseScroll = Vector2.zero;
                 }
 
-                x += chip + gap;
+                x += chipW + gap;
             }
 
-            var caption = Label(13, FontStyle.Normal, new Color(0.78f, 0.74f, 0.58f));
-            var filterName = _bookFilter == RuneId.None
-                ? "Every mark"
-                : RuneCatalog.NameOf(_bookFilter);
-            if (x + 120f > view.xMax)
-            {
-                x = view.x;
-                y += chip + 4f;
-            }
-
-            GUI.Label(new Rect(x + 8f, y + 8f, 280f, 20f), filterName, caption);
-            return y + chip - view.y;
+            return y + chipH - view.y;
         }
 
-        void DrawBookPage(Rect view, float innerHeight, System.Action<float, float> draw)
+        void DrawBookPage(Rect view, System.Func<float, float> measure, System.Action<float, float> draw)
         {
-            var needScroll = innerHeight > view.height + 1f;
-            if (!needScroll)
+            var fullHeight = measure(view.width);
+            if (fullHeight <= view.height + 1f)
             {
                 _pauseScroll = Vector2.zero;
                 GUI.BeginGroup(view);
@@ -2798,9 +2792,10 @@ namespace RuneMagic
                 return;
             }
 
-            _pauseScroll = GUI.BeginScrollView(
-                view, _pauseScroll, new Rect(0, 0, view.width - 22f, innerHeight));
-            draw(view.width - 22f, 0f);
+            var innerW = view.width - 22f;
+            var innerH = measure(innerW);
+            _pauseScroll = GUI.BeginScrollView(view, _pauseScroll, new Rect(0, 0, innerW, innerH));
+            draw(innerW, 0f);
             GUI.EndScrollView();
         }
 
