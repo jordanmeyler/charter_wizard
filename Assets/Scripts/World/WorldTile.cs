@@ -129,6 +129,7 @@ namespace RuneMagic
 
         public bool HasWaterCover =>
             !HasAshCover
+            && !HasIceCover
             && (Material == MaterialId.Water
             || string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase)
             || string.Equals(_coverId, "cover-water", System.StringComparison.OrdinalIgnoreCase));
@@ -257,14 +258,54 @@ namespace RuneMagic
 
         /// <summary>
         /// Fuel sitting on the walk — vine, oil, a plant or timber
-        /// detail. The floor underneath is not this.
+        /// detail. The floor underneath is not this. Fire cover is
+        /// the flame, not the fuel it lights.
         /// </summary>
         public bool HasOverlayFuel =>
             HasVine
             || (HasOil && !IsGeyser)
             || HasPlantishDetail
-            || HasPoisonCover
-            || (HasFireCover && !Kindled);
+            || HasPoisonCover;
+
+        /// <summary>
+        /// Plant, oil, timber, or other fuel a rest flame can light
+        /// on this cell. Fire cover and rest-fire walks are the
+        /// source, not catchable fuel.
+        /// </summary>
+        public bool HasCatchableFuel
+        {
+            get
+            {
+                if (HasAshCover)
+                {
+                    return false;
+                }
+
+                if (HasVine
+                    || HasPlantCover
+                    || (HasOil && !IsGeyser)
+                    || HasPlantishDetail
+                    || HasPoisonCover
+                    || (VitalLaw.CanBurn(Material) && !IsFireFloor))
+                {
+                    return true;
+                }
+
+                if (IsFireFloor || HasFireCover)
+                {
+                    return false;
+                }
+
+                return Hunger > VitalLaw.HungerNeutral;
+            }
+        }
+
+        /// <summary>
+        /// A painted flame that stays without a spell: fire cover,
+        /// rest fire in the walk, ember, or a kindled hall.
+        /// </summary>
+        public bool ProvidesRestFlame =>
+            !HasAshCover && (HasFireCover || IsFireFloor || HasEmber || Kindled);
 
         /// <summary>
         /// A stood Fire · Salt column. Hunger without rest. It
@@ -274,14 +315,15 @@ namespace RuneMagic
             IsConjured && Material == MaterialId.Fire;
 
         /// <summary>
-        /// Kindled halls, geysers, oil, overlay fuel, ember, or rest
-        /// fire already in the walk. Those keep a fire-pillar standing.
+        /// Kindled halls, geysers, oil, overlay fuel, ember, fire
+        /// cover, or rest fire already in the walk. Those keep a
+        /// fire-pillar standing.
         /// </summary>
         public bool FeedsHunger
         {
             get
             {
-                if (Kindled || IsGeyser || HasOil || HasOverlayFuel || HasEmber)
+                if (Kindled || IsGeyser || HasOil || HasOverlayFuel || HasEmber || HasFireCover)
                 {
                     return true;
                 }
@@ -692,21 +734,21 @@ namespace RuneMagic
             !HasAshCover
             && (IsPlantMaterial(_detailMaterial) || IsPlantMaterial(_detail2Material));
         /// <summary>
-        /// Fuel hunger can finish. Kindled halls, rest fire, and ember
-        /// stay. Fire cover, timber walls, and plant / timber floors
-        /// catch once, then leftover dirt. An embered tile keeps
-        /// whatever walk was already there.
+        /// Fuel hunger can finish. Kindled halls, rest fire, ember,
+        /// and fire cover stay. Timber walls and plant / timber
+        /// floors catch once, then leftover dirt. An embered tile
+        /// keeps whatever walk was already there.
         /// </summary>
         public bool HoldsBurnFuel =>
             !HasAshCover
             && !IsFireFloor
             && !HasEmber
+            && !HasFireCover
             && (IsPlantish
                 || HasPlantishDetail
                 || HasVine
                 || HasPoisonCover
                 || (HasOil && !IsGeyser)
-                || (HasFireCover && !Kindled)
                 || (Kind == TileKind.Wall && VitalLaw.CanBurn(Material))
                 || ((Kind == TileKind.Floor || Kind == TileKind.Bridge)
                     && VitalLaw.CanBurn(Material)));
@@ -735,7 +777,7 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 — a spell starts that source.
+        /// stays 0 for the 7+ walk — at rest it still lights fuel beside it.
         /// </summary>
         public int Hunger
         {
@@ -786,16 +828,22 @@ namespace RuneMagic
         /// <summary>
         /// How hard this live flame may light other cells. A kindled
         /// hall, a geyser, or a lit rest-fire walk is an oil-grade
-        /// source (10). Only a strong source (7+) walks fire, onto
-        /// equal-or-weaker fuel, out to its own reach.
+        /// source (10). A covering a spell left on that walk is the
+        /// fuel — the floor stays rest. Only a strong source (7+)
+        /// walks fire, onto equal-or-weaker fuel, out to its own reach.
         /// </summary>
         public int FirePotency
         {
             get
             {
-                if (Kindled || IsGeyser || (IsFireFloor && LiveFire) || (HasEmber && LiveFire))
+                if (Kindled || IsGeyser)
                 {
                     return VitalLaw.HungerOil;
+                }
+
+                if ((IsFireFloor && LiveFire) || (HasEmber && LiveFire))
+                {
+                    return HasOverlayFuel || HasFireCover ? Hunger : VitalLaw.HungerOil;
                 }
 
                 return Hunger;
@@ -895,7 +943,7 @@ namespace RuneMagic
         public bool CanTakePlant =>
             (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             Material != MaterialId.Water && Material != MaterialId.Lava &&
-            Material != MaterialId.Void && !IsPlantish;
+            Material != MaterialId.Void && !IsFireFloor && !IsPlantish;
 
         /// <summary>
         /// Yield holding a vessel with no floor under it. It drowns.
@@ -1043,7 +1091,7 @@ namespace RuneMagic
 
             if (IsDeepWater)
             {
-                BecomeWalkable(MaterialId.Ice, conjured: true);
+                SealWaterForIce();
                 PaintIceCover();
                 Wet = Mathf.Min(Wet, 0.15f);
                 RefreshFx();
@@ -1062,8 +1110,23 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Yield keeps its picture. Ice is the same cover sheen
+        /// ice-shot leaves — not a new ice floor or column.
+        /// A pit must become a walk so the drop trigger does not fire.
+        /// </summary>
+        void SealWaterForIce()
+        {
+            if (Kind != TileKind.Pit)
+            {
+                return;
+            }
+
+            AuthorKind(TileKind.Floor, Material == MaterialId.None ? MaterialId.Water : Material);
+        }
+
+        /// <summary>
         /// Hard water on this cell. Water becomes the same ice sheet
-        /// ice-wall uses. A dry walk takes that same cover sheen.
+        /// ice-shot and ice-wall use. A dry walk takes that same cover sheen.
         /// </summary>
         public bool LayIce()
         {
@@ -1117,6 +1180,7 @@ namespace RuneMagic
             }
 
             PaintCover(TileCover.Vine);
+            LightNewPlant();
             RefreshFx();
             return true;
         }
@@ -1141,6 +1205,7 @@ namespace RuneMagic
                 }
 
                 PaintCover(TileCover.Vine);
+                LightNewPlant();
                 RefreshFx();
                 return true;
             }
@@ -1409,37 +1474,62 @@ namespace RuneMagic
 
         /// <summary>
         /// A climbing body on the walk. Hunger runs it like a wick.
+        /// Floor and wall stamps stay at rest; a spell that lays this
+        /// covering on hunger lights the plant, not the masonry.
         /// </summary>
         public bool LayVine()
         {
-            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            if (Kind == TileKind.Door || Material == MaterialId.Void)
             {
                 return false;
             }
 
-            if (IsDeepWater || Material == MaterialId.Lava)
+            if (Kind == TileKind.Wall && !AcceptsVineOnWall)
+            {
+                return false;
+            }
+
+            if (IsDeepWater)
             {
                 return false;
             }
 
             if (HasVine)
             {
-                if (IsBurning)
-                {
-                    Ignite(0.45f);
-                }
-
+                LightNewPlant(0.45f);
                 return true;
             }
 
             PaintCover(TileCover.Vine);
-            if (IsBurning)
-            {
-                Ignite(0.55f);
-            }
-
+            LightNewPlant(0.55f);
             RefreshFx();
             return true;
+        }
+
+        /// <summary>
+        /// Stone walls stay bare. A fire wall, a kindled hall, or
+        /// live hunger takes the climbing body so the covering can
+        /// catch.
+        /// </summary>
+        bool AcceptsVineOnWall =>
+            IsFireFloor || HasFireCover || Kindled || LiveFire || IsBurning;
+
+        /// <summary>
+        /// A spell laid plant on hunger — rest fire, a hall, live
+        /// flame, or fire cover. The covering lights. The walk does
+        /// not become a source by itself.
+        /// </summary>
+        bool ShouldLightNewPlant =>
+            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover;
+
+        void LightNewPlant(float amount = 0.55f)
+        {
+            if (!ShouldLightNewPlant)
+            {
+                return;
+            }
+
+            Ignite(amount);
         }
 
         public void BurnVine()
@@ -2023,7 +2113,7 @@ namespace RuneMagic
         /// </summary>
         public void TickOverlayFuel(float seconds)
         {
-            if (!HasOverlayFuel)
+            if (!HasOverlayFuel && !HasCatchableFuel)
             {
                 _overlayBurn = 0f;
                 return;
@@ -2049,7 +2139,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (IsFireFloor || HasEmber)
+            if (IsFireFloor || HasEmber || HasFireCover)
             {
                 Fire = 0f;
                 RefreshFx();
@@ -2096,20 +2186,54 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Hunger finishes the fuel. Fire cover wears off. A plant or
-        /// timber floor swaps stamp and look to leftover dirt — it
-        /// does not draw ash over the tile you placed. A timber or
-        /// plant wall burns for its clock, then falls to that leftover
-        /// dirt so a key behind it can be reached. Floor-Fire and
-        /// ember stay. Ember keeps the walk that was already there.
+        /// Plant or timber under a staying fire cover leftovers to
+        /// dirt. The covering remains.
+        /// </summary>
+        void LeftoverFuelWalk()
+        {
+            if (IsFireFloor || HasEmber)
+            {
+                return;
+            }
+
+            if (!VitalLaw.CanBurn(Material) && !IsPlantish)
+            {
+                return;
+            }
+
+            var leftover = Kind == TileKind.Wall
+                ? CoverCatalog.RestAfterBurn(Material)
+                : CoverCatalog.LeftoverFloor(Material);
+            if (leftover == MaterialId.None || leftover == Material)
+            {
+                return;
+            }
+
+            Reshape(Kind == TileKind.Wall
+                ? new TileDef(TileKind.Floor, leftover)
+                : new TileDef(Kind, leftover));
+        }
+
+        /// <summary>
+        /// Hunger finishes the fuel. A plant or timber floor swaps
+        /// stamp and look to leftover dirt — it does not draw ash
+        /// over the tile you placed. A timber or plant wall burns
+        /// for its clock, then falls to that leftover dirt so a key
+        /// behind it can be reached. Floor-Fire, ember, and fire
+        /// cover stay. Ember keeps the walk that was already there.
         /// It only spends what sat on it. Covers and spells may still
         /// sit on the leftover.
         /// </summary>
         public void BurnOut()
         {
-            if (IsFireFloor || HasEmber)
+            if (IsFireFloor || HasEmber || HasFireCover)
             {
                 SpendOverlayFuel();
+                if (HasFireCover && !IsFireFloor && !HasEmber)
+                {
+                    LeftoverFuelWalk();
+                }
+
                 if (HasEmber)
                 {
                     KeepEmber();

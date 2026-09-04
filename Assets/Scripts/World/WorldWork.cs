@@ -205,6 +205,15 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Ice-pillar in a pool freezes the click and the water
+        /// around it, the same local sheet ice-shot leaves.
+        /// </summary>
+        public const int IceColumnPoolRadius = 1;
+
+        public static bool IceColumnSealsPool(SpellId spell, bool overWater) =>
+            spell == SpellId.IcePillar && overWater;
+
         public static bool RaisesBarrier(SpellId spell) =>
             IsPillar(spell);
 
@@ -1301,6 +1310,11 @@ namespace RuneMagic
                 return Span(CoordOf(from), CoordOf(to));
             }
 
+            if (spell == SpellId.IcePillar)
+            {
+                return Disk(CoordOf(to), IceColumnPoolRadius);
+            }
+
             if (spell == SpellId.DirtToss)
             {
                 return Merge(Span(CoordOf(from), CoordOf(to)), Disk(CoordOf(to), 1));
@@ -1420,6 +1434,8 @@ namespace RuneMagic
             {
                 cells = CollectWet(grid, CoordOf(to), 2);
             }
+
+            var sealsPool = IceColumnSealsPool(spell, CellHoldsWater(grid, CoordOf(to)));
 
             var caster = CoordOf(origin);
             var form = IsSinglePillar(spell) ? RaisedForm.Pillar : RaisedForm.Wall;
@@ -1549,6 +1565,20 @@ namespace RuneMagic
                 {
                     tile.BecomeBarrier(material, form);
                     barred++;
+                }
+            }
+
+            if (sealsPool)
+            {
+                var around = Disk(CoordOf(to), IceColumnPoolRadius);
+                for (var i = 0; i < around.Count; i++)
+                {
+                    var tile = grid.Get(around[i]);
+                    if (tile != null && (tile.IsDeepWater || tile.HasWaterCover) && tile.LayIce())
+                    {
+                        frozen++;
+                        filled++;
+                    }
                 }
             }
 
@@ -2034,6 +2064,12 @@ namespace RuneMagic
             }
 
             return WorldGrid.Center(land.x, land.y);
+        }
+
+        static bool CellHoldsWater(WorldGrid grid, Vector2Int cell)
+        {
+            var tile = grid != null ? grid.Get(cell) : null;
+            return tile != null && (tile.IsDeepWater || tile.HasWaterCover);
         }
 
         static List<Vector2Int> CollectWet(WorldGrid grid, Vector2Int center, int radius)

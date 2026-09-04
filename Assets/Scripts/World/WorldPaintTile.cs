@@ -35,7 +35,7 @@ namespace RuneMagic
         public bool StampsFloor => StampsWalk && kind == TileKind.Floor;
         [Tooltip("Legacy veil stamp. Fire aura is a kindled hall. Prefer Cover for the Fire mark.")]
         public TileAura aura;
-        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover is tinder when hunger is live. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
+        [Tooltip("Ice / fire / miasma / poison / fog / ash over the walk tile. Covers are the live layer: they can catch, melt, and interact once a spell starts work. Floor and wall stamps stay at rest. Fire cover burns who stands on it and, at rest, lights flammable fuel on or beside it. Aura-Fire still kindles a hall. Poison is a liquid slick; miasma is the airborne cloud.")]
         public TileCover cover;
         [Tooltip("On Environment Details, this cell blocks walking. Drag-stamp a cluster of tables or statues.")]
         public bool blocks;

@@ -908,13 +908,14 @@ namespace RuneMagic
                 || VitalLaw.IsSpreadFuel(MaterialId.Stone)
                 || VitalLaw.IsSpreadFuel(MaterialId.Dirt)
                 || VitalLaw.IsSpreadFuel(MaterialId.Ember)
+                || !VitalLaw.IsSpreadFuel(MaterialId.Fire, MaterialId.None, true, false)
                 || VitalLaw.ConductsFire(MaterialId.Stone)
                 || !VitalLaw.ConductsFire(MaterialId.Ember)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Timber)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Oil)
                 || !VitalLaw.IsSpreadFuel(MaterialId.Plant))
             {
-                broken.Add("Hunger must not run onto empty or neutral ground; ember hosts fire but is not fuel");
+                broken.Add("Hunger must not run onto empty or neutral ground; ember hosts fire but is not fuel; plant on rest fire is the wick");
             }
 
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)

@@ -579,6 +579,7 @@ namespace RuneMagic
             }
 
             TickPoisonVeil();
+            TickFireContact();
             if (_effects.Count == 0)
             {
                 return;
@@ -649,10 +650,26 @@ namespace RuneMagic
             }
         }
 
+        void TickFireContact()
+        {
+            if (AdeptAvatar.IsAdept(this) || Has(StatusId.Burning))
+            {
+                return;
+            }
+
+            var grid = FindFirstObjectByType<WorldGrid>();
+            var tile = grid != null ? grid.TileAtWorld(transform.position) : null;
+            if (VitalLaw.IsFireContact(tile))
+            {
+                Apply(StatusId.Burning, VitalLaw.Seconds(StatusId.Burning, Nature, false));
+            }
+        }
+
         void RefreshChip()
         {
             var hidden = IsHidden;
-            var text = hidden ? string.Empty : Summary();
+            var onAdept = AdeptAvatar.IsAdept(this);
+            var text = hidden || onAdept ? string.Empty : Summary();
             if (_chip != null)
             {
                 _chip.text = text;
@@ -672,9 +689,10 @@ namespace RuneMagic
                 return;
             }
 
-            _sprite.color = text.Length == 0
-                ? _baseColor
-                : Color.Lerp(_baseColor, DominantTint(), 0.42f);
+            var affected = onAdept ? Summary().Length > 0 : text.Length > 0;
+            _sprite.color = affected
+                ? Color.Lerp(_baseColor, DominantTint(), 0.42f)
+                : _baseColor;
         }
 
         Color DominantTint()

@@ -101,7 +101,7 @@ namespace RuneMagic
             E(15, SpellBook.End, SpellId.Scald, "Hunger forced through yield and sent.", "Scald", "Fire · Water · Mercury", "Steam · Mercury", "Shot", SpellOutcome.Kill),
             E(16, SpellBook.Weather, SpellId.WaterJet, "Yield learns breath so it can leave the vessel, then is sent.", "Water-jet", "Water · Air · Mercury", "", "Shot", SpellOutcome.Restrain),
             E(17, SpellBook.Hold, SpellId.Flood, "Yield going, more yield, given a body. They bog.", "Flood", "Water · Mercury · Water · Salt", "Current · Water · Salt", "Grow", SpellOutcome.Restrain),
-            E(18, SpellBook.Cross, SpellId.IcePillar, "Hard water asked to rest as a column. Over a pit it must join two floors, or it falls. On water it freezes without banks. It will thaw.", "Ice-pillar", "Water · Earth · Salt · Earth", "Ice · Salt · Earth", "Pillar", SpellOutcome.Restrain),
+            E(18, SpellBook.Cross, SpellId.IcePillar, "Hard water asked to rest as a column. Over a pit it must join two floors, or it falls. On water it freezes the pool around it without banks, the same ice sheet as ice-spear. It will thaw.", "Ice-pillar", "Water · Earth · Salt · Earth", "Ice · Salt · Earth", "Pillar", SpellOutcome.Restrain),
             E(19, SpellBook.Hold, SpellId.IceSpear, "Hard water sent.", "Ice-spear", "Water · Earth · Mercury", "Ice · Mercury", "Shot", SpellOutcome.Restrain),
             E(20, SpellBook.Hold, SpellId.Snowfall, "The veil is given ice’s story and sent softly.", "Snowfall", "Air · Water · Water · Earth · Mercury", "Cloud · Ice · Mercury", "Remote", SpellOutcome.Restrain),
             E(21, SpellBook.Cross, SpellId.Thaw, "The hard water-body meets hunger and remembers yield.", "Thaw", "Water · Earth · Fire", "Ice · Fire", "Remote", SpellOutcome.Neither),
@@ -678,6 +678,16 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.IceWall).Status == StatusId.Frozen)
             {
                 broken.Add("Ice-spear, ice-pillar, and ice-wall must not freeze a living body");
+            }
+
+            if (SpellVerb.Of(SpellId.IcePillar).Tiles != TileVerb.Freeze
+                || SpellVerb.Of(SpellId.IceSpear).Tiles != TileVerb.Freeze
+                || !WorldWork.FreezesWater(SpellId.IcePillar)
+                || !WorldWork.FreezesWater(SpellId.IceSpear)
+                || !WorldWork.IceColumnSealsPool(SpellId.IcePillar, true)
+                || CoverCatalog.SheenId(TileCover.Ice) != "cover-ice")
+            {
+                broken.Add("Ice-pillar in water must freeze the pool around it with the same ice-shot sheen");
             }
 
             if (SpellVerb.Of(SpellId.Snowfall).Status != StatusId.Frozen

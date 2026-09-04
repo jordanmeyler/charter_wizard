@@ -13,8 +13,9 @@ namespace RuneMagic
     /// Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
-    /// already alight does not recatch. Fire cover is tinder and
-    /// then ashes. Charge uses a 0–10 Conduct grade. Wood refuses.
+    /// already alight does not recatch. Fire cover stays and, at
+    /// rest, lights flammable fuel on or beside it. Charge uses a
+    /// 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
     /// Cover on water stays put, like ice, unless a spell-watered
@@ -196,7 +197,7 @@ namespace RuneMagic
             var burning = new List<WorldTile>();
             foreach (var tile in _grid.All)
             {
-                if (tile != null && tile.Fire > 0.05f)
+                if (tile != null && (tile.Fire > 0.05f || tile.ProvidesRestFlame))
                 {
                     burning.Add(tile);
                 }
@@ -215,7 +216,7 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.IsFireFloor || tile.HasEmber)
+                if (tile.IsFireFloor || tile.HasEmber || tile.HasFireCover)
                 {
                     StepRestFire(tile);
                     continue;
@@ -262,11 +263,12 @@ namespace RuneMagic
             }
         }
 
-        // Rest fire (Floor-Fire, lava, a hearth) and ember are inert
-        // walk until a flame finds them. A spell or neighbor lights
-        // them; then they burn overlays and can jump to flammable
-        // neighbors. Ember stays embered. When the overlay is gone
-        // rest fire goes dark again — unless the hall is kindled.
+        // Rest fire (Floor-Fire, lava, a hearth), ember, and fire
+        // cover stay without a spell. At rest they light flammable
+        // fuel on the cell or beside it. Neutral stone stays dark.
+        // A spell or a catching overlay can still walk further using
+        // Hunger. Ember and fire cover stay. When the overlay is
+        // gone rest fire goes dark again — unless the hall is kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -276,12 +278,17 @@ namespace RuneMagic
                 return;
             }
 
+            if (!pressure.Suppress)
+            {
+                CatchRestFuel(tile);
+            }
+
             if (tile.LiveFire && !pressure.Suppress)
             {
                 SpreadFrom(tile);
             }
 
-            if (tile.HasOverlayFuel && (tile.LiveFire || tile.Kindled))
+            if ((tile.HasOverlayFuel || tile.HasCatchableFuel) && (tile.LiveFire || tile.Kindled))
             {
                 tile.TickOverlayFuel(Step);
                 return;
@@ -296,6 +303,36 @@ namespace RuneMagic
             if (tile.Kindled)
             {
                 tile.KeepKindled();
+            }
+        }
+
+        /// <summary>
+        /// A rest flame lights catchable fuel on its own cell and on
+        /// the four tiles beside it. It does not leap a stone gap.
+        /// </summary>
+        void CatchRestFuel(WorldTile tile)
+        {
+            if (tile == null)
+            {
+                return;
+            }
+
+            if (tile.HasCatchableFuel && !tile.LiveFire)
+            {
+                tile.Ignite(0.55f);
+            }
+
+            var neighbors = _grid.Neighbors(tile.Coord);
+            for (var n = 0; n < neighbors.Count; n++)
+            {
+                var other = neighbors[n];
+                if (!AcceptsFireSpread(other) || !other.HasCatchableFuel)
+                {
+                    continue;
+                }
+
+                var fuel = other.Flammability > 0f ? other.Flammability : 0.85f;
+                other.Ignite(fuel);
             }
         }
 

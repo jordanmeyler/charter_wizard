@@ -268,12 +268,13 @@ namespace RuneMagic
             if (Underfoot != null && Underfoot.IsSafeStand)
             {
                 var host = StatusHost.On(player);
-                var inFire = Underfoot.IsBurning || Underfoot.HasEmber;
-                if (inFire)
+                var airborne = adept != null && adept.IsAirborne;
+                var inFire = VitalLaw.IsFireContact(Underfoot);
+                if (inFire && !airborne)
                 {
                     host?.Apply(StatusId.Burning, VitalLaw.AdeptBurnSeconds);
                     var warded = host != null && host.Fends(Essence.Fire);
-                    if (Underfoot.Kindled && !warded && (adept == null || !adept.IsAirborne))
+                    if (Underfoot.Kindled && !warded)
                     {
                         KillPlayer(DeathCause.Plain(
                             "The flaming hall finds you. Wear a flame ward, or throw yield first."));
@@ -2533,7 +2534,7 @@ namespace RuneMagic
 
                 var tile = Grid.TileAtWorld(encounter.WorldPosition);
                 var host = StatusHost.On(body);
-                if (tile != null && (tile.IsBurning || tile.HasEmber))
+                if (VitalLaw.IsFireContact(tile))
                 {
                     host?.Apply(StatusId.Burning, VitalLaw.FleshBurnSeconds);
                 }
