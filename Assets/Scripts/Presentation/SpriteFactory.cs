@@ -615,6 +615,11 @@ namespace RuneMagic
                 return authored;
             }
 
+            if (material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier)
+            {
+                return Wall(material, x, y);
+            }
+
             if (material == MaterialId.Timber)
             {
                 var timberSeed = Hash(x, y, (int)material + 41);

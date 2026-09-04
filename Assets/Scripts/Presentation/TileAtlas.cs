@@ -181,17 +181,39 @@ namespace RuneMagic
                 return "wall-moss";
             }
 
+            if (material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier)
+            {
+                return "wall-ice";
+            }
+
             return "wall";
+        }
+
+        /// <summary>
+        /// Ice columns share the ice-wall face (and the freeze sheen
+        /// as a fallback). The sanctuary fountain prop is furniture,
+        /// not a stood body of ice.
+        /// </summary>
+        public static string ColumnId(MaterialId material)
+        {
+            if (material == MaterialId.Ice || material == MaterialId.Snow || material == MaterialId.Glacier)
+            {
+                return "wall-ice";
+            }
+
+            return "pillar";
         }
 
         public static Sprite Column(MaterialId material)
         {
-            if (material == MaterialId.Ice || material == MaterialId.Snow)
+            var id = ColumnId(material);
+            var sprite = Get(id);
+            if (sprite != null)
             {
-                return Get("ice-fountain");
+                return sprite;
             }
 
-            return Get("pillar");
+            return id == "wall-ice" ? Get("cover-ice") : null;
         }
 
         public static Sprite Door(bool open, bool leaf)
@@ -313,10 +335,21 @@ namespace RuneMagic
             if (WallId(MaterialId.Stone, 0, 0) != "wall"
                 || WallId(MaterialId.Stone, 6, 4) != "wall"
                 || WallId(MaterialId.Stone, 1, 1) == "wall-crack"
-                || WallId(MaterialId.Stone, 2, 3) == "wall-c"
-                || WallId(MaterialId.Ice, 1, 0) != "wall")
+                || WallId(MaterialId.Stone, 2, 3) == "wall-c")
             {
-                broken.Add("Stone and ice walls must stay the wall tile; do not spawn random brick");
+                broken.Add("Stone walls must stay the wall tile; do not spawn random brick");
+            }
+
+            if (WallId(MaterialId.Ice, 1, 0) != "wall-ice"
+                || WallId(MaterialId.Snow, 0, 0) != "wall-ice"
+                || WallId(MaterialId.Glacier, 2, 3) != "wall-ice"
+                || ColumnId(MaterialId.Ice) != "wall-ice"
+                || ColumnId(MaterialId.Snow) != "wall-ice"
+                || ColumnId(MaterialId.Glacier) != "wall-ice"
+                || ColumnId(MaterialId.Ice) == "ice-fountain"
+                || ColumnId(MaterialId.Stone) != "pillar")
+            {
+                broken.Add("Ice wall and ice column must share the ice-wall face, not the fountain prop");
             }
         }
 

@@ -720,6 +720,14 @@ namespace RuneMagic
                 broken.Add("Ice-pillar in water must freeze the pool around it with the same ice-shot sheen");
             }
 
+            if (TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice"
+                || TileAtlas.WallId(MaterialId.Ice) != "wall-ice"
+                || TileAtlas.ColumnId(MaterialId.Ice) != TileAtlas.WallId(MaterialId.Ice)
+                || TileAtlas.ColumnId(MaterialId.Ice) == "ice-fountain")
+            {
+                broken.Add("Ice column must draw the same ice-wall face as ice-wall, not the fountain prop");
+            }
+
             if (SpellVerb.Of(SpellId.Snowfall).Status != StatusId.Frozen
                 || SpellVerb.Of(SpellId.Freeze).Status != StatusId.Frozen
                 || SpellVerb.Of(SpellId.Snowstorm).Status != StatusId.Frozen)
