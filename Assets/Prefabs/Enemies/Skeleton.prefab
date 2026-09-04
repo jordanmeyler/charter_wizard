@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 360772063138841653}
   - component: {fileID: 1067855875432681553}
   - component: {fileID: 718916447711486475}
+  - component: {fileID: -8115010488856065256}
+  - component: {fileID: 5589905930660638992}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Untagged
@@ -144,3 +146,29 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+--- !u!114 &-8115010488856065256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821851982756476391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d5f3c02e4e5b9f0c7d6e5f4a3b2c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldYSort
+  bias: 0
+--- !u!210 &5589905930660638992
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 821851982756476391}
+  m_Enabled: 1
+  m_SortingLayerID: 1847392011
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0

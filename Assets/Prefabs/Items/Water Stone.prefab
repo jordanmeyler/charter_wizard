@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: water-stone
   displayName: Water Stone
+  look: yield, that which becomes what holds it.
+  note: Yield, that which becomes what holds it.
+  catalogId: water-stone
   spriteId: stone-water
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Yield, that which becomes what holds it.
-  look: yield, that which becomes what holds it.
 --- !u!212 &236733516198451887
 SpriteRenderer:
   serializedVersion: 2

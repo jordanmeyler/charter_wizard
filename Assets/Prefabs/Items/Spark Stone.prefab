@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: spark-stone
   displayName: Spark Stone
+  look: fire from the sky.
+  note: Fire from the sky.
+  catalogId: spark-stone
   spriteId: stone-spark
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Fire from the sky.
-  look: fire from the sky.
 --- !u!212 &320801895316690077
 SpriteRenderer:
   serializedVersion: 2

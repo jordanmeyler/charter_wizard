@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a4b106858840aa9dc12dda44dd9bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RuneMagic.WorldItem
-  catalogId: flood-stone
   displayName: Flood Stone
+  look: yield given a floor.
+  note: Yield given a floor.
+  catalogId: flood-stone
   spriteId: stone-flood
   portrait: {fileID: 0}
   idleFrames: []
@@ -58,8 +60,6 @@ MonoBehaviour:
   fragile: 0
   keys: []
   teachesSpell: 
-  note: Yield given a floor.
-  look: yield given a floor.
 --- !u!212 &298882095007402394
 SpriteRenderer:
   serializedVersion: 2
