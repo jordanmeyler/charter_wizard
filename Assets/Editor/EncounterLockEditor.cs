@@ -1,5 +1,7 @@
 #if UNITY_EDITOR
+using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace RuneMagic
@@ -7,9 +9,12 @@ namespace RuneMagic
     [CustomEditor(typeof(EncounterLock))]
     public sealed class EncounterLockEditor : Editor
     {
+        const string EnemyPrefabFolder = "Assets/Prefabs/Enemies";
+
         static readonly string[] SpellLabels = Labels();
         static readonly SpellId[] SpellIds = Ids();
         int _packIndex;
+        bool _rawAffinities;
 
         public override void OnInspectorGUI()
         {
@@ -19,6 +24,7 @@ namespace RuneMagic
                 "Attacks — what they do on their own. Add slam, a shot, a pillar, or a wall. Pick Custom and write the runes yourself (Fire · Mercury is a fireball).\n\n" +
                 "Gambits — if / then. First match wins. “If they raise a wall, then write flame-pillar” is the Mixed Court lesson. Add that row on any caster.\n\n" +
                 "Enemies do not use a Unity Animator. Drag idle / attack slices onto the frames below. The adept is the one with Animator.\n\n" +
+                "Resistances are sliders — 0 immune, 1 normal, 5 ruin-weak. Empty rows use Nature. Tweaking a slider saves an override. Customize, then Save as prefab; later drag from Assets/Prefabs/Enemies.\n\n" +
                 "See ENEMIES.md.",
                 MessageType.Info);
 
@@ -29,6 +35,7 @@ namespace RuneMagic
             DrawAttacks();
             DrawGambits();
             DrawLegacyAttack();
+            DrawSavePrefab();
 
             serializedObject.ApplyModifiedProperties();
 
@@ -118,43 +125,387 @@ namespace RuneMagic
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Nature & resistances", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "0 immune, 1 normal, 5 ruin-weak. Empty rows use Nature. Tweaking a slider saves an override. A stone golem is defense 4 and shrugs a fireball; set Fire to 0 if it should also ignore hunger.",
+                MessageType.None);
             EditorGUILayout.PropertyField(
                 serializedObject.FindProperty("authoredNature"),
                 new GUIContent("Nature", "Auto reads the Id. Golem is earth. Warden is mind if Ensouled."));
-            var customDefense = serializedObject.FindProperty("customDefense");
-            EditorGUILayout.PropertyField(customDefense, new GUIContent("Override defense"));
-            if (customDefense.boolValue)
+            if (serializedObject.ApplyModifiedProperties())
             {
-                EditorGUILayout.IntSlider(serializedObject.FindProperty("authoredDefense"), 0, 10, new GUIContent("Defense"));
-            }
-
-            var customPush = serializedObject.FindProperty("customPush");
-            EditorGUILayout.PropertyField(customPush, new GUIContent("Override push resist"));
-            if (customPush.boolValue)
-            {
-                EditorGUILayout.IntSlider(serializedObject.FindProperty("authoredPushResist"), 0, 6, new GUIContent("Push resist"));
-            }
-
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("strikeAffinities"),
-                new GUIContent("Strike affinities", "0 immune, 1 normal, 5 ruin-weak. Empty uses the nature row."),
-                true);
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("statusAffinities"),
-                new GUIContent("Status affinities"),
-                true);
-
-            if (GUILayout.Button("Load nature defaults into affinities"))
-            {
-                var encounter = (EncounterLock)target;
-                Undo.RecordObject(encounter, "Load nature defaults");
-                encounter.LoadNatureDefaults();
                 serializedObject.Update();
             }
 
+            var encounter = (EncounterLock)target;
+            var nature = encounter.PreviewNature();
+            var natureRow = AffinityProfile.Of(nature);
+            var profile = encounter.PreviewProfile();
+            EditorGUILayout.LabelField("Reads as", nature.ToString());
+
+            DrawDefenseSlider(encounter, profile, natureRow);
+            DrawPushSlider(encounter, profile, natureRow);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Strike affinities", EditorStyles.miniBoldLabel);
+            for (var i = 0; i < CombatBook.TunableStrikes.Length; i++)
+            {
+                var kind = CombatBook.TunableStrikes[i];
+                DrawAffinitySlider(
+                    kind.ToString(),
+                    profile.Strike(kind),
+                    next => MutateLock("Enemy strike affinity", lockOn => lockOn.SetStrikeAffinity(kind, next)));
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Status affinities", EditorStyles.miniBoldLabel);
+            for (var i = 0; i < CombatBook.TunableStatuses.Length; i++)
+            {
+                var id = CombatBook.TunableStatuses[i];
+                DrawAffinitySlider(
+                    id.ToString(),
+                    profile.Status(id),
+                    next => MutateLock("Enemy status affinity", lockOn => lockOn.SetStatusAffinity(id, next)));
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Load nature defaults"))
+            {
+                MutateLock("Load nature defaults", lockOn => lockOn.LoadNatureDefaults());
+            }
+
+            if (GUILayout.Button("Reset to nature"))
+            {
+                MutateLock("Reset to nature", lockOn => lockOn.ClearAffinityOverrides());
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            _rawAffinities = EditorGUILayout.Foldout(_rawAffinities, "Raw affinity arrays", true);
+            if (_rawAffinities)
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("customDefense"), new GUIContent("Override defense"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("authoredDefense"), new GUIContent("Authored defense"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("customPush"), new GUIContent("Override push resist"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("authoredPushResist"), new GUIContent("Authored push resist"));
+                EditorGUILayout.PropertyField(
+                    serializedObject.FindProperty("strikeAffinities"),
+                    new GUIContent("Strike affinities"),
+                    true);
+                EditorGUILayout.PropertyField(
+                    serializedObject.FindProperty("statusAffinities"),
+                    new GUIContent("Status affinities"),
+                    true);
+            }
+        }
+
+        void DrawDefenseSlider(EncounterLock encounter, AffinityProfile profile, AffinityProfile natureRow)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginChangeCheck();
+            var next = EditorGUILayout.IntSlider(
+                new GUIContent("Defense", "0–10. Power × affinity must beat this."),
+                profile.Defense,
+                StrikeLaw.DefenseMin,
+                StrikeLaw.DefenseMax);
+            if (EditorGUI.EndChangeCheck() && next != profile.Defense)
+            {
+                MutateLock("Enemy defense", lockOn => lockOn.SetDefense(next));
+            }
+
+            EditorGUI.BeginDisabledGroup(!encounter.HasDefenseOverride);
+            if (GUILayout.Button("Use nature", GUILayout.Width(88)))
+            {
+                MutateLock("Use nature defense", lockOn => lockOn.ClearDefenseOverride());
+            }
+
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            if (encounter.HasDefenseOverride)
+            {
+                EditorGUILayout.LabelField("Nature defense", natureRow.Defense.ToString(), EditorStyles.miniLabel);
+            }
+        }
+
+        void DrawPushSlider(EncounterLock encounter, AffinityProfile profile, AffinityProfile natureRow)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginChangeCheck();
+            var next = EditorGUILayout.IntSlider(
+                new GUIContent("Push resist", "0–6. How hard a shove must be."),
+                profile.PushResist,
+                0,
+                6);
+            if (EditorGUI.EndChangeCheck() && next != profile.PushResist)
+            {
+                MutateLock("Enemy push resist", lockOn => lockOn.SetPushResist(next));
+            }
+
+            EditorGUI.BeginDisabledGroup(!encounter.HasPushOverride);
+            if (GUILayout.Button("Use nature", GUILayout.Width(88)))
+            {
+                MutateLock("Use nature push", lockOn => lockOn.ClearPushOverride());
+            }
+
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            if (encounter.HasPushOverride)
+            {
+                EditorGUILayout.LabelField("Nature push resist", natureRow.PushResist.ToString(), EditorStyles.miniLabel);
+            }
+        }
+
+        void DrawAffinitySlider(string label, int current, System.Action<int> set)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginChangeCheck();
+            var next = EditorGUILayout.IntSlider(new GUIContent(label), current, StrikeLaw.AffinityImmune, StrikeLaw.AffinityMax);
+            EditorGUILayout.LabelField(StrikeLaw.AffinityWord(next), GUILayout.Width(72));
+            if (EditorGUI.EndChangeCheck() && next != current)
+            {
+                set(next);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        void MutateLock(string undo, System.Action<EncounterLock> change)
+        {
+            serializedObject.ApplyModifiedProperties();
+            var encounter = (EncounterLock)target;
+            Undo.RecordObject(encounter, undo);
+            change(encounter);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(encounter);
+            EditorUtility.SetDirty(encounter);
+            serializedObject.Update();
+        }
+
+        void DrawSavePrefab()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Prefab", EditorStyles.boldLabel);
+            var encounter = (EncounterLock)target;
+            var fileName = PrefabFileName(encounter);
+            var path = EnemyPrefabFolder + "/" + fileName + ".prefab";
             EditorGUILayout.HelpBox(
-                "Affinity 0 shrugs the column off. A stone golem is defense 4 and will not take a fireball. Override Fire to 0 if you want a stubborn earth body that also ignores hunger.",
+                "Customize this body, then save it. Later drag it from Assets/Prefabs/Enemies, or Place it under Saved enemies in Authoring. The file name follows Name — change Name first for a new enemy.",
                 MessageType.None);
+            EditorGUILayout.LabelField("Writes", path);
+            if (GUILayout.Button("Save as prefab"))
+            {
+                serializedObject.ApplyModifiedProperties();
+                SaveEnemyPrefab((EncounterLock)target);
+                serializedObject.Update();
+            }
+        }
+
+        static string PrefabFileName(EncounterLock encounter)
+        {
+            var stem = encounter != null ? (encounter.AuthoredName ?? string.Empty).Trim() : string.Empty;
+            if (string.IsNullOrEmpty(stem) && encounter != null)
+            {
+                stem = (encounter.AuthoredId ?? string.Empty).Trim();
+            }
+
+            if (string.IsNullOrEmpty(stem) && encounter != null)
+            {
+                stem = encounter.gameObject.name;
+            }
+
+            return SanitizeFileName(stem);
+        }
+
+        static string SanitizeFileName(string name)
+        {
+            var raw = (name ?? string.Empty).Trim();
+            var chars = Path.GetInvalidFileNameChars();
+            var buffer = new char[raw.Length];
+            var count = 0;
+            for (var i = 0; i < raw.Length; i++)
+            {
+                var c = raw[i];
+                var bad = false;
+                for (var j = 0; j < chars.Length; j++)
+                {
+                    if (c == chars[j])
+                    {
+                        bad = true;
+                        break;
+                    }
+                }
+
+                buffer[count++] = bad ? '-' : c;
+            }
+
+            var file = count == 0 ? string.Empty : new string(buffer, 0, count).Trim();
+            return string.IsNullOrEmpty(file) ? "Custom" : file;
+        }
+
+        static bool IsPackPrefab(string fileName)
+        {
+            if (string.Equals(fileName, "Custom", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            for (var i = 0; i < PackEnemies.All.Length; i++)
+            {
+                if (string.Equals(PackEnemies.All[i].Name, fileName, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        static bool ConfirmWrite(string path, string fileName)
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(path) == null)
+            {
+                return true;
+            }
+
+            var body = IsPackPrefab(fileName)
+                ? "Overwrite the pack prefab '" + fileName + "'? Rooms that already use it will take this body. Change Name first if you want a new enemy."
+                : "Overwrite " + fileName + ".prefab?";
+            return EditorUtility.DisplayDialog("Save enemy prefab", body, "Overwrite", "Cancel");
+        }
+
+        static void EnsureEnemyFolder()
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
+            {
+                AssetDatabase.CreateFolder("Assets", "Prefabs");
+            }
+
+            if (!AssetDatabase.IsValidFolder(EnemyPrefabFolder))
+            {
+                AssetDatabase.CreateFolder("Assets/Prefabs", "Enemies");
+            }
+        }
+
+        static void PingPrefab(string path)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (asset != null)
+            {
+                EditorGUIUtility.PingObject(asset);
+            }
+        }
+
+        static void SaveEnemyPrefab(EncounterLock encounter)
+        {
+            if (encounter == null)
+            {
+                return;
+            }
+
+            var go = encounter.gameObject;
+            var fileName = PrefabFileName(encounter);
+            var path = EnemyPrefabFolder + "/" + fileName + ".prefab";
+            var stage = PrefabStageUtility.GetCurrentPrefabStage();
+            if (stage != null && stage.prefabContentsRoot != null
+                && go.transform.root == stage.prefabContentsRoot.transform)
+            {
+                if (string.Equals(stage.assetPath, path, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    EditorUtility.SetDirty(go);
+                    PrefabUtility.SavePrefabAsset(stage.prefabContentsRoot);
+                    PingPrefab(path);
+                    return;
+                }
+
+                EnsureEnemyFolder();
+                if (!ConfirmWrite(path, fileName))
+                {
+                    return;
+                }
+
+                PrefabUtility.SaveAsPrefabAsset(stage.prefabContentsRoot, path);
+                PingPrefab(path);
+                return;
+            }
+
+            if (PrefabUtility.IsPartOfPrefabAsset(go) && !PrefabUtility.IsPartOfNonAssetPrefabInstance(go))
+            {
+                var assetPath = AssetDatabase.GetAssetPath(go);
+                if (string.Equals(assetPath, path, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    EditorUtility.SetDirty(go);
+                    AssetDatabase.SaveAssets();
+                    PingPrefab(path);
+                    return;
+                }
+
+                EnsureEnemyFolder();
+                if (!ConfirmWrite(path, fileName))
+                {
+                    return;
+                }
+
+                PrefabUtility.SaveAsPrefabAsset(go, path);
+                PingPrefab(path);
+                return;
+            }
+
+            if (PrefabUtility.IsPartOfPrefabInstance(go))
+            {
+                if (!PrefabUtility.IsAnyPrefabInstanceRoot(go))
+                {
+                    EditorUtility.DisplayDialog(
+                        "Save enemy prefab",
+                        "This lock sits inside another prefab. Open the enemy prefab, or unpack this instance, then save.",
+                        "OK");
+                    return;
+                }
+
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(go);
+                var sourcePath = source != null ? AssetDatabase.GetAssetPath(source) : string.Empty;
+                if (string.Equals(sourcePath, path, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (IsPackPrefab(fileName)
+                        && !EditorUtility.DisplayDialog(
+                            "Save enemy prefab",
+                            "Apply these tweaks back to " + fileName + ".prefab? Every instance of that pack body will change.",
+                            "Apply",
+                            "Cancel"))
+                    {
+                        return;
+                    }
+
+                    PrefabUtility.ApplyPrefabInstance(go, InteractionMode.UserAction);
+                    PingPrefab(path);
+                    return;
+                }
+
+                EnsureEnemyFolder();
+                if (!ConfirmWrite(path, fileName))
+                {
+                    return;
+                }
+
+                PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+            }
+            else
+            {
+                EnsureEnemyFolder();
+                if (!ConfirmWrite(path, fileName))
+                {
+                    return;
+                }
+            }
+
+            go.name = fileName;
+            var saved = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
+            if (saved == null)
+            {
+                EditorUtility.DisplayDialog("Save enemy prefab", "Unity could not write " + path, "OK");
+                return;
+            }
+
+            PingPrefab(path);
         }
 
         void DrawMind()

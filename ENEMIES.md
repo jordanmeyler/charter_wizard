@@ -180,10 +180,39 @@ spends the row after it fires.
 fire, an ensouled `warden` is mind). Set Nature yourself if the Id
 should not decide the body.
 
-**Load nature defaults into affinities** writes defense, push resist,
-and the strike / status columns (0 immune … 5 ruin-weak). Change a
-column without rewriting the rest of the row. A stone golem that also
-ignores hunger is Defense 4 with Fire set to 0.
+Resistances are sliders on the same Inspector. **Defense** is 0–10.
+**Push resist** is 0–6. Each strike and status column is 0–5:
+
+| Value | Word |
+|---|---|
+| 0 | immune |
+| 1 | normal |
+| 2 | weak |
+| 3 | frail |
+| 4 | brittle |
+| 5 | ruin-weak |
+
+Empty rows use Nature. Tweaking a slider writes an override. **Use
+nature** next to Defense / Push drops that override. **Load nature
+defaults** fills every column from the current Nature so you can
+nudge one value. **Reset to nature** clears every override.
+
+A stone golem that also ignores hunger is Defense 4 with Fire set to
+0. You do not have to click Load first — the sliders already show the
+nature numbers.
+
+## Save as prefab
+
+**Save as prefab** writes `Assets/Prefabs/Enemies/{Name}.prefab`.
+Change **Name** first if this should be a new body. If the file
+already exists you get an overwrite prompt; pack names (Golem,
+Warden, Custom, …) warn that rooms using that prefab will change.
+
+A scene instance of that same file **Applies** back. Prefab Mode
+saves the open asset, or writes a copy if you renamed it.
+
+Later: drag the prefab from `Assets/Prefabs/Enemies`, or Place it
+under **Saved enemies** in `Window → Rune Magic → Authoring`.
 
 ## Add another enemy
 
@@ -198,7 +227,8 @@ Yes — no new C# for a new body.
    pack name / formula / frames onto this lock.
 4. Set **Mode**, **Attacks**, **Gambits**, **Formula**, **Ensouled**,
    **Blocking**, **Grant**, and resistances.
-5. Drop the new prefab in the room.
+5. **Save as prefab**. Drop the new prefab in the room, or Place it
+   from Authoring → Saved enemies.
 
 `GameObject → Rune Magic → Mite` is the same component with no pack
 art. Set Sprite Id or drag frames yourself.

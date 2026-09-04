@@ -287,6 +287,25 @@ namespace RuneMagic
             return profile.Status(id);
         }
 
+        public static string AffinityWord(int value)
+        {
+            switch (MathfClamp(value, AffinityImmune, AffinityMax))
+            {
+                case 0:
+                    return "immune";
+                case 1:
+                    return "normal";
+                case 2:
+                    return "weak";
+                case 3:
+                    return "frail";
+                case 4:
+                    return "brittle";
+                default:
+                    return "ruin-weak";
+            }
+        }
+
         public static void Audit(List<string> broken)
         {
             if (broken == null)
@@ -339,6 +358,14 @@ namespace RuneMagic
                 || stone.Status(StatusId.Raging) <= 0)
             {
                 broken.Add("Earth bodies take Lull, Terror, and Rage — the Silent Court walks over a sleeping stone man");
+            }
+
+            if (AffinityWord(0) != "immune"
+                || AffinityWord(1) != "normal"
+                || AffinityWord(5) != "ruin-weak"
+                || StatusAffinity(stone, StatusId.Sleeping) <= 0)
+            {
+                broken.Add("Affinity words are immune / normal / ruin-weak, and earth still takes Lull");
             }
 
             if (AffinityOf(stone, StrikeKind.Witchfire) != AffinityNormal)
