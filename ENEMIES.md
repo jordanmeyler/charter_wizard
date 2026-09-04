@@ -26,8 +26,10 @@ The body sits on the 16×16 grid. One cell is one tile.
 | **Mite** | `ash-mite` | None | Blank lock. Set formula / attack yourself. |
 
 The Silent Court's stone men are a **Mite** with Id `stone-man`, Attack
-**None**, and Blocking on. They do not slam. Charm, Command, Lull,
-Terror, Jolt, or Rage turn them.
+**None**, and Blocking on. They do not slam. Charm, Command, **Lull**,
+Terror, Jolt, or Rage turn them. Lull puts them to sleep — they flatten,
+and you walk over the body. Recast Lull (or another mind sentence that
+shares a mark) to wake them.
 
 Empty **Keys** means the usual mite list (Fireball, Charm, Command, …).
 **Grant item** is a catalog id dropped when the lock turns (`mind-stone`).
@@ -68,6 +70,28 @@ Do not assign the unsliced strips under `Assets/Resources/Sprites/Enemies`
 to Portrait — those are the catalog fallback, 16 PPU, and they read as
 two tiles tall. The ElvGames slices are 32 PPU and sit on one cell.
 
+## Animation — frames on the prefab, not a Unity Animator
+
+Unity's usual path for a character is an **Animator Controller** (states
+like Idle / Walk / Attack). **The adept uses that.** Hero_22 has
+`Idle` / `Walk` / `Cast` / `Hop`. Rebuild it from `Window → Rune Magic
+→ Adept Animator` if the controller looks empty.
+
+Enemies do **not**. A lock is a short clip list on `EncounterLock`:
+
+1. Slice a sheet (ElvGames already is). **A** is idle. **C** is slam
+   or write. **D** is the unmake.
+2. Drag idle slices onto **Idle Frames**.
+3. Drag slam / cast slices onto **Attack Frames**.
+4. Optional: **Resolve Frames** for the unmake.
+
+Play loops those arrays. Changing how they look is a new set of
+slices on that same prefab — not a new controller. Generated painters
+stay as a fallback if Portrait and Idle Frames are empty (`Sprite Id`
+`enemy-011`, `fire-golem-slam`, `warden-cast`).
+
+Do not put an Animator on a golem or warden.
+
 ## Mind, ranges, and attack slots
 
 The same Inspector now has a mind. **Mode** and **Attacks** are how
@@ -87,11 +111,24 @@ slot listed as Close slams inside slam reach. Mid and Long write a
 sentence. Distance picks the matching band first, then any slot that
 can still reach.
 
-**Attacks** is a list. Add slam, fireball, arrow, or flame-pillar with
-the buttons, or pick **Attack / spell** on a slot. Picking a spell
-fills **Recipe** from the book (`Fireball` writes `Fire · Mercury`,
-`Flame-pillar` writes `Fire · Salt · Earth`). Leave the spell on None
-and write the runes yourself.
+### Attacks (what they do on their own)
+
+**Attacks** is the list they use every breath. Buttons on the Inspector:
+
+| Button | What you get |
+|---|---|
+| **Add slam** | Close slam. Hop or Stoneskin survives it. |
+| **Add fireball** | Mid shot. `Fire · Mercury`. Facing locks when they start writing. |
+| **Add arrow** | Long wood arrow. |
+| **Add flame-pillar** | Mid pillar. Floor hungers, then a column stands. |
+| **Add wall** | Mid earth wall (`Earth · Salt · Earth`) across the line to you. |
+| **Add custom (write runes)** | Spell stays empty. Type the sentence. Set **Strike** to Slam, Shot, or Pillar. |
+
+Picking **Attack / spell** on a slot fills **Recipe** from the book
+(`Fireball` writes `Fire · Mercury`). **Custom** is how you make a
+new attack that is not in that list — write `Spark · Mercury`, or any
+chain the catalog knows, or a sentence that is only a shot because you
+set Strike to Shot.
 
 Empty **Attacks** still uses the old **Attack** dropdown:
 
@@ -107,19 +144,34 @@ to break the shot, hop over it, get behind them, or wear a flame ward
 (`Fire · Salt · Sulphur`).
 
 **Blocking** on a Golem is a solid body — you cannot walk through it.
-Wizards leave it off so you can step past while they write.
+Wizards leave it off so you can step past while they write. **Lull**
+(and stun, freeze, charm) still lets you walk over a blocking body
+while they sleep.
 
-## Gambits
+## Gambits (if they do this, then write that)
+
+Gambits are **not** the regular attack list. They are answers.
 
 First matching if/then wins, the way FF12 wrote gambits.
 
 `If the player raises a wall, then write flame-pillar.` That is the
-Mixed Court lesson. A fire wizard with an empty gambit list still
-does it there. Add the same row on any enemy if you want it everywhere.
+Mixed Court lesson. Buttons:
+
+| Button | What you get |
+|---|---|
+| **If they raise a wall → flame-pillar** | Mixed Court answer. Add this on any caster you want to do it everywhere. |
+| **If they raise a wall → wall** | They stand earth of their own. |
+| **If close → slam** | A caster who slams when you step in. |
+| **Add empty if / then** | Blank row. Set **When**, then **Then spell** or write **Then recipe**. |
+
+A fire wizard with an empty gambit list still answers a wall in the
+Mixed Court only. Put the row on the prefab if you want it in every
+room.
 
 Other whens: they cast a named spell, they are close / mid / long,
 an ally is nearby, this body has a status, the mark has a status.
-**Then spell** fills runes the same way an attack slot does. **Once**
+**Then spell** fills runes the same way an attack slot does. Leave Then
+spell on None and write **Then recipe** for a custom sentence. **Once**
 spends the row after it fires.
 
 ## Nature and resistances
@@ -128,10 +180,39 @@ spends the row after it fires.
 fire, an ensouled `warden` is mind). Set Nature yourself if the Id
 should not decide the body.
 
-**Load nature defaults into affinities** writes defense, push resist,
-and the strike / status columns (0 immune … 5 ruin-weak). Change a
-column without rewriting the rest of the row. A stone golem that also
-ignores hunger is Defense 4 with Fire set to 0.
+Resistances are sliders on the same Inspector. **Defense** is 0–10.
+**Push resist** is 0–6. Each strike and status column is 0–5:
+
+| Value | Word |
+|---|---|
+| 0 | immune |
+| 1 | normal |
+| 2 | weak |
+| 3 | frail |
+| 4 | brittle |
+| 5 | ruin-weak |
+
+Empty rows use Nature. Tweaking a slider writes an override. **Use
+nature** next to Defense / Push drops that override. **Load nature
+defaults** fills every column from the current Nature so you can
+nudge one value. **Reset to nature** clears every override.
+
+A stone golem that also ignores hunger is Defense 4 with Fire set to
+0. You do not have to click Load first — the sliders already show the
+nature numbers.
+
+## Save as prefab
+
+**Save as prefab** writes `Assets/Prefabs/Enemies/{Name}.prefab`.
+Change **Name** first if this should be a new body. If the file
+already exists you get an overwrite prompt; pack names (Golem,
+Warden, Custom, …) warn that rooms using that prefab will change.
+
+A scene instance of that same file **Applies** back. Prefab Mode
+saves the open asset, or writes a copy if you renamed it.
+
+Later: drag the prefab from `Assets/Prefabs/Enemies`, or Place it
+under **Saved enemies** in `Window → Rune Magic → Authoring`.
 
 ## Add another enemy
 
@@ -146,33 +227,17 @@ Yes — no new C# for a new body.
    pack name / formula / frames onto this lock.
 4. Set **Mode**, **Attacks**, **Gambits**, **Formula**, **Ensouled**,
    **Blocking**, **Grant**, and resistances.
-5. Drop the new prefab in the room.
+5. **Save as prefab**. Drop the new prefab in the room, or Place it
+   from Authoring → Saved enemies.
 
 `GameObject → Rune Magic → Mite` is the same component with no pack
 art. Set Sprite Id or drag frames yourself.
 
 A new wood archer does not need new C# — add a Long **Wood arrow**
 slot, or set Attack to **Archer**. A body that slams in close and
-answers a wall with a flame-pillar is two slots and one gambit.
-
-## Animation — frames on the prefab, not a controller
-
-Enemies do **not** use a Unity Animator Controller. The adept does
-(`Idle` / `Walk` / `Cast` / `Hop` on Hero_22).
-
-For a golem or warden:
-
-1. Slice a sheet (ElvGames already is).
-2. Drag idle slices onto **Idle Frames**.
-3. Drag slam / cast slices onto **Attack Frames**.
-4. Optional: **Resolve Frames** for the unmake.
-
-That is the animation. Play loops those arrays. Changing how they look
-is a new set of slices on that same prefab — not a new controller.
-
-If you leave the arrays empty, **Sprite Id** / **Idle Clip** /
-**Attack Clip** fall back to catalog painters (`enemy-011`,
-`fire-golem-slam`, `warden-cast`).
+answers a wall with a flame-pillar is two slots and one gambit. A
+custom spark shot is **Add custom**, recipe `Spark · Mercury`, Strike
+**Shot**.
 
 ## Rooms that want these
 

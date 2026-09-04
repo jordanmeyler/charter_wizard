@@ -144,7 +144,7 @@ namespace RuneMagic
 
         public static readonly CombatPage[] Pages =
         {
-            new("None (write runes)", SpellId.None, CombatRange.Close, CombatStrike.None, 0f),
+            new("Custom (write runes)", SpellId.None, CombatRange.Mid, CombatStrike.None, 1.6f),
             new("Slam", SpellId.None, CombatRange.Close, CombatStrike.Slam, 0.85f),
             new("Fireball", SpellId.Fireball, CombatRange.Mid, CombatStrike.Shot, 2f),
             new("Wood arrow", SpellId.WoodArrow, CombatRange.Long, CombatStrike.Shot, 1.15f),
@@ -163,7 +163,10 @@ namespace RuneMagic
             new("Ice-pillar", SpellId.IcePillar, CombatRange.Mid, CombatStrike.Pillar, 2f),
             new("Earth-pillar", SpellId.EarthPillar, CombatRange.Close, CombatStrike.Pillar, 1.6f),
             new("Lava-pillar", SpellId.LavaPillar, CombatRange.Mid, CombatStrike.Pillar, 2.2f),
-            new("Water-pillar", SpellId.WaterPillar, CombatRange.Mid, CombatStrike.Pillar, 1.8f)
+            new("Water-pillar", SpellId.WaterPillar, CombatRange.Mid, CombatStrike.Pillar, 1.8f),
+            new("Wall", SpellId.Wall, CombatRange.Mid, CombatStrike.Pillar, 1.8f),
+            new("Ice-wall", SpellId.IceWall, CombatRange.Mid, CombatStrike.Pillar, 2f),
+            new("Wood-wall", SpellId.WoodWall, CombatRange.Mid, CombatStrike.Pillar, 2f)
         };
 
         public static readonly StrikeKind[] TunableStrikes =
@@ -207,6 +210,24 @@ namespace RuneMagic
             };
         }
 
+        public static CombatSlot CustomSlot()
+        {
+            return new CombatSlot
+            {
+                Name = "Custom",
+                Range = CombatRange.Mid,
+                Strike = CombatStrike.Shot,
+                Spell = SpellId.None,
+                Recipe = System.Array.Empty<string>(),
+                CastSeconds = 1.6f
+            };
+        }
+
+        public static CombatSlot WallSlot()
+        {
+            return SlotFromPage(PageOf(SpellId.Wall, CombatStrike.Pillar));
+        }
+
         public static CombatGambit WallToFlamePillar()
         {
             return new CombatGambit
@@ -217,6 +238,46 @@ namespace RuneMagic
                 ThenStrike = CombatStrike.Pillar,
                 ThenSpell = SpellId.FlamePillar,
                 ThenRecipe = RecipeNames(SpellId.FlamePillar),
+                Once = false
+            };
+        }
+
+        public static CombatGambit WallToWall()
+        {
+            return new CombatGambit
+            {
+                Name = "Wall → wall",
+                When = GambitWhen.PlayerRaisesWall,
+                WhenSpell = SpellId.Wall,
+                ThenStrike = CombatStrike.Pillar,
+                ThenSpell = SpellId.Wall,
+                ThenRecipe = RecipeNames(SpellId.Wall),
+                Once = false
+            };
+        }
+
+        public static CombatGambit CloseSlam()
+        {
+            return new CombatGambit
+            {
+                Name = "If close → slam",
+                When = GambitWhen.InCloseRange,
+                ThenStrike = CombatStrike.Slam,
+                ThenSpell = SpellId.None,
+                ThenRecipe = System.Array.Empty<string>(),
+                Once = false
+            };
+        }
+
+        public static CombatGambit EmptyGambit()
+        {
+            return new CombatGambit
+            {
+                Name = "If / then",
+                When = GambitWhen.PlayerCasts,
+                ThenStrike = CombatStrike.None,
+                ThenSpell = SpellId.None,
+                ThenRecipe = System.Array.Empty<string>(),
                 Once = false
             };
         }
@@ -240,14 +301,25 @@ namespace RuneMagic
                 recipe = RecipeNames(gambit.ThenSpell);
             }
 
+            var spell = gambit.ThenSpell;
+            if (spell == SpellId.None)
+            {
+                spell = SpellFromRecipe(ParseRecipe(recipe));
+            }
+
+            if (strike == CombatStrike.None && spell != SpellId.None)
+            {
+                strike = StrikeOf(spell);
+            }
+
             return new CombatSlot
             {
-                Name = string.IsNullOrEmpty(gambit.Name) ? NameOf(gambit.ThenSpell, strike) : gambit.Name,
-                Range = DefaultRange(gambit.ThenSpell, strike),
+                Name = string.IsNullOrEmpty(gambit.Name) ? NameOf(spell, strike) : gambit.Name,
+                Range = DefaultRange(spell != SpellId.None ? spell : gambit.ThenSpell, strike),
                 Strike = strike,
-                Spell = gambit.ThenSpell,
+                Spell = spell,
                 Recipe = recipe ?? System.Array.Empty<string>(),
-                CastSeconds = DefaultCastSeconds(gambit.ThenSpell, strike)
+                CastSeconds = DefaultCastSeconds(spell != SpellId.None ? spell : gambit.ThenSpell, strike)
             };
         }
 
@@ -335,6 +407,85 @@ namespace RuneMagic
             return AuthoringUtil.ParseRunes(names);
         }
 
+        public static SpellId SpellFromRecipe(IReadOnlyList<RuneId> recipe)
+        {
+            if (recipe == null || recipe.Count == 0)
+            {
+                return SpellId.None;
+            }
+
+            var exact = ChainBook.CollectExact(Composition.FromSequence(recipe), SpellShape.None);
+            return exact.Count > 0 ? exact[0].Spell : SpellId.None;
+        }
+
+        public static SpellId SpellOf(CombatSlot slot)
+        {
+            if (slot == null)
+            {
+                return SpellId.None;
+            }
+
+            if (slot.Spell != SpellId.None)
+            {
+                return slot.Spell;
+            }
+
+            return SpellFromRecipe(ParseRecipe(slot.Recipe));
+        }
+
+        /// <summary>
+        /// A short wall in front of the caster, across the line to the mark.
+        /// </summary>
+        public static void WallSpan(Vector3 origin, Vector3 aim, Vector2 facing, out Vector3 from, out Vector3 to)
+        {
+            var toward = (Vector2)(aim - origin);
+            if (toward.sqrMagnitude < 0.01f)
+            {
+                toward = facing.sqrMagnitude > 0.01f ? facing.normalized : Vector2.right;
+            }
+            else
+            {
+                toward.Normalize();
+            }
+
+            var mid = origin + (Vector3)(toward * 1.7f);
+            var across = new Vector2(-toward.y, toward.x);
+            from = mid - (Vector3)(across * 1.55f);
+            to = mid + (Vector3)(across * 1.55f);
+        }
+
+        public static void ResolveCustom(CombatSlot slot)
+        {
+            if (slot == null || slot.Spell != SpellId.None)
+            {
+                return;
+            }
+
+            var spell = SpellFromRecipe(ParseRecipe(slot.Recipe));
+            if (spell == SpellId.None)
+            {
+                return;
+            }
+
+            if (slot.Strike == CombatStrike.None)
+            {
+                slot.Strike = StrikeOf(spell);
+            }
+
+            if (slot.CastSeconds <= 0f)
+            {
+                slot.CastSeconds = DefaultCastSeconds(spell, slot.Strike);
+            }
+
+            if (string.IsNullOrEmpty(slot.Name)
+                || slot.Name == "Custom"
+                || slot.Name == "Custom (write runes)"
+                || slot.Name == "None (write runes)")
+            {
+                slot.Name = NameOf(spell, slot.Strike);
+            }
+        }
+
         public static CombatStrike StrikeOf(SpellId spell)
         {
             if (spell == SpellId.None)
@@ -353,6 +504,11 @@ namespace RuneMagic
             if (SpellCodex.TryGet(spell, out var entry))
             {
                 if (entry.Shape == SpellShape.Pillar)
+                {
+                    return CombatStrike.Pillar;
+                }
+
+                if (WorldWork.NeedsSpan(spell) || WorldWork.IsPillar(spell))
                 {
                     return CombatStrike.Pillar;
                 }
@@ -416,7 +572,9 @@ namespace RuneMagic
                 slot.Strike = page.Strike != CombatStrike.None ? page.Strike : StrikeOf(slot.Spell);
             }
 
-            if (string.IsNullOrEmpty(slot.Name) || slot.Name == "None (write runes)")
+            if (string.IsNullOrEmpty(slot.Name)
+                || slot.Name == "None (write runes)"
+                || slot.Name == "Custom (write runes)")
             {
                 slot.Name = page.Name;
             }
@@ -446,6 +604,11 @@ namespace RuneMagic
                 {
                     FillFromSpell(slot);
                 }
+            }
+
+            for (var i = 0; i < slots.Length; i++)
+            {
+                ResolveCustom(slots[i]);
             }
         }
 
@@ -1036,6 +1199,28 @@ namespace RuneMagic
             if (pillar.Length != 3 || pillar[0] != RuneId.Fire || pillar[1] != RuneId.Salt || pillar[2] != RuneId.Earth)
             {
                 broken.Add("Picking Flame-pillar must write Fire · Salt · Earth");
+            }
+
+            if (SpellFromRecipe(new[] { RuneId.Earth, RuneId.Salt, RuneId.Earth }) != SpellId.Wall)
+            {
+                broken.Add("Writing Earth · Salt · Earth on a custom slot must be a wall");
+            }
+
+            if (!TryPage(SpellId.Wall, out var wallPage) || wallPage.Strike != CombatStrike.Pillar)
+            {
+                broken.Add("Wall is an enemy attack — a mid pillar they can write");
+            }
+
+            var custom = new CombatSlot
+            {
+                Name = "Custom",
+                Spell = SpellId.None,
+                Recipe = new[] { "Fire", "Mercury" }
+            };
+            ResolveCustom(custom);
+            if (custom.Strike != CombatStrike.Shot || custom.Name != "Fireball")
+            {
+                broken.Add("A custom Fire · Mercury slot must fill as a fireball shot without locking the dropdown");
             }
 
             if (ModeOf(CombatMode.Auto, CombatKind.Golem) != CombatMode.Guard

@@ -287,6 +287,25 @@ namespace RuneMagic
             return profile.Status(id);
         }
 
+        public static string AffinityWord(int value)
+        {
+            switch (MathfClamp(value, AffinityImmune, AffinityMax))
+            {
+                case 0:
+                    return "immune";
+                case 1:
+                    return "normal";
+                case 2:
+                    return "weak";
+                case 3:
+                    return "frail";
+                case 4:
+                    return "brittle";
+                default:
+                    return "ruin-weak";
+            }
+        }
+
         public static void Audit(List<string> broken)
         {
             if (broken == null)
@@ -332,6 +351,21 @@ namespace RuneMagic
                 || !Kills(SpellId.MetalRain, stone))
             {
                 broken.Add("A stone golem takes a fireball, a spark shot, and a bolt; strike, witchfire, lava, and metal drop it");
+            }
+
+            if (stone.Status(StatusId.Sleeping) <= 0
+                || stone.Status(StatusId.Frightened) <= 0
+                || stone.Status(StatusId.Raging) <= 0)
+            {
+                broken.Add("Earth bodies take Lull, Terror, and Rage — the Silent Court walks over a sleeping stone man");
+            }
+
+            if (AffinityWord(0) != "immune"
+                || AffinityWord(1) != "normal"
+                || AffinityWord(5) != "ruin-weak"
+                || StatusAffinity(stone, StatusId.Sleeping) <= 0)
+            {
+                broken.Add("Affinity words are immune / normal / ruin-weak, and earth still takes Lull");
             }
 
             if (AffinityOf(stone, StrikeKind.Witchfire) != AffinityNormal)
@@ -628,9 +662,9 @@ namespace RuneMagic
                 Set(m, StatusId.Soaked, 1);
                 Set(m, StatusId.Poisoned, 0);
                 Set(m, StatusId.Charmed, 2);
-                Set(m, StatusId.Raging, 0);
-                Set(m, StatusId.Sleeping, 0);
-                Set(m, StatusId.Frightened, 0);
+                Set(m, StatusId.Raging, 1);
+                Set(m, StatusId.Sleeping, 1);
+                Set(m, StatusId.Frightened, 1);
                 Set(m, StatusId.Confused, 1);
                 Set(m, StatusId.Stunned, 1);
             });

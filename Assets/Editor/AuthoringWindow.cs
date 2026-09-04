@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -51,7 +52,7 @@ namespace RuneMagic
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details or lvl 2, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
                 "6. Drag prefabs from Assets/Prefabs. Stones can live in any folder under Prefabs. Authoring Place and GameObject → Rune Magic find them by name. A Door has Closed and Open sprites; drag it onto a Gate or Electric Gate. Cover-Fire burns who stands on it and lights flammable fuel beside it; Aura-Fire is a kindled hall.\n" +
-                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies. Drag Golem or Warden, then Portrait / Idle Frames / Attack Frames and set Attack. See ENEMIES.md.\n" +
+                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies. Drag Golem or Warden, then Idle / Attack frames. Attacks are what they do; Gambits are if/then (wall → flame-pillar). Custom writes your own runes. Resistances are Inspector sliders; Save as prefab writes Assets/Prefabs/Enemies. No Animator on enemies — see ENEMIES.md.\n" +
                 "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
@@ -92,7 +93,7 @@ namespace RuneMagic
             DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
             DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant. Prefer Enemies/Golem or Warden.");
             EditorGUILayout.Space();
-            DrawPlace("Custom", "Blank EncounterLock with Hunt, a close slam, and editable resistances. Dress it in the Inspector.");
+            DrawPlace("Custom", "Blank Hunt + slam. Add Attacks (wall, custom runes) and Gambits (if they raise a wall → …) in the Inspector.");
             EditorGUILayout.LabelField("Pack enemies", EditorStyles.boldLabel);
             for (var i = 0; i < PackEnemies.All.Length; i++)
             {
@@ -115,6 +116,8 @@ namespace RuneMagic
 
                 EditorGUILayout.EndHorizontal();
             }
+
+            DrawSavedEnemies();
 
             EditorGUILayout.Space();
             DrawPlace("Torch", "TorchFixture — keys, lit frames");
@@ -163,6 +166,70 @@ namespace RuneMagic
             }
 
             EditorGUILayout.EndScrollView();
+        }
+
+        void DrawSavedEnemies()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Saved enemies", EditorStyles.boldLabel);
+            var saved = SavedEnemyNames();
+            if (saved.Length == 0)
+            {
+                EditorGUILayout.LabelField(
+                    "None yet. Inspector → Save as prefab writes Assets/Prefabs/Enemies.",
+                    EditorStyles.miniLabel);
+                return;
+            }
+
+            for (var i = 0; i < saved.Length; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(saved[i], GUILayout.Width(120));
+                EditorGUILayout.LabelField("Saved from Inspector", EditorStyles.miniLabel);
+                if (GUILayout.Button("Place", GUILayout.Width(56)))
+                {
+                    PlacePrefab(saved[i]);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        static string[] SavedEnemyNames()
+        {
+            var pack = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase) { "Custom" };
+            for (var i = 0; i < PackEnemies.All.Length; i++)
+            {
+                pack.Add(PackEnemies.All[i].Name);
+            }
+
+            var names = new List<string>();
+            if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Enemies"))
+            {
+                return System.Array.Empty<string>();
+            }
+
+            var guids = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Enemies" });
+            for (var i = 0; i < (guids != null ? guids.Length : 0); i++)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                var name = Path.GetFileNameWithoutExtension(path);
+                if (string.IsNullOrEmpty(name) || pack.Contains(name))
+                {
+                    continue;
+                }
+
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab == null || prefab.GetComponent<EncounterLock>() == null)
+                {
+                    continue;
+                }
+
+                names.Add(name);
+            }
+
+            names.Sort(System.StringComparer.OrdinalIgnoreCase);
+            return names.ToArray();
         }
 
         public readonly struct StoneSpec

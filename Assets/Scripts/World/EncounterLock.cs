@@ -178,6 +178,180 @@ namespace RuneMagic
                 statusAffinities);
         }
 
+        public string AuthoredName => authoredName;
+        public string AuthoredId => authoredId;
+        public bool HasDefenseOverride => customDefense;
+        public bool HasPushOverride => customPush;
+
+        public CreatureNature PreviewNature()
+        {
+            return CombatBook.NatureOf(authoredNature, authoredId, authoredEnsouled);
+        }
+
+        public AffinityProfile PreviewProfile()
+        {
+            return BuildProfile(PreviewNature());
+        }
+
+        /// <summary>
+        /// Fills empty strike / status rows from Nature so the Inspector
+        /// can tweak a single column without wiping the rest.
+        /// </summary>
+        public void EnsureAffinityRows()
+        {
+            var nature = PreviewNature();
+            var row = AffinityProfile.Of(nature);
+            strikeAffinities = MergeStrikes(strikeAffinities, row);
+            statusAffinities = MergeStatuses(statusAffinities, row);
+            if (!customDefense)
+            {
+                authoredDefense = row.Defense;
+            }
+
+            if (!customPush)
+            {
+                authoredPushResist = row.PushResist;
+            }
+        }
+
+        public void SetDefense(int defense)
+        {
+            customDefense = true;
+            authoredDefense = Mathf.Clamp(defense, StrikeLaw.DefenseMin, StrikeLaw.DefenseMax);
+        }
+
+        public void SetPushResist(int push)
+        {
+            customPush = true;
+            authoredPushResist = Mathf.Clamp(push, 0, 6);
+        }
+
+        public void ClearDefenseOverride()
+        {
+            customDefense = false;
+            authoredDefense = AffinityProfile.Of(PreviewNature()).Defense;
+        }
+
+        public void ClearPushOverride()
+        {
+            customPush = false;
+            authoredPushResist = AffinityProfile.Of(PreviewNature()).PushResist;
+        }
+
+        public void SetStrikeAffinity(StrikeKind kind, int affinity)
+        {
+            if (kind == StrikeKind.None)
+            {
+                return;
+            }
+
+            EnsureAffinityRows();
+            affinity = Mathf.Clamp(affinity, StrikeLaw.AffinityImmune, StrikeLaw.AffinityMax);
+            for (var i = 0; i < strikeAffinities.Length; i++)
+            {
+                if (strikeAffinities[i] != null && strikeAffinities[i].Kind == kind)
+                {
+                    strikeAffinities[i].Affinity = affinity;
+                    return;
+                }
+            }
+        }
+
+        public void SetStatusAffinity(StatusId id, int affinity)
+        {
+            if (id == StatusId.None)
+            {
+                return;
+            }
+
+            EnsureAffinityRows();
+            affinity = Mathf.Clamp(affinity, StrikeLaw.AffinityImmune, StrikeLaw.AffinityMax);
+            for (var i = 0; i < statusAffinities.Length; i++)
+            {
+                if (statusAffinities[i] != null && statusAffinities[i].Status == id)
+                {
+                    statusAffinities[i].Affinity = affinity;
+                    return;
+                }
+            }
+        }
+
+        public void ClearAffinityOverrides()
+        {
+            customDefense = false;
+            customPush = false;
+            strikeAffinities = System.Array.Empty<StrikeAffinity>();
+            statusAffinities = System.Array.Empty<StatusAffinity>();
+        }
+
+        static StrikeAffinity[] MergeStrikes(StrikeAffinity[] authored, AffinityProfile row)
+        {
+            var next = new StrikeAffinity[CombatBook.TunableStrikes.Length];
+            for (var i = 0; i < CombatBook.TunableStrikes.Length; i++)
+            {
+                var kind = CombatBook.TunableStrikes[i];
+                next[i] = new StrikeAffinity
+                {
+                    Kind = kind,
+                    Affinity = FindStrike(authored, kind, row.Strike(kind))
+                };
+            }
+
+            return next;
+        }
+
+        static StatusAffinity[] MergeStatuses(StatusAffinity[] authored, AffinityProfile row)
+        {
+            var next = new StatusAffinity[CombatBook.TunableStatuses.Length];
+            for (var i = 0; i < CombatBook.TunableStatuses.Length; i++)
+            {
+                var id = CombatBook.TunableStatuses[i];
+                next[i] = new StatusAffinity
+                {
+                    Status = id,
+                    Affinity = FindStatus(authored, id, row.Status(id))
+                };
+            }
+
+            return next;
+        }
+
+        static int FindStrike(StrikeAffinity[] authored, StrikeKind kind, int fallback)
+        {
+            if (authored == null)
+            {
+                return fallback;
+            }
+
+            for (var i = 0; i < authored.Length; i++)
+            {
+                if (authored[i] != null && authored[i].Kind == kind)
+                {
+                    return authored[i].Affinity;
+                }
+            }
+
+            return fallback;
+        }
+
+        static int FindStatus(StatusAffinity[] authored, StatusId id, int fallback)
+        {
+            if (authored == null)
+            {
+                return fallback;
+            }
+
+            for (var i = 0; i < authored.Length; i++)
+            {
+                if (authored[i] != null && authored[i].Status == id)
+                {
+                    return authored[i].Affinity;
+                }
+            }
+
+            return fallback;
+        }
+
         public void AuthorCustom()
         {
             authoredName = "Custom";

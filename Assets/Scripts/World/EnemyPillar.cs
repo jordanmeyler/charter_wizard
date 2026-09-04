@@ -25,6 +25,9 @@ namespace RuneMagic
 
         RuneId[] _recipe = System.Array.Empty<RuneId>();
 
+        Vector3 _spanFrom;
+        Vector3 _spanTo;
+
         public static void Cast(
             WorldGrid grid,
             Vector3 origin,
@@ -34,6 +37,19 @@ namespace RuneMagic
             ShotAllegiance allegiance,
             RuneId[] recipe = null)
         {
+            Cast(grid, origin, target, spell, source, allegiance, recipe, Vector2.zero);
+        }
+
+        public static void Cast(
+            WorldGrid grid,
+            Vector3 origin,
+            Vector3 target,
+            SpellId spell,
+            CombatActor source,
+            ShotAllegiance allegiance,
+            RuneId[] recipe,
+            Vector2 facing)
+        {
             if (spell == SpellId.None)
             {
                 spell = SpellId.FlamePillar;
@@ -41,7 +57,7 @@ namespace RuneMagic
 
             var host = new GameObject("EnemyPillar");
             var strike = host.AddComponent<EnemyPillar>();
-            strike.Begin(grid, origin, target, spell, source, allegiance, recipe);
+            strike.Begin(grid, origin, target, spell, source, allegiance, recipe, facing);
         }
 
         void Begin(
@@ -51,7 +67,8 @@ namespace RuneMagic
             SpellId spell,
             CombatActor source,
             ShotAllegiance allegiance,
-            RuneId[] recipe)
+            RuneId[] recipe,
+            Vector2 facing)
         {
             _grid = grid;
             _origin = origin;
@@ -61,11 +78,28 @@ namespace RuneMagic
             _allegiance = allegiance;
             _recipe = recipe ?? System.Array.Empty<RuneId>();
             _left = TelegraphSeconds;
+            if (WorldWork.NeedsSpan(spell))
+            {
+                CombatBook.WallSpan(origin, target, facing, out _spanFrom, out _spanTo);
+                _target = (_spanFrom + _spanTo) * 0.5f;
+            }
+            else
+            {
+                _spanFrom = target;
+                _spanTo = target;
+            }
+
             var element = CombatBook.ElementOf(spell, _recipe);
-            _tile = grid != null ? grid.TileAtWorld(target) : null;
+            _tile = grid != null ? grid.TileAtWorld(_target) : null;
             if (_tile != null)
             {
                 _target = _tile.transform.position;
+                if (!WorldWork.NeedsSpan(spell))
+                {
+                    _spanFrom = _target;
+                    _spanTo = _target;
+                }
+
                 _tile.BeginTelegraph(WorldWork.MaterialFor(element, spell));
             }
 
@@ -119,11 +153,12 @@ namespace RuneMagic
                 _linger = null;
             }
 
-            SpellFx.Play(_origin, _target, RuneId.Fire, SpellShape.Pillar, string.Empty, null, 1f, _spell);
+            var element = CombatBook.ElementOf(_spell, _recipe);
+            SpellFx.Play(_origin, _target, element, SpellShape.Pillar, string.Empty, null, 1f, _spell);
             var adeptHeld = StrikeOccupants();
             if (!adeptHeld && _grid != null)
             {
-                WorldWork.Apply(_grid, _spell, RuneId.Fire, _origin, _target, _target);
+                WorldWork.Apply(_grid, _spell, element, _origin, _spanFrom, _spanTo, SpellShape.Pillar);
             }
 
             Destroy(gameObject);
@@ -131,6 +166,11 @@ namespace RuneMagic
 
         bool StrikeOccupants()
         {
+            if (WorldWork.NeedsSpan(_spell) || StrikeLaw.Of(_spell).Power <= 0)
+            {
+                return false;
+            }
+
             var director = FindFirstObjectByType<SanctumDirector>();
             var tile = WorldWork.CoordOf(_target);
             var adeptHeld = false;
