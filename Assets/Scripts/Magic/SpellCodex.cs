@@ -1402,6 +1402,62 @@ namespace RuneMagic
             }
 
             FormLaw.Audit(broken);
+            ValidateGrimoireQuery(broken);
+        }
+
+        static void ValidateGrimoireQuery(List<string> broken)
+        {
+            if (!GrimoireQuery.TextMatches("fire", "Fireball")
+                || GrimoireQuery.TextMatches("zzz", "Fireball")
+                || !GrimoireQuery.TextMatches("  ", "anything"))
+            {
+                broken.Add("Grimoire search must match names without caring about case");
+            }
+
+            CodexEntry fireball = default;
+            var found = false;
+            foreach (var entry in All)
+            {
+                if (entry.Spell == SpellId.Fireball)
+                {
+                    fireball = entry;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found
+                || !GrimoireQuery.MatchesSpell(fireball, "ball", RuneId.None)
+                || !GrimoireQuery.MatchesSpell(fireball, "", RuneId.Fire)
+                || GrimoireQuery.MatchesSpell(fireball, "", RuneId.Water)
+                || !GrimoireQuery.MatchesSpell(fireball, "mercury", RuneId.Fire))
+            {
+                broken.Add("Grimoire search and rune filter must narrow the written book");
+            }
+
+            if (!GrimoireQuery.MatchesRune(RuneId.Spark, "", RuneId.Fire)
+                || !GrimoireQuery.MatchesRune(RuneId.Spark, "spark", RuneId.None)
+                || GrimoireQuery.MatchesRune(RuneId.Spark, "", RuneId.Water)
+                || GrimoireQuery.MatchesRune(RuneId.Water, "spark", RuneId.None))
+            {
+                broken.Add("A rune filter must keep joins born from that mark");
+            }
+
+            var stone = MaterialCatalog.Of(MaterialId.Stone);
+            if (!GrimoireQuery.MatchesMaterial(stone, "stone", RuneId.None)
+                || !GrimoireQuery.MatchesMaterial(stone, "", RuneId.Earth)
+                || GrimoireQuery.MatchesMaterial(stone, "", RuneId.Fire))
+            {
+                broken.Add("The Grimoire world page must filter materials by name and rune");
+            }
+
+            var kept = new KeptWorking(CastingStance.Charter, new[] { RuneId.Fire, RuneId.Mercury }, SpellId.Fireball, "Hunger sent");
+            if (!GrimoireQuery.MatchesWorking(kept, "hunger", RuneId.None)
+                || !GrimoireQuery.MatchesWorking(kept, "", RuneId.Fire)
+                || GrimoireQuery.MatchesWorking(kept, "", RuneId.Water))
+            {
+                broken.Add("Kept workings must follow the same Grimoire search and rune filter");
+            }
         }
 
         public static bool TryGet(int number, out CodexEntry entry)
