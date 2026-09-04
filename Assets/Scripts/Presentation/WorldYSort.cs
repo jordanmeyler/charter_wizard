@@ -31,11 +31,10 @@ namespace RuneMagic
                 return null;
             }
 
-            var sort = AuthoringUtil.GetOrAdd<WorldYSort>(host);
-            if (sort.bias != bias)
+            var sort = AuthoringUtil.GetOrAdd<WorldYSort>(host, out var created);
+            if (created)
             {
                 sort.bias = bias;
-                sort._lastOrder = int.MinValue;
             }
 
             sort.Refresh();

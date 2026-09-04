@@ -204,8 +204,7 @@ namespace RuneMagic
 
         void Preview()
         {
-            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            renderer.sortingOrder = 8;
+            var renderer = AuthoringUtil.KeepRenderer(gameObject, 8);
             if (portrait != null)
             {
                 renderer.sprite = portrait;
@@ -216,6 +215,12 @@ namespace RuneMagic
             if (!string.IsNullOrEmpty(spriteId))
             {
                 renderer.sprite = SpriteFactory.Named(spriteId);
+                renderer.enabled = true;
+                return;
+            }
+
+            if (renderer.sprite != null)
+            {
                 renderer.enabled = true;
                 return;
             }

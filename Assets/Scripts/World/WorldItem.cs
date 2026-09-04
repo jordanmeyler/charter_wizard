@@ -116,9 +116,12 @@ namespace RuneMagic
                 FixtureGlow.Attach(transform, new Color(1f, 0.5f, 0.12f, 0.65f), 1.5f, 0.14f);
             }
 
-            _hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
+            _hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject, out var addedHit);
             _hit.isTrigger = true;
-            _hit.radius = 0.4f;
+            if (addedHit)
+            {
+                _hit.radius = 0.4f;
+            }
             WorldLabel.Attach(transform, _item != null ? _item.name : "Item", new Vector3(0f, 0.7f, 0f),
                 new Color(1f, 0.72f, 0.3f));
             Lookables.Register(this);
@@ -383,11 +386,15 @@ namespace RuneMagic
 
         void PreviewLook()
         {
-            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            renderer.sortingOrder = 5;
+            var renderer = AuthoringUtil.KeepRenderer(gameObject, 5);
             if (portrait != null)
             {
                 renderer.sprite = portrait;
+                return;
+            }
+
+            if (renderer.sprite != null)
+            {
                 return;
             }
 

@@ -40,7 +40,12 @@ namespace RuneMagic
 
         public IInteractable NearbyInteract { get; private set; }
         public WorldTile Underfoot { get; private set; }
-        public string LastLog { get; private set; } = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
+        const string OpeningLog = "WASD to walk. Space opens the Charter. Charter Cast, Store, or Free Cast.";
+        const int MaxLogLines = 32;
+        readonly List<string> _logLines = new() { OpeningLog };
+
+        public string LastLog { get; private set; } = OpeningLog;
+        public IReadOnlyList<string> LogLines => _logLines;
         public DeathCause LastDeath { get; private set; }
         public float LastDeathAt { get; private set; }
         public bool DeathNoticeUp =>
@@ -330,6 +335,16 @@ namespace RuneMagic
                 return;
             }
 
+            if (GameHud.EditingBookSearch)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    GameHud.CancelBookSearch();
+                }
+
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 ToggleSight();
@@ -535,6 +550,39 @@ namespace RuneMagic
             }
         }
 
+        public void ToggleCharter()
+        {
+            if (Mode == PlayMode.Aiming)
+            {
+                CancelAim();
+                return;
+            }
+
+            if (Mode == PlayMode.Charter)
+            {
+                CloseCharter();
+                return;
+            }
+
+            if (Mode == PlayMode.Grimoire)
+            {
+                CloseGrimoire();
+            }
+            else if (Mode == PlayMode.Inventory)
+            {
+                CloseInventory();
+            }
+            else if (Mode == PlayMode.Paused)
+            {
+                TogglePause();
+            }
+
+            if (Mode == PlayMode.Exploring)
+            {
+                OpenCharter();
+            }
+        }
+
         public void OpenCharter()
         {
             EnterMode(PlayMode.Charter);
@@ -621,8 +669,8 @@ namespace RuneMagic
 
             EnterMode(PlayMode.Grimoire);
             Log(GlyphView.Speak(
-                "The Grimoire. Every written chain and join. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
-                "Your book. Workings you have kept. Click a page to send it — the marks must be in the weave."));
+                "The Grimoire. Search or filter a rune. Click a name to string it. The eleven roots are always ready. Kept workings are marked.",
+                "The Grimoire. Search your kept pages, or filter by a rune. Click a page to send it if those marks are around."));
         }
 
         public void CloseGrimoire()
@@ -2850,7 +2898,23 @@ namespace RuneMagic
 
         public void Log(string message)
         {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+
             LastLog = message;
+            if (_logLines.Count > 0
+                && string.Equals(_logLines[_logLines.Count - 1], message, System.StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _logLines.Add(message);
+            while (_logLines.Count > MaxLogLines)
+            {
+                _logLines.RemoveAt(0);
+            }
         }
 
         public string CallWorking(Composition composition) => Grimoire.Names.Call(composition);

@@ -9,6 +9,7 @@ namespace RuneMagic
     {
         SanctumDirector _director;
         Camera _camera;
+        Color _authoredWash = new(0.04f, 0.045f, 0.07f);
         Color _background = new(0.04f, 0.045f, 0.07f);
         string _roomId;
 
@@ -16,6 +17,11 @@ namespace RuneMagic
         {
             _director = director;
             _camera = Camera.main;
+            if (_camera != null)
+            {
+                _authoredWash = _camera.backgroundColor;
+                _background = _authoredWash;
+            }
         }
 
         void LateUpdate()
@@ -30,7 +36,7 @@ namespace RuneMagic
             if (id != _roomId)
             {
                 _roomId = id;
-                _background = TintFor(id);
+                _background = TintFor(id, _authoredWash);
             }
 
             if (_camera == null)
@@ -52,6 +58,11 @@ namespace RuneMagic
         }
 
         public static Color TintFor(string roomId)
+        {
+            return TintFor(roomId, new Color(0.04f, 0.045f, 0.07f));
+        }
+
+        public static Color TintFor(string roomId, Color fallback)
         {
             switch (roomId)
             {
@@ -84,7 +95,7 @@ namespace RuneMagic
                 case "door-ii":
                     return new Color(0.035f, 0.03f, 0.05f);
                 default:
-                    return new Color(0.04f, 0.045f, 0.07f);
+                    return fallback;
             }
         }
     }
