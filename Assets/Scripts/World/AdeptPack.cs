@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace RuneMagic
@@ -88,6 +89,11 @@ namespace RuneMagic
 
             for (var i = 0; i < ids.Count; i++)
             {
+                if (string.IsNullOrWhiteSpace(ids[i]))
+                {
+                    continue;
+                }
+
                 if (!Has(ids[i]))
                 {
                     return false;
@@ -202,24 +208,91 @@ namespace RuneMagic
             {
                 broken.Add("An empty Description must use the catalog look");
             }
+
+            var pack = new AdeptPack();
+            pack.Take(fire);
+            if (!pack.HasAll(new[] { "fire-stone", "", "  " }))
+            {
+                broken.Add("Empty required ids must not keep a lock shut");
+            }
+
+            if (!pack.Has("Fire Stone") || !pack.Has("stone-fire"))
+            {
+                broken.Add("A fire stone in the pack must seat a lock that asks for Fire Stone or stone-fire");
+            }
         }
 
         int IndexOf(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return -1;
             }
 
             for (var i = 0; i < _held.Count; i++)
             {
-                if (_held[i] != null && _held[i].id == id)
+                if (Fulfills(_held[i], id))
                 {
                     return i;
                 }
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Pack rows and gate Requires lists use the same catalog id, but
+        /// an authored stone may only carry a display name or sprite id.
+        /// </summary>
+        public static bool Fulfills(CatalogItem item, string required)
+        {
+            if (item == null || string.IsNullOrWhiteSpace(required))
+            {
+                return false;
+            }
+
+            return SameStone(item.id, required)
+                || SameStone(item.name, required)
+                || SameStone(item.sprite, required);
+        }
+
+        static bool SameStone(string held, string required)
+        {
+            if (string.IsNullOrEmpty(held))
+            {
+                return false;
+            }
+
+            if (held == required)
+            {
+                return true;
+            }
+
+            return Fold(held) == Fold(required);
+        }
+
+        static string Fold(string value)
+        {
+            var buffer = new char[value.Length];
+            var n = 0;
+            for (var i = 0; i < value.Length; i++)
+            {
+                var c = value[i];
+                if (c == '-' || c == '_' || char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                buffer[n++] = char.ToLowerInvariant(c);
+            }
+
+            var folded = new string(buffer, 0, n);
+            if (folded.StartsWith("stone", StringComparison.Ordinal) && folded.Length > 5)
+            {
+                return folded.Substring(5) + "stone";
+            }
+
+            return folded;
         }
     }
 }

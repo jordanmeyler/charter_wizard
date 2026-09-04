@@ -30,7 +30,8 @@ namespace RuneMagic
         Confused,
         Poisoned,
         Zombified,
-        Flying
+        Flying,
+        Floating
     }
 
     public enum StatusKind
@@ -97,17 +98,18 @@ namespace RuneMagic
         public bool RecastDismisses =>
             IsStance || IsBuff || IsMindAilment(Id);
         /// <summary>
-        /// Focus holds mind work — ailments and wards. Wards use
-        /// Sulphur; they are mind spells. Another focus sentence
-        /// that reuses a mark other than Sulphur lets the held
-        /// working go. Recasting the same sentence also lets it go.
-        /// A fireball or a wall does not.
+        /// Focus holds worn work — ailments, wards, forms, and
+        /// buffs (flight, float, veil). Wards use Sulphur; they
+        /// are mind spells. Flight writes logos. Another focus
+        /// sentence that reuses a mark other than Sulphur lets
+        /// the held working go. Recasting the same sentence also
+        /// lets it go. A fireball or a wall does not.
         /// Burning and poison are meters: they run while the body
         /// still stands in that fire or foul, then empty is ash or death.
         /// Leave the fire and the burn lifts. Leave the poison and
         /// the level stays until Light cleanses it.
         /// </summary>
-        public bool NeedsConcentration => IsStance || IsMindAilment(Id);
+        public bool NeedsConcentration => IsStance || IsBuff || IsMindAilment(Id);
         public bool NeedsFocus => NeedsConcentration;
         public bool IsMeter => VitalLaw.IsMeter(Id);
         public StatusClock Clock => VitalLaw.ClockOf(Id);
@@ -115,22 +117,22 @@ namespace RuneMagic
         {
             get
             {
-                if (IsStance)
+                switch (Id)
                 {
-                    switch (Id)
-                    {
-                        case StatusId.Stoneskin:
-                        case StatusId.StoneForm: return RuneId.Earth;
-                        case StatusId.Watershield:
-                        case StatusId.TideForm: return RuneId.Water;
-                        case StatusId.Flameward:
-                        case StatusId.FlameForm: return RuneId.Fire;
-                        case StatusId.Windward:
-                        case StatusId.GaleForm:
-                        case StatusId.CloudForm: return RuneId.Air;
-                        case StatusId.Plantward:
-                        case StatusId.GroveForm: return RuneId.Plant;
-                    }
+                    case StatusId.Stoneskin:
+                    case StatusId.StoneForm: return RuneId.Earth;
+                    case StatusId.Watershield:
+                    case StatusId.TideForm: return RuneId.Water;
+                    case StatusId.Flameward:
+                    case StatusId.FlameForm: return RuneId.Fire;
+                    case StatusId.Windward:
+                    case StatusId.GaleForm:
+                    case StatusId.CloudForm:
+                    case StatusId.Flying:
+                    case StatusId.Floating: return RuneId.Air;
+                    case StatusId.Plantward:
+                    case StatusId.GroveForm: return RuneId.Plant;
+                    case StatusId.Veiled: return RuneId.Umbra;
                 }
 
                 return IsMindAilment(Id) ? RuneId.Sulphur : RuneId.None;
@@ -192,7 +194,9 @@ namespace RuneMagic
                 case StatusId.CloudForm:
                     return new StatusSpec(id, "cloud-form", StatusKind.Form, new Color(0.78f, 0.86f, 0.95f), Essence.Air, false, false, false);
                 case StatusId.Flying:
-                    return new StatusSpec(id, "flight", StatusKind.Buff, new Color(0.75f, 0.92f, 1f), Essence.None, false, false, false);
+                    return new StatusSpec(id, "flying", StatusKind.Buff, new Color(0.75f, 0.92f, 1f), Essence.None, false, false, false);
+                case StatusId.Floating:
+                    return new StatusSpec(id, "floating", StatusKind.Buff, new Color(0.7f, 0.86f, 0.98f), Essence.None, false, false, false);
                 default:
                     return new StatusSpec(StatusId.None, "—", StatusKind.Debuff, Color.white, Essence.None, false, false, false);
             }

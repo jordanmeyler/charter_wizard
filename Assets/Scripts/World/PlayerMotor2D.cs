@@ -47,8 +47,7 @@ namespace RuneMagic
             }
 
             // Hop is a scripted leap. Flight is walkable airborne and
-            // must not go through IsHopping, or WASD freezes for the
-            // whole Flight clock.
+            // must not go through IsHopping, or WASD freezes while you fly.
             if (_adept != null && _adept.IsHopping)
             {
                 Halt();
