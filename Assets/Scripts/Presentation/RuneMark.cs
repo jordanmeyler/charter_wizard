@@ -456,6 +456,17 @@ namespace RuneMagic
                     canvas.ThickLine(16, 36, 32, 36, ink);
                     canvas.FillCircle(18, 14, 2, ink);
                     break;
+                case RuneId.Explosion:
+                    canvas.FillCircle(c, c, 4, ink);
+                    canvas.ThickLine(c, 8, c, 18, ink);
+                    canvas.ThickLine(c, 30, c, 40, ink);
+                    canvas.ThickLine(8, c, 18, c, ink);
+                    canvas.ThickLine(30, c, 40, c, ink);
+                    canvas.ThickLine(14, 14, 20, 20, ink);
+                    canvas.ThickLine(28, 28, 34, 34, ink);
+                    canvas.ThickLine(34, 14, 28, 20, ink);
+                    canvas.ThickLine(20, 28, 14, 34, ink);
+                    break;
                 case RuneId.Miasma:
                     canvas.Circle(16, 18, 7, ink);
                     canvas.Circle(c, 14, 8, ink);

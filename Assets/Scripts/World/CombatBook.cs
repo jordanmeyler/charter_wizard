@@ -148,6 +148,9 @@ namespace RuneMagic
             new("Slam", SpellId.None, CombatRange.Close, CombatStrike.Slam, 0.85f),
             new("Fireball", SpellId.Fireball, CombatRange.Mid, CombatStrike.Shot, 2f),
             new("Wood arrow", SpellId.WoodArrow, CombatRange.Long, CombatStrike.Shot, 1.15f),
+            new("Fire arrow", SpellId.FireArrow, CombatRange.Long, CombatStrike.Shot, 1.2f),
+            new("Ice arrow", SpellId.IceArrow, CombatRange.Long, CombatStrike.Shot, 1.2f),
+            new("Poison arrow", SpellId.PoisonArrow, CombatRange.Long, CombatStrike.Shot, 1.25f),
             new("Hurled stone", SpellId.HurledStone, CombatRange.Mid, CombatStrike.Shot, 1.3f),
             new("Ice-spear", SpellId.IceSpear, CombatRange.Long, CombatStrike.Shot, 1.6f),
             new("Spark shot", SpellId.SparkShot, CombatRange.Mid, CombatStrike.Shot, 1.5f),
@@ -157,6 +160,8 @@ namespace RuneMagic
             new("Vine", SpellId.Vine, CombatRange.Mid, CombatStrike.Shot, 1.5f),
             new("Gust", SpellId.Gust, CombatRange.Mid, CombatStrike.Shot, 1.2f),
             new("Poison", SpellId.Poison, CombatRange.Mid, CombatStrike.Shot, 1.6f),
+            new("Explosion", SpellId.Explosion, CombatRange.Mid, CombatStrike.Shot, 1.8f),
+            new("Atomic", SpellId.Atomic, CombatRange.Long, CombatStrike.Shot, 2.4f),
             new("Witchfire", SpellId.Witchfire, CombatRange.Long, CombatStrike.Shot, 2.2f),
             new("Flame-pillar", SpellId.FlamePillar, CombatRange.Mid, CombatStrike.Pillar, 2f),
             new("Fire-pillar", SpellId.FirePillar, CombatRange.Mid, CombatStrike.Pillar, 1.8f),
@@ -474,7 +479,7 @@ namespace RuneMagic
 
         public static ProjectileKind ShotKind(SpellId spell, IReadOnlyList<RuneId> recipe)
         {
-            if (spell == SpellId.WoodArrow || spell == SpellId.Vine || WritesWood(recipe))
+            if (ArrowLaw.IsArrow(spell) || spell == SpellId.Vine || WritesWood(recipe))
             {
                 return ProjectileKind.Wood;
             }
@@ -715,7 +720,7 @@ namespace RuneMagic
                 if (slot.Strike == CombatStrike.Shot || slot.Strike == CombatStrike.Pillar)
                 {
                     ranged = true;
-                    if (slot.Spell == SpellId.WoodArrow || WritesWood(ParseRecipe(slot.Recipe)))
+                    if (ArrowLaw.IsArrow(slot.Spell) || WritesWood(ParseRecipe(slot.Recipe)))
                     {
                         wood = true;
                     }

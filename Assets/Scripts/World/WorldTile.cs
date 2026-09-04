@@ -2054,9 +2054,14 @@ namespace RuneMagic
             return true;
         }
 
-        public bool Annihilate()
+        public bool Annihilate(bool breakWards = false)
         {
-            if (MatterLaw.ResistsMagic(Material) || Material == MaterialId.Void)
+            if (Material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            if (!breakWards && MatterLaw.ResistsMagic(Material))
             {
                 return false;
             }

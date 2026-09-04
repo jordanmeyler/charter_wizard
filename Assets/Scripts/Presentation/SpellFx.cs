@@ -178,6 +178,11 @@ namespace RuneMagic
         Sprite BodySprite()
         {
             var color = _look.Core;
+            if (ArrowLaw.IsArrow(_spell))
+            {
+                return SpriteFactory.WoodArrowShot();
+            }
+
             switch (_look.Family)
             {
                 case ElementFamily.Fire:

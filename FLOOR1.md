@@ -42,7 +42,7 @@ Two new ordinary sentences were written so the floor has a clean water-send and 
 | 57 | **Water ward** | Water · Salt · Sulphur | Water breaks. You walk on yield. |
 | 58 | **Flame ward** | Fire · Salt · Sulphur | Fire breaks. Wear it against the wizard and a burning floor. |
 | 59 | **Wind ward** | Air · Salt · Sulphur | Air breaks. Fog and foul breath leave as you walk. |
-| 60 | **Lava-pillar** | Fire · Earth · Salt | Hungry earth stood. Water cools it to rock. |
+| 60 | **Lava-pillar** | Fire · Earth · Salt | Hungry earth stood. Water cools it to obsidian. |
 | 61 | **Shatter** | Earth · Salt · Earth · Air · Mercury | A stood wall given breath and sent. Matter comes apart. |
 | 62 | **Confuse** | Air · Sulphur · Mercury | Breath turned by Sulphur, into a mind. They lose the thread. |
 | 63 | **Ice-wall** | Water · Earth · Salt · Water · Earth | Ice given a body and asked to stand as more ice. `Ice · Salt · Ice`. |

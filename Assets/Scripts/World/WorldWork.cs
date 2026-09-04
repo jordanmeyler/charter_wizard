@@ -113,6 +113,9 @@ namespace RuneMagic
                 case SpellId.Blackout:
                 case SpellId.HurledStone:
                 case SpellId.WoodArrow:
+                case SpellId.FireArrow:
+                case SpellId.IceArrow:
+                case SpellId.PoisonArrow:
                 case SpellId.DirtToss:
                 case SpellId.Gust:
                 case SpellId.Push:
@@ -124,6 +127,8 @@ namespace RuneMagic
                 case SpellId.Spore:
                 case SpellId.Hemlock:
                 case SpellId.Plasma:
+                case SpellId.Explosion:
+                case SpellId.Atomic:
                 case SpellId.Vine:
                 case SpellId.Glacier:
                     return true;
@@ -197,6 +202,7 @@ namespace RuneMagic
                 case SpellId.IcePillar:
                 case SpellId.IceWall:
                 case SpellId.IceSpear:
+                case SpellId.IceArrow:
                 case SpellId.Snowfall:
                 case SpellId.Blizzard:
                 case SpellId.Glacier:
@@ -253,7 +259,7 @@ namespace RuneMagic
         /// The grave of a plant, sent as a liquid. Not a cloud.
         /// </summary>
         public static bool IsPoisonLiquid(SpellId spell) =>
-            spell == SpellId.Poison || spell == SpellId.Hemlock;
+            spell == SpellId.Poison || spell == SpellId.Hemlock || spell == SpellId.PoisonArrow;
 
         public static bool IsPoisonBreath(SpellId spell) =>
             spell == SpellId.Spore;
@@ -325,6 +331,47 @@ namespace RuneMagic
 
         public const int OilPuddleRadius = 1;
         public const int OilSlickRadius = 4;
+        public const int ExplosionRadius = 2;
+        public const int AtomicRadius = 3;
+
+        public static bool IsExplosionWork(SpellId spell) =>
+            spell == SpellId.Explosion;
+
+        public static bool IsBlastWork(SpellId spell) =>
+            spell == SpellId.Explosion || spell == SpellId.Atomic;
+
+        public static int BlastRadius(SpellId spell)
+        {
+            if (spell == SpellId.Atomic)
+            {
+                return AtomicRadius;
+            }
+
+            return IsBlastWork(spell) ? ExplosionRadius : 0;
+        }
+
+        /// <summary>
+        /// A blast takes stood dirt, stone, ice, plant, flame, oil,
+        /// and yield. Metal, lava, glacier, glass, and wards will not.
+        /// </summary>
+        public static bool IsBlastable(MaterialId material)
+        {
+            if (material == MaterialId.None
+                || material == MaterialId.Void
+                || material == MaterialId.Metal
+                || material == MaterialId.Lava
+                || material == MaterialId.Glacier
+                || material == MaterialId.Glass
+                || MatterLaw.ResistsMagic(material))
+            {
+                return false;
+            }
+
+            return IsSolidMatter(material)
+                || IsFlameBody(material)
+                || IsFuelBody(material)
+                || IsYieldBody(material);
+        }
 
         public static bool IsOilWork(SpellId spell)
         {
@@ -428,7 +475,7 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Stood stone. A wall, a stone column, cooled lava.
+        /// Stood stone. A wall, a stone column.
         /// Hurled stone, Shatter, or Melt. Water is not enough.
         /// </summary>
         public static bool IsMasonry(MaterialId material)
@@ -523,9 +570,10 @@ namespace RuneMagic
         /// matter-breaking work of similar weight. Water · Mercury
         /// washes a dirt wall. Stone masonry needs a hurled stone,
         /// Shatter, or Melt — the room's own walls still need Melt.
-        /// Heat thaws ice. Water ends a flame and cools lava to rock.
-        /// Fire eats vine, oil, and a water column. Obsidian will not
-        /// take the work; hop, fly, or yield (K) still clears it.
+        /// Heat thaws ice. Water ends a flame and cools lava to obsidian.
+        /// Fire eats vine, oil, and a water column. Obsidian, wardstone,
+        /// and aegis yield only to Unmake or Atomic. Hop, fly, or yield
+        /// (K) still clears a wall you stood.
         /// </summary>
         public static bool Unmakes(SpellId spell, WorldTile tile)
         {
@@ -539,12 +587,27 @@ namespace RuneMagic
 
         public static bool Unmakes(SpellId spell, MaterialId material, bool conjured)
         {
+            if (material == MaterialId.None || material == MaterialId.Void)
+            {
+                return false;
+            }
+
+            if (MatterLaw.BreaksWard(spell))
+            {
+                return true;
+            }
+
             if (MatterLaw.ResistsMagic(material))
             {
                 return false;
             }
 
             if (IsPlasmaWork(spell) && MatterLaw.IsAnnihilable(material))
+            {
+                return true;
+            }
+
+            if (IsExplosionWork(spell) && conjured && IsBlastable(material))
             {
                 return true;
             }
@@ -653,6 +716,16 @@ namespace RuneMagic
             if (MatterLaw.IsMeltWork(spell))
             {
                 return "The stood fire-body bores the masonry.";
+            }
+
+            if (MatterLaw.BreaksWard(spell))
+            {
+                return "The work unmakes the body. Even warded stone yields.";
+            }
+
+            if (IsBlastWork(spell))
+            {
+                return "The blast takes the stood matter.";
             }
 
             return "The stood body comes apart.";
@@ -838,6 +911,10 @@ namespace RuneMagic
             var notes = new List<string>();
             var sweep = WorldPhysics.Build(grid, spell, shape, origin, from, to);
             var cells = sweep.Cells.Count > 0 ? sweep.Cells : WorkCells(spell, origin, from, to);
+            if (IsBlastWork(spell))
+            {
+                cells = Merge(cells, Disk(CoordOf(to), BlastRadius(spell)));
+            }
             var quenchNote = QuenchAlong(grid, spell, cells, out var quenched);
             if (quenched > 0)
             {
@@ -1381,10 +1458,13 @@ namespace RuneMagic
 
             if (spell == SpellId.WaterJet || spell == SpellId.Fireball || spell == SpellId.Gale
                 || spell == SpellId.Gust || spell == SpellId.Push || spell == SpellId.Scald
-                || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.WoodArrow || spell == SpellId.Douse
+                || spell == SpellId.SunLance || spell == SpellId.HurledStone || spell == SpellId.WoodArrow
+                || spell == SpellId.FireArrow || spell == SpellId.IceArrow || spell == SpellId.PoisonArrow
+                || spell == SpellId.Douse
                 || spell == SpellId.IceSpear || spell == SpellId.SparkShot || spell == SpellId.LightningBolt
                 || spell == SpellId.BrilliantArc || spell == SpellId.Blackout
-                || spell == SpellId.Vine || spell == SpellId.Poison)
+                || spell == SpellId.Vine || spell == SpellId.Poison
+                || spell == SpellId.Explosion || spell == SpellId.Atomic)
             {
                 return Span(CoordOf(from), CoordOf(to));
             }
@@ -1399,9 +1479,9 @@ namespace RuneMagic
                 return Merge(Span(CoordOf(from), CoordOf(to)), Disk(CoordOf(to), 1));
             }
 
-            if (IsShatterWork(spell))
+            if (IsShatterWork(spell) || IsBlastWork(spell))
             {
-                return Disk(CoordOf(to), 1);
+                return Disk(CoordOf(to), IsBlastWork(spell) ? BlastRadius(spell) : 1);
             }
 
             if (spell == SpellId.Rain || spell == SpellId.StormCall || spell == SpellId.Flood
@@ -1438,14 +1518,14 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (tile.Transmute(MaterialId.Stone))
+                if (tile.Transmute(MaterialId.Obsidian))
                 {
                     changed++;
                     if (string.IsNullOrEmpty(note))
                     {
                         note = tile.RaisedAs == RaisedForm.Pillar
-                            ? "Yield finds the hungry earth. The column cools to rock."
-                            : "Yield finds the hungry earth. The wall cools to rock.";
+                            ? "Yield finds the hungry earth. The column cools to obsidian."
+                            : "Yield finds the hungry earth. The wall cools to obsidian.";
                     }
                 }
             }
@@ -1482,12 +1562,19 @@ namespace RuneMagic
 
                 if (string.IsNullOrEmpty(note))
                 {
-                    note = IsPlasmaWork(spell)
-                        ? "The work eats the ordinary matter."
-                        : UnmakeNote(spell, tile);
+                    note = MatterLaw.BreaksWard(spell)
+                        ? "The work unmakes the body. Even warded stone yields."
+                        : IsPlasmaWork(spell)
+                            ? "The work eats the ordinary matter."
+                            : UnmakeNote(spell, tile);
                 }
 
-                if (IsPlasmaWork(spell) ? tile.Annihilate() : tile.RestoreFoundation())
+                var ruined = MatterLaw.BreaksWard(spell)
+                    ? tile.Annihilate(true)
+                    : IsPlasmaWork(spell)
+                        ? tile.Annihilate()
+                        : tile.RestoreFoundation();
+                if (ruined)
                 {
                     undone++;
                 }
@@ -2302,6 +2389,20 @@ namespace RuneMagic
                 || Unmakes(SpellId.HurledStone, MaterialId.Crystal, false))
             {
                 broken.Add("Each stood body needs a counter of similar weight: fire thaws ice and eats wood, oil, and yield; water ends flame; Melt bores iron; water cools lava instead of eating it");
+            }
+
+            if (Unmakes(SpellId.Explosion, MaterialId.Obsidian, true)
+                || Unmakes(SpellId.Plasma, MaterialId.Obsidian, true)
+                || Unmakes(SpellId.Melt, MaterialId.Wardstone, true)
+                || !Unmakes(SpellId.Explosion, MaterialId.Stone, true)
+                || Unmakes(SpellId.Explosion, MaterialId.Stone, false)
+                || Unmakes(SpellId.Explosion, MaterialId.Metal, true)
+                || !Unmakes(SpellId.Unmake, MaterialId.Obsidian, true)
+                || !Unmakes(SpellId.Unmake, MaterialId.Wardstone, false)
+                || !Unmakes(SpellId.Atomic, MaterialId.Aegis, true)
+                || !Unmakes(SpellId.Atomic, MaterialId.Stone, false))
+            {
+                broken.Add("Explosion takes stood dirt and stone, not metal or wards; Unmake and Atomic take black glass and the room");
             }
         }
     }
