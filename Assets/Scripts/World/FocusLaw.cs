@@ -4,13 +4,15 @@ using UnityEngine;
 namespace RuneMagic
 {
     /// <summary>
-    /// Focus holds mind spells. Charm, command, lull, rage, terror,
-    /// confuse, and the wards (they all write Sulphur) stay until
-    /// another focus sentence reuses a mark from the held working,
-    /// or until you recast the same sentence. Sulphur is the mind
-    /// rune — it is how a hold is written, not a copied mark — so
-    /// two holds can stand if the rest of the sentences do not share
-    /// a rune. A fireball or a wall does not ask focus to let go.
+    /// Focus holds mind spells and worn buffs. Charm, command, lull,
+    /// rage, terror, confuse, the wards, the forms, flight, float,
+    /// and veil stay until another focus sentence reuses a mark from
+    /// the held working, or until you recast the same sentence.
+    /// Sulphur is the mind rune — it is how a hold is written, not a
+    /// copied mark — so two holds can stand if the rest of the
+    /// sentences do not share a rune. Flight writes logos and Salt,
+    /// so a ward that stands with Salt lets the flight go. A fireball
+    /// or a wall does not ask focus to let go.
     /// Burning is a contact meter. Poison is a slower meter that
     /// keeps its level off the slick until Light cleanses it.
     /// Other elemental work stands on its own clock.
@@ -25,7 +27,7 @@ namespace RuneMagic
             }
 
             var status = SpellVerb.Of(spell).Status;
-            if (StatusSpec.IsMindAilment(status) || StatusSpec.Of(status).IsStance)
+            if (StatusSpec.Of(status).NeedsFocus)
             {
                 return true;
             }
@@ -153,6 +155,9 @@ namespace RuneMagic
                 case StatusId.GaleForm: return SpellId.GaleForm;
                 case StatusId.GroveForm: return SpellId.GroveForm;
                 case StatusId.CloudForm: return SpellId.CloudForm;
+                case StatusId.Flying: return SpellId.Flight;
+                case StatusId.Floating: return SpellId.Float;
+                case StatusId.Veiled: return SpellId.Veil;
                 default: return SpellId.None;
             }
         }
@@ -217,20 +222,27 @@ namespace RuneMagic
                 || !IsMindSpell(SpellId.FlameForm)
                 || !IsMindSpell(SpellId.GaleForm)
                 || !IsMindSpell(SpellId.CloudForm)
+                || !IsMindSpell(SpellId.Flight)
+                || !IsMindSpell(SpellId.Float)
+                || !IsMindSpell(SpellId.Veil)
+                || IsMindSpell(SpellId.Hop)
                 || IsMindSpell(SpellId.Wall)
                 || IsMindSpell(SpellId.Fireball))
             {
-                broken.Add("Wards and forms are mind spells; walls and fireballs are not");
+                broken.Add("Wards, forms, flight, float, and veil are mind spells; hop, walls, and fireballs are not");
             }
 
             if (!Holds(StatusId.Stoneskin)
                 || !Holds(StatusId.Watershield)
+                || !Holds(StatusId.Flying)
+                || !Holds(StatusId.Floating)
+                || !Holds(StatusId.Veiled)
                 || Holds(StatusId.Burning)
                 || Holds(StatusId.Frozen)
                 || Holds(StatusId.Poisoned)
                 || Holds(StatusId.Stunned))
             {
-                broken.Add("Focus holds wards and mind ailments, not elemental clocks");
+                broken.Add("Focus holds wards, buffs, and mind ailments, not elemental clocks");
             }
 
             if (!Holds(StatusId.Charmed) || !Holds(StatusId.Sleeping))
@@ -246,20 +258,21 @@ namespace RuneMagic
                 || !StatusSpec.Of(StatusId.Sleeping).RecastDismisses
                 || !StatusSpec.Of(StatusId.Veiled).RecastDismisses
                 || !StatusSpec.Of(StatusId.Flying).RecastDismisses
+                || !StatusSpec.Of(StatusId.Floating).RecastDismisses
                 || StatusSpec.Of(StatusId.Burning).RecastDismisses
                 || StatusSpec.Of(StatusId.Frozen).RecastDismisses
                 || StatusSpec.Of(StatusId.Poisoned).RecastDismisses
                 || StatusSpec.Of(StatusId.Stunned).RecastDismisses)
             {
-                broken.Add("Recasting lets go of a ward, form, flight, veil, or mind hold — not a meter or frost");
+                broken.Add("Recasting lets go of a ward, form, flight, float, veil, or mind hold — not a meter or frost");
             }
 
-            if (SpellVerb.Of(SpellId.Flight).Status != StatusId.None
-                || SpellVerb.Of(SpellId.Float).Status != StatusId.None
+            if (SpellVerb.Of(SpellId.Flight).Status != StatusId.Flying
+                || SpellVerb.Of(SpellId.Float).Status != StatusId.Floating
                 || SpellVerb.Of(SpellId.Hop).Status != StatusId.None
                 || SpellVerb.Of(SpellId.CloudForm).Status != StatusId.CloudForm)
             {
-                broken.Add("Flight and float hang on the caster clock; hop is only a leap; cloud-form stays a form");
+                broken.Add("Flight and float are focus holds; hop is only a leap; cloud-form stays a form");
             }
 
             if (Breaks(StatusId.Stoneskin, SpellId.Wall)
@@ -268,7 +281,11 @@ namespace RuneMagic
                 || Breaks(StatusId.Sleeping, SpellId.Fireball)
                 || Breaks(StatusId.Charmed, SpellId.Fireball)
                 || Breaks(StatusId.Charmed, SpellId.Wall)
-                || Breaks(StatusId.Stoneskin, SpellId.Hop))
+                || Breaks(StatusId.Stoneskin, SpellId.Hop)
+                || Breaks(StatusId.Flying, SpellId.Fireball)
+                || Breaks(StatusId.Flying, SpellId.Hop)
+                || Breaks(StatusId.Flying, SpellId.Blink)
+                || Breaks(StatusId.Floating, SpellId.Gust))
             {
                 broken.Add("A non-focus sentence must not drop a hold");
             }
@@ -278,6 +295,10 @@ namespace RuneMagic
                 || !Breaks(StatusId.Flameward, SpellId.Rage)
                 || !Breaks(StatusId.Charmed, SpellId.Command)
                 || !Breaks(StatusId.Charmed, SpellId.Plantward)
+                || !Breaks(StatusId.Stoneskin, SpellId.Flight)
+                || !Breaks(StatusId.Flying, SpellId.Stoneskin)
+                || !Breaks(StatusId.Flying, SpellId.Float)
+                || !Breaks(StatusId.Floating, SpellId.Windward)
                 || Breaks(StatusId.Charmed, SpellId.Stoneskin)
                 || Breaks(StatusId.Sleeping, SpellId.Flameward)
                 || Breaks(StatusId.Stoneskin, SpellId.Charm))

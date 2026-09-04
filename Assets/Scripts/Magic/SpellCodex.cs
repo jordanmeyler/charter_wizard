@@ -118,12 +118,12 @@ namespace RuneMagic
             E(31, SpellBook.GrowHeal, SpellId.Grow, "A living vegetable body sent. Plant cover at the mark, the way Sprout stands from the feet.", "Grow", "Water · Salt · Earth · Life · Mercury", "Plant · Life · Mercury", "Remote", SpellOutcome.Neither),
             E(32, SpellBook.GrowHeal, SpellId.Mend, "A living body, yield and rest, sent into the living.", "Mend", "Life · Salt · Water · Earth · Mercury", "", "Grow", SpellOutcome.Neither),
             E(33, SpellBook.Cross, SpellId.Hop, "Breath given a body, then more breath, kept on you. A leap.", "Hop", "Air · Salt · Air", "", "Self", SpellOutcome.Neither),
-            E(34, SpellBook.Cross, SpellId.Flight, "That leap given logos, then going. You fly. Recast the same breath to land.", "Flight", "Air · Salt · Air · Fire · Sulphur · Air · Mercury", "Air · Salt · Air · Animus · Mercury", "Self", SpellOutcome.Neither),
+            E(34, SpellBook.Cross, SpellId.Flight, "That leap given logos, then going. You fly. Recast the same breath to land. Focus holds it.", "Flight", "Air · Salt · Air · Fire · Sulphur · Air · Mercury", "Air · Salt · Air · Animus · Mercury", "Self", SpellOutcome.Neither),
             E(35, SpellBook.Mind, SpellId.Rage, "Fire sent, turned by Sulphur, into a mind.", "Rage", "Fire · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(36, SpellBook.Mind, SpellId.Terror, "The withheld reaches a mind. They flee or freeze.", "Terror", "Dark · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(37, SpellBook.Mind, SpellId.Lull, "Yield reaches a mind. They sleep. They can be woken.", "Lull", "Water · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(38, SpellBook.Weather, SpellId.Gale, "Breath going, more breath, so it can push.", "Gale", "Air · Mercury · Air", "", "Shot", SpellOutcome.Restrain),
-            E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see.", "Veil", "Dark · Life · Salt · Air", "", "Grow", SpellOutcome.Neither),
+            E(39, SpellBook.SeeHide, SpellId.Veil, "The withheld, a living body, as breath. Hard to see. Focus holds it.", "Veil", "Dark · Life · Salt · Air", "", "Grow", SpellOutcome.Neither),
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(41, SpellBook.Grave, SpellId.Blight, "A vegetable body, then the grave, given a body. Verdure rots.", "Blight", "Water · Salt · Earth · Death · Salt", "Poison · Salt", "Grow", SpellOutcome.Kill, "Either"),
             E(42, SpellBook.Grave, SpellId.Shade, "Withheld, given a body, marked by the grave, and sent.", "Shade", "Dark · Death · Salt · Mercury", "Shade · Mercury", "Remote", SpellOutcome.Neither, "Free"),
@@ -213,7 +213,7 @@ namespace RuneMagic
             E(126, SpellBook.Grave, SpellId.Hemlock, "A living plant, then the grave, sent. Hemlock. Living venom, stronger than the dead spray.", "Hemlock", "Water · Salt · Earth · Life · Death · Mercury", "Plant · Life · Death · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(127, SpellBook.Grave, SpellId.Nightshade, "A living plant, then the grave, given a body. Nightshade. A living poison column. It weeps onto adjacent tiles until it is destroyed.", "Nightshade", "Water · Salt · Earth · Life · Death · Salt", "Plant · Life · Death · Salt", "Pillar", SpellOutcome.Kill, "Either"),
             E(128, SpellBook.Hold, SpellId.Briar, "A stood living plant sent. Briar. It holds them, and hunger can run it as a wick.", "Briar", "Water · Salt · Earth · Life · Salt · Mercury", "Plant · Life · Salt · Mercury", "Remote", SpellOutcome.Restrain),
-            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
+            E(129, SpellBook.Cross, SpellId.Float, "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land. Focus holds it.", "Float", "Air · Mercury · Salt", "", "Self", SpellOutcome.Neither),
             E(130, SpellBook.Cross, SpellId.Blink, "That leap given the seed. You jump as the spark. A wall will not stop you.", "Blink", "Air · Salt · Air · Fire · Air", "Air · Salt · Air · Spark", "Self", SpellOutcome.Neither),
             E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither),
             E(132, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill),
@@ -1270,7 +1270,9 @@ namespace RuneMagic
 
             if (FocusLaw.Breaks(StatusId.Stoneskin, SpellId.Blink)
                 || FocusLaw.Breaks(StatusId.Charmed, SpellId.Teleport)
-                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Blink))
+                || FocusLaw.Breaks(StatusId.Sleeping, SpellId.Blink)
+                || FocusLaw.Breaks(StatusId.Flying, SpellId.Blink)
+                || FocusLaw.Breaks(StatusId.Floating, SpellId.Teleport))
             {
                 broken.Add("Blink and Teleport must not drop a hold — they are not focus sentences");
             }

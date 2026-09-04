@@ -635,9 +635,12 @@ namespace RuneMagic
 
             if (ClockOf(StatusId.Charmed) != StatusClock.Focus
                 || ClockOf(StatusId.Sleeping) != StatusClock.Focus
-                || ClockOf(StatusId.Stoneskin) != StatusClock.Focus)
+                || ClockOf(StatusId.Stoneskin) != StatusClock.Focus
+                || ClockOf(StatusId.Flying) != StatusClock.Focus
+                || ClockOf(StatusId.Floating) != StatusClock.Focus
+                || ClockOf(StatusId.Veiled) != StatusClock.Focus)
             {
-                broken.Add("Sulphur work and wards must stay on focus, not a meter");
+                broken.Add("Sulphur work, wards, and worn buffs must stay on focus, not a meter");
             }
 
             if (ClockOf(StatusId.Frozen) != StatusClock.Timed

@@ -507,7 +507,6 @@ namespace RuneMagic
         void CollectHudStatuses()
         {
             _hudStatuses.Clear();
-            var flying = false;
             var host = StatusHost.On(AdeptAvatar.Find());
             if (host != null)
             {
@@ -520,36 +519,12 @@ namespace RuneMagic
                         continue;
                     }
 
-                    if (effect.Id == StatusId.Flying)
-                    {
-                        flying = true;
-                    }
-
                     _hudStatuses.Add(new HudStatus
                     {
                         Label = StatusLabel(effect),
                         Color = effect.Spec.Tint
                     });
                 }
-            }
-
-            var adept = AdeptAvatar.Find();
-            if (adept != null && adept.IsFlying && !flying)
-            {
-                _hudStatuses.Add(new HudStatus
-                {
-                    Label = TitleStatus("flight"),
-                    Color = StatusSpec.Of(StatusId.Flying).Tint
-                });
-            }
-
-            if (adept != null && adept.IsFloating)
-            {
-                _hudStatuses.Add(new HudStatus
-                {
-                    Label = TitleStatus("floating"),
-                    Color = new Color(0.7f, 0.86f, 0.98f)
-                });
             }
 
             if (_hudStatuses.Count == 0)

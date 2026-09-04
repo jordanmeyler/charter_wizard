@@ -25,8 +25,6 @@ namespace RuneMagic
         public const string AirborneParam = "Airborne";
 
         float _hopUntil;
-        float _flightUntil;
-        float _floatUntil;
         float _stillUntil;
         float _flameStand;
         SpriteRenderer _sprite;
@@ -46,46 +44,14 @@ namespace RuneMagic
         /// Flight must not use this — walking is the point of Flight.
         /// </summary>
         public bool IsHopping => Time.time < _hopUntil;
-        public bool IsFlying => Time.time < _flightUntil;
-        public bool IsFloating => Time.time < _floatUntil;
-        public bool Flies
-        {
-            get
-            {
-                if (IsFlying || IsFloating)
-                {
-                    return true;
-                }
-
-                if (_status == null)
-                {
-                    _status = GetComponent<StatusHost>();
-                }
-
-                return _status != null && _status.Flies;
-            }
-        }
+        public bool IsFlying => HostHas(StatusId.Flying);
+        public bool IsFloating => HostHas(StatusId.Floating);
+        public bool Flies => IsFlying || IsFloating || HostFlies;
         /// <summary>
         /// Float hangs without logos. WASD is a crawl. Flight and
         /// cloud-form still walk.
         /// </summary>
-        public bool Drifts
-        {
-            get
-            {
-                if (!IsFloating || IsFlying)
-                {
-                    return false;
-                }
-
-                if (_status == null)
-                {
-                    _status = GetComponent<StatusHost>();
-                }
-
-                return _status == null || !_status.Flies;
-            }
-        }
+        public bool Drifts => IsFloating && !IsFlying && !HostFlies;
         public bool IsAirborne => IsHopping || Flies;
         public static bool WorldHeld { get; private set; }
 
@@ -99,6 +65,29 @@ namespace RuneMagic
             return other != null && other.GetComponent<AdeptAvatar>() != null;
         }
 
+        bool HostHas(StatusId id)
+        {
+            if (_status == null)
+            {
+                _status = GetComponent<StatusHost>();
+            }
+
+            return _status != null && _status.Has(id);
+        }
+
+        bool HostFlies
+        {
+            get
+            {
+                if (_status == null)
+                {
+                    _status = GetComponent<StatusHost>();
+                }
+
+                return _status != null && _status.Flies;
+            }
+        }
+
         public void KeepAirborne(float seconds)
         {
             if (seconds <= 0f)
@@ -107,56 +96,6 @@ namespace RuneMagic
             }
 
             _hopUntil = Mathf.Max(_hopUntil, Time.time + seconds);
-        }
-
-        public void KeepFlying(float seconds)
-        {
-            if (seconds <= 0f)
-            {
-                return;
-            }
-
-            _flightUntil = Mathf.Max(_flightUntil, Time.time + seconds);
-        }
-
-        public void KeepFloating(float seconds)
-        {
-            if (seconds <= 0f)
-            {
-                return;
-            }
-
-            _floatUntil = Mathf.Max(_floatUntil, Time.time + seconds);
-        }
-
-        /// <summary>
-        /// Recast the same breath to land. True if the hold now stands.
-        /// </summary>
-        public bool ToggleFlying(float seconds)
-        {
-            if (IsFlying)
-            {
-                _flightUntil = 0f;
-                return false;
-            }
-
-            KeepFlying(seconds);
-            return true;
-        }
-
-        /// <summary>
-        /// Recast the same breath to land. True if the hold now stands.
-        /// </summary>
-        public bool ToggleFloating(float seconds)
-        {
-            if (IsFloating)
-            {
-                _floatUntil = 0f;
-                return false;
-            }
-
-            KeepFloating(seconds);
-            return true;
         }
 
         public void HoldWorld(float seconds)
@@ -177,8 +116,6 @@ namespace RuneMagic
         public void ClearWork()
         {
             _hopUntil = 0f;
-            _flightUntil = 0f;
-            _floatUntil = 0f;
             _stillUntil = 0f;
             _flameStand = 0f;
             _casting = false;

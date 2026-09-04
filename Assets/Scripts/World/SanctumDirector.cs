@@ -1122,7 +1122,7 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Walk while it lasts — pits will not take you. Recast the same sentence to land.";
+                return "Click to keep the breath on you. Walk the air — pits will not take you. Recast the same sentence to land.";
             }
 
             if (WorldWork.IsFloat(spell))
@@ -2029,26 +2029,6 @@ namespace RuneMagic
         {
             var player = PlayerTransform();
             var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
-            if (WorldWork.IsFlight(spell) && adept != null)
-            {
-                if (!adept.ToggleFlying(WorldWork.FlightSeconds))
-                {
-                    _carryNote = "The flight lifts.";
-                }
-
-                yield break;
-            }
-
-            if (WorldWork.IsFloat(spell) && adept != null)
-            {
-                if (!adept.ToggleFloating(WorldWork.FloatSeconds))
-                {
-                    _carryNote = "The float lifts.";
-                }
-
-                yield break;
-            }
-
             if (WorldWork.IsTimeStop(spell) && adept != null)
             {
                 adept.HoldWorld(WorldWork.TimeStopSeconds);
@@ -2774,17 +2754,6 @@ namespace RuneMagic
             var player = PlayerTransform();
             var host = StatusHost.On(player);
             var text = host != null ? host.Summary() : string.Empty;
-            var adept = player != null ? player.GetComponent<AdeptAvatar>() : null;
-            if (adept != null && adept.IsFlying)
-            {
-                text = string.IsNullOrEmpty(text) ? "flying" : text + " · flying";
-            }
-
-            if (adept != null && adept.IsFloating)
-            {
-                text = string.IsNullOrEmpty(text) ? "floating" : text + " · floating";
-            }
-
             return text;
         }
 
