@@ -64,6 +64,7 @@ namespace RuneMagic
         WorldDoor[] _objectDoors;
         Vector2Int[] _doors;
         Vector2Int[] _cells;
+        readonly List<Vector2Int> _reach = new();
         float _pulse;
         bool _wired;
         SpriteRenderer _renderer;
@@ -104,9 +105,7 @@ namespace RuneMagic
             _grid = grid;
             _objectDoors = CopyDoors(objectDoors);
             _doors = CopyCells(doors);
-            _cells = sensors != null && sensors.Count > 0
-                ? CopyCells(sensors)
-                : AuthoringUtil.CellsOrHere(null, transform.position);
+            _cells = MergeSensors(sensors, transform.position, _objectDoors);
             ApplyPlayLook(spriteId);
         }
 
@@ -157,19 +156,19 @@ namespace RuneMagic
             WorldWork.IsChargeWork(spell);
 
         public float DistanceTo(Vector3 point) =>
-            CellVolume.DistanceTo(point, transform.position, _cells);
+            CellVolume.DistanceTo(point, transform.position, FillReach());
 
         public Vector3 ClosestPoint(Vector3 point) =>
-            CellVolume.ClosestPoint(point, transform.position, _cells);
+            CellVolume.ClosestPoint(point, transform.position, FillReach());
 
         public bool Touches(Vector3 point, float radius) =>
-            CellVolume.Touches(point, radius, transform.position, _cells);
+            CellVolume.Touches(point, radius, transform.position, FillReach());
 
         public bool Crosses(Vector3 from, Vector3 to, float width) =>
-            CellVolume.Crosses(from, to, width, transform.position, _cells);
+            CellVolume.Crosses(from, to, width, transform.position, FillReach());
 
         public bool OccupiesCell(Vector2Int cell) =>
-            CellVolume.Occupies(_cells, cell, transform.position);
+            CellVolume.Occupies(FillReach(), cell, transform.position);
 
         public string Resolve(SpellId spell)
         {
@@ -249,16 +248,17 @@ namespace RuneMagic
         void OpenDoors()
         {
             var opened = false;
-            if (_objectDoors != null)
+            var objectDoors = LinkedDoors();
+            if (objectDoors != null)
             {
-                for (var i = 0; i < _objectDoors.Length; i++)
+                for (var i = 0; i < objectDoors.Length; i++)
                 {
-                    if (_objectDoors[i] == null)
+                    if (objectDoors[i] == null)
                     {
                         continue;
                     }
 
-                    _objectDoors[i].Open();
+                    objectDoors[i].Open();
                     opened = true;
                 }
             }
@@ -317,6 +317,48 @@ namespace RuneMagic
             return copy;
         }
 
+        WorldDoor[] LinkedDoors()
+        {
+            if (_objectDoors != null && _objectDoors.Length > 0)
+            {
+                return _objectDoors;
+            }
+
+            return doors;
+        }
+
+        Vector2Int[] SensorCells()
+        {
+            if (sensorCells != null && sensorCells.Length > 0)
+            {
+                return sensorCells;
+            }
+
+            if (_cells != null && _cells.Length > 0)
+            {
+                return _cells;
+            }
+
+            return _doors ?? doorCells;
+        }
+
+        List<Vector2Int> FillReach()
+        {
+            _reach.Clear();
+            WorldDoor.GatherLockCells(transform.position, LinkedDoors(), SensorCells(), _reach);
+            return _reach;
+        }
+
+        static Vector2Int[] MergeSensors(
+            IList<Vector2Int> sensors,
+            Vector3 origin,
+            IList<WorldDoor> objectDoors)
+        {
+            var buffer = new List<Vector2Int>();
+            WorldDoor.GatherLockCells(origin, objectDoors, sensors, buffer);
+            return buffer.ToArray();
+        }
+
         bool ChargedHere()
         {
             if (_grid == null)
@@ -329,21 +371,12 @@ namespace RuneMagic
                 return false;
             }
 
-            var tile = _grid.TileAtWorld(transform.position);
-            if (tile != null && tile.Charge > ChargeThreshold)
+            _reach.Clear();
+            WorldDoor.GatherLockCells(transform.position, LinkedDoors(), SensorCells(), _reach);
+            for (var i = 0; i < _reach.Count; i++)
             {
-                return true;
-            }
-
-            if (_cells == null)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < _cells.Length; i++)
-            {
-                var other = _grid.Get(_cells[i]);
-                if (other != null && other.Charge > ChargeThreshold)
+                var tile = _grid.Get(_reach[i]);
+                if (tile != null && tile.Charge > ChargeThreshold)
                 {
                     return true;
                 }

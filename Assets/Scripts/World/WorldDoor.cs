@@ -117,6 +117,106 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// Cells this leaf covers. A Gate uses these as the lock
+        /// even when the lock object sits a few tiles away.
+        /// </summary>
+        public Vector2Int[] OccupiedCells()
+        {
+            if (_cells == null || _cells.Length == 0)
+            {
+                RefreshCells();
+            }
+
+            return _cells ?? System.Array.Empty<Vector2Int>();
+        }
+
+        /// <summary>
+        /// The lock's own cell, any authored extra cells, and every
+        /// cell a linked door occupies.
+        /// </summary>
+        public static void GatherLockCells(
+            Vector3 origin,
+            IList<WorldDoor> doors,
+            IList<Vector2Int> extra,
+            List<Vector2Int> buffer)
+        {
+            if (buffer == null)
+            {
+                return;
+            }
+
+            AddCell(buffer, AuthoringUtil.CellOf(origin));
+            if (extra != null)
+            {
+                for (var i = 0; i < extra.Count; i++)
+                {
+                    AddCell(buffer, extra[i]);
+                }
+            }
+
+            if (doors == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < doors.Count; i++)
+            {
+                if (doors[i] == null)
+                {
+                    continue;
+                }
+
+                var cells = doors[i].OccupiedCells();
+                if (cells == null)
+                {
+                    continue;
+                }
+
+                for (var j = 0; j < cells.Length; j++)
+                {
+                    AddCell(buffer, cells[j]);
+                }
+            }
+        }
+
+        static void AddCell(List<Vector2Int> buffer, Vector2Int cell)
+        {
+            if (!buffer.Contains(cell))
+            {
+                buffer.Add(cell);
+            }
+        }
+
+        public static void Audit(List<string> broken)
+        {
+            if (broken == null)
+            {
+                return;
+            }
+
+            var origin = new Vector3(0.5f, 32.5f, 0f);
+            var door = new Vector2Int(0, 38);
+            var atDoor = WorldGrid.Center(door.x, door.y);
+            var reach = new List<Vector2Int>();
+            GatherLockCells(origin, null, new[] { door }, reach);
+            if (CellVolume.DistanceTo(atDoor, origin, reach) > SocketGate.ApproachRadius)
+            {
+                broken.Add("A gate must turn when you stand at a linked door, even if the lock object sits a few tiles away");
+            }
+
+            var onlyLock = new List<Vector2Int> { AuthoringUtil.CellOf(origin) };
+            if (CellVolume.DistanceTo(atDoor, origin, onlyLock) <= SocketGate.ApproachRadius)
+            {
+                broken.Add("A lock six tiles from a door must not feel a body at that door unless the door is linked");
+            }
+
+            if (!reach.Contains(AuthoringUtil.CellOf(origin)) || !reach.Contains(door))
+            {
+                broken.Add("A gate's reach must include its own cell and every linked door cell");
+            }
+        }
+
         public void BindFromAuthoring(WorldGrid grid = null)
         {
             if (_wired)

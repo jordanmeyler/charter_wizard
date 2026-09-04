@@ -338,7 +338,9 @@ Drag `Assets/Prefabs/Gate`. Sit it in front of the door. This is the
 - **Hide Look** — on by default. No picture. Paint any tiles you want on the Tilemap; the Gate does not stamp a 2×2.
 - **Portrait** — optional single sprite if you want a picture on the Gate itself. Uncheck Hide Look first.
 
-Walk up to the Gate holding every required stone and it turns.
+Walk up to the Gate — or to any Door on its **Doors** list — holding
+every required stone and it turns. The lock object can sit a tile in
+front of the leaf; standing at the linked doors still seats the stones.
 
 The default look is a generated painter. Same path as the Door: drag a
 slice from your sheet onto **Portrait**. Scene view shows it immediately.
@@ -349,7 +351,9 @@ Drag `Assets/Prefabs/Electric Gate` (or `GameObject → Rune Magic →
 Electric Gate`). Same Doors list as a stone gate. A bolt, a spark
 sentence, live-floor, or charge walking onto its cells opens those
 doors. Sensor Cells are the tiles that take the spark — leave them
-empty to use the gate’s own cell. Hide Look is on by default;
+empty to use the gate’s own cell **and** every linked Door. A bolt
+or live-floor on those doors still turns the lock, even if the Electric
+Gate object sits beside the leaf. Hide Look is on by default;
 paint the look on the Tilemap. Uncheck it and set Portrait if you
 want a picture on the lock itself.
 

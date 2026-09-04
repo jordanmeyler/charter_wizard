@@ -13,6 +13,8 @@ namespace RuneMagic
     [SelectionBase]
     public sealed class SocketGate : MonoBehaviour, ISpellLock, IRuneSource
     {
+        public const float ApproachRadius = 2.1f;
+
         public string DisplayName { get; private set; }
         public string FormulaId { get; private set; }
         public SpellId[] AcceptedKeys { get; private set; } = System.Array.Empty<SpellId>();
@@ -59,6 +61,7 @@ namespace RuneMagic
         WorldGrid _grid;
         WorldDoor[] _objectDoors;
         Vector2Int[] _doors;
+        readonly List<Vector2Int> _reach = new();
         float _pulse;
         bool _wired;
         SpriteRenderer _renderer;
@@ -132,15 +135,16 @@ namespace RuneMagic
 
         public string FormulaText()
         {
-            if (_requires == null || _requires.Length == 0)
+            var needed = RequiredIds();
+            if (needed == null || needed.Length == 0)
             {
                 return "empty sockets";
             }
 
-            var parts = new string[_requires.Length];
-            for (var i = 0; i < _requires.Length; i++)
+            var parts = new string[needed.Length];
+            for (var i = 0; i < needed.Length; i++)
             {
-                parts[i] = Pretty(_requires[i]);
+                parts[i] = Pretty(needed[i]);
             }
 
             return string.Join(" · ", parts);
@@ -194,19 +198,42 @@ namespace RuneMagic
             _renderer.enabled = false;
         }
 
+        WorldDoor[] LinkedDoors()
+        {
+            if (_objectDoors != null && _objectDoors.Length > 0)
+            {
+                return _objectDoors;
+            }
+
+            return doors;
+        }
+
+        string[] RequiredIds()
+        {
+            return _requires ?? requires ?? System.Array.Empty<string>();
+        }
+
+        bool PlayerAtLock(Vector3 player)
+        {
+            _reach.Clear();
+            WorldDoor.GatherLockCells(transform.position, LinkedDoors(), _doors ?? doorCells, _reach);
+            return CellVolume.DistanceTo(player, transform.position, _reach) <= ApproachRadius;
+        }
+
         void OpenDoors()
         {
             var opened = false;
-            if (_objectDoors != null)
+            var objectDoors = LinkedDoors();
+            if (objectDoors != null)
             {
-                for (var i = 0; i < _objectDoors.Length; i++)
+                for (var i = 0; i < objectDoors.Length; i++)
                 {
-                    if (_objectDoors[i] == null)
+                    if (objectDoors[i] == null)
                     {
                         continue;
                     }
 
-                    _objectDoors[i].Open();
+                    objectDoors[i].Open();
                     opened = true;
                 }
             }
@@ -278,12 +305,12 @@ namespace RuneMagic
             }
 
             var player = AdeptAvatar.Find();
-            if (player == null || Vector2.Distance(player.transform.position, transform.position) > 2.1f)
+            if (player == null || !PlayerAtLock(player.transform.position))
             {
                 return;
             }
 
-            if (!_director.Pack.HasAll(_requires))
+            if (!_director.Pack.HasAll(RequiredIds()))
             {
                 return;
             }
