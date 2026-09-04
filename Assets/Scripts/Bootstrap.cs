@@ -107,8 +107,10 @@ namespace RuneMagic
         static Camera PrepareCamera()
         {
             var cam = Camera.main;
+            var created = false;
             if (cam == null)
             {
+                created = true;
                 var cameraObject = new GameObject("Main Camera");
                 cam = cameraObject.AddComponent<Camera>();
                 cameraObject.AddComponent<AudioListener>();
@@ -122,7 +124,12 @@ namespace RuneMagic
             }
 
             cam.orthographic = true;
-            cam.orthographicSize = 5.4f;
+            // Inspector Size is the play zoom. Only force a default
+            // when we had to spawn the camera ourselves.
+            if (created)
+            {
+                cam.orthographicSize = 8f;
+            }
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.04f, 0.045f, 0.07f);
             cam.nearClipPlane = 0.1f;
