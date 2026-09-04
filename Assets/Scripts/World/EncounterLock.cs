@@ -112,10 +112,6 @@ namespace RuneMagic
             WorldYSort.On(gameObject);
             var anim = SpriteAnim.On(gameObject, _renderer);
             anim.FreezeWhenWorldHeld = true;
-            if (GetComponentInChildren<FixtureGlow>() == null)
-            {
-                FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
-            }
 
             var body = AuthoringUtil.GetOrAdd<Rigidbody2D>(gameObject, out var addedBody);
             if (addedBody)
