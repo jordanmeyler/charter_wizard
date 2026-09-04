@@ -19,9 +19,7 @@ namespace RuneMagic
         public const int BlinkTiles = 4;
         // Walkable airborne. Pits and water will not take the adept.
         // Must not share hop's motor lock — Flight is the walk.
-        public const float FlightSeconds = 10f;
         // Hang without logos. Weak walk. Wind, vine, and a jet of yield carry you.
-        public const float FloatSeconds = 12f;
         public const float FloatWalkScale = 0.2f;
         /// <summary>
         /// Miasma holds the step. It does not throw the body back.
@@ -733,12 +731,7 @@ namespace RuneMagic
                 return string.Empty;
             }
 
-            if (IsFloat(spell))
-            {
-                return "Breath going stands on you. You hang. Wind, a vine, or a jet of yield will move you.";
-            }
-
-            if (IsHop(spell) || IsFlight(spell))
+            if (IsHop(spell) || IsFlight(spell) || IsFloat(spell))
             {
                 return string.Empty;
             }

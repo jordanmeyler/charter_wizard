@@ -665,7 +665,7 @@
       "id": "Flight",
       "book": "Cross",
       "name": "Flight",
-      "want": "That leap given logos, then going. You fly. Recast the same breath to land.",
+      "want": "That leap given logos, then going. You fly. Recast the same breath to land. Focus holds it.",
       "recipe": "Air · Salt · Air · Fire · Sulphur · Air · Mercury",
       "via": "Air · Salt · Air · Animus · Mercury",
       "form": "Self",
@@ -673,8 +673,7 @@
       "gate": "",
       "work": "Flight",
       "target": "Self",
-      "status": "Flying",
-      "statusSeconds": 10
+      "status": "Flying"
     },
     {
       "number": 35,
@@ -742,13 +741,15 @@
       "id": "Veil",
       "book": "SeeHide",
       "name": "Veil",
-      "want": "The withheld, a living body, as breath. Hard to see.",
+      "want": "The withheld, a living body, as breath. Hard to see. Focus holds it.",
       "recipe": "Dark · Life · Salt · Air",
       "via": "",
       "form": "Grow",
       "outcome": "Neither",
       "gate": "",
-      "work": "Veil"
+      "work": "Veil",
+      "target": "Self",
+      "status": "Veiled"
     },
     {
       "number": 40,
@@ -2074,14 +2075,15 @@
       "id": "Float",
       "book": "Cross",
       "name": "Float",
-      "want": "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land.",
+      "want": "Breath going, then stood on you. You hang. Pits will not take you. You barely walk. Wind, a vine, or a jet of yield moves you. Recast the same breath to land. Focus holds it.",
       "recipe": "Air · Mercury · Salt",
       "via": "",
       "form": "Self",
       "outcome": "Neither",
       "gate": "",
       "work": "Float",
-      "target": "Self"
+      "target": "Self",
+      "status": "Floating"
     },
     {
       "number": 130,

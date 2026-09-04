@@ -203,7 +203,7 @@ namespace RuneMagic
                 case SpellId.CloudForm:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.CloudForm, 14f, TileVerb.None);
                 case SpellId.Veil:
-                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 8f, TileVerb.None);
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Veiled, 0f, TileVerb.None);
                 case SpellId.StormCall:
                     return new SpellVerb(SpellTarget.Area, 3f, StatusId.Soaked, 4f, TileVerb.Wet);
                 case SpellId.Gust:
@@ -293,11 +293,13 @@ namespace RuneMagic
                 case SpellId.GraveDust:
                     return new SpellVerb(SpellTarget.Area, 2.4f, StatusId.None, 0f, TileVerb.Foul);
                 case SpellId.Hop:
-                case SpellId.Flight:
-                case SpellId.Float:
                 case SpellId.Blink:
                 case SpellId.Teleport:
                     return new SpellVerb(SpellTarget.Self, 0f, StatusId.None, 0f, TileVerb.None);
+                case SpellId.Flight:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Flying, 0f, TileVerb.None);
+                case SpellId.Float:
+                    return new SpellVerb(SpellTarget.Self, 0f, StatusId.Floating, 0f, TileVerb.None);
                 default:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
             }
