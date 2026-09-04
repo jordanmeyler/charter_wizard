@@ -140,6 +140,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
+      propertyPath: authoredName
+      value: Gate of Elements
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
+      propertyPath: authoredId
+      value: door-i
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: doors.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -161,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 1601210923}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: requires.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: 'requires.Array.data[0]'
@@ -169,11 +177,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: 'requires.Array.data[1]'
-      value: air-stone
+      value: water-stone
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: 'requires.Array.data[2]'
       value: earth-stone
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
+      propertyPath: 'requires.Array.data[3]'
+      value: air-stone
       objectReference: {fileID: 0}
     - target: {fileID: 1272102081706159708, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: m_Enabled
@@ -51799,6 +51811,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
+      propertyPath: authoredName
+      value: Gate of Joins
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
+      propertyPath: authoredId
+      value: door-iii
+      objectReference: {fileID: 0}
+    - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: doors.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -51828,7 +51848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: 'requires.Array.data[1]'
-      value: ice-stone
+      value: flood-stone
       objectReference: {fileID: 0}
     - target: {fileID: 1124768097625384175, guid: d1102b4bf47206248ba13c9e1697bc88, type: 3}
       propertyPath: 'requires.Array.data[2]'
