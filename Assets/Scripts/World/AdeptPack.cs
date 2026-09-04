@@ -88,6 +88,11 @@ namespace RuneMagic
 
             for (var i = 0; i < ids.Count; i++)
             {
+                if (string.IsNullOrWhiteSpace(ids[i]))
+                {
+                    continue;
+                }
+
                 if (!Has(ids[i]))
                 {
                     return false;
@@ -201,6 +206,13 @@ namespace RuneMagic
             if (Sight.OfItem(fallback) != fire.look)
             {
                 broken.Add("An empty Description must use the catalog look");
+            }
+
+            var pack = new AdeptPack();
+            pack.Take(fire);
+            if (!pack.HasAll(new[] { "fire-stone", "", "  " }))
+            {
+                broken.Add("Empty required ids must not keep a lock shut");
             }
         }
 

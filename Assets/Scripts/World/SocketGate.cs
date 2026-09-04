@@ -62,6 +62,7 @@ namespace RuneMagic
         WorldDoor[] _objectDoors;
         Vector2Int[] _doors;
         readonly List<Vector2Int> _reach = new();
+        readonly List<Vector3> _doorWorlds = new();
         float _pulse;
         bool _wired;
         SpriteRenderer _renderer;
@@ -114,6 +115,11 @@ namespace RuneMagic
         {
             if (_wired)
             {
+                if (grid != null)
+                {
+                    _grid = grid;
+                }
+
                 return;
             }
 
@@ -210,14 +216,90 @@ namespace RuneMagic
 
         string[] RequiredIds()
         {
-            return _requires ?? requires ?? System.Array.Empty<string>();
+            var source = requires != null && requires.Length > 0 ? requires : _requires;
+            if (source == null || source.Length == 0)
+            {
+                return System.Array.Empty<string>();
+            }
+
+            var count = 0;
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(source[i]))
+                {
+                    count++;
+                }
+            }
+
+            if (count == source.Length)
+            {
+                return source;
+            }
+
+            var trimmed = new string[count];
+            var write = 0;
+            for (var i = 0; i < source.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(source[i]))
+                {
+                    continue;
+                }
+
+                trimmed[write++] = source[i];
+            }
+
+            return trimmed;
         }
 
         bool PlayerAtLock(Vector3 player)
         {
             _reach.Clear();
-            WorldDoor.GatherLockCells(transform.position, LinkedDoors(), _doors ?? doorCells, _reach);
-            return CellVolume.DistanceTo(player, transform.position, _reach) <= ApproachRadius;
+            _doorWorlds.Clear();
+            var objectDoors = LinkedDoors();
+            WorldDoor.GatherLockCells(transform.position, objectDoors, _doors ?? doorCells, _reach);
+            if (objectDoors != null)
+            {
+                for (var i = 0; i < objectDoors.Length; i++)
+                {
+                    if (objectDoors[i] == null)
+                    {
+                        continue;
+                    }
+
+                    _doorWorlds.Add(objectDoors[i].transform.position);
+                }
+            }
+
+            return PlayerReaches(player, transform.position, _doorWorlds, _reach);
+        }
+
+        /// <summary>
+        /// Standing at the lock, or at a linked door — even when the
+        /// lock object sits several tiles off the leaf.
+        /// </summary>
+        public static bool PlayerReaches(
+            Vector3 player,
+            Vector3 origin,
+            IList<Vector3> doorWorlds,
+            IList<Vector2Int> cells)
+        {
+            if (Vector2.Distance(player, origin) <= WorldDoor.AutoLinkRadius)
+            {
+                return true;
+            }
+
+            if (doorWorlds != null)
+            {
+                for (var i = 0; i < doorWorlds.Count; i++)
+                {
+                    if (Vector2.Distance(player, doorWorlds[i]) <= WorldDoor.AutoLinkRadius)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return CellVolume.DistanceTo(player, origin, cells) <= ApproachRadius;
         }
 
         void OpenDoors()
@@ -299,7 +381,7 @@ namespace RuneMagic
                 _director = FindFirstObjectByType<SanctumDirector>();
             }
 
-            if (_director == null || _director.Pack == null || _director.Busy)
+            if (_director == null || _director.Pack == null)
             {
                 return;
             }

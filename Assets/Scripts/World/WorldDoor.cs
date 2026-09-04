@@ -197,7 +197,8 @@ namespace RuneMagic
 
             var origin = new Vector3(0.5f, 32.5f, 0f);
             var door = new Vector2Int(0, 38);
-            var atDoor = WorldGrid.Center(door.x, door.y);
+            var doorWorld = WorldGrid.Center(door.x, door.y);
+            var atDoor = doorWorld + new Vector3(0f, -1f, 0f);
             var reach = new List<Vector2Int>();
             GatherLockCells(origin, null, new[] { door }, reach);
             if (CellVolume.DistanceTo(atDoor, origin, reach) > SocketGate.ApproachRadius)
@@ -206,9 +207,14 @@ namespace RuneMagic
             }
 
             var onlyLock = new List<Vector2Int> { AuthoringUtil.CellOf(origin) };
-            if (CellVolume.DistanceTo(atDoor, origin, onlyLock) <= SocketGate.ApproachRadius)
+            if (SocketGate.PlayerReaches(atDoor, origin, null, onlyLock))
             {
                 broken.Add("A lock six tiles from a door must not feel a body at that door unless the door is linked");
+            }
+
+            if (!SocketGate.PlayerReaches(atDoor, origin, new[] { doorWorld }, onlyLock))
+            {
+                broken.Add("Walking up to a linked door six tiles from the lock must seat the stones");
             }
 
             if (!reach.Contains(AuthoringUtil.CellOf(origin)) || !reach.Contains(door))
