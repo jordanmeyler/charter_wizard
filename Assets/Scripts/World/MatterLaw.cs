@@ -57,7 +57,11 @@ namespace RuneMagic
                 return Heat.None;
             }
 
-            if (Has(recipe, RuneId.Oil) && !Has(recipe, RuneId.Plasma) && !Has(recipe, RuneId.Flame) && !Has(recipe, RuneId.Inferno))
+            if (Has(recipe, RuneId.Oil)
+                && !Has(recipe, RuneId.Plasma)
+                && !Has(recipe, RuneId.Flame)
+                && !Has(recipe, RuneId.Inferno)
+                && !Has(recipe, RuneId.Explosion))
             {
                 return Heat.None;
             }
@@ -70,6 +74,11 @@ namespace RuneMagic
             if (Has(recipe, RuneId.Flame) || IsWitchfireChain(recipe))
             {
                 return Heat.Flame;
+            }
+
+            if (Has(recipe, RuneId.Explosion))
+            {
+                return Heat.Fire;
             }
 
             // Animus is logos, not hunger. Ice given will stays cold even
@@ -167,6 +176,12 @@ namespace RuneMagic
 
         public static bool IsPlasmaWork(SpellId spell) =>
             spell == SpellId.Plasma;
+
+        /// <summary>
+        /// Unmake and Atomic take warded glass. Plasma still refuses it.
+        /// </summary>
+        public static bool BreaksWard(SpellId spell) =>
+            spell == SpellId.Unmake || spell == SpellId.Atomic;
 
         public static bool IsAnnihilable(MaterialId material)
         {
@@ -408,6 +423,21 @@ namespace RuneMagic
             if (HeatOf(SpellId.Plasma) != Heat.Inferno)
             {
                 broken.Add("Plasma must carry Inferno heat");
+            }
+
+            if (HeatOf(SpellId.Explosion) != Heat.Fire
+                || HeatOf(SpellId.Atomic) != Heat.Inferno)
+            {
+                broken.Add("Explosion is hunger on fuel; Atomic is that blast joined to plasma");
+            }
+
+            if (!BreaksWard(SpellId.Unmake)
+                || !BreaksWard(SpellId.Atomic)
+                || BreaksWard(SpellId.Plasma)
+                || BreaksWard(SpellId.Explosion)
+                || BreaksWard(SpellId.Melt))
+            {
+                broken.Add("Unmake and Atomic take warded stone; Plasma, Explosion, and Melt still refuse it");
             }
 
             if (HeatOf(SpellId.Rage) != Heat.None

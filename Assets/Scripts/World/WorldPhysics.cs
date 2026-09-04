@@ -99,7 +99,20 @@ namespace RuneMagic
             }
 
             var width = WidthOf(spell, shape, potency);
-            return new SpellSweep(spell, shape, origin, start, stop, width, CellsAlong(grid, start, stop, width));
+            var cells = CellsAlong(grid, start, stop, width);
+            if (WorldWork.IsBlastWork(spell))
+            {
+                var blast = WorldWork.Disk(WorldWork.CoordOf(stop), WorldWork.BlastRadius(spell));
+                for (var i = 0; i < blast.Count; i++)
+                {
+                    if (!cells.Contains(blast[i]))
+                    {
+                        cells.Add(blast[i]);
+                    }
+                }
+            }
+
+            return new SpellSweep(spell, shape, origin, start, stop, width, cells);
         }
 
         public static SpellShape ShapeOf(SpellId spell)
@@ -406,6 +419,8 @@ namespace RuneMagic
             {
                 return WorldWork.IsShatterWork(spell)
                     || WorldWork.IsBoulderWork(spell)
+                    || WorldWork.IsBlastWork(spell)
+                    || MatterLaw.BreaksWard(spell)
                     || WorldWork.IsWaterWork(spell)
                     || MatterLaw.IsMeltWork(spell);
             }
@@ -476,6 +491,7 @@ namespace RuneMagic
                 var burning = tile.IsBurning;
                 var before = tile.Material;
                 if (MatterLaw.ResistsMagic(before)
+                    && !MatterLaw.BreaksWard(sweep.Spell)
                     && (MatterLaw.IsMeltWork(sweep.Spell)
                         || WorldWork.IsShatterWork(sweep.Spell)
                         || WorldWork.IsBoulderWork(sweep.Spell)
@@ -679,25 +695,27 @@ namespace RuneMagic
                 return;
             }
 
-            var cells = WorldWork.Disk(origin, 2);
+            var cells = WorldWork.Disk(origin, WorldWork.ExplosionRadius);
             for (var i = 0; i < cells.Count; i++)
             {
                 var tile = grid.Get(cells[i]);
-                if (tile == null || MatterLaw.ResistsMagic(tile.Material))
+                if (tile == null || (MatterLaw.ResistsMagic(tile.Material) && !MatterLaw.BreaksWard(SpellId.Explosion)))
                 {
                     continue;
                 }
 
                 tile.SlickOil(0.85f);
                 tile.Ignite(1.2f);
-                if (tile.IsConjured && tile.Material == MaterialId.Oil && tile.Coord != origin)
+                if (WorldWork.Unmakes(SpellId.Explosion, tile)
+                    && tile.IsConjured
+                    && tile.Coord != origin)
                 {
                     tile.RestoreFoundation();
                 }
             }
 
             var core = grid.Get(origin);
-            if (core != null && core.IsConjured && core.Material == MaterialId.Oil)
+            if (core != null && core.IsConjured && WorldWork.Unmakes(SpellId.Explosion, core))
             {
                 core.RestoreFoundation();
             }
@@ -777,6 +795,14 @@ namespace RuneMagic
                 || SpellVerb.Of(SpellId.OilPillar).Tiles != TileVerb.None)
             {
                 broken.Add("Oil-pillar is a stood wick. A later fire sentence makes it a bomb");
+            }
+
+            if (WorldWork.IsFireWork(SpellId.OilShot)
+                || !WorldWork.IsFireWork(SpellId.Explosion)
+                || !WorldWork.IsFireWork(SpellId.Atomic)
+                || WorldWork.IsOilWork(SpellId.Explosion))
+            {
+                broken.Add("Oil shot is fuel, not hunger; Explosion is Oil · Fire sent, and Atomic is that blast joined to plasma");
             }
 
             if (!WorldWork.IsOilWork(SpellId.OilShot) || WorldWork.IsFireWork(SpellId.OilShot))
@@ -1006,6 +1032,7 @@ namespace RuneMagic
             }
 
             MatterLaw.Audit(broken);
+            WorldWork.Audit(broken);
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);
             LookIds.Audit(broken);

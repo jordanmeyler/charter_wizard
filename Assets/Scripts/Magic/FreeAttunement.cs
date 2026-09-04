@@ -141,6 +141,7 @@ namespace RuneMagic
                 case RuneId.Poison:
                     return RuneId.Mors;
                 case RuneId.Oil:
+                case RuneId.Explosion:
                     return RuneId.Fire;
                 case RuneId.Miasma:
                     return RuneId.Mors;

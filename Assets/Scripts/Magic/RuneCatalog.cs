@@ -76,6 +76,7 @@ namespace RuneMagic
         Shade,
         Thunder,
         Oil,
+        Explosion,
         Miasma,
         Poison,
         DarkCrystal
@@ -134,6 +135,7 @@ namespace RuneMagic
                 new RuneDef(RuneId.Acid, RuneFamily.Material, "Acid", "Ac", "Steam forced through Metal."),
                 new RuneDef(RuneId.Ash, RuneFamily.Material, "Ash", "Ah", "What hunger leaves of a vegetable body. Fire · Plant."),
                 new RuneDef(RuneId.Oil, RuneFamily.Material, "Oil", "Ol", "A vegetable body pressed with hunger and rest. Plant · Fire · Earth. It holds flame."),
+                new RuneDef(RuneId.Explosion, RuneFamily.Material, "Explosion", "Xn", "Fuel meeting hunger as a blast. Oil · Fire. Sent, it unmakes stood dirt and stone. Warded glass needs the plasma evolution."),
                 new RuneDef(RuneId.Miasma, RuneFamily.Material, "Miasma", "Mi", "Hunger takes the grave of a plant. Poison · Fire. Foul breath that holds the step."),
                 new RuneDef(RuneId.Poison, RuneFamily.Material, "Poison", "Po", "The vegetable body, then the grave. Plant · Death."),
 
@@ -547,7 +549,7 @@ namespace RuneMagic
             RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Ember,
             RuneId.Steam, RuneId.Cloud, RuneId.Ice, RuneId.Mud,
             RuneId.Lava, RuneId.Dust, RuneId.Stone, RuneId.Plant,
-            RuneId.Ash, RuneId.Oil, RuneId.Metal
+            RuneId.Ash, RuneId.Oil, RuneId.Explosion, RuneId.Metal
         };
 
         static readonly RuneId[] PlaceableLead =
@@ -558,7 +560,7 @@ namespace RuneMagic
             RuneId.Spark, RuneId.Lightning, RuneId.Flame, RuneId.Animus, RuneId.Anima, RuneId.Ember,
             RuneId.Cloud, RuneId.Steam,
             RuneId.Ice, RuneId.Glacier,
-            RuneId.Plant, RuneId.Ash, RuneId.Oil,
+            RuneId.Plant, RuneId.Ash, RuneId.Oil, RuneId.Explosion,
             RuneId.Dust, RuneId.Mud, RuneId.Stone,
             RuneId.Lava, RuneId.Metal, RuneId.Obsidian, RuneId.Glass, RuneId.Crystal,
             RuneId.Acid, RuneId.Miasma, RuneId.Poison, RuneId.Plasma,

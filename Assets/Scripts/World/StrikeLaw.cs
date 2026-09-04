@@ -77,6 +77,11 @@ namespace RuneMagic
 
         public static Strike Of(SpellId spell)
         {
+            if (ArrowLaw.TryGet(spell, out var arrow))
+            {
+                return new Strike(arrow.Power, arrow.Kind);
+            }
+
             switch (spell)
             {
                 case SpellId.Fireball: return new Strike(3, StrikeKind.Fire);
@@ -88,6 +93,8 @@ namespace RuneMagic
                 case SpellId.Drive: return new Strike(5, StrikeKind.Fire);
                 case SpellId.Witchfire: return new Strike(WitchfirePower, StrikeKind.Witchfire);
                 case SpellId.Plasma: return new Strike(8, StrikeKind.Plasma);
+                case SpellId.Explosion: return new Strike(5, StrikeKind.Fire);
+                case SpellId.Atomic: return new Strike(10, StrikeKind.Plasma);
                 case SpellId.LavaPillar: return new Strike(4, StrikeKind.Lava);
                 case SpellId.LavaFlood: return new Strike(4, StrikeKind.Lava);
                 case SpellId.LavaRain: return new Strike(4, StrikeKind.Lava);
@@ -101,7 +108,6 @@ namespace RuneMagic
                 case SpellId.StormCall: return new Strike(5, StrikeKind.Spark);
                 case SpellId.SparkRain: return new Strike(3, StrikeKind.Spark);
                 case SpellId.HurledStone: return new Strike(3, StrikeKind.Earth);
-                case SpellId.WoodArrow: return new Strike(3, StrikeKind.Plant);
                 case SpellId.MetalRain: return new Strike(3, StrikeKind.Metal);
                 case SpellId.MetalPillar: return new Strike(3, StrikeKind.Metal);
                 case SpellId.Douse: return new Strike(2, StrikeKind.Water);
@@ -463,6 +469,18 @@ namespace RuneMagic
             {
                 broken.Add("Wood arrow is the plant twin of hurled stone — power 3, drops flesh, not a golem or a plant");
             }
+
+            if (Of(SpellId.FireArrow).Kind != StrikeKind.Fire
+                || Of(SpellId.IceArrow).Kind != StrikeKind.Ice
+                || Of(SpellId.PoisonArrow).Kind != StrikeKind.Poison
+                || Of(SpellId.Explosion).Power != 5
+                || Of(SpellId.Atomic).Power != 10
+                || Of(SpellId.Atomic).Kind != StrikeKind.Plasma)
+            {
+                broken.Add("Mixed arrows strike as the mixed element; Explosion is force 5; Atomic is plasma force 10");
+            }
+
+            ArrowLaw.Audit(broken);
         }
     }
 

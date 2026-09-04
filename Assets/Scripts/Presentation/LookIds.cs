@@ -165,7 +165,7 @@ namespace RuneMagic
                 var compact = spell.ToString().ToLowerInvariant();
                 Add(ids, kebab + "-shot");
                 Add(ids, kebab);
-                if (spell == SpellId.WoodArrow)
+                if (ArrowLaw.IsArrow(spell))
                 {
                     Add(ids, "arrow-shot");
                     Add(ids, "wood-arrow-shot");

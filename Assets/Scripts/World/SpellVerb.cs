@@ -84,6 +84,11 @@ namespace RuneMagic
 
         static SpellVerb FromSpell(SpellId spell)
         {
+            if (ArrowLaw.IsArrow(spell))
+            {
+                return ArrowLaw.VerbOf(spell);
+            }
+
             switch (spell)
             {
                 case SpellId.Fireball:
@@ -132,7 +137,6 @@ namespace RuneMagic
                 case SpellId.DirtToss:
                     return new SpellVerb(SpellTarget.Single, 2.2f, StatusId.None, 0f, TileVerb.Dirt);
                 case SpellId.HurledStone:
-                case SpellId.WoodArrow:
                     return new SpellVerb(SpellTarget.Single, 0f, StatusId.None, 0f, TileVerb.None);
                 case SpellId.Thunder:
                     return new SpellVerb(SpellTarget.Area, 2.2f, StatusId.Stunned, 1.6f, TileVerb.Charge);
@@ -281,6 +285,10 @@ namespace RuneMagic
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.Poisoned, StatusSpec.PoisonKillSeconds, TileVerb.None);
                 case SpellId.Plasma:
                     return new SpellVerb(SpellTarget.Single, 1.2f, StatusId.Burning, 3f, TileVerb.Ignite);
+                case SpellId.Explosion:
+                    return new SpellVerb(SpellTarget.Single, 2.2f, StatusId.Burning, 4.5f, TileVerb.Ignite);
+                case SpellId.Atomic:
+                    return new SpellVerb(SpellTarget.Single, 3.4f, StatusId.Burning, 5f, TileVerb.Ignite);
                 case SpellId.Tree:
                 case SpellId.WoodWall:
                     return new SpellVerb(SpellTarget.Single, 1.1f, StatusId.None, 0f, TileVerb.Grow);

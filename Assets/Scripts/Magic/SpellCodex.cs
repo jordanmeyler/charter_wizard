@@ -76,7 +76,8 @@ namespace RuneMagic
     /// 41–50 are Death / Free. 51 is Time-stop (Charter).
     /// 121–128 are plant-cure, light orbs, and living venom.
     /// 129 is Float. 130–131 are Blink and Teleport. 132 is Wood arrow.
-    /// 133 is Lightning bolt (Spark shot is 7).
+    /// 133 is Lightning bolt (Spark shot is 7). 134–135 are Explosion
+    /// and Atomic. 136–138 are mixed wood arrows.
     /// Life only marks a living recipe.
     /// </summary>
     public static class SpellCodex
@@ -127,7 +128,7 @@ namespace RuneMagic
             E(40, SpellBook.Call, SpellId.CallBeast, "Flesh, marked living, given a mind, sent here. Know the formula.", "Call beast", "Earth · Water · Salt · Life · Sulphur · Mercury", "", "Remote", SpellOutcome.Neither),
             E(41, SpellBook.Grave, SpellId.Blight, "A vegetable body, then the grave, given a body. Verdure rots.", "Blight", "Water · Salt · Earth · Death · Salt", "Poison · Salt", "Grow", SpellOutcome.Kill, "Either"),
             E(42, SpellBook.Grave, SpellId.Shade, "Withheld, given a body, marked by the grave, and sent.", "Shade", "Dark · Death · Salt · Mercury", "Shade · Mercury", "Remote", SpellOutcome.Neither, "Free"),
-            E(43, SpellBook.Grave, SpellId.Unmake, "The grave is sent into a living body.", "Unmake", "Death · Mercury · Life · Salt", "", "Remote", SpellOutcome.Kill, "Free"),
+            E(43, SpellBook.Grave, SpellId.Unmake, "The grave is sent into a body. Living flesh, black glass, and warded stone come apart.", "Unmake", "Death · Mercury · Life · Salt", "", "Remote", SpellOutcome.Kill, "Free"),
             E(44, SpellBook.Grave, SpellId.GraveSleep, "The waking passion is given to the grave. Sleep as if dead.", "Grave-sleep", "Life · Sulphur · Death", "", "Remote", SpellOutcome.Restrain, "Free"),
             E(45, SpellBook.Grave, SpellId.CorpseCall, "One grave is opened and a mind is sent. They rise and serve while you hold the sentence.", "Corpse-call", "Salt · Water · Earth · Fire · Death · Mercury", "", "Remote", SpellOutcome.Restrain, "Free"),
             E(46, SpellBook.Grave, SpellId.GraveDust, "Rest marked by the grave. Earth-life and golems come apart.", "Grave-dust", "Earth · Death · Salt", "", "Grow", SpellOutcome.Kill, "Either"),
@@ -144,7 +145,7 @@ namespace RuneMagic
             E(57, SpellBook.Mind, SpellId.Watershield, "Yield given a body, then the mind holds it on you. Water breaks. You walk on yield.", "Water ward", "Water · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(58, SpellBook.Mind, SpellId.Flameward, "Hunger given a body, then the mind holds it on you. Fire breaks.", "Flame ward", "Fire · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
             E(59, SpellBook.Mind, SpellId.Windward, "Breath given a body, then the mind holds it on you. Air breaks. Fog and foul breath leave.", "Wind ward", "Air · Salt · Sulphur", "", "Self", SpellOutcome.Neither),
-            E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a standing body. It stands. Yield cools it to rock.", "Lava-pillar", "Fire · Earth · Salt", "Lava · Salt", "Pillar", SpellOutcome.Kill),
+            E(60, SpellBook.End, SpellId.LavaPillar, "Hungry earth given a standing body. It stands. Yield cools it to obsidian.", "Lava-pillar", "Fire · Earth · Salt", "Lava · Salt", "Pillar", SpellOutcome.Kill),
             E(61, SpellBook.Cross, SpellId.Shatter, "A stood wall given breath and sent. Matter comes apart.", "Shatter", "Earth · Salt · Earth · Air · Mercury", "Stone · Earth · Air · Mercury", "Remote", SpellOutcome.Neither),
             E(62, SpellBook.Mind, SpellId.Confuse, "Breath turned by Sulphur, into a mind. They lose the thread.", "Confuse", "Air · Sulphur · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(63, SpellBook.Cross, SpellId.IceWall, "A body of ice asked to stand as more ice. A wall. Across a pit it is a two-tile span that must find floor or wall at each end, or it falls. On water it freezes without banks. It will thaw.", "Ice-wall", "Water · Earth · Salt · Water · Earth", "Ice · Salt · Ice", "Pillar", SpellOutcome.Restrain),
@@ -217,7 +218,12 @@ namespace RuneMagic
             E(130, SpellBook.Cross, SpellId.Blink, "That leap given the seed. You jump as the spark. A wall will not stop you.", "Blink", "Air · Salt · Air · Fire · Air", "Air · Salt · Air · Spark", "Self", SpellOutcome.Neither),
             E(131, SpellBook.Cross, SpellId.Teleport, "That spark-leap is shown. You leave and arrive anywhere you can see.", "Teleport", "Air · Salt · Air · Fire · Air · Light", "Air · Salt · Air · Spark · Light", "Self", SpellOutcome.Neither),
             E(132, SpellBook.End, SpellId.WoodArrow, "A vegetable body given a shaft and sent. Wood flies.", "Wood arrow", "Water · Salt · Earth · Salt · Mercury", "Plant · Salt · Mercury", "Shot", SpellOutcome.Kill),
-            E(133, SpellBook.End, SpellId.LightningBolt, "The seed stretched through more breath and sent. A bolt, a path, not a body.", "Lightning bolt", "Fire · Air · Air · Mercury", "Lightning · Mercury", "Shot", SpellOutcome.Kill)
+            E(133, SpellBook.End, SpellId.LightningBolt, "The seed stretched through more breath and sent. A bolt, a path, not a body.", "Lightning bolt", "Fire · Air · Air · Mercury", "Lightning · Mercury", "Shot", SpellOutcome.Kill),
+            E(134, SpellBook.End, SpellId.Explosion, "Fuel meeting hunger, sent. A blast. Stood dirt and stone come apart. Black glass will not.", "Explosion", "Oil · Fire · Mercury", "Explosion · Mercury", "Shot", SpellOutcome.Kill),
+            E(135, SpellBook.End, SpellId.Atomic, "That blast joined to plasma and sent. Ordinary matter and warded stone end.", "Atomic", "Oil · Fire · Flame · Lightning · Mercury", "Explosion · Plasma · Mercury", "Shot", SpellOutcome.Kill),
+            E(136, SpellBook.End, SpellId.FireArrow, "A vegetable shaft mixed with hunger and sent. The tile kindles.", "Fire arrow", "Water · Salt · Earth · Salt · Fire · Mercury", "Plant · Salt · Fire · Mercury", "Shot", SpellOutcome.Kill),
+            E(137, SpellBook.End, SpellId.IceArrow, "A vegetable shaft mixed with hard water and sent. The tile freezes.", "Ice arrow", "Water · Salt · Earth · Salt · Ice · Mercury", "Plant · Salt · Ice · Mercury", "Shot", SpellOutcome.Kill),
+            E(138, SpellBook.End, SpellId.PoisonArrow, "A vegetable shaft mixed with the grave of a plant and sent. The tile weeps venom.", "Poison arrow", "Water · Salt · Earth · Salt · Poison · Mercury", "Plant · Salt · Poison · Mercury", "Shot", SpellOutcome.Kill)
         };
 
         public static IReadOnlyList<CodexEntry> All
@@ -795,6 +801,63 @@ namespace RuneMagic
                 broken.Add("Water · Salt · Earth · Salt · Mercury should be Wood arrow");
             }
 
+            var fireArrow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Fire, RuneId.Mercury });
+            var fireArrowExact = ChainBook.CollectExact(fireArrow, SpellShape.None);
+            if (fireArrowExact.Count == 0 || fireArrowExact[0].Spell != SpellId.FireArrow)
+            {
+                broken.Add("Plant · Salt · Fire · Mercury should be Fire arrow");
+            }
+
+            var iceArrow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Ice, RuneId.Mercury });
+            var iceArrowExact = ChainBook.CollectExact(iceArrow, SpellShape.None);
+            if (iceArrowExact.Count == 0 || iceArrowExact[0].Spell != SpellId.IceArrow)
+            {
+                broken.Add("Plant · Salt · Ice · Mercury should be Ice arrow");
+            }
+
+            var poisonArrow = Composition.FromSequence(new[] { RuneId.Plant, RuneId.Salt, RuneId.Poison, RuneId.Mercury });
+            var poisonArrowExact = ChainBook.CollectExact(poisonArrow, SpellShape.None);
+            if (poisonArrowExact.Count == 0 || poisonArrowExact[0].Spell != SpellId.PoisonArrow)
+            {
+                broken.Add("Plant · Salt · Poison · Mercury should be Poison arrow");
+            }
+
+            var explosionVia = Composition.FromSequence(new[] { RuneId.Explosion, RuneId.Mercury });
+            var explosionExact = ChainBook.CollectExact(explosionVia, SpellShape.None);
+            if (explosionExact.Count == 0 || explosionExact[0].Spell != SpellId.Explosion)
+            {
+                broken.Add("Explosion · Mercury should be Explosion");
+            }
+
+            var explosionRoots = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Fire, RuneId.Mercury });
+            var explosionFromRoots = ChainBook.CollectExact(explosionRoots, SpellShape.None);
+            if (explosionFromRoots.Count == 0 || explosionFromRoots[0].Spell != SpellId.Explosion)
+            {
+                broken.Add("Oil · Fire · Mercury should be Explosion");
+            }
+
+            var oilFireJoin = Composition.FromSequence(new[] { RuneId.Oil, RuneId.Fire });
+            if (ChainBook.CollectExact(oilFireJoin, SpellShape.None).Count != 0)
+            {
+                broken.Add("Oil · Fire joins to Explosion, not a spell");
+            }
+
+            var atomicVia = Composition.FromSequence(new[] { RuneId.Explosion, RuneId.Plasma, RuneId.Mercury });
+            var atomicExact = ChainBook.CollectExact(atomicVia, SpellShape.None);
+            if (atomicExact.Count == 0 || atomicExact[0].Spell != SpellId.Atomic)
+            {
+                broken.Add("Explosion · Plasma · Mercury should be Atomic");
+            }
+
+            if (!WorldWork.StopsOnWalls(SpellId.Explosion)
+                || !WorldWork.StopsOnWalls(SpellId.Atomic)
+                || !WorldWork.StopsOnWalls(SpellId.FireArrow)
+                || !WorldWork.StopsOnWalls(SpellId.IceArrow)
+                || !WorldWork.StopsOnWalls(SpellId.PoisonArrow))
+            {
+                broken.Add("Explosion, Atomic, and mixed arrows must stop on a wall");
+            }
+
             var monsoon = Composition.FromSequence(new[] { RuneId.Water, RuneId.Salt, RuneId.Mercury });
             var monsoonExact = ChainBook.CollectExact(monsoon, SpellShape.None);
             if (monsoonExact.Count == 0 || monsoonExact[0].Spell != SpellId.Monsoon)
@@ -910,6 +973,21 @@ namespace RuneMagic
                 || plasmaBirth[1] != RuneId.Lightning)
             {
                 broken.Add("Plasma must be Flame · Lightning");
+            }
+
+            if (!ChainBook.TryBirth(RuneId.Explosion, out var explosionBirth)
+                || explosionBirth.Count != 2
+                || explosionBirth[0] != RuneId.Oil
+                || explosionBirth[1] != RuneId.Fire)
+            {
+                broken.Add("Explosion must be Oil · Fire");
+            }
+
+            if (!MaterialTree.TryBlend(RuneId.Oil, RuneId.Fire, out var fuelBlast)
+                || fuelBlast.Result != RuneId.Explosion
+                || fuelBlast.Kind != BlendKind.Violent)
+            {
+                broken.Add("Oil · Fire must join violently into Explosion");
             }
 
             var mudJoin = Composition.FromSequence(new[] { RuneId.Earth, RuneId.Water });

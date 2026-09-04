@@ -1107,7 +1107,7 @@ namespace RuneMagic
             spell = SpellCodex.WorkOf(spell);
             if (WorldWork.IsHop(spell))
             {
-                return "Click where you want to land. Breath given a body carries you over a hollow.";
+                return "Click where you want to land. Breath given a body carries you over a hollow, and over a wall you stood.";
             }
 
             if (WorldWork.IsBlink(spell))
@@ -1122,7 +1122,7 @@ namespace RuneMagic
 
             if (WorldWork.IsFlight(spell))
             {
-                return "Click to keep the breath on you. Walk the air — pits will not take you. Recast the same sentence to land.";
+                return "Click to keep the breath on you. Walk the air — pits will not take you, and a wall you stood will not stop you. Recast the same sentence to land.";
             }
 
             if (WorldWork.IsFloat(spell))

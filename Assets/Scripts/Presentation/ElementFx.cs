@@ -191,6 +191,8 @@ namespace RuneMagic
                 case RuneId.Oil:
                 case RuneId.Vita:
                     return ElementFamily.Plant;
+                case RuneId.Explosion:
+                    return ElementFamily.Fire;
                 case RuneId.Umbra:
                 case RuneId.Mors:
                 case RuneId.Shade:

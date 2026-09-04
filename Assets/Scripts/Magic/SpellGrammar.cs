@@ -155,6 +155,11 @@ namespace RuneMagic
         Teleport,
         WoodArrow,
         SparkShot,
+        Explosion,
+        Atomic,
+        FireArrow,
+        IceArrow,
+        PoisonArrow,
         // Aliases of earlier ids. Keep these last so they do not
         // reset the next unique values.
         DarkCrystal = GraveIce
@@ -286,6 +291,7 @@ namespace RuneMagic
             Register(RuneId.Miasma, RuneId.Salt, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Poison · Fire. Hunger taking the grave of a plant. Foul breath given a body.");
             Register(RuneId.Poison, RuneId.Fire, SpellShape.Spread, SpellId.Miasma, "Miasma", "Compressed. Catalog: Poison · Fire. Hunger taking the grave of a plant.");
             Register(RuneId.Plasma, RuneId.Mercury, SpellShape.Shot, SpellId.Plasma, "Plasma", "Witchfire joined to the bolt and sent. Ordinary matter ends.");
+            Register(RuneId.Explosion, RuneId.Mercury, SpellShape.Shot, SpellId.Explosion, "Explosion", "Compressed. Catalog: Explosion · Mercury. Oil · Fire · Mercury. Fuel meeting hunger, sent. A blast.");
             Register(RuneId.Obsidian, RuneId.Salt, SpellShape.Pillar, SpellId.ObsidianWall, "Obsidian-wall", "Compressed. Catalog: Obsidian · Salt · Obsidian. Lava · Salt · Water · Salt · Lava · Salt · Water.");
             Register(RuneId.Water, RuneId.Anima, SpellShape.Self, SpellId.TideForm, "Tide-form", "Compressed. Catalog: Water · Anima · Water · Salt · Sulphur. Yield given eros and itself again. You become yield.");
             Register(RuneId.Vita, RuneId.Mercury, SpellShape.Remote, SpellId.Charm, "Charm", "Compressed. Catalog: Life · Sulphur · Mercury. A living mind is reached. They fetch, and they fight what you mark.");

@@ -194,6 +194,13 @@
       ]
     },
     {
+      "rune": "Explosion",
+      "sources": [
+        "Oil",
+        "Fire"
+      ]
+    },
+    {
       "rune": "Miasma",
       "sources": [
         "Poison",
@@ -798,7 +805,7 @@
       "id": "Unmake",
       "book": "Grave",
       "name": "Unmake",
-      "want": "The grave is sent into a living body.",
+      "want": "The grave is sent into a body. Living flesh, black glass, and warded stone come apart.",
       "recipe": "Death · Mercury · Life · Salt",
       "via": "",
       "form": "Remote",
@@ -1041,7 +1048,7 @@
       "id": "LavaPillar",
       "book": "End",
       "name": "Lava-pillar",
-      "want": "Hungry earth given a standing body. It stands. Yield cools it to rock.",
+      "want": "Hungry earth given a standing body. It stands. Yield cools it to obsidian.",
       "recipe": "Fire · Earth · Salt",
       "via": "Lava · Salt",
       "form": "Pillar",
@@ -2138,6 +2145,71 @@
       "outcome": "Kill",
       "gate": "",
       "work": "LightningBolt"
+    },
+    {
+      "number": 134,
+      "id": "Explosion",
+      "book": "End",
+      "name": "Explosion",
+      "want": "Fuel meeting hunger, sent. A blast. Stood dirt and stone come apart. Black glass will not.",
+      "recipe": "Oil · Fire · Mercury",
+      "via": "Explosion · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "Explosion"
+    },
+    {
+      "number": 135,
+      "id": "Atomic",
+      "book": "End",
+      "name": "Atomic",
+      "want": "That blast joined to plasma and sent. Ordinary matter and warded stone end.",
+      "recipe": "Oil · Fire · Flame · Lightning · Mercury",
+      "via": "Explosion · Plasma · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "Atomic"
+    },
+    {
+      "number": 136,
+      "id": "FireArrow",
+      "book": "End",
+      "name": "Fire arrow",
+      "want": "A vegetable shaft mixed with hunger and sent. The tile kindles.",
+      "recipe": "Water · Salt · Earth · Salt · Fire · Mercury",
+      "via": "Plant · Salt · Fire · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "FireArrow"
+    },
+    {
+      "number": 137,
+      "id": "IceArrow",
+      "book": "End",
+      "name": "Ice arrow",
+      "want": "A vegetable shaft mixed with hard water and sent. The tile freezes.",
+      "recipe": "Water · Salt · Earth · Salt · Ice · Mercury",
+      "via": "Plant · Salt · Ice · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "IceArrow"
+    },
+    {
+      "number": 138,
+      "id": "PoisonArrow",
+      "book": "End",
+      "name": "Poison arrow",
+      "want": "A vegetable shaft mixed with the grave of a plant and sent. The tile weeps venom.",
+      "recipe": "Water · Salt · Earth · Salt · Poison · Mercury",
+      "via": "Plant · Salt · Poison · Mercury",
+      "form": "Shot",
+      "outcome": "Kill",
+      "gate": "",
+      "work": "PoisonArrow"
     }
   ]
 }
