@@ -6,13 +6,14 @@ namespace RuneMagic
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
     /// Ice is Water · Earth. Fire cover is the live hunger layer:
-    /// it can catch and interact once a spell starts work, and it
-    /// always puts Fire in the weave so it can be drawn. It does
-    /// not kindle a hall. Ember cover is coals: it provides fire
-    /// and stays on the walk. Floor-Fire / Wall-Fire are rest matter.
-    /// When fuel is spent, fire cover wears off and a plant or
-    /// timber walk swaps to leftover dirt (look and stamp). Vine
-    /// cover speaks Plant — Vine is a spell, not a rune.
+    /// standing on it burns, and at rest it lights flammable fuel
+    /// on or beside it. It always puts Fire in the weave so it can
+    /// be drawn. It does not kindle a hall. Ember cover is coals:
+    /// it provides fire and stays on the walk. Floor-Fire /
+    /// Wall-Fire are rest matter that also light fuel beside them.
+    /// When fuel is spent, a plant or timber walk swaps to leftover
+    /// dirt (look and stamp). Fire cover stays. Vine cover speaks
+    /// Plant — Vine is a spell, not a rune.
     /// Wither cover is what withholding leaves; it speaks Death.
     /// Miasma is Poison · Fire, a hanging fog wind must take.
     /// Poison is a liquid slick yield washes. Fog is the Cloud veil.
@@ -373,7 +374,7 @@ namespace RuneMagic
                 || MaterialOf(TileCover.Ember) != MaterialId.Ember
                 || SheenId(TileCover.Ember) != "fx-ember")
             {
-                broken.Add("Ember cover is coals on the walk — not fire cover that wears off");
+                broken.Add("Ember cover is coals on the walk — not leftover dirt");
             }
 
             if (MaterialOf(TileCover.Fire) != MaterialId.Fire

@@ -579,6 +579,7 @@ namespace RuneMagic
             }
 
             TickPoisonVeil();
+            TickFireContact();
             if (_effects.Count == 0)
             {
                 return;
@@ -646,6 +647,21 @@ namespace RuneMagic
                 || WorldPhysics.MiasmaCloudAt(grid, transform.position))
             {
                 Apply(StatusId.Poisoned, VitalLaw.AdeptPoisonSeconds);
+            }
+        }
+
+        void TickFireContact()
+        {
+            if (AdeptAvatar.IsAdept(this) || Has(StatusId.Burning))
+            {
+                return;
+            }
+
+            var grid = FindFirstObjectByType<WorldGrid>();
+            var tile = grid != null ? grid.TileAtWorld(transform.position) : null;
+            if (VitalLaw.IsFireContact(tile))
+            {
+                Apply(StatusId.Burning, VitalLaw.Seconds(StatusId.Burning, Nature, false));
             }
         }
 
