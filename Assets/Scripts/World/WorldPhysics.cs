@@ -1006,6 +1006,7 @@ namespace RuneMagic
             }
 
             MatterLaw.Audit(broken);
+            WorldWork.Audit(broken);
             ChargeLaw.Audit(broken);
             CoverCatalog.Audit(broken);
             LookIds.Audit(broken);

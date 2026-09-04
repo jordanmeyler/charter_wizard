@@ -87,6 +87,13 @@ namespace RuneMagic
             }
         }
         public bool IsAirborne => IsHopping || Flies;
+        /// <summary>
+        /// Hop, flight, and cloud-form clear a wall you stood.
+        /// Float still hangs against it. The room's own masonry stays.
+        /// </summary>
+        public bool PassesUserBuilt => IsHopping || (Flies && !Drifts);
+        bool _passingUserBuilt;
+
         public static bool WorldHeld { get; private set; }
 
         public static AdeptAvatar Find()
@@ -107,6 +114,7 @@ namespace RuneMagic
             }
 
             _hopUntil = Mathf.Max(_hopUntil, Time.time + seconds);
+            SyncUserBuiltPass();
         }
 
         public void KeepFlying(float seconds)
@@ -117,6 +125,7 @@ namespace RuneMagic
             }
 
             _flightUntil = Mathf.Max(_flightUntil, Time.time + seconds);
+            SyncUserBuiltPass();
         }
 
         public void KeepFloating(float seconds)
@@ -137,10 +146,13 @@ namespace RuneMagic
             if (IsFlying)
             {
                 _flightUntil = 0f;
+                SyncUserBuiltPass();
+                SnapOffBarrier();
                 return false;
             }
 
             KeepFlying(seconds);
+            SyncUserBuiltPass();
             return true;
         }
 
@@ -183,6 +195,8 @@ namespace RuneMagic
             _flameStand = 0f;
             _casting = false;
             WorldHeld = false;
+            SyncUserBuiltPass();
+            SnapOffBarrier();
         }
 
         public bool TickFlame(bool inFire, bool warded)
@@ -325,6 +339,63 @@ namespace RuneMagic
         void OnDisable()
         {
             WorldHeld = false;
+            _passingUserBuilt = false;
+            SyncUserBuiltPass(true);
+        }
+
+        public void NoteUserBuiltCollider(WorldTile tile)
+        {
+            var hit = GetComponent<Collider2D>();
+            var wall = tile != null ? tile.TravelCollider : null;
+            if (hit == null || wall == null || hit == wall)
+            {
+                return;
+            }
+
+            Physics2D.IgnoreCollision(hit, wall, PassesUserBuilt && WorldWork.IsUserBuiltBarrier(tile));
+        }
+
+        void SyncUserBuiltPass(bool forceOff = false)
+        {
+            BindView();
+            var pass = !forceOff && PassesUserBuilt;
+            _passingUserBuilt = pass;
+            var hit = GetComponent<Collider2D>();
+            var grid = _director != null ? _director.Grid : null;
+            if (hit == null || grid == null)
+            {
+                return;
+            }
+
+            foreach (var tile in grid.All)
+            {
+                var wall = tile != null ? tile.TravelCollider : null;
+                if (wall == null || wall == hit)
+                {
+                    continue;
+                }
+
+                Physics2D.IgnoreCollision(hit, wall, pass && WorldWork.IsUserBuiltBarrier(tile));
+            }
+        }
+
+        void SnapOffBarrier()
+        {
+            BindView();
+            var grid = _director != null ? _director.Grid : null;
+            if (grid == null)
+            {
+                return;
+            }
+
+            var land = WorldWork.SafeStandNear(grid, transform.position);
+            var body = GetComponent<Rigidbody2D>();
+            if (body != null)
+            {
+                body.position = land;
+            }
+
+            transform.position = land;
         }
 
         void Update()
@@ -371,6 +442,16 @@ namespace RuneMagic
 
         void LateUpdate()
         {
+            if (PassesUserBuilt != _passingUserBuilt)
+            {
+                var landing = _passingUserBuilt && !PassesUserBuilt;
+                SyncUserBuiltPass();
+                if (landing)
+                {
+                    SnapOffBarrier();
+                }
+            }
+
             var hidden = _status != null && _status.IsHidden;
             if (_glow != null)
             {

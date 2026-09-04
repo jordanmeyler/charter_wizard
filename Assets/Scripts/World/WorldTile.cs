@@ -3100,6 +3100,8 @@ namespace RuneMagic
             RefreshCollider();
         }
 
+        public Collider2D TravelCollider => _collider;
+
         void RefreshCollider()
         {
             var solid = BlocksTravel;
@@ -3112,6 +3114,7 @@ namespace RuneMagic
                     _collider = null;
                 }
 
+                AdeptAvatar.Find()?.NoteUserBuiltCollider(this);
                 return;
             }
 
@@ -3124,6 +3127,7 @@ namespace RuneMagic
 
             _collider.isTrigger = pit;
             _collider.enabled = true;
+            AdeptAvatar.Find()?.NoteUserBuiltCollider(this);
         }
 
         void RefreshLinger()
