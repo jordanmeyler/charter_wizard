@@ -11,13 +11,25 @@ namespace RuneMagic
     {
         public static T GetOrAdd<T>(GameObject host) where T : Component
         {
+            return GetOrAdd<T>(host, out _);
+        }
+
+        public static T GetOrAdd<T>(GameObject host, out bool created) where T : Component
+        {
+            created = false;
             if (host == null)
             {
                 return null;
             }
 
             var existing = host.GetComponent<T>();
-            return existing != null ? existing : host.AddComponent<T>();
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            created = true;
+            return host.AddComponent<T>();
         }
 
         public static SpriteRenderer ApplyLook(
@@ -28,9 +40,7 @@ namespace RuneMagic
             Sprite[] frames,
             float fps = 4f)
         {
-            var renderer = GetOrAdd<SpriteRenderer>(host);
-            renderer.sortingOrder = sortingOrder;
-            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            var renderer = KeepRenderer(host, sortingOrder);
             if (frames != null && frames.Length > 0)
             {
                 SpriteAnim.On(host, renderer).Play(frames, fps, true, spriteId ?? "authored");
@@ -43,9 +53,38 @@ namespace RuneMagic
                 return renderer;
             }
 
+            // A sprite already on the renderer is the author's picture.
+            if (renderer.sprite != null)
+            {
+                return renderer;
+            }
+
             var id = string.IsNullOrEmpty(spriteId) ? "charm" : spriteId;
             renderer.sprite = SpriteFactory.Named(id);
             SpriteAnim.On(host, renderer).Play(id, fps);
+            return renderer;
+        }
+
+        /// <summary>
+        /// Add a renderer only when the object has none. Sorting
+        /// order and sort point stay as the Inspector left them.
+        /// </summary>
+        public static SpriteRenderer KeepRenderer(GameObject host, int sortingOrder)
+        {
+            if (host == null)
+            {
+                return null;
+            }
+
+            var existing = host.GetComponent<SpriteRenderer>();
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var renderer = host.AddComponent<SpriteRenderer>();
+            renderer.sortingOrder = sortingOrder;
+            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
             return renderer;
         }
 

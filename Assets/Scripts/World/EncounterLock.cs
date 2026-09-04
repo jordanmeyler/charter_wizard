@@ -97,13 +97,19 @@ namespace RuneMagic
                 FixtureGlow.Attach(transform, new Color(1f, 0.35f, 0.08f, 0.7f), 1.8f, 0.16f);
             }
 
-            var body = AuthoringUtil.GetOrAdd<Rigidbody2D>(gameObject);
-            body.gravityScale = 0f;
-            body.bodyType = RigidbodyType2D.Kinematic;
+            var body = AuthoringUtil.GetOrAdd<Rigidbody2D>(gameObject, out var addedBody);
+            if (addedBody)
+            {
+                body.gravityScale = 0f;
+                body.bodyType = RigidbodyType2D.Kinematic;
+            }
 
-            var hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
-            hit.radius = blocking ? 0.48f : 0.42f;
-            hit.isTrigger = !blocking;
+            var hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject, out var addedHit);
+            if (addedHit)
+            {
+                hit.radius = blocking ? 0.48f : 0.42f;
+                hit.isTrigger = !blocking;
+            }
             _hit = hit;
             _rest = transform.position;
 
@@ -351,9 +357,7 @@ namespace RuneMagic
 
         void PreviewLook()
         {
-            var renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            renderer.sortingOrder = DrawDepth.Body;
-            renderer.spriteSortPoint = SpriteSortPoint.Pivot;
+            var renderer = AuthoringUtil.KeepRenderer(gameObject, DrawDepth.Body);
             WorldYSort.On(gameObject);
             if (idleFrames != null && idleFrames.Length > 0 && idleFrames[0] != null)
             {
@@ -364,6 +368,11 @@ namespace RuneMagic
             if (portrait != null)
             {
                 renderer.sprite = portrait;
+                return;
+            }
+
+            if (renderer.sprite != null)
+            {
                 return;
             }
 

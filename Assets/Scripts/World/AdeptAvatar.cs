@@ -316,10 +316,10 @@ namespace RuneMagic
                 return;
             }
 
-            animator.runtimeAnimatorController = controller;
-            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
-            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-            animator.applyRootMotion = false;
+            if (animator.runtimeAnimatorController == null)
+            {
+                animator.runtimeAnimatorController = controller;
+            }
         }
 
         void OnDisable()

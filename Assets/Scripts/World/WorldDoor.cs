@@ -236,8 +236,7 @@ namespace RuneMagic
         void ApplyState(bool playing)
         {
             RefreshCells();
-            _renderer = AuthoringUtil.GetOrAdd<SpriteRenderer>(gameObject);
-            _renderer.sortingOrder = 7;
+            _renderer = AuthoringUtil.KeepRenderer(gameObject, 7);
             var frames = IsOpen ? openFrames : closedFrames;
             var portrait = IsOpen ? openPortrait : closedPortrait;
             var id = CurrentSpriteId();
@@ -249,7 +248,7 @@ namespace RuneMagic
             {
                 _renderer.sprite = portrait;
             }
-            else
+            else if (_renderer.sprite == null)
             {
                 _renderer.sprite = SpriteFactory.Named(id);
             }
