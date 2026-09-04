@@ -17,6 +17,7 @@ namespace RuneMagic
         public TileDef Foundation { get; private set; }
         public bool PassageOpen { get; private set; }
         public DoorFace DoorFace { get; private set; }
+        bool LeafOpen;
         string _coverId;
         Sprite _coverLook;
         float _coverAlpha = 1f;
@@ -28,7 +29,12 @@ namespace RuneMagic
         /// An opened door is a hole in the wall.
         /// </summary>
         public bool BlocksTravel =>
-            Kind == TileKind.Wall || (Kind == TileKind.Door && !PassageOpen) || _detailBlocks || _detail2Blocks;
+            LeafOpen
+                ? (_detailBlocks || _detail2Blocks)
+                : Kind == TileKind.Wall
+                    || (Kind == TileKind.Door && !PassageOpen)
+                    || _detailBlocks
+                    || _detail2Blocks;
 
         public bool IsEmitting =>
             !Def.TearsTapestry
@@ -2397,6 +2403,30 @@ namespace RuneMagic
 
             PassageOpen = true;
             ApplyDoorSprite(open: true);
+            if (_collider != null)
+            {
+                _collider.enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// A WorldDoor leaf covers this cell. Open a painted door, or
+        /// drop the wall collider so the object door is the passage.
+        /// </summary>
+        public void YieldToLeaf()
+        {
+            if (Kind == TileKind.Door)
+            {
+                OpenDoor();
+                return;
+            }
+
+            if (!BlocksTravel)
+            {
+                return;
+            }
+
+            LeafOpen = true;
             if (_collider != null)
             {
                 _collider.enabled = false;

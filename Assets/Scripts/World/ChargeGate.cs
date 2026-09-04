@@ -267,7 +267,7 @@ namespace RuneMagic
             {
                 for (var i = 0; i < _doors.Length; i++)
                 {
-                    _grid.Get(_doors[i])?.OpenDoor();
+                    _grid.Get(_doors[i])?.YieldToLeaf();
                     opened = true;
                 }
             }

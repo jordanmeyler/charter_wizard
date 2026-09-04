@@ -65,6 +65,7 @@ namespace RuneMagic
         readonly List<Vector3> _doorWorlds = new();
         float _pulse;
         bool _wired;
+        bool _volumeReady;
         SpriteRenderer _renderer;
 
         bool HasAuthoredArt =>
@@ -109,6 +110,7 @@ namespace RuneMagic
             }
 
             ApplyPlayLook(spriteId);
+            EnsureVolume();
         }
 
         public void BindFromAuthoring(WorldGrid grid)
@@ -324,7 +326,7 @@ namespace RuneMagic
             {
                 for (var i = 0; i < _doors.Length; i++)
                 {
-                    _grid.Get(_doors[i])?.OpenDoor();
+                    _grid.Get(_doors[i])?.YieldToLeaf();
                     opened = true;
                 }
             }
@@ -358,22 +360,24 @@ namespace RuneMagic
             return copy;
         }
 
-        void Update()
+        void EnsureVolume()
         {
-            if (!Application.isPlaying)
+            if (_volumeReady || !Application.isPlaying)
             {
                 return;
             }
 
+            _volumeReady = true;
+            var hit = AuthoringUtil.GetOrAdd<CircleCollider2D>(gameObject);
+            hit.isTrigger = true;
+            hit.radius = Mathf.Max(1.2f, ApproachRadius * 0.75f);
+        }
+
+        void TrySeat()
+        {
             if (Resolved)
             {
                 return;
-            }
-
-            if (pulse && !HasAuthoredArt)
-            {
-                _pulse += Time.deltaTime;
-                transform.localScale = Vector3.one * (1f + Mathf.Sin(_pulse * 2.4f) * 0.04f);
             }
 
             if (_director == null)
@@ -386,18 +390,50 @@ namespace RuneMagic
                 return;
             }
 
-            var player = AdeptAvatar.Find();
-            if (player == null || !PlayerAtLock(player.transform.position))
-            {
-                return;
-            }
-
             if (!_director.Pack.HasAll(RequiredIds()))
             {
                 return;
             }
 
             _director.TurnLock(this);
+        }
+
+        void OnTriggerStay2D(Collider2D other)
+        {
+            if (!Application.isPlaying || Resolved || !AdeptAvatar.IsAdept(other))
+            {
+                return;
+            }
+
+            TrySeat();
+        }
+
+        void Update()
+        {
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+
+            if (Resolved)
+            {
+                return;
+            }
+
+            EnsureVolume();
+            if (pulse && !HasAuthoredArt)
+            {
+                _pulse += Time.deltaTime;
+                transform.localScale = Vector3.one * (1f + Mathf.Sin(_pulse * 2.4f) * 0.04f);
+            }
+
+            var player = AdeptAvatar.Find();
+            if (player == null || !PlayerAtLock(player.transform.position))
+            {
+                return;
+            }
+
+            TrySeat();
         }
 
         static string Pretty(string id)

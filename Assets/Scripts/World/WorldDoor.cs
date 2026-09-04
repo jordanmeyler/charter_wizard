@@ -305,7 +305,7 @@ namespace RuneMagic
 
             for (var i = 0; i < _cells.Length; i++)
             {
-                _grid.Get(_cells[i])?.OpenDoor();
+                _grid.Get(_cells[i])?.YieldToLeaf();
             }
         }
 
@@ -346,16 +346,18 @@ namespace RuneMagic
             var frames = IsOpen ? openFrames : closedFrames;
             var portrait = IsOpen ? openPortrait : closedPortrait;
             var id = CurrentSpriteId();
-            if (playing)
+            if (frames != null && frames.Length > 0)
             {
                 AuthoringUtil.ApplyLook(gameObject, 7, id, portrait, frames, 4f);
             }
             else if (portrait != null)
             {
+                _renderer.enabled = true;
                 _renderer.sprite = portrait;
             }
-            else if (_renderer.sprite == null)
+            else
             {
+                _renderer.enabled = true;
                 _renderer.sprite = SpriteFactory.Named(id);
             }
 
