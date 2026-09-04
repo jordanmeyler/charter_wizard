@@ -918,6 +918,15 @@ namespace RuneMagic
                 broken.Add("Hunger must not run onto empty or neutral ground; ember hosts fire but is not fuel; plant on rest fire is the wick");
             }
 
+            if (VitalLaw.IsRestCatchFuel(MaterialId.Plant)
+                || VitalLaw.IsRestCatchFuel(MaterialId.Timber)
+                || !VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
+                || !VitalLaw.IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
+                || !VitalLaw.IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true))
+            {
+                broken.Add("Rest fire lights adjacent covers, oil, and details — not a plant or timber walk");
+            }
+
             if (water.BurnRate > 0f || water.BurnSeconds > 0f || water.Flammability >= 0f)
             {
                 broken.Add("Water itself must quench hunger, not carry it");

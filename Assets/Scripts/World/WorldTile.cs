@@ -268,9 +268,20 @@ namespace RuneMagic
             || HasPoisonCover;
 
         /// <summary>
+        /// Fuel a rest flame lights on a neighbor at rest: vine /
+        /// plant cover, oil, a poison slick, or a bush / table.
+        /// Floor-Plant and the other vegetable walks are not this.
+        /// </summary>
+        public bool HasRestCatchFuel =>
+            !HasAshCover && (HasOverlayFuel || HasPlantCover);
+
+        /// <summary>
         /// Plant, oil, timber, or other fuel a rest flame can light
-        /// on this cell. Fire cover and rest-fire walks are the
-        /// source, not catchable fuel.
+        /// on this cell. Includes a plant walk under fire cover so
+        /// that covering burns the fuel it sits on. Neighbors use
+        /// <see cref="HasRestCatchFuel"/> — rest fire does not walk
+        /// onto a plant floor beside it. Fire cover and rest-fire
+        /// walks are the source, not catchable fuel.
         /// </summary>
         public bool HasCatchableFuel
         {
@@ -281,11 +292,7 @@ namespace RuneMagic
                     return false;
                 }
 
-                if (HasVine
-                    || HasPlantCover
-                    || (HasOil && !IsGeyser)
-                    || HasPlantishDetail
-                    || HasPoisonCover
+                if (HasRestCatchFuel
                     || (VitalLaw.CanBurn(Material) && !IsFireFloor))
                 {
                     return true;
@@ -777,7 +784,8 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 for the 7+ walk — at rest it still lights fuel beside it.
+        /// stays 0 for the 7+ walk — at rest it still lights overlay
+        /// fuel beside it, not a plant walk.
         /// </summary>
         public int Hunger
         {

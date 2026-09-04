@@ -14,7 +14,8 @@ namespace RuneMagic
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover stays and, at
-    /// rest, lights flammable fuel on or beside it. Charge uses a
+    /// rest, lights overlay fuel on or beside it — not a plant walk.
+    /// Charge uses a
     /// 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
@@ -264,11 +265,13 @@ namespace RuneMagic
         }
 
         // Rest fire (Floor-Fire, lava, a hearth), ember, and fire
-        // cover stay without a spell. At rest they light flammable
-        // fuel on the cell or beside it. Neutral stone stays dark.
-        // A spell or a catching overlay can still walk further using
-        // Hunger. Ember and fire cover stay. When the overlay is
-        // gone rest fire goes dark again — unless the hall is kindled.
+        // cover stay without a spell. At rest they light overlay
+        // fuel on the cell or beside it — vine, oil, a bush / table.
+        // They do not light a plant or timber walk beside them.
+        // Neutral stone stays dark. A spell that starts hunger can
+        // still run into those walks. Ember and fire cover stay.
+        // When the overlay is gone rest fire goes dark again —
+        // unless the hall is kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -307,8 +310,11 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A rest flame lights catchable fuel on its own cell and on
-        /// the four tiles beside it. It does not leap a stone gap.
+        /// A rest flame lights catchable fuel on its own cell, and
+        /// overlay fuel on the four tiles beside it — covers, oil,
+        /// bushes, tables. It does not light a plant or timber walk
+        /// beside it, and it does not leap a stone gap. A spell that
+        /// starts hunger can still run into those walks.
         /// </summary>
         void CatchRestFuel(WorldTile tile)
         {
@@ -326,7 +332,7 @@ namespace RuneMagic
             for (var n = 0; n < neighbors.Count; n++)
             {
                 var other = neighbors[n];
-                if (!AcceptsFireSpread(other) || !other.HasCatchableFuel)
+                if (!AcceptsFireSpread(other) || !other.HasRestCatchFuel)
                 {
                     continue;
                 }
