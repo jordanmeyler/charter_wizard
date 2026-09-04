@@ -51,7 +51,7 @@ namespace RuneMagic
                 "4. Or paint looks first from any ElvGames palette, then Window → Rune Magic → Tile Properties and click cells to set kind / material / cover / blocks. Looks are not floor until stamped. Select Environment Details or lvl 2, check Blocks, and drag across a cluster to add collision.\n" +
                 "5. Click a tile asset to change material, kind, cover, aura, or sprite.\n" +
                 "6. Drag prefabs from Assets/Prefabs. Stones can live in any folder under Prefabs. Authoring Place and GameObject → Rune Magic find them by name. A Door has Closed and Open sprites; drag it onto a Gate or Electric Gate. Cover-Fire burns who stands on it and lights flammable fuel beside it; Aura-Fire is a kindled hall.\n" +
-                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies. Drag Golem or Warden, then Portrait / Idle Frames / Attack Frames and set Attack. See ENEMIES.md.\n" +
+                "7. ElvGames palettes also paint — Play reads those sprites. Enemies are under GameObject → Rune Magic → Enemies. Drag Golem or Warden, then Idle / Attack frames. Attacks are what they do; Gambits are if/then (wall → flame-pillar). Custom writes your own runes. No Animator on enemies — see ENEMIES.md.\n" +
                 "8. Play. The painted map becomes the live grid. JSON floors are not loaded.",
                 MessageType.Info);
 
@@ -92,7 +92,7 @@ namespace RuneMagic
             DrawPlace("Decor", "WorldDecor — sprite id, blocking prop");
             DrawPlace("Mite", "EncounterLock — formula, keys, attack, grant. Prefer Enemies/Golem or Warden.");
             EditorGUILayout.Space();
-            DrawPlace("Custom", "Blank EncounterLock with Hunt, a close slam, and editable resistances. Dress it in the Inspector.");
+            DrawPlace("Custom", "Blank Hunt + slam. Add Attacks (wall, custom runes) and Gambits (if they raise a wall → …) in the Inspector.");
             EditorGUILayout.LabelField("Pack enemies", EditorStyles.boldLabel);
             for (var i = 0; i < PackEnemies.All.Length; i++)
             {

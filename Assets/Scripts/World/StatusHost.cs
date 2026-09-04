@@ -16,9 +16,13 @@ namespace RuneMagic
 
         static readonly List<StatusHost> Live = new();
 
+        public static IReadOnlyList<StatusHost> LiveHosts => Live;
+
         readonly List<StatusInstance> _effects = new();
         TextMesh _chip;
         SpriteRenderer _sprite;
+        Collider2D _hit;
+        bool _baseTrigger;
         Color _baseColor = Color.white;
 
         void OnEnable()
@@ -49,11 +53,16 @@ namespace RuneMagic
                 _baseColor = _sprite.color;
             }
 
+            _hit = GetComponent<Collider2D>();
+            _baseTrigger = _hit != null && _hit.isTrigger;
+
             _chip = WorldLabel.Attach(transform, "", chipOffset, new Color(0.95f, 0.82f, 0.55f), DrawDepth.Chip);
             if (_chip != null)
             {
                 _chip.characterSize = 0.055f;
             }
+
+            SyncPassage();
         }
 
         public static StatusHost On(Component other)
@@ -342,6 +351,7 @@ namespace RuneMagic
                     }
 
                     RefreshChip();
+                    SyncPassage();
                     return spec.IsMeter
                         ? $"{name} is {spec.Name} ({_effects[i].Remaining:0})."
                         : $"{name} is {spec.Name}.";
@@ -350,6 +360,7 @@ namespace RuneMagic
 
             _effects.Add(new StatusInstance(id, held, caster, runes, source));
             RefreshChip();
+            SyncPassage();
             return spec.IsMeter
                 ? $"{name} is {spec.Name} ({held:0})."
                 : $"{name} is {spec.Name}.";
@@ -478,6 +489,7 @@ namespace RuneMagic
         {
             _effects.Clear();
             RefreshChip();
+            SyncPassage();
             if (_sprite != null)
             {
                 _sprite.color = _baseColor;
@@ -531,6 +543,7 @@ namespace RuneMagic
             }
 
             RefreshChip();
+            SyncPassage();
             return removed;
         }
 
@@ -633,6 +646,7 @@ namespace RuneMagic
             }
 
             RefreshChip();
+            SyncPassage();
         }
 
         void TickPoisonVeil()
@@ -698,6 +712,34 @@ namespace RuneMagic
             _sprite.color = affected
                 ? Color.Lerp(_baseColor, DominantTint(), 0.42f)
                 : _baseColor;
+        }
+
+        /// <summary>
+        /// Sleep, stun, freeze, and charm are a body you can step over.
+        /// Blocking colliders stay solid until then.
+        /// </summary>
+        public void SyncPassage()
+        {
+            if (AdeptAvatar.IsAdept(this))
+            {
+                return;
+            }
+
+            if (_hit == null)
+            {
+                _hit = GetComponent<Collider2D>();
+                if (_hit != null)
+                {
+                    _baseTrigger = _hit.isTrigger && !YieldsPassage;
+                }
+            }
+
+            if (_hit == null)
+            {
+                return;
+            }
+
+            _hit.isTrigger = _baseTrigger || YieldsPassage;
         }
 
         Color DominantTint()

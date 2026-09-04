@@ -16,9 +16,9 @@ namespace RuneMagic
             serializedObject.Update();
             EditorGUILayout.HelpBox(
                 "Every enemy is a lock. Dress the look, then give them a mind.\n\n" +
-                "Attacks — add close / mid / long slots. Pick a spell and the runes fill themselves. Leave Attacks empty and the old Attack dropdown still works (Golem slam, Wizard fireball, Archer arrow).\n\n" +
-                "Gambits — first matching if/then wins, like FF12. The Mixed Court wall → flame-pillar is the default when this list is empty and they write fire.\n\n" +
-                "Nature — change the body from the Inspector. Load nature defaults, then tweak defense and affinities (0 immune … 5 ruin-weak).\n\n" +
+                "Attacks — what they do on their own. Add slam, a shot, a pillar, or a wall. Pick Custom and write the runes yourself (Fire · Mercury is a fireball).\n\n" +
+                "Gambits — if / then. First match wins. “If they raise a wall, then write flame-pillar” is the Mixed Court lesson. Add that row on any caster.\n\n" +
+                "Enemies do not use a Unity Animator. Drag idle / attack slices onto the frames below. The adept is the one with Animator.\n\n" +
                 "See ENEMIES.md.",
                 MessageType.Info);
 
@@ -79,6 +79,9 @@ namespace RuneMagic
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Look", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "Not a Unity Animator. Drag ElvGames slices onto Portrait / Idle / Attack. A is idle, C is slam or write, D is the unmake. The adept is the one with an Animator Controller.",
+                MessageType.None);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("portrait"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("idleFrames"), true);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("attackFrames"), true);
@@ -175,10 +178,12 @@ namespace RuneMagic
         void DrawAttacks()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Attacks", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Attacks — what they do on their own", EditorStyles.boldLabel);
             var attacks = serializedObject.FindProperty("attacks");
             EditorGUILayout.HelpBox(
-                "One slot per range is enough for most bodies. A golem with a mid fireball and a close slam will shoot, then slam when you step in. Pick a spell to fill the runes.",
+                "Each slot is one strike. Close slams. Mid / Long write a sentence (shot, pillar, or wall).\n" +
+                "Pick a named attack to fill the runes. Custom keeps Spell empty so you can write any sentence.\n" +
+                "A golem with slam + a mid wall will hold the tile, then stand earth if you stay at mid.",
                 MessageType.None);
 
             EditorGUILayout.BeginHorizontal();
@@ -197,9 +202,21 @@ namespace RuneMagic
                 AddSlot(CombatBook.SlotFromPage(CombatBook.PageOf(SpellId.WoodArrow, CombatStrike.Shot)));
             }
 
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Add flame-pillar"))
             {
                 AddSlot(CombatBook.SlotFromPage(CombatBook.PageOf(SpellId.FlamePillar, CombatStrike.Pillar)));
+            }
+
+            if (GUILayout.Button("Add wall"))
+            {
+                AddSlot(CombatBook.WallSlot());
+            }
+
+            if (GUILayout.Button("Add custom (write runes)"))
+            {
+                AddSlot(CombatBook.CustomSlot());
             }
 
             EditorGUILayout.EndHorizontal();
@@ -249,7 +266,9 @@ namespace RuneMagic
             {
                 var page = CombatBook.Pages[pageIndex];
                 spellProp.intValue = (int)page.Spell;
-                strikeProp.enumValueIndex = (int)page.Strike;
+                strikeProp.enumValueIndex = page.Strike != CombatStrike.None
+                    ? (int)page.Strike
+                    : (int)CombatStrike.Shot;
                 slot.FindPropertyRelative("Range").enumValueIndex = (int)page.Range;
                 WriteStrings(slot.FindPropertyRelative("Recipe"), CombatBook.RecipeNames(page.Spell));
                 var seconds = slot.FindPropertyRelative("CastSeconds");
@@ -261,20 +280,24 @@ namespace RuneMagic
                 var name = slot.FindPropertyRelative("Name");
                 name.stringValue = page.Name;
             }
-            else
-            {
-                EditorGUILayout.PropertyField(strikeProp, new GUIContent("Strike"));
-            }
+
+            EditorGUILayout.PropertyField(strikeProp, new GUIContent("Strike", "Slam, Shot, or Pillar. Pillar also covers walls."));
 
             EditorGUILayout.PropertyField(slot.FindPropertyRelative("Recipe"), new GUIContent("Recipe"), true);
             var runes = CombatBook.ParseRecipe(ReadStrings(slot.FindPropertyRelative("Recipe")));
             if (runes.Length > 0)
             {
-                EditorGUILayout.LabelField(WorkingNames.RunePhrase(runes), EditorStyles.miniLabel);
+                var matched = CombatBook.SpellFromRecipe(runes);
+                var phrase = WorkingNames.RunePhrase(runes);
+                EditorGUILayout.LabelField(
+                    matched != SpellId.None
+                        ? phrase + "  →  " + CombatBook.NameOf(matched, currentStrike)
+                        : phrase + "  (custom — set Strike to Slam, Shot, or Pillar)",
+                    EditorStyles.miniLabel);
             }
             else if (currentStrike != CombatStrike.Slam)
             {
-                EditorGUILayout.LabelField("No spell — write the runes yourself, or pick Slam.", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Write the runes (Fire, Mercury) or pick a named attack above.", EditorStyles.miniLabel);
             }
 
             EditorGUILayout.PropertyField(slot.FindPropertyRelative("CastSeconds"));
@@ -284,14 +307,36 @@ namespace RuneMagic
         void DrawGambits()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Gambits", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Gambits — if / then", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(
-                "If the player raises a wall, then write flame-pillar. First match wins. Player-cast gambits fire when that sentence lands in the same room.",
+                "If the player does this, then they write that. First matching row wins.\n" +
+                "If they raise a wall → flame-pillar is the Mixed Court answer. Add it here if you want it on this body everywhere, not only in that room.\n" +
+                "Then spell fills the runes. Leave Then spell on None and write Then recipe for a custom sentence.",
                 MessageType.None);
-            if (GUILayout.Button("Add wall → flame-pillar"))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("If they raise a wall → flame-pillar"))
             {
                 AddGambit(CombatBook.WallToFlamePillar());
             }
+
+            if (GUILayout.Button("If they raise a wall → wall"))
+            {
+                AddGambit(CombatBook.WallToWall());
+            }
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("If close → slam"))
+            {
+                AddGambit(CombatBook.CloseSlam());
+            }
+
+            if (GUILayout.Button("Add empty if / then"))
+            {
+                AddGambit(CombatBook.EmptyGambit());
+            }
+
+            EditorGUILayout.EndHorizontal();
 
             var gambits = serializedObject.FindProperty("gambits");
             for (var i = 0; i < gambits.arraySize; i++)
@@ -329,7 +374,7 @@ namespace RuneMagic
                 EditorGUILayout.PropertyField(gambit.FindPropertyRelative("WhenStatus"));
             }
 
-            EditorGUILayout.PropertyField(gambit.FindPropertyRelative("ThenStrike"), new GUIContent("Then"));
+            EditorGUILayout.PropertyField(gambit.FindPropertyRelative("ThenStrike"), new GUIContent("Then strike"));
             var thenSpell = gambit.FindPropertyRelative("ThenSpell");
             var then = SpellPopup("Then spell", (SpellId)thenSpell.intValue);
             if (then != (SpellId)thenSpell.intValue)
@@ -347,7 +392,12 @@ namespace RuneMagic
                 }
             }
 
-            EditorGUILayout.PropertyField(gambit.FindPropertyRelative("ThenRecipe"), new GUIContent("Then recipe"), true);
+            EditorGUILayout.PropertyField(gambit.FindPropertyRelative("ThenRecipe"), new GUIContent("Then recipe (custom if Then spell is None)"), true);
+            var thenRunes = CombatBook.ParseRecipe(ReadStrings(gambit.FindPropertyRelative("ThenRecipe")));
+            if (thenRunes.Length > 0)
+            {
+                EditorGUILayout.LabelField(WorkingNames.RunePhrase(thenRunes), EditorStyles.miniLabel);
+            }
             EditorGUILayout.PropertyField(gambit.FindPropertyRelative("Once"));
             EditorGUILayout.EndVertical();
         }

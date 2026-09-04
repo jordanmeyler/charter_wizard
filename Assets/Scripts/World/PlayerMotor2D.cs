@@ -11,6 +11,7 @@ namespace RuneMagic
 
         Rigidbody2D _body;
         SpriteRenderer _sprite;
+        Collider2D _hit;
         SanctumDirector _director;
         AdeptAvatar _adept;
 
@@ -18,6 +19,7 @@ namespace RuneMagic
         {
             _body = GetComponent<Rigidbody2D>();
             _sprite = GetComponent<SpriteRenderer>();
+            _hit = GetComponent<Collider2D>();
             _body.gravityScale = 0f;
             _body.freezeRotation = true;
             _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -77,6 +79,8 @@ namespace RuneMagic
                     _sprite.flipX = Facing.x < 0f;
                 }
             }
+
+            IgnoreSleepingBodies();
 
             var speed = moveSpeed;
             if (_adept != null && _adept.Drifts)
@@ -153,6 +157,36 @@ namespace RuneMagic
             if (_body != null)
             {
                 _body.linearVelocity = Vector2.zero;
+            }
+        }
+
+        /// <summary>
+        /// Lull, stun, freeze, and charm let the adept step over
+        /// the body. Blocking colliders stay solid until then.
+        /// </summary>
+        void IgnoreSleepingBodies()
+        {
+            if (_hit == null)
+            {
+                return;
+            }
+
+            var found = StatusHost.LiveHosts;
+            for (var i = 0; i < found.Count; i++)
+            {
+                var host = found[i];
+                if (host == null || host.gameObject == gameObject)
+                {
+                    continue;
+                }
+
+                var other = host.GetComponent<Collider2D>();
+                if (other == null)
+                {
+                    continue;
+                }
+
+                Physics2D.IgnoreCollision(_hit, other, host.YieldsPassage);
             }
         }
     }

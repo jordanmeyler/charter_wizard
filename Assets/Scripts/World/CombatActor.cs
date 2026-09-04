@@ -203,8 +203,18 @@ namespace RuneMagic
             if (_status != null && _status.BlocksAction)
             {
                 CancelWindup();
+                if (_status.Has(StatusId.Sleeping))
+                {
+                    transform.localScale = new Vector3(_restScale.x, _restScale.y * 0.55f, 1f);
+                }
+
                 ShowMindChip();
                 return;
+            }
+
+            if (_windup <= 0f && !_casting)
+            {
+                transform.localScale = _restScale;
             }
 
             var mind = _status != null ? _status.MindAilment : StatusId.None;
@@ -831,16 +841,26 @@ namespace RuneMagic
             PlayMotion(false, 4f);
             ClearCastChip();
             FinishPending();
-            var strike = slot.Strike == CombatStrike.None ? CombatBook.StrikeOf(slot.Spell) : slot.Strike;
-            var aim = mark != null ? mark.position : transform.position + (Vector3)_committed;
-            if (strike == CombatStrike.Pillar)
+            var spell = CombatBook.SpellOf(slot);
+            if (spell == SpellId.None)
             {
-                var spell = slot.Spell != SpellId.None ? slot.Spell : SpellId.FlamePillar;
-                EnemyPillar.Cast(_grid, transform.position, aim, spell, this, ShotOf(), _castRecipe);
+                spell = CombatBook.SpellFromRecipe(_castRecipe);
+            }
+
+            var strike = slot.Strike == CombatStrike.None ? CombatBook.StrikeOf(spell) : slot.Strike;
+            var aim = mark != null ? mark.position : transform.position + (Vector3)_committed;
+            if (strike == CombatStrike.Pillar || WorldWork.IsPillar(spell) || WorldWork.NeedsSpan(spell))
+            {
+                if (spell == SpellId.None)
+                {
+                    spell = SpellId.FlamePillar;
+                }
+
+                EnemyPillar.Cast(_grid, transform.position, aim, spell, this, ShotOf(), _castRecipe, _committed);
                 return;
             }
 
-            var shot = CombatBook.ShotKind(slot.Spell, _castRecipe);
+            var shot = CombatBook.ShotKind(spell, _castRecipe);
             var origin = transform.position + (Vector3)(_committed * 0.45f);
             WorldProjectile.Spawn(origin, _committed, shot, _grid, shot == ProjectileKind.Fireball ? 6.4f : 7.4f, this, ShotOf(), _castRecipe);
         }
