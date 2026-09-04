@@ -150,7 +150,8 @@ namespace RuneMagic
             new("Wood arrow", SpellId.WoodArrow, CombatRange.Long, CombatStrike.Shot, 1.15f),
             new("Hurled stone", SpellId.HurledStone, CombatRange.Mid, CombatStrike.Shot, 1.3f),
             new("Ice-spear", SpellId.IceSpear, CombatRange.Long, CombatStrike.Shot, 1.6f),
-            new("Lightning", SpellId.LightningBolt, CombatRange.Long, CombatStrike.Shot, 1.8f),
+            new("Spark shot", SpellId.SparkShot, CombatRange.Mid, CombatStrike.Shot, 1.5f),
+            new("Lightning bolt", SpellId.LightningBolt, CombatRange.Long, CombatStrike.Shot, 1.8f),
             new("Water-jet", SpellId.WaterJet, CombatRange.Mid, CombatStrike.Shot, 1.4f),
             new("Scald", SpellId.Scald, CombatRange.Mid, CombatStrike.Shot, 1.5f),
             new("Vine", SpellId.Vine, CombatRange.Mid, CombatStrike.Shot, 1.5f),
@@ -771,9 +772,17 @@ namespace RuneMagic
                 {
                     spell = SpellId.WoodArrow;
                 }
-                else if (WritesFire(written))
+                else
                 {
-                    spell = SpellId.Fireball;
+                    var exact = ChainBook.CollectExact(Composition.FromSequence(written), SpellShape.None);
+                    if (exact.Count > 0)
+                    {
+                        spell = exact[0].Spell;
+                    }
+                    else if (WritesFire(written))
+                    {
+                        spell = SpellId.Fireball;
+                    }
                 }
             }
 
@@ -1005,7 +1014,8 @@ namespace RuneMagic
             }
 
             var spark = SlotsFromKind(CombatKind.Wizard, new[] { RuneId.Spark, RuneId.Mercury }, 2f);
-            if (spark[0].Recipe == null || spark[0].Recipe.Length < 2 || spark[0].Recipe[0] != "Spark")
+            if (spark[0].Recipe == null || spark[0].Recipe.Length < 2 || spark[0].Recipe[0] != "Spark"
+                || spark[0].Spell != SpellId.SparkShot)
             {
                 broken.Add("A written wizard recipe must keep the author's marks");
             }

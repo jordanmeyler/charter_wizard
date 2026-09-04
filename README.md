@@ -21,12 +21,12 @@ Tiles are **materials** and each material keeps a full rune sentence. Those glyp
 | **The Sundered Heights** | Miasma on the floor | Wind (`Air · Mercury`), Gale | Air: a simple wind clears the room. |
 | **The Standing Stone** | A gap | Earth-pillar (`Earth · Salt`), Wall, Ice-wall (`Ice · Salt · Ice`), Bridge; Hop if you know Air | Salt stands a body. |
 | **The flaming hall** | Kindled floor, no water nearby | Flame ward (`Fire · Salt · Sulphur`); Douse if you fetch yield | First ward. Columns write the sentence at the mouth. |
-| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Lightning…) | Mercury sends. The same flame ward turns the shot. |
+| **The Gallery of Force** | Wizard (2s fireball) | A sent element (Fireball, Douse, Hurled stone, Wood arrow, Spark shot, Lightning bolt…) | Mercury sends. The same flame ward turns the shot. |
 | **The Silent Court** | Two stone men (they block a short aisle) | Charm (`Life · Sulphur · Mercury`) — they fetch the stone; Command, Lull, Terror, Jolt, Rage | Sulphur reaches a mind. |
 | **Gate of Aspects** | Three sockets | Body, Spirit, and Mind stones | This section’s keys only. Opens the Wrought Courts. |
 | **The Living Thicket** | A four-tile pit, then a living thicket | Grow plant cover from the bank (Sprout, three tiles); grove stone on the far bank | Grow, then optionally burn. Hop cannot clear the gap. |
 | **The Cistern** | A drowning channel | Ice-pillar / Ice-wall / Ice-spear freezes the water; columns write Ice · Salt · Earth | Water drowns. Ice is a floor. |
-| **The Seed of Charge** | A charge veil, a live rod | Lightning or Spark · Mercury drops the veil; columns write Fire · Air · Spark | The join is a rune when it already stands. |
+| **The Seed of Charge** | A charge veil, a live rod | Spark shot (`Spark · Mercury`) or Lightning bolt (`Lightning · Mercury`) drops the veil; columns write Fire · Air · Spark | The join is a rune when it already stands. |
 | **The Mixed Court** | Golems, two wizards, an archer | Any send; casters show their marks overhead | Melee and ranged. Wall the ember adept and they stand a flame-pillar; the floor hungers first. |
 | **Gate of Joins** | Three sockets | Grove, Flood, and Spark stones | This section’s keys only. The floor opens. |
 
@@ -40,7 +40,7 @@ Douse, Command, Wind, and Earth-pillar are new ordinary sentences written for th
 | The world is the same materials | Each `MaterialId` has its own tile paint and a full signature (timber is Water · Salt · Earth · Plant, not a lone root). Ice, lava, grove, and the rest are already in the catalog for later maps. The Grimoire lists them beside the spells. |
 | Enemy = lock, spell = key | The right spell unmakes the encounter instantly. No HP. Statuses still land, and bodies can strike back. |
 | Terrain = lock | Rope, ice, flame, poison, pits, and socketed gates accept keys the same way a creature does. |
-| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Lightning is Fire · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
+| Chains, not pairs | The catalog spells resolve in play. Fire is Fire · Mercury. Spark shot is Fire · Air · Mercury. Lightning bolt is Fire · Air · Air · Mercury. The written order is the sentence. In Develop the Grimoire lists them all; in Play it holds only workings you Keep. |
 | Joins are runes | Fire · Air → Spark. Steam · Metal → Acid. Ice is Water · Earth. Mud is Earth · Water. The Grimoire lists every birth. Short tutorial strings still work as a fallback. |
 | Free is never required | Every lock has a Charter key. Free fills a blank, unscrambles a valid bag of runes, leans on attunement, and cannot be stored. |
 
