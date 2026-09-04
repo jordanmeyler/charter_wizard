@@ -7,8 +7,10 @@ namespace RuneMagic
     /// Covers speak the current catalog, same marks as inscriptions.
     /// Ice is Water · Earth. Fire cover is the live hunger layer:
     /// standing on it burns, and at rest it lights adjacent covers.
-    /// Floors, walls, and details stay at rest until a spell starts
-    /// hunger. It always puts Fire in the weave so it can be drawn.
+    /// A burning plant covering then wicks adjacent wood and oil.
+    /// Floors, walls, and details stay at rest until that covering
+    /// or a spell starts hunger. It always puts Fire in the weave so
+    /// it can be drawn.
     /// It does not kindle a hall. Ember cover is coals: it provides
     /// fire and stays on the walk. Floor-Fire / Wall-Fire are rest
     /// matter that light adjacent covers the same way.

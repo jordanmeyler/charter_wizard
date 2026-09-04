@@ -268,8 +268,20 @@ namespace RuneMagic
             || HasPoisonCover;
 
         /// <summary>
+        /// Walk, a timber / plant detail, or oil this cell can leftover.
+        /// A covering on stone is not this.
+        /// </summary>
+        public bool HasWalkFuel =>
+            !HasAshCover
+            && !IsFireFloor
+            && (VitalLaw.CanBurn(Material)
+                || HasPlantishDetail
+                || (HasOil && !IsGeyser));
+
+        /// <summary>
         /// Fuel a rest flame lights on a neighbor at rest: a plant /
-        /// vine covering. Floors, walls, oil, and details stay at rest.
+        /// vine covering. Floors, walls, oil, and details stay at rest
+        /// until that covering wicks into them.
         /// </summary>
         public bool HasRestCatchFuel =>
             !HasAshCover && HasPlantCover;
@@ -842,6 +854,7 @@ namespace RuneMagic
         /// source (10). A covering a spell left on that walk is the
         /// fuel — the floor stays rest. Only a strong source (7+)
         /// walks fire, onto equal-or-weaker fuel, out to its own reach.
+        /// A burning plant covering still wicks adjacent wood and oil.
         /// </summary>
         public int FirePotency
         {
