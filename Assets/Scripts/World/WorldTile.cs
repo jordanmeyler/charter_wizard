@@ -497,6 +497,14 @@ namespace RuneMagic
             || (_hasFoundation && Foundation.Material == MaterialId.Water && !HasIceCover);
 
         /// <summary>
+        /// Ice is sitting where yield was. The sheet should read as
+        /// ice-wall, not a wash over the pool.
+        /// </summary>
+        bool IceSeatsOnWater =>
+            Material == MaterialId.Water
+            || (_hasFoundation && Foundation.Material == MaterialId.Water);
+
+        /// <summary>
         /// A plant standing on water. It can light, but it does not
         /// carry the flame. Oil on the same cell still runs.
         /// </summary>
@@ -1140,8 +1148,8 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Yield keeps its picture. Ice is the same cover sheen
-        /// ice-shot leaves — not a new ice floor or column.
+        /// Yield keeps its picture underneath. Ice on water uses the
+        /// ice-wall face so an ice-column freeze matches ice-wall.
         /// A pit must become a walk so the drop trigger does not fire.
         /// </summary>
         void SealWaterForIce()
@@ -1156,7 +1164,8 @@ namespace RuneMagic
 
         /// <summary>
         /// Hard water on this cell. Water becomes the same ice sheet
-        /// ice-shot and ice-wall use. A dry walk takes that same cover sheen.
+        /// ice-wall uses — the ice-wall face, not a UI cover tile.
+        /// A dry walk takes that same cover sheen.
         /// </summary>
         public bool LayIce()
         {
@@ -1188,8 +1197,20 @@ namespace RuneMagic
 
         void PaintIceCover()
         {
+            var onWater = IceSeatsOnWater || IsDeepWater || HasWaterCover;
             _coverLook = null;
             PaintCover(TileCover.Ice);
+            var face = TileAtlas.Get("wall-ice") ?? CoverCatalog.Sheen(TileCover.Ice);
+            if (face != null)
+            {
+                _coverLook = TileSprite.Solid(face);
+                if (onWater)
+                {
+                    _coverAlpha = 1f;
+                }
+
+                ApplyCover();
+            }
         }
 
         /// <summary>
@@ -2822,6 +2843,11 @@ namespace RuneMagic
         float CoverDrawAlpha()
         {
             var alpha = _coverAlpha > 0.01f ? _coverAlpha : 1f;
+            if (Cover == TileCover.Ice && IceSeatsOnWater)
+            {
+                return alpha;
+            }
+
             if (_authoredLook == null)
             {
                 return alpha;
@@ -2829,6 +2855,8 @@ namespace RuneMagic
 
             // A painted walk tile must stay visible. Opaque pack covers
             // (hell lava, ice sheets) used to hide that sprite in Play.
+            // Ice that replaced water is the ice-wall face — it should
+            // hide the pool, the way ice-wall on water does.
             if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud || Cover == TileCover.Wither)
             {
                 return Mathf.Min(alpha, 0.72f);

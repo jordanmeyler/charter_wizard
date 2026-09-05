@@ -344,7 +344,7 @@ namespace RuneMagic
                 || WorldWork.IceColumnPoolRadius != 1
                 || WorldWork.Disk(new Vector2Int(4, 4), WorldWork.IceColumnPoolRadius).Count != 5)
             {
-                broken.Add("Ice column on water must freeze the click and the water around it, the same sheet as ice-shot");
+                broken.Add("Ice column on water must freeze the click and the water around it, the same ice-wall face as ice-wall");
             }
 
             if (NeedsEndAnchors(SpanGrade.Metal, false, true)
