@@ -117,8 +117,8 @@ namespace RuneMagic
 
         /// <summary>
         /// One sheen per spoken cover. Ice-shot, ice-pillar over water,
-        /// ice-wall over water, and a stamped ice mark all draw the
-        /// same ice sheet.
+        /// and ice-wall over water share the ice-wall face so a freeze
+        /// sheet reads as ice, not the Cover-Ice UI tile.
         /// </summary>
         public static string SheenId(TileCover cover)
         {
@@ -141,6 +141,22 @@ namespace RuneMagic
 
         public static Sprite Sheen(TileCover cover)
         {
+            if (cover == TileCover.Ice)
+            {
+                // Ice laid on water (ice-column, ice-wall, ice-shot)
+                // uses the ice-wall face so the sheet matches a stood
+                // ice wall, not the sanctuary UI square.
+                if (LookLibrary.TryAuthored("wall-ice", out var wall) && wall != null)
+                {
+                    return wall;
+                }
+
+                if (TileAtlas.TryGet("wall-ice", out var atlas) && atlas != null)
+                {
+                    return atlas;
+                }
+            }
+
             var id = SheenId(cover);
             if (string.IsNullOrEmpty(id))
             {
@@ -427,6 +443,12 @@ namespace RuneMagic
                 || SheenId(TileCover.Poison) != "tile-wet")
             {
                 broken.Add("Each spoken cover must use one sheen so ice-shot, ice-pillar, and ice-wall match");
+            }
+
+            if (TileAtlas.WallId(MaterialId.Ice) != "wall-ice"
+                || TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice")
+            {
+                broken.Add("Ice freeze on water must use the ice-wall face so ice-column matches ice-wall");
             }
         }
     }
