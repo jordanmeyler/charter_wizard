@@ -241,9 +241,10 @@ namespace RuneMagic
                 || !Insulates(Combine(Of(MaterialId.Metal), Of(MaterialId.Timber)))
                 || !Insulates(Combine(Of(MaterialId.Water), Of(MaterialId.Plant)))
                 || !Conducts(Combine(Of(MaterialId.Stone), Of(MaterialId.Water)))
+                || !Conducts(Combine(Of(MaterialId.Stone), Of(MaterialId.Metal)))
                 || !Conducts(Combine(Of(MaterialId.Stone), OfWetness(1f))))
             {
-                broken.Add("A plant or timber on metal must break the path; water on stone must run the spark");
+                broken.Add("A plant or timber on metal must break the path; water or a metal stamp on stone must run the spark");
             }
 
             if (!Conducts(OfCover(TileCover.Water))

@@ -687,8 +687,10 @@ namespace RuneMagic
 
         /// <summary>
         /// 0–10 conduct on this cell. Walk, cover, wet, a detail,
-        /// and a stood item combine. An insulator wins — wood on
-        /// metal breaks the path. Water on stone runs the spark.
+        /// and a stood item combine. Floor-Metal stamps the walk at
+        /// 10, so the spark holds and spreads. An insulator wins — wood
+        /// on metal breaks the path. Water or a metal plate on stone
+        /// runs the spark.
         /// </summary>
         public int Conduct
         {
