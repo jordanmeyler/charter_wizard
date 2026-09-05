@@ -269,11 +269,19 @@ namespace RuneMagic
                 || !IsQualityStampOf(TileKind.Floor, MaterialId.Ice)
                 || !IsQualityStampOf(TileKind.Floor, MaterialId.Plant)
                 || !IsQualityStampOf(TileKind.Floor, MaterialId.Fire)
+                || !IsQualityStampOf(TileKind.Floor, MaterialId.Metal)
                 || !IsQualityStampOf(TileKind.Wall, MaterialId.Stone)
                 || !IsQualityStampOf(TileKind.Wall, MaterialId.Ice)
                 || !IsQualityStampOf(TileKind.Wall, MaterialId.Fire))
             {
                 broken.Add("Floor and wall stamps must keep the tileset sprite they sit on");
+            }
+
+            if (!StampsWalkOf("Floor-Metal", TileKind.Floor, TileCover.None, TileAura.None)
+                || !ChargeLaw.Conducts(ChargeLaw.Of(MaterialId.Metal))
+                || !ChargeLaw.AcceptsSpread(ChargeLaw.Of(MaterialId.Metal)))
+            {
+                broken.Add("Floor-Metal must stamp a metal walk that conducts and spreads the spark");
             }
 
             if (AutomaticOpacity(TileCover.Fire) >= 0.95f

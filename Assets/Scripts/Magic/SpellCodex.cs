@@ -88,7 +88,7 @@ namespace RuneMagic
         {
             E(1, SpellBook.End, SpellId.Fireball, "Hunger sent. Fire that flies.", "Fireball", "Fire · Mercury", "", "Shot", SpellOutcome.Kill),
             E(2, SpellBook.End, SpellId.FlamePillar, "Hunger given a standing body and asked to rest. It stands.", "Flame-pillar", "Fire · Salt · Earth", "", "Pillar", SpellOutcome.Kill),
-            E(3, SpellBook.Cross, SpellId.Melt, "A stood fire-body sent into a thing. Salt keeps it from flying. Stone and steel remember they were liquid. Obsidian will not.", "Melt", "Fire · Salt · Mercury", "", "Remote", SpellOutcome.Neither),
+            E(3, SpellBook.Cross, SpellId.Melt, "A lasting fire-body sent into a thing. Hunger given a standing body, asked to rest, then sent. Stone and steel remember they were liquid. Obsidian will not.", "Melt", "Fire · Salt · Earth · Mercury", "", "Remote", SpellOutcome.Neither),
             E(4, SpellBook.End, SpellId.Smother, "Hunger needs breath; that breath is withheld.", "Smother", "Fire · Air · Dark", "Spark · Dark", "Remote", SpellOutcome.Neither),
             E(5, SpellBook.End, SpellId.SunLance, "Hunger shown, given breath, sent as a clean line.", "Sun-lance", "Fire · Light · Air · Mercury", "Spark · Light · Mercury", "Shot", SpellOutcome.Kill),
             E(6, SpellBook.End, SpellId.Ignite, "Hunger’s wildcard given a standing body — a wick that stays.", "Ignite", "Fire · Sulphur · Salt", "", "Remote", SpellOutcome.Neither),
@@ -167,7 +167,7 @@ namespace RuneMagic
             E(79, SpellBook.Grave, SpellId.Poison, "The grave of a plant, sent as a stream. It poisons what it crosses.", "Poison spray", "Water · Salt · Earth · Death · Mercury", "Poison · Mercury", "Shot", SpellOutcome.Kill, "Either"),
             E(80, SpellBook.SeeHide, SpellId.Miasma, "Hunger takes the grave of a plant. Foul breath that poisons faster, and holds the step.", "Miasma", "Water · Salt · Earth · Death · Fire", "Poison · Fire", "Grow", SpellOutcome.Kill),
             E(81, SpellBook.End, SpellId.Plasma, "Witchfire joined to the bolt and sent. Ordinary matter ends. Obsidian and warded stone refuse it.", "Plasma", "Fire · Animus · Fire · Fire · Air · Air · Mercury", "Plasma · Mercury", "Shot", SpellOutcome.Kill),
-            E(82, SpellBook.End, SpellId.FirePillar, "Hunger given a standing body. A column of fire. Without a source it goes out in a few seconds.", "Fire-pillar", "Fire · Salt", "", "Pillar", SpellOutcome.Kill),
+            E(82, SpellBook.End, SpellId.FirePillar, "Hunger given a standing body. A column of fire. Without a source it goes out in a few seconds. Fire · Salt · Mercury is the same pillar sent to a cell.", "Fire-pillar", "Fire · Salt", "Fire · Salt · Mercury", "Pillar", SpellOutcome.Kill),
             E(83, SpellBook.Weather, SpellId.Monsoon, "Yield given a body and sent. A remote flood. The monsoon.", "Monsoon", "Water · Salt · Mercury", "", "Remote", SpellOutcome.Restrain),
             E(84, SpellBook.Cross, SpellId.DirtToss, "Rest sent without a body. Loose dirt. It smothers ground-fire and leaves Earth speaking where it lands.", "Dirt toss", "Earth · Mercury", "", "Shot", SpellOutcome.Neither),
             E(85, SpellBook.Cross, SpellId.MetalPillar, "Hungry earth given spark and asked to stand. A column of iron. It hangs without a far bank.", "Metal-pillar", "Fire · Earth · Fire · Air · Earth · Salt · Earth", "Metal · Salt · Earth", "Pillar", SpellOutcome.Neither),
@@ -464,6 +464,23 @@ namespace RuneMagic
             if (firePillar.Count == 0 || firePillar[0].Spell != SpellId.FirePillar)
             {
                 broken.Add("Fire · Salt should be Fire-pillar");
+            }
+
+            var saltMercury = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt, RuneId.Mercury });
+            var firePillarSent = ChainBook.CollectExact(saltMercury, SpellShape.None);
+            if (firePillarSent.Count == 0 || firePillarSent[0].Spell != SpellId.FirePillar)
+            {
+                broken.Add("Fire · Salt · Mercury should be Fire-pillar");
+            }
+
+            var meltChain = Composition.FromSequence(new[]
+            {
+                RuneId.Fire, RuneId.Salt, RuneId.Earth, RuneId.Mercury
+            });
+            var meltExact = ChainBook.CollectExact(meltChain, SpellShape.None);
+            if (meltExact.Count == 0 || meltExact[0].Spell != SpellId.Melt)
+            {
+                broken.Add("Fire · Salt · Earth · Mercury should be Melt");
             }
 
             var flamePillar = Composition.FromSequence(new[] { RuneId.Fire, RuneId.Salt, RuneId.Earth });
