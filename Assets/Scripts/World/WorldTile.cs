@@ -866,11 +866,12 @@ namespace RuneMagic
 
         /// <summary>
         /// How hard this live flame may light other cells. A kindled
-        /// hall, a geyser, or a lit rest-fire walk is an oil-grade
-        /// source (10). A covering a spell left on that walk is the
-        /// fuel — the floor stays rest. Only a strong source (7+)
-        /// walks fire, onto equal-or-weaker fuel, out to its own reach.
-        /// A burning plant covering still wicks adjacent wood and oil.
+        /// hall or geyser is an oil-grade source (10). Floor-Fire /
+        /// Wall-Fire stay rest: they never walk as Hunger 10. A
+        /// covering a spell left on that walk is the fuel — the
+        /// masonry stays rest. Only a strong source (7+) walks fire,
+        /// onto equal-or-weaker fuel, out to its own reach. A burning
+        /// plant covering still wicks adjacent wood and oil.
         /// </summary>
         public int FirePotency
         {
@@ -881,7 +882,12 @@ namespace RuneMagic
                     return VitalLaw.HungerOil;
                 }
 
-                if ((IsFireFloor && LiveFire) || (HasEmber && LiveFire))
+                if (IsFireFloor)
+                {
+                    return Hunger;
+                }
+
+                if (HasEmber && LiveFire)
                 {
                     return HasOverlayFuel || HasFireCover ? Hunger : VitalLaw.HungerOil;
                 }
@@ -1586,7 +1592,7 @@ namespace RuneMagic
                 return;
             }
 
-            Ignite(amount);
+            Ignite(amount, live: true, coverOnly: !HasWalkFuel);
         }
 
         public void BurnVine()
