@@ -190,9 +190,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Ice columns share the ice-wall face (and the freeze sheen
-        /// as a fallback). The sanctuary fountain prop is furniture,
-        /// not a stood body of ice.
+        /// Ice columns share the ice-wall face. Freeze on water uses
+        /// that same face so ice-column and ice-wall sheets match.
+        /// The sanctuary fountain prop is furniture, not ice.
         /// </summary>
         public static string ColumnId(MaterialId material)
         {
@@ -347,9 +347,10 @@ namespace RuneMagic
                 || ColumnId(MaterialId.Snow) != "wall-ice"
                 || ColumnId(MaterialId.Glacier) != "wall-ice"
                 || ColumnId(MaterialId.Ice) == "ice-fountain"
+                || CoverId(MaterialId.Ice, 0, 0) != "cover-ice"
                 || ColumnId(MaterialId.Stone) != "pillar")
             {
-                broken.Add("Ice wall and ice column must share the ice-wall face, not the fountain prop");
+                broken.Add("Ice wall, ice column, and freeze on water must share the ice-wall face, not the fountain prop");
             }
         }
 

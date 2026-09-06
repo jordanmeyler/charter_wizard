@@ -212,7 +212,8 @@ namespace RuneMagic
 
         /// <summary>
         /// Ice-pillar in a pool freezes the click and the water
-        /// around it, the same local sheet ice-shot leaves.
+        /// around it. That sheet uses the ice-wall face, the same
+        /// picture ice-wall leaves on water.
         /// </summary>
         public const int IceColumnPoolRadius = 1;
 
@@ -1715,7 +1716,7 @@ namespace RuneMagic
                     continue;
                 }
 
-                if (spanning)
+                if (spanning || sealsPool)
                 {
                     continue;
                 }
