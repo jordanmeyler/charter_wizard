@@ -28,7 +28,7 @@ namespace RuneMagic
         public Tilemap walls;
         [Tooltip("Cover and aura only. A Cover or Coverings child works.")]
         public Tilemap overlays;
-        [Tooltip("Environment Details — plants, rugs, furniture. Look only unless you stamp Floor or Blocks. A sibling named Environment Details lvl 2 (or Enviromental Details lvl 2) stacks on top. Burns to ash; a plant or timber floor becomes dirt. Fire a spell starts can run onto a flammable floor.")]
+        [Tooltip("Environment Details — plants, rugs, furniture. Look only unless you stamp Floor on an empty drop, or Blocks. It does not rewrite a wall or floor already baked from Tiles / Walls. A sibling named Environment Details lvl 2 (or Enviromental Details lvl 2) stacks on top. Burns to ash; a plant or timber floor becomes dirt. Fire a spell starts can run onto a flammable floor.")]
         public Tilemap decor;
 
         [Header("Spawn")]

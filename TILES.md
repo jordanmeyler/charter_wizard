@@ -104,8 +104,8 @@ on the cells you can walk.
 | **Tiles** / **Floor** / **Floor 2** | Looks, then Floor / pit / door stamps | Floor only where stamped. Empty cells become pits. Hidden, then baked. |
 | **Walls** | Solid walls | Unstamped cells on this layer stay walls. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, miasma, fog | Overlay: look, work, and weave. Hidden, then baked. |
-| **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here still makes that cell walkable. Hidden, then baked. |
-| **Environment Details lvl 2** | Same, drawn on top of Environment Details | Same bake. Overlapping cells keep both looks. Hidden, then baked. Cover still sits above. |
+| **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here makes an empty or pit cell walkable. It does not rewrite a wall or floor already baked from Tiles / Walls — a metal plate or rug sits on that walk. Hidden, then baked. |
+| **Environment Details lvl 2** | Same, drawn on top of Environment Details | Same bake. Overlapping cells keep both looks. Hidden, then baked. Cover still sits above. Details never delete the wall or floor underneath. |
 
 Hide a layer while you work on the ones under it. Uncheck it in
 **Window → Rune Magic → Tile Properties**, the **Rune Layers** panel
@@ -168,6 +168,10 @@ burn, or oil that a spell left will find the cover. Aura-Fire
 still kindles a hall. Ice cover melts when hunger crosses it.
 Oil or metal stamped on the Cover layer is the same: fuel or a
 path for the spark, not a reaction that starts itself.
+**Floor-Metal** (or Kind = Floor, Material = Metal) stamps the
+walk as iron. The spark holds and spreads on that cell the same
+way it does on a metal cover or a metal plate on Environment
+Details. Wood or plant on that metal still breaks the path.
 `GameObject → Rune Magic → Inscription` or **Pillar** still works
 if you want a floating mark instead. Do not stamp fire on
 Environment Details and do not expect a painted torch tile
@@ -407,7 +411,7 @@ Materials work if you stamp them after painting: select the layer, open `Window 
 
 **Environment Details** has its own stamp. Select that layer (or **Environment Details lvl 2**), stamp **Timber** on a table or **Plant** on a bush. A standing torch does not catch those bushes — the room is at rest. Cover-Fire or Floor-Fire beside a bush or table leaves it. They light an adjacent covering, not the floor. A burning plant covering then wicks into wood, oil, and other fuel. A player or NPC spell that starts a fire can then run into Plant / Timber / Moss / Grove. When the fuel is spent a plant or timber floor swaps stamp and tile to leftover dirt (look and Earth). Fire cover stays. Stone floors do not catch; a burned table on stone is gone and the cobble stays. A tile named table / chair / bench / bush is guessed as Timber or Plant even if you never stamped it.
 
-Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on that cell. When a blocking table burns, the walk becomes dirt if it was plant or timber, and you can walk over it. Cover still applies to that cell (ice, fire, vine, miasma) — only covers and spells draw over the leftover tile.
+Collision is a separate stamp. Select **Environment Details**, check only **Blocks** in Tile Properties, and drag across a group of tables or statues. Those cells block walking. Tables, chairs, statues, crates, and pillars are guessed as blocking if you never stamped them; rugs and grass are not. A detail is never a floor unless you stamp **Kind = Floor** on an empty or pit cell. Painting details over a wall or an already-baked floor sits on that walk — it does not delete the masonry or rewrite the floor's material. When a blocking table burns, the walk becomes dirt if it was plant or timber, and you can walk over it. Cover still applies to that cell (ice, fire, vine, miasma) — only covers and spells draw over the leftover tile.
 
 `GameObject → Rune Magic → Decor` is still look-only art. Burning or blocking furniture has to be an Environment Details **tile**.
 

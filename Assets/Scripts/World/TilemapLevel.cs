@@ -10,9 +10,10 @@ namespace RuneMagic
     /// stamp says so. Looks on any layer are not floor. Extra Floor /
     /// Tiles children merge — each Floor stamp still counts. Walls you
     /// never stamp stay walls on a Walls layer. Cover is overlay.
-    /// Environment Details is a detail on that cell, and may also carry
-    /// a Floor stamp if you want a second level to walk. Environment
-    /// Details lvl 2 is another detail layer — Play stacks it on top.
+    /// Environment Details is a detail on that cell. A Floor stamp
+    /// there may raise a walk on an empty drop; it must not rewrite a
+    /// wall or an already-baked floor. Environment Details lvl 2 is
+    /// another detail layer — Play stacks it on top.
     /// </summary>
     public static class TilemapLevel
     {
@@ -575,6 +576,12 @@ namespace RuneMagic
                     if (kind != null)
                     {
                         var tile = grid.Get(x, y);
+                        if (!DetailMayRewriteWalk(tile != null ? tile.Kind : (TileKind?)null, kind.Value))
+                        {
+                            ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks);
+                            continue;
+                        }
+
                         var replace = tile == null || tile.Kind == TileKind.Pit || kind == TileKind.Wall || kind == TileKind.Door;
                         tile = ApplyWalkStamp(grid, tile, x, y, kind.Value, material, look, replace);
                         if (paint != null)
@@ -590,6 +597,23 @@ namespace RuneMagic
             }
 
             return any;
+        }
+
+        /// <summary>
+        /// Environment Details may raise a walk on an empty drop.
+        /// It must not rewrite masonry or a floor Tiles / Walls already
+        /// baked — a Floor stamp there is a rug or a metal plate, not
+        /// a new walk family. Wood on metal still breaks the spark;
+        /// metal on stone still runs it.
+        /// </summary>
+        public static bool DetailMayRewriteWalk(TileKind? existing, TileKind stamp)
+        {
+            if (stamp == TileKind.None)
+            {
+                return false;
+            }
+
+            return existing == null || existing == TileKind.Pit;
         }
 
         /// <summary>
@@ -941,6 +965,16 @@ namespace RuneMagic
             if (broken == null)
             {
                 return;
+            }
+
+            if (DetailMayRewriteWalk(TileKind.Wall, TileKind.Floor)
+                || DetailMayRewriteWalk(TileKind.Door, TileKind.Floor)
+                || DetailMayRewriteWalk(TileKind.Floor, TileKind.Floor)
+                || DetailMayRewriteWalk(TileKind.Floor, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Pit, TileKind.Floor)
+                || !DetailMayRewriteWalk(null, TileKind.Floor))
+            {
+                broken.Add("Environment Details must sit on walls and floors; a Floor stamp there must not rewrite masonry or an already-baked walk");
             }
 
             var dirt = TileAtlas.Get("floor-dirt");

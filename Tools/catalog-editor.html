@@ -87,7 +87,7 @@
     }
 
     function addOne() {
-      if (tab === "spells") spells.spells.push({ number: spells.spells.length+1, id: "NewSpell", book: "End", name: "New spell", want: "", recipe: "Fire · Salt · Mercury", via: "", form: "Remote", outcome: "Neither", gate: "", work: "Melt" });
+      if (tab === "spells") spells.spells.push({ number: spells.spells.length+1, id: "NewSpell", book: "End", name: "New spell", want: "", recipe: "Fire · Salt · Earth · Mercury", via: "", form: "Remote", outcome: "Neither", gate: "", work: "Melt" });
       if (tab === "joins") spells.joins.push({ rune: "Spark", sources: ["Fire","Air"] });
       if (tab === "sprites") art.sprites.push({ id: "new-sprite", width: 32, height: 32, pixelsPerUnit: 32, source: "", pivot: "0.5,0.5", colors: ["#00000000","#e86a2a","#ffe7a0","#1a1014"], cells: "0".repeat(32*32) });
       if (tab === "items") art.items.push({ id: "new-item", name: "New item", kind: "stone", sprite: "charm", teachesSpell: "", note: "", look: "" });

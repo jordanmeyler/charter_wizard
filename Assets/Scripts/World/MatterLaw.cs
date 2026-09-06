@@ -144,8 +144,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Melt is a stood fire-body sent into a thing. It bores stone
-        /// and steel, including room masonry. Fireball still only thaws ice.
+        /// Melt is a lasting fire-body sent into a thing — Fire · Salt ·
+        /// Earth · Mercury. It bores stone and steel, including room
+        /// masonry. Fire · Salt · Mercury is still a fire-pillar.
+        /// Fireball still only thaws ice.
         /// </summary>
         public static bool IsMeltWork(SpellId spell) =>
             spell == SpellId.Melt;
@@ -592,6 +594,18 @@ namespace RuneMagic
                 && melt.ViaRunes.Count > 0)
             {
                 broken.Add("Melt must not take the Flame via — Flame · Mercury is witchfire");
+            }
+
+            if (SpellCodex.TryGet(SpellId.Melt, out melt)
+                && !ChainBook.SameStory(melt.RecipeRunes, ChainBook.Parse("Fire · Salt · Earth · Mercury")))
+            {
+                broken.Add("Melt must be Fire · Salt · Earth · Mercury — a lasting fire-body sent into stone");
+            }
+
+            if (SpellCodex.TryGet(SpellId.FirePillar, out var firePillar)
+                && !ChainBook.SameStory(firePillar.ViaRunes, ChainBook.Parse("Fire · Salt · Mercury")))
+            {
+                broken.Add("Fire · Salt · Mercury must stay Fire-pillar");
             }
 
             if (!TryParse("wood", out var wood) || wood != MaterialId.Timber
