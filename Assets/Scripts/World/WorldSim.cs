@@ -14,9 +14,11 @@ namespace RuneMagic
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
     /// already alight does not recatch. Fire cover stays and, at
-    /// rest, lights adjacent covers. A burning plant covering
-    /// wicks adjacent wood and oil. Floors and walls stay at rest
-    /// until that covering or a spell starts hunger. Charge uses a
+    /// rest, lights adjacent covers. Floor-Fire and Wall-Fire do
+    /// not walk hunger onto neighboring floors or walls. A burning
+    /// plant covering wicks adjacent wood and oil. Floors and walls
+    /// stay at rest until that covering or a spell on those cells
+    /// starts hunger. Charge uses a
     /// 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
@@ -269,7 +271,8 @@ namespace RuneMagic
         // cover stay without a spell. The room is at rest: they
         // light adjacent covers (vine / plant). Floors, walls,
         // oil, and details stay dark until that covering wicks
-        // into them, or a spell starts hunger.
+        // into them, or a spell starts hunger on those cells.
+        // Rest fire itself does not walk as Hunger 10.
         // Ember and fire cover stay. When the overlay is gone rest
         // fire goes dark again — unless the hall is kindled.
         void StepRestFire(WorldTile tile)
@@ -286,7 +289,7 @@ namespace RuneMagic
                 CatchRestFuel(tile);
             }
 
-            if (tile.LiveFire && !pressure.Suppress)
+            if (tile.LiveFire && !pressure.Suppress && RestFireMayWalk(tile))
             {
                 SpreadFrom(tile);
             }
@@ -310,10 +313,30 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Rest fire walks only from a covering, kindled hall, or
+        /// fuel already alight on the cell. Bare Floor-Fire / Wall-Fire
+        /// light covers through <see cref="CatchRestFuel"/> and stop.
+        /// </summary>
+        static bool RestFireMayWalk(WorldTile tile)
+        {
+            if (tile == null)
+            {
+                return false;
+            }
+
+            return tile.Kindled
+                || tile.HasPlantCover
+                || tile.CoverOnlyBurn
+                || tile.HasCatchableFuel
+                || tile.HasOverlayFuel;
+        }
+
+        /// <summary>
         /// A rest flame lights a covering on its own cell, and
         /// adjacent plant / vine covers. Floors, walls, oil, and
         /// details stay at rest until that covering wicks into them.
-        /// A spell that starts hunger can still run into those walks.
+        /// A spell still lights the cells it hits; rest fire does not
+        /// then walk that hunger onto neighboring floors or walls.
         /// </summary>
         void CatchRestFuel(WorldTile tile)
         {
@@ -451,9 +474,21 @@ namespace RuneMagic
             }
 
             var coverWick = tile.HasPlantCover || tile.CoverOnlyBurn;
+            var restFlame = tile.IsFireFloor || tile.HasFireCover;
             _grid.ForEachInChebyshev(tile.Coord, VitalLaw.CatchReach(potency), (other, dist) =>
             {
                 if (!AcceptsFireSpread(other))
+                {
+                    return;
+                }
+
+                if (restFlame
+                    && !tile.Kindled
+                    && !coverWick
+                    && !tile.HasCatchableFuel
+                    && !tile.HasWalkFuel
+                    && !other.HasRestCatchFuel
+                    && !other.ConductsFire)
                 {
                     return;
                 }

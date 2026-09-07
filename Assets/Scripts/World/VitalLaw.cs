@@ -73,7 +73,9 @@ namespace RuneMagic
         ///         to equal-or-weaker fuel out to hunger − 6. 7 is
         ///         free for brush.
         /// 9–10    Oil / a kindled hall (10). Strong source. 9 is free
-        ///         for later pitch / grease.
+        ///         for later pitch / grease. Lit Floor-Fire is not this
+        ///         — rest fire stays 0 until a covering or spell on
+        ///         the cells it hits starts hunger.
         /// </summary>
         public const int HungerNeutral = 0;
         public const int HungerEmber = 1;
@@ -91,7 +93,7 @@ namespace RuneMagic
         /// Strong sources use the grade directly: reach = hunger − 6
         /// (timber 8 → 2, oil / hall 10 → 4). Weaker fuel does not
         /// run a field. A burning plant covering still wicks the
-        /// next tile onto wood, oil, and other fuel.
+        /// next tile onto wood and oil, not plant floors.
         /// </summary>
         public static int CatchReach(int sourceHunger)
         {
@@ -508,8 +510,9 @@ namespace RuneMagic
         /// world also requires the target to touch fuel toward the
         /// source — fire does not leap a stone gap. Weaker fuel does
         /// not walk fire. A vine covering takes any adjacent live
-        /// flame, and a burning plant covering wicks adjacent wood,
-        /// oil, and other fuel. Neutral never catches here.
+        /// flame. A burning plant covering wicks adjacent wood and
+        /// oil — not plant floors, walls, or other catch-only fuel.
+        /// Neutral never catches here.
         /// </summary>
         public static bool CanIgnite(
             int sourceHunger,
@@ -523,7 +526,12 @@ namespace RuneMagic
                 return false;
             }
 
-            if ((vineWick || coverWick) && chebyshev == 1)
+            if (vineWick && chebyshev == 1)
+            {
+                return true;
+            }
+
+            if (coverWick && chebyshev == 1 && targetHunger >= HungerTimber)
             {
                 return true;
             }
@@ -806,9 +814,12 @@ namespace RuneMagic
                 || CanIgnite(HungerPlant, HungerTimber, 1, false)
                 || !CanIgnite(HungerPlant, HungerTimber, 1, false, true)
                 || !CanIgnite(HungerPlant, HungerOil, 1, false, true)
-                || CanIgnite(HungerPlant, HungerTimber, 2, false, true))
+                || CanIgnite(HungerPlant, HungerTimber, 2, false, true)
+                || CanIgnite(HungerPlant, HungerPlant, 1, false, true)
+                || CanIgnite(HungerPlant, HungerSoft, 1, false, true)
+                || !CanIgnite(HungerTinder, HungerPlant, 1, true, true))
             {
-                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil");
+                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil, not plant floors");
             }
 
             if (QuenchOf(MaterialId.Stone) != QuenchDry

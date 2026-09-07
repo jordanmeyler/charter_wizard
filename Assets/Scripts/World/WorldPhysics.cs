@@ -914,9 +914,11 @@ namespace RuneMagic
                 || VitalLaw.CanIgnite(timber.Hunger, plant.Hunger, 3, false)
                 || VitalLaw.CanIgnite(plant.Hunger, timber.Hunger, 1, false)
                 || !VitalLaw.CanIgnite(plant.Hunger, timber.Hunger, 1, false, true)
-                || !VitalLaw.CanIgnite(plant.Hunger, oil.Hunger, 1, false, true))
+                || !VitalLaw.CanIgnite(plant.Hunger, oil.Hunger, 1, false, true)
+                || VitalLaw.CanIgnite(plant.Hunger, plant.Hunger, 1, false, true)
+                || VitalLaw.CanIgnite(plant.Hunger, grove.Hunger, 1, false, true))
             {
-                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil");
+                broken.Add("Hunger 0–10: a strong source (7+) walks fire to equal-or-weaker fuel out to its own reach; a burning plant covering wicks adjacent wood and oil, not plant floors");
             }
 
             var mud = MaterialCatalog.Of(MaterialId.Mud);
