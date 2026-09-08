@@ -239,8 +239,7 @@ namespace RuneMagic
         public bool HasFireCover =>
             Cover == TileCover.Fire
             || CoverMaterial == MaterialId.Hearth
-            || CoverMaterial == MaterialId.Lava
-            || CoverMaterial == MaterialId.Fire;
+            || CoverMaterial == MaterialId.Lava;
 
         /// <summary>
         /// Coals on this cell — the walk, a cover, or a detail. They
@@ -285,10 +284,11 @@ namespace RuneMagic
                 || (HasOil && !IsGeyser));
 
         /// <summary>
-        /// Fuel a rest flame lights on a neighbor at rest: a plant /
-        /// vine covering on walk that is not itself fuel. Adjacent
-        /// plant, timber, and oil floors stay dark until a spell hits
-        /// them. Vine on rest fire or stone may still catch.
+        /// Fuel a rest flame lights on its own cell at rest: a plant /
+        /// vine covering on walk that is not itself fuel. Neighbors
+        /// stay dark until a spell hits them, including vine on stone
+        /// beside a torch or Wall-Fire. Vine on the same rest-fire
+        /// cell still catches.
         /// </summary>
         public bool HasRestCatchFuel =>
             !HasAshCover && HasPlantCover && !HasWalkFuel;
@@ -816,8 +816,8 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 for the 7+ walk — at rest it still lights adjacent
-        /// covers, not floors or walls.
+        /// stays 0 for the 7+ walk — at rest it still lights a cover
+        /// on that same cell, not a neighboring floor or wall.
         /// </summary>
         public int Hunger
         {
