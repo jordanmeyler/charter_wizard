@@ -386,12 +386,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Fuel a rest flame lights at rest: a covering (vine / plant)
-        /// on that same walk, when the walk is not itself fuel. Plant,
-        /// timber, and oil floors and walls stay dark, including the
-        /// cell beside a torch or Wall-Fire. A spell that hits those
-        /// cells can still light them. Vine on the rest-fire cell
-        /// itself may catch.
+        /// A covering rest fire may light. The walk under it is not
+        /// the fuel — plant, timber, and oil floors stay dark until a
+        /// covering is on them. Vine on stone, rest fire, or a plant
+        /// floor all catch the cover only.
         /// </summary>
         public static bool IsRestCatchFuel(
             MaterialId walk,
@@ -399,9 +397,10 @@ namespace RuneMagic
             bool vine = false,
             bool oil = false)
         {
+            _ = walk;
             _ = detail;
             _ = oil;
-            return vine && !CanBurn(walk);
+            return vine;
         }
 
         /// <summary>
@@ -763,14 +762,14 @@ namespace RuneMagic
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber)
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
-                || IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
-                || IsRestCatchFuel(MaterialId.Timber, MaterialId.None, true, false)
-                || IsRestCatchFuel(MaterialId.Grove, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Timber, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Grove, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
             {
-                broken.Add("Rest fire lights a cover on its own cell only — plant, timber, and oil floors stay at rest");
+                broken.Add("Rest fire lights coverings on or beside it — plant, timber, and oil floors stay at rest until a covering is there");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f

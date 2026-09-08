@@ -7,14 +7,16 @@ namespace RuneMagic
     /// Covers speak the current catalog, same marks as inscriptions.
     /// Ice is Water · Earth. Fire cover is the live hunger layer
     /// on the Cover tilemap: standing on it burns, and at rest it
-    /// reacts with the stamp on that same cell. It does not jump
-    /// onto a neighboring floor or wall. A burning plant covering
-    /// then wicks adjacent wood and oil. Floors, walls, and details
-    /// stay at rest until a covering lands on them or a spell starts
-    /// hunger. It always puts Fire in the weave so it can be drawn.
+    /// lights a covering on that cell or beside it. Floor-Fire and
+    /// Wall-Fire never light a neighboring plant floor. Grow never
+    /// paints plant onto a wall. A burning plant covering then wicks
+    /// adjacent wood and oil. Floors, walls, and details stay at rest
+    /// until a covering lands on them or a spell starts hunger. It
+    /// always puts Fire in the weave so it can be drawn.
     /// It does not kindle a hall. Ember cover is coals: it provides
     /// fire and stays on the walk. Floor-Fire / Wall-Fire are rest
-    /// matter. A cover that lands on that cell can still light.
+    /// matter. A cover that lands on that cell, or on the cell beside
+    /// it, can still light.
     /// When fuel is spent, a plant or timber walk swaps to leftover
     /// dirt (look and stamp). Fire cover stays. Vine cover speaks
     /// Plant — Vine is a spell, not a rune.
