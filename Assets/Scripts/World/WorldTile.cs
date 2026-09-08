@@ -286,11 +286,12 @@ namespace RuneMagic
 
         /// <summary>
         /// Fuel a rest flame lights on a neighbor at rest: a plant /
-        /// vine covering. Floors, walls, oil, and details stay at rest
-        /// until that covering wicks into them.
+        /// vine covering on walk that is not itself fuel. Adjacent
+        /// plant, timber, and oil floors stay dark until a spell hits
+        /// them. Vine on rest fire or stone may still catch.
         /// </summary>
         public bool HasRestCatchFuel =>
-            !HasAshCover && HasPlantCover;
+            !HasAshCover && HasPlantCover && !HasWalkFuel;
 
         /// <summary>
         /// Plant, oil, timber, or other fuel this cell can burn.
