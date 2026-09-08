@@ -608,16 +608,22 @@ namespace RuneMagic
 
         /// <summary>
         /// Environment Details may raise a walk on an empty drop.
-        /// It must not rewrite masonry or a floor Tiles / Walls already
-        /// baked — a Floor stamp there is a rug or a metal plate, not
-        /// a new walk family. Wood on metal still breaks the spark;
-        /// metal on stone still runs it.
+        /// A Floor stamp there is a rug or a metal plate — it must not
+        /// rewrite masonry or a floor Tiles / Walls already baked.
+        /// A Wall or Door stamp is masonry: a fire pot blocks, and it
+        /// does not take floor covering. That stamp may stand on a
+        /// floor or sit in an existing wall (Fire in the brick).
         /// </summary>
         public static bool DetailMayRewriteWalk(TileKind? existing, TileKind stamp)
         {
             if (stamp == TileKind.None)
             {
                 return false;
+            }
+
+            if (stamp == TileKind.Wall || stamp == TileKind.Door)
+            {
+                return existing != TileKind.Door || stamp == TileKind.Door;
             }
 
             return existing == null || existing == TileKind.Pit;
@@ -696,9 +702,9 @@ namespace RuneMagic
             }
             else
             {
-                // Wall-Fire / Floor-Fire on Environment Details stay a
-                // detail. The walk underneath does not change. The pot
-                // is still rest fire — WorldTile.HasRestFireDetail.
+                // Wall-Fire on Environment Details becomes masonry via
+                // DetailMayRewriteWalk. Floor stamps that stay look-only
+                // still sit as a detail; Fire there is rest flame.
                 tile.AuthorDetail(look, material, blocks);
             }
 
@@ -993,11 +999,15 @@ namespace RuneMagic
             if (DetailMayRewriteWalk(TileKind.Wall, TileKind.Floor)
                 || DetailMayRewriteWalk(TileKind.Door, TileKind.Floor)
                 || DetailMayRewriteWalk(TileKind.Floor, TileKind.Floor)
-                || DetailMayRewriteWalk(TileKind.Floor, TileKind.Wall)
+                || DetailMayRewriteWalk(TileKind.Door, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Floor, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Wall, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Pit, TileKind.Wall)
+                || !DetailMayRewriteWalk(null, TileKind.Wall)
                 || !DetailMayRewriteWalk(TileKind.Pit, TileKind.Floor)
                 || !DetailMayRewriteWalk(null, TileKind.Floor))
             {
-                broken.Add("Environment Details must sit on walls and floors; a Floor stamp there must not rewrite masonry or an already-baked walk");
+                broken.Add("Environment Details Floor stamps sit on the walk; a Wall stamp there is masonry and must block");
             }
 
             if (KeepMasonryKind(TileKind.Floor, TileKind.Wall, null) != TileKind.Wall

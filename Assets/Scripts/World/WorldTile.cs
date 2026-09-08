@@ -262,9 +262,9 @@ namespace RuneMagic
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
         /// <summary>
-        /// Wall-Fire / Floor-Fire stamped on Environment Details. The
-        /// walk stays whatever Tiles / Walls already baked. The pot
-        /// or brazier is still rest fire.
+        /// Floor-Fire / hearth / lava on a detail that did not become
+        /// walk — a Floor stamp left as a plate. Wall-Fire stamps
+        /// become masonry and use <see cref="IsFireFloor"/>.
         /// </summary>
         public bool HasRestFireDetail =>
             VitalLaw.IsRestFire(_detailMaterial) || VitalLaw.IsRestFire(_detail2Material);
@@ -1265,13 +1265,13 @@ namespace RuneMagic
         /// Plant cover on this cell only — ice's law, not a walk
         /// across the pool. Water takes a walkable vine; a hollow
         /// takes the same cover; dry walk takes a climbing body.
-        /// Walls stay masonry. Fire pots stamped on Environment Details
-        /// stay visible — plant lands beside them, then that covering
-        /// catches. The plant does not eat the brick or the pot.
+        /// Walls stay masonry. A Wall stamp on Environment Details is a
+        /// wall — it blocks, and plant does not cover it. Covering
+        /// lands on the floor beside it and can catch.
         /// </summary>
         public bool PlacePlantCover(MaterialId material = MaterialId.Plant)
         {
-            if (Kind == TileKind.Wall || Kind == TileKind.Door || HasRestFireDetail || HasBlockingDetail)
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || HasBlockingDetail)
             {
                 return false;
             }
@@ -1563,14 +1563,13 @@ namespace RuneMagic
         /// <summary>
         /// A climbing body on the walk. Hunger runs it like a wick.
         /// Floor and wall stamps stay at rest. A covering on or beside
-        /// rest fire lights the plant, not the masonry. Walls and fire
-        /// pots never take this covering — the brick and the vessel stay
-        /// visible.
+        /// rest fire lights the plant, not the masonry. Walls never
+        /// take this covering — the brick stays visible.
         /// </summary>
         public bool LayVine()
         {
             if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void
-                || HasRestFireDetail || HasBlockingDetail)
+                || HasBlockingDetail)
             {
                 return false;
             }

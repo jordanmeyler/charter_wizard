@@ -52,11 +52,11 @@ we ask for it and work it out together.
    do not stamp a new floor.
    **Floor-Fire** and **Wall-Fire** go on Tiles / Walls — rest
    materials, like stone. They keep wall collision. They are not
-   covers. A Wall-Fire / Floor-Fire stamp on **Environment Details**
-   is a fire pot: the walk underneath stays, the pot is still rest
-   fire. They light a covering on them or beside them. They never
-   light a neighboring Floor-Plant. Grow never paints plant onto a
-   wall or over a fire pot. Paint **Cover-Fire** on Cover if you want live hunger on
+   covers. A **Wall-Fire** stamp on **Environment Details** is still a
+   wall: you cannot walk through it, and Grow does not cover it.
+   A **Floor-Fire** stamp is a floor. They light a covering on them or
+   beside them. They never light a neighboring Floor-Plant. Grow never
+   paints plant onto a wall. Paint **Cover-Fire** on Cover if you want live hunger on
    that cell. A torch tile or Wall-Fire next to Floor-Plant stays
    dark on the plant until a cover or a spell covering is on that
    plant cell.

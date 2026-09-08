@@ -265,12 +265,12 @@ namespace RuneMagic
             }
         }
 
-        // Rest fire (Floor-Fire, Wall-Fire, a fire pot on Environment
-        // Details, lava, a hearth), ember, and fire cover stay without
-        // a spell. A covering on that cell lights, and so does a
-        // covering beside it — Grow (Plant · Life · Mercury) next to a
-        // flame wall. They never light a neighboring plant floor with no
-        // covering. Grow never paints plant onto a wall or a fire pot.
+        // Rest fire (Floor-Fire, Wall-Fire, lava, a hearth), ember,
+        // and fire cover stay without a spell. A covering on that
+        // cell lights, and so does a covering beside it — Grow
+        // (Plant · Life · Mercury) next to a flame wall. They never
+        // light a neighboring plant floor with no covering. Grow never
+        // paints plant onto a wall.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
