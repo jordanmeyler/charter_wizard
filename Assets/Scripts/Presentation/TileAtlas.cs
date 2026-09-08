@@ -190,8 +190,8 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Ice columns share the ice-wall face. Freeze on water uses
-        /// that same face so ice-column and ice-wall sheets match.
+        /// Ice columns share the ice-wall face. Ice-shot, ice-column,
+        /// and ice-wall freeze on water use that same face.
         /// The sanctuary fountain prop is furniture, not ice.
         /// </summary>
         public static string ColumnId(MaterialId material)

@@ -735,14 +735,17 @@ namespace RuneMagic
 
             if (SpellVerb.Of(SpellId.IcePillar).Tiles != TileVerb.Freeze
                 || SpellVerb.Of(SpellId.IceSpear).Tiles != TileVerb.Freeze
+                || SpellVerb.Of(SpellId.IceWall).Tiles != TileVerb.Freeze
                 || !WorldWork.FreezesWater(SpellId.IcePillar)
                 || !WorldWork.FreezesWater(SpellId.IceSpear)
+                || !WorldWork.FreezesWater(SpellId.IceWall)
                 || !WorldWork.IceColumnSealsPool(SpellId.IcePillar, true)
                 || CoverCatalog.SheenId(TileCover.Ice) != "cover-ice"
+                || CoverCatalog.WaterFreezeFaceId != "wall-ice"
                 || TileAtlas.WallId(MaterialId.Ice) != "wall-ice"
                 || TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice")
             {
-                broken.Add("Ice-pillar in water must freeze the pool around it with the ice-wall face");
+                broken.Add("Ice-shot, ice-pillar, and ice-wall freeze water with the ice-wall face");
             }
 
             if (TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice"
