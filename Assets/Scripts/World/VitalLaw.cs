@@ -386,9 +386,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Fuel a rest flame lights at rest: a covering (vine / plant).
-        /// Floors, walls, oil, and details do not catch from rest fire
-        /// itself. A burning covering then wicks into wood and oil.
+        /// Fuel a rest flame lights at rest: a covering (vine / plant)
+        /// on a walk that is not itself fuel. Plant, timber, and oil
+        /// floors and walls stay dark. A spell that hits those cells
+        /// can still light them. Vine on rest fire or stone may catch.
         /// </summary>
         public static bool IsRestCatchFuel(
             MaterialId walk,
@@ -396,10 +397,9 @@ namespace RuneMagic
             bool vine = false,
             bool oil = false)
         {
-            _ = walk;
             _ = detail;
             _ = oil;
-            return vine;
+            return vine && !CanBurn(walk);
         }
 
         /// <summary>
@@ -761,11 +761,14 @@ namespace RuneMagic
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.Plant)
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber)
                 || IsRestCatchFuel(MaterialId.Stone, MaterialId.None, false, true)
+                || IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
+                || IsRestCatchFuel(MaterialId.Timber, MaterialId.None, true, false)
+                || IsRestCatchFuel(MaterialId.Grove, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Fire, MaterialId.None, true, false)
-                || !IsRestCatchFuel(MaterialId.Plant, MaterialId.None, true, false)
+                || !IsRestCatchFuel(MaterialId.Stone, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
             {
-                broken.Add("Rest fire lights adjacent covers only — floors, walls, details, and oil stay at rest");
+                broken.Add("Rest fire lights covers on rest walk only — plant, timber, and oil floors stay at rest");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f
