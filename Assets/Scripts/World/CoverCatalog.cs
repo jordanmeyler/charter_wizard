@@ -119,6 +119,12 @@ namespace RuneMagic
         }
 
         /// <summary>
+        /// Ice-shot, ice-pillar, and ice-wall freeze water with this
+        /// face — the same sanctuary tile an ice wall stands.
+        /// </summary>
+        public const string WaterFreezeFaceId = "wall-ice";
+
+        /// <summary>
         /// One sheen per spoken cover. Ice-shot, ice-pillar over water,
         /// and ice-wall over water share the ice-wall face so a freeze
         /// sheet reads as ice, not the Cover-Ice UI tile.
@@ -142,21 +148,33 @@ namespace RuneMagic
             }
         }
 
+        /// <summary>
+        /// The ice-wall tile. Freeze on water (shot, column, wall)
+        /// draws this so the pool reads as ice, not a wash.
+        /// </summary>
+        public static Sprite WaterFreezeFace()
+        {
+            if (LookLibrary.TryAuthored(WaterFreezeFaceId, out var wall) && wall != null)
+            {
+                return wall;
+            }
+
+            if (TileAtlas.TryGet(WaterFreezeFaceId, out var atlas) && atlas != null)
+            {
+                return atlas;
+            }
+
+            return SpriteFactory.Wall(MaterialId.Ice);
+        }
+
         public static Sprite Sheen(TileCover cover)
         {
             if (cover == TileCover.Ice)
             {
-                // Ice laid on water (ice-column, ice-wall, ice-shot)
-                // uses the ice-wall face so the sheet matches a stood
-                // ice wall, not the sanctuary UI square.
-                if (LookLibrary.TryAuthored("wall-ice", out var wall) && wall != null)
+                var face = WaterFreezeFace();
+                if (face != null)
                 {
-                    return wall;
-                }
-
-                if (TileAtlas.TryGet("wall-ice", out var atlas) && atlas != null)
-                {
-                    return atlas;
+                    return face;
                 }
             }
 
@@ -470,10 +488,12 @@ namespace RuneMagic
                 broken.Add("Each spoken cover must use one sheen so ice-shot, ice-pillar, and ice-wall match");
             }
 
-            if (TileAtlas.WallId(MaterialId.Ice) != "wall-ice"
-                || TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice")
+            if (WaterFreezeFaceId != "wall-ice"
+                || TileAtlas.WallId(MaterialId.Ice) != "wall-ice"
+                || TileAtlas.ColumnId(MaterialId.Ice) != "wall-ice"
+                || SheenId(TileCover.Ice) != "cover-ice")
             {
-                broken.Add("Ice freeze on water must use the ice-wall face so ice-column matches ice-wall");
+                broken.Add("Ice freeze on water must use the ice-wall face so ice-shot, ice-column, and ice-wall match");
             }
         }
     }

@@ -68,6 +68,7 @@ namespace RuneMagic
         int _growth;
         GameObject _linger;
         bool _hasFoundation;
+        bool _iceOnWater;
         int _animFrame = -1;
         MaterialId _telegraph = MaterialId.None;
         int _telegraphCount;
@@ -394,12 +395,23 @@ namespace RuneMagic
                 _coverLook = null;
             }
 
+            if (Cover != TileCover.Ice)
+            {
+                _iceOnWater = false;
+            }
+
             if (string.Equals(_coverId, "water", System.StringComparison.OrdinalIgnoreCase))
             {
                 _coverAlpha = Mathf.Min(_coverAlpha, 0.62f);
             }
 
             ApplyCover();
+            if (IceHidesWater)
+            {
+                ApplyVisual();
+                ApplyCover();
+            }
+
             if (before != Cover)
             {
                 NoteSpokenChange();
@@ -517,8 +529,16 @@ namespace RuneMagic
         /// ice-wall, not a wash over the pool.
         /// </summary>
         bool IceSeatsOnWater =>
-            Material == MaterialId.Water
+            _iceOnWater
+            || Material == MaterialId.Water
             || (_hasFoundation && Foundation.Material == MaterialId.Water);
+
+        /// <summary>
+        /// Freeze on water: ice-shot, ice-column, and ice-wall share
+        /// this. The ice-wall face is the picture; water stays under
+        /// as cover / foundation until it thaws.
+        /// </summary>
+        bool IceHidesWater => HasIceCover && IceSeatsOnWater;
 
         /// <summary>
         /// A plant standing on water. It can light, but it does not
@@ -1173,9 +1193,9 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Yield keeps its picture underneath. Ice on water uses the
-        /// ice-wall face so an ice-column freeze matches ice-wall.
-        /// A pit must become a walk so the drop trigger does not fire.
+        /// Ice on water uses the ice-wall face so ice-shot, ice-column,
+        /// and ice-wall match. A pit must become a walk so the drop
+        /// trigger does not fire. Water stays underneath until thaw.
         /// </summary>
         void SealWaterForIce()
         {
@@ -1222,20 +1242,31 @@ namespace RuneMagic
 
         void PaintIceCover()
         {
-            var onWater = IceSeatsOnWater || IsDeepWater || HasWaterCover;
+            var onWater = IceSeatsOnWater || IsDeepWater || HasWaterCover || IsOverWater;
             _coverLook = null;
             PaintCover(TileCover.Ice);
-            var face = TileAtlas.Get("wall-ice") ?? CoverCatalog.Sheen(TileCover.Ice);
+            var face = IceWallFace();
             if (face != null)
             {
                 _coverLook = TileSprite.Solid(face);
                 if (onWater)
                 {
+                    _iceOnWater = true;
                     _coverAlpha = 1f;
                 }
 
                 ApplyCover();
+                if (onWater)
+                {
+                    ApplyVisual();
+                    ApplyCover();
+                }
             }
+        }
+
+        static Sprite IceWallFace()
+        {
+            return CoverCatalog.WaterFreezeFace();
         }
 
         /// <summary>
@@ -2106,9 +2137,12 @@ namespace RuneMagic
 
         void LeaveMeltWater()
         {
+            _iceOnWater = false;
             PaintCover(TileCover.Water);
             Drench(1f);
             SmotherGroundFire();
+            ApplyVisual();
+            ApplyCover();
         }
 
         bool MeltIceCover()
@@ -2574,6 +2608,19 @@ namespace RuneMagic
         {
             try
             {
+                if (IceHidesWater)
+                {
+                    StopLook(_renderer);
+                    var face = IceWallFace();
+                    _renderer.sprite = face != null
+                        ? TileSprite.Solid(face)
+                        : SpriteFactory.Wall(MaterialId.Ice);
+                    _renderer.sortingOrder = Kind == TileKind.Wall ? 3 : 0;
+                    ApplyDetail();
+                    ApplyUnderlay();
+                    return;
+                }
+
                 if (_authoredLook != null && _telegraph == MaterialId.None && !IsConjured)
                 {
                     StopLook(_renderer);
@@ -2852,7 +2899,7 @@ namespace RuneMagic
         void ApplyCoverMark()
         {
             var rune = CoverCatalog.RuneOf(Cover);
-            if (rune == RuneId.None)
+            if (rune == RuneId.None || IceHidesWater)
             {
                 HideCoverMark();
                 return;
@@ -2885,9 +2932,9 @@ namespace RuneMagic
         float CoverDrawAlpha()
         {
             var alpha = _coverAlpha > 0.01f ? _coverAlpha : 1f;
-            if (Cover == TileCover.Ice && IceSeatsOnWater)
+            if (IceHidesWater)
             {
-                return alpha;
+                return 1f;
             }
 
             // Vine on masonry is a thin sheen. The brick stays visible.
@@ -2904,8 +2951,8 @@ namespace RuneMagic
 
             // A painted walk tile must stay visible. Opaque pack covers
             // (hell lava, ice sheets) used to hide that sprite in Play.
-            // Ice that replaced water is the ice-wall face — it should
-            // hide the pool, the way ice-wall on water does.
+            // Ice that froze water is drawn as the ice-wall face on the
+            // walk sprite itself (IceHidesWater) so the pool does not show.
             if (Cover == TileCover.Ice || Cover == TileCover.Ash || Cover == TileCover.Mud || Cover == TileCover.Wither)
             {
                 return Mathf.Min(alpha, 0.72f);
@@ -3257,6 +3304,11 @@ namespace RuneMagic
                 return;
             }
 
+            if (IceHidesWater && look.Family == ElementFamily.Ice)
+            {
+                return;
+            }
+
             if ((Kind == TileKind.Wall || Kind == TileKind.Door)
                 && look.Family == ElementFamily.Plant)
             {
@@ -3341,6 +3393,11 @@ namespace RuneMagic
             }
 
             _animFrame = frame;
+            if (IceHidesWater)
+            {
+                return;
+            }
+
             var keepAuthored = _authoredLook != null && _telegraph == MaterialId.None && !IsConjured;
             var lookAnim = GetComponent<SpriteAnim>();
             var authoredClip = lookAnim != null && LookLibrary.HasAuthoredClip(lookAnim.Clip);
