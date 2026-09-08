@@ -284,14 +284,14 @@ namespace RuneMagic
                 || (HasOil && !IsGeyser));
 
         /// <summary>
-        /// Fuel a rest flame lights on its own cell at rest: a plant /
-        /// vine covering on walk that is not itself fuel. Neighbors
-        /// stay dark until a spell hits them, including vine on stone
-        /// beside a torch or Wall-Fire. Vine on the same rest-fire
-        /// cell still catches.
+        /// Fuel a rest flame lights: a plant / vine covering on this
+        /// cell or beside it. The covering catches. The floor or wall
+        /// stamp stays rest — plant, timber, and oil walks do not
+        /// ignite from the stamp. A covering on a plant floor still
+        /// counts; Grow's new body is not the fuel.
         /// </summary>
         public bool HasRestCatchFuel =>
-            !HasAshCover && HasPlantCover && !HasWalkFuel;
+            !HasAshCover && (HasPlantCover || HasVine);
 
         /// <summary>
         /// Plant, oil, timber, or other fuel this cell can burn.
@@ -816,8 +816,8 @@ namespace RuneMagic
         /// <summary>
         /// 0–10 hunger on this cell. Walk, a timber / plant detail, vine,
         /// oil, and fire cover raise the grade. Rest fire in the floor
-        /// stays 0 for the 7+ walk — at rest it still lights a cover
-        /// on that same cell, not a neighboring floor or wall.
+        /// stays 0 for the 7+ walk — at rest it lights a covering on
+        /// that cell or beside it, not a neighboring floor or wall.
         /// </summary>
         public int Hunger
         {
@@ -1249,9 +1249,16 @@ namespace RuneMagic
         /// Plant cover on this cell only — ice's law, not a walk
         /// across the pool. Water takes a walkable vine; a hollow
         /// takes the same cover; dry walk takes a climbing body.
+        /// Walls stay masonry. A covering beside a fire wall can
+        /// still catch; the plant does not eat the brick.
         /// </summary>
         public bool PlacePlantCover(MaterialId material = MaterialId.Plant)
         {
+            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            {
+                return false;
+            }
+
             if (IsDeepWater || HasWaterCover)
             {
                 return GrowOverWater(material);
@@ -1538,17 +1545,13 @@ namespace RuneMagic
 
         /// <summary>
         /// A climbing body on the walk. Hunger runs it like a wick.
-        /// Floor and wall stamps stay at rest; a spell that lays this
-        /// covering on hunger lights the plant, not the masonry.
+        /// Floor and wall stamps stay at rest. A covering on or beside
+        /// rest fire lights the plant, not the masonry. Walls never
+        /// take this covering — the brick stays visible.
         /// </summary>
         public bool LayVine()
         {
-            if (Kind == TileKind.Door || Material == MaterialId.Void)
-            {
-                return false;
-            }
-
-            if (Kind == TileKind.Wall && !AcceptsVineOnWall)
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
             {
                 return false;
             }
@@ -1571,20 +1574,31 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// Stone walls stay bare. A fire wall, a kindled hall, or
-        /// live hunger takes the climbing body so the covering can
-        /// catch.
-        /// </summary>
-        bool AcceptsVineOnWall =>
-            IsFireFloor || HasFireCover || Kindled || LiveFire || IsBurning;
-
-        /// <summary>
         /// A spell laid plant on hunger — rest fire, a hall, live
-        /// flame, or fire cover. The covering lights. The walk does
-        /// not become a source by itself.
+        /// flame, fire cover, or a flame wall beside this cell. The
+        /// covering lights. The stamp stays rest.
         /// </summary>
         bool ShouldLightNewPlant =>
-            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover;
+            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover || TouchesRestFlame();
+
+        bool TouchesRestFlame()
+        {
+            var grid = GetComponentInParent<WorldGrid>() ?? Object.FindFirstObjectByType<WorldGrid>();
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var found = false;
+            grid.ForEachInChebyshev(Coord, 1, (other, _) =>
+            {
+                if (other != null && other.ProvidesRestFlame)
+                {
+                    found = true;
+                }
+            });
+            return found;
+        }
 
         void LightNewPlant(float amount = 0.55f)
         {
@@ -1593,7 +1607,7 @@ namespace RuneMagic
                 return;
             }
 
-            Ignite(amount, live: true, coverOnly: !HasWalkFuel);
+            Ignite(amount, live: true, coverOnly: true);
         }
 
         public void BurnVine()
@@ -2154,6 +2168,7 @@ namespace RuneMagic
 
             _growth = 0;
             Reshape(new TileDef(TileKind.Floor, MaterialId.Plant));
+            LightNewPlant();
             RefreshFx();
         }
 
@@ -2857,6 +2872,13 @@ namespace RuneMagic
                 return alpha;
             }
 
+            // Vine on masonry is a thin sheen. The brick stays visible.
+            if ((Kind == TileKind.Wall || Kind == TileKind.Door)
+                && (Cover == TileCover.Vine || HasPlantCover))
+            {
+                return Mathf.Min(alpha, 0.22f);
+            }
+
             if (_authoredLook == null)
             {
                 return alpha;
@@ -2876,6 +2898,12 @@ namespace RuneMagic
 
         Sprite ResolveCoverSprite()
         {
+            if ((Kind == TileKind.Wall || Kind == TileKind.Door)
+                && (Cover == TileCover.Vine || HasPlantCover))
+            {
+                return SpriteFactory.Named("tile-grow") ?? CoverCatalog.Sheen(TileCover.Vine);
+            }
+
             if (_coverLook != null)
             {
                 return _coverLook;
@@ -3207,6 +3235,12 @@ namespace RuneMagic
             ClearLinger();
             var look = LingerLook();
             if (!NeedsLinger(look.Family))
+            {
+                return;
+            }
+
+            if ((Kind == TileKind.Wall || Kind == TileKind.Door)
+                && look.Family == ElementFamily.Plant)
             {
                 return;
             }

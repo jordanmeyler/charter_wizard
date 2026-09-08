@@ -46,14 +46,18 @@ we ask for it and work it out together.
 6. Select **Cover** and paint ice / fire / lightning / vine / miasma over
    those cells if you would rather brush overlays than stamp them.
    **Cover is the live substance layer.** A cover lands on a cell and
-   reacts with that cell's Floor / Wall stamp. It does not rewrite
-   walk or wall collision. **Cover-*** / **Aura-*** have Kind = None —
-   they sit on the tile you placed; they do not stamp a new floor.
+   reacts with that cell's Floor / Wall stamp, or with a fire stamp
+   beside it. It does not rewrite walk or wall collision. **Cover-*** /
+   **Aura-*** have Kind = None — they sit on the tile you placed; they
+   do not stamp a new floor.
    **Floor-Fire** and **Wall-Fire** go on Tiles / Walls — rest
    materials, like stone. They keep wall collision. They are not
-   covers. Paint **Cover-Fire** on Cover if you want live hunger on
+   covers. They light a covering on them or beside them. They never
+   light a neighboring Floor-Plant. Grow never paints plant onto a
+   wall. Paint **Cover-Fire** on Cover if you want live hunger on
    that cell. A torch tile or Wall-Fire next to Floor-Plant stays
-   dark on the plant until a cover or a spell is on the plant cell.
+   dark on the plant until a cover or a spell covering is on that
+   plant cell.
    Miasma and fog are see-through (about 40%). Check **Opacity** in
    Tile Properties to fade any Cover tile, or to make the veil denser.
    Select **Environment Details** for plants and furniture that sit on
@@ -292,7 +296,8 @@ do not walk a field on their own, and they keep wall collision.
 The room is at rest. A cover that lands on that same cell can
 still light (Cover-Vine on Floor-Fire, Cover-Fire on Floor-Plant).
 They do not light the floor or wall beside them — not Floor-Plant,
-timber, moss, a bush, or a table. A plant spell on that fire walk
+timber, moss, a bush, or a table. A plant **spell** beside a flame
+wall or Floor-Fire still lights that covering. A plant spell on that fire walk
 lights the covering, not the masonry. A spell that starts a fire
 can then run into those plant walks. Vine cover speaks Plant — Vine
 is a climbing shot (`Plant · Mercury`), not a rune, and hunger
