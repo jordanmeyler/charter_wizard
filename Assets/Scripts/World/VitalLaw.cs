@@ -64,7 +64,7 @@ namespace RuneMagic
         /// Burn seconds stay their own 1–5 clock.
         /// 0       Neutral — spell volume only. Stone, dirt, metal.
         /// 1–2     Tinder — dust / fire cover (2). 1 is open. Fire cover
-        ///         stays and lights adjacent covers; dust is catch-only.
+        ///         stays and burns who stands on it; dust is catch-only.
         /// 3–4     Soft — moss (3), grove (4). Catch-only.
         /// 5–6     Plant — living plant (6). Catches from a strong
         ///         source. The walk does not run. A burning plant
@@ -248,9 +248,9 @@ namespace RuneMagic
         /// <summary>
         /// Spoken covers that feed the burn meter on contact, and
         /// that stay as a rest flame. Fire cover is hunger on the
-        /// walk. Ember is coals. At rest they light adjacent covers.
-        /// Floors, walls, and details stay at rest until a spell
-        /// starts hunger.
+        /// Cover layer. Ember is coals. At rest they react with the
+        /// stamp on that same cell. Floors, walls, and details stay
+        /// at rest until a cover lands on them or a spell starts hunger.
         /// </summary>
         public static bool CoverFeedsBurn(TileCover cover) =>
             cover == TileCover.Fire || cover == TileCover.Ember;
@@ -387,9 +387,11 @@ namespace RuneMagic
 
         /// <summary>
         /// Fuel a rest flame lights at rest: a covering (vine / plant)
-        /// on a walk that is not itself fuel. Plant, timber, and oil
-        /// floors and walls stay dark. A spell that hits those cells
-        /// can still light them. Vine on rest fire or stone may catch.
+        /// on that same walk, when the walk is not itself fuel. Plant,
+        /// timber, and oil floors and walls stay dark, including the
+        /// cell beside a torch or Wall-Fire. A spell that hits those
+        /// cells can still light them. Vine on the rest-fire cell
+        /// itself may catch.
         /// </summary>
         public static bool IsRestCatchFuel(
             MaterialId walk,
@@ -693,7 +695,7 @@ namespace RuneMagic
                 || CoverFeedsBurn(TileCover.Ash)
                 || CoverFeedsBurn(TileCover.Poison))
             {
-                broken.Add("Fire cover and ember must burn who stands on them and light adjacent covers; ice, ash, and poison must not");
+                broken.Add("Fire cover and ember must burn who stands on them; ice, ash, and poison must not");
             }
 
             if (FireRun(0f) != 0f || FireRun(SlowBurnSeconds) != 0f)
@@ -768,7 +770,7 @@ namespace RuneMagic
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
             {
-                broken.Add("Rest fire lights covers on rest walk only — plant, timber, and oil floors stay at rest");
+                broken.Add("Rest fire lights a cover on its own cell only — plant, timber, and oil floors stay at rest");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f

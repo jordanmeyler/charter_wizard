@@ -5,15 +5,16 @@ namespace RuneMagic
 {
     /// <summary>
     /// Covers speak the current catalog, same marks as inscriptions.
-    /// Ice is Water · Earth. Fire cover is the live hunger layer:
-    /// standing on it burns, and at rest it lights adjacent covers.
-    /// A burning plant covering then wicks adjacent wood and oil.
-    /// Floors, walls, and details stay at rest until that covering
-    /// or a spell starts hunger. It always puts Fire in the weave so
-    /// it can be drawn.
+    /// Ice is Water · Earth. Fire cover is the live hunger layer
+    /// on the Cover tilemap: standing on it burns, and at rest it
+    /// reacts with the stamp on that same cell. It does not jump
+    /// onto a neighboring floor or wall. A burning plant covering
+    /// then wicks adjacent wood and oil. Floors, walls, and details
+    /// stay at rest until a covering lands on them or a spell starts
+    /// hunger. It always puts Fire in the weave so it can be drawn.
     /// It does not kindle a hall. Ember cover is coals: it provides
     /// fire and stays on the walk. Floor-Fire / Wall-Fire are rest
-    /// matter that light adjacent covers the same way.
+    /// matter. A cover that lands on that cell can still light.
     /// When fuel is spent, a plant or timber walk swaps to leftover
     /// dirt (look and stamp). Fire cover stays. Vine cover speaks
     /// Plant — Vine is a spell, not a rune.
@@ -236,15 +237,31 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A material stamped on the Cover layer that is not just
-        /// look — oil, metal, plant, ice — without starting live fire,
-        /// charge, or wet on its own.
+        /// A material stamped on the Cover layer that is not walk or
+        /// wall matter. Oil, metal, ice, water, mud, miasma sit here.
+        /// Fire, plant, timber, ember, hearth, and lava are stamps on
+        /// Tiles / Walls — they are not covers by themselves.
         /// </summary>
         public static bool IsOverlayMaterial(MaterialId material)
         {
-            return material != MaterialId.None
-                && material != MaterialId.Stone
-                && material != MaterialId.Void;
+            switch (material)
+            {
+                case MaterialId.None:
+                case MaterialId.Stone:
+                case MaterialId.Void:
+                case MaterialId.Dirt:
+                case MaterialId.Fire:
+                case MaterialId.Hearth:
+                case MaterialId.Lava:
+                case MaterialId.Ember:
+                case MaterialId.Plant:
+                case MaterialId.Grove:
+                case MaterialId.Moss:
+                case MaterialId.Timber:
+                    return false;
+                default:
+                    return true;
+            }
         }
 
         public static void SpeakMaterial(MaterialId material, ICollection<RuneId> dest)
@@ -416,9 +433,15 @@ namespace RuneMagic
 
             if (!IsOverlayMaterial(MaterialId.Oil)
                 || !IsOverlayMaterial(MaterialId.Metal)
-                || IsOverlayMaterial(MaterialId.Stone))
+                || !IsOverlayMaterial(MaterialId.Ice)
+                || IsOverlayMaterial(MaterialId.Stone)
+                || IsOverlayMaterial(MaterialId.Fire)
+                || IsOverlayMaterial(MaterialId.Plant)
+                || IsOverlayMaterial(MaterialId.Timber)
+                || IsOverlayMaterial(MaterialId.Hearth)
+                || IsOverlayMaterial(MaterialId.Ember))
             {
-                broken.Add("Oil and metal covers must react; stone is the walk family, not an overlay");
+                broken.Add("Oil, metal, and ice covers must react; fire, plant, and timber stamps are walk, not Cover-layer overlay");
             }
 
             if (WorldPaintTile.AuraFromCover(TileCover.Fire) != TileAura.None)

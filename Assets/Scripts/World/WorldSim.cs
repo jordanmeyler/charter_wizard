@@ -13,11 +13,11 @@ namespace RuneMagic
     /// Weaker fuel does not walk.
     /// Quench is the wet counterpart (0–10): dry stone leaves a
     /// fire alone, mud suppresses it, water puts it out. A tile
-    /// already alight does not recatch. Fire cover stays and, at
-    /// rest, lights adjacent covers on rest walk. Floor-Fire and
-    /// Wall-Fire never light neighboring floors or walls. A spell
-    /// that hits those cells can still light them. Charge uses a
-    /// 0–10 Conduct grade. Wood refuses.
+    /// already alight does not recatch. Covers live on the Cover
+    /// layer: they react with the stamp on that same cell. Floor-Fire,
+    /// Wall-Fire, and a painted fire cover never light a neighboring
+    /// floor or wall. A spell that hits those cells can still light
+    /// them. Charge uses a 0–10 Conduct grade. Wood refuses.
     /// Stone holds a spark for a second. Metal and water walk it.
     /// Plants do not grow on their own.
     /// Cover on water stays put, like ice, unless a spell-watered
@@ -266,12 +266,12 @@ namespace RuneMagic
         }
 
         // Rest fire (Floor-Fire, lava, a hearth), ember, and fire
-        // cover stay without a spell. The room is at rest: they
-        // light a covering on their own cell, and adjacent covers
-        // on rest walk. They never light a neighboring floor or
-        // wall. A spell that hits those cells can still light them.
-        // Ember and fire cover stay. When the overlay is gone rest
-        // fire goes dark again — unless the hall is kindled.
+        // cover stay without a spell. A cover reacts with the stamp
+        // on its own cell. They never light a neighboring floor,
+        // wall, or cover. A spell that hits those cells can still
+        // light them. Ember and fire cover stay. When the overlay
+        // is gone rest fire goes dark again — unless the hall is
+        // kindled.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -310,11 +310,10 @@ namespace RuneMagic
         }
 
         /// <summary>
-        /// A rest flame lights a covering on its own cell, and
-        /// adjacent plant / vine covers that sit on rest walk
-        /// (stone, fire). It never lights a neighboring floor or
-        /// wall — plant, timber, oil, and other fuel walks stay
-        /// dark until a spell hits those cells.
+        /// A rest flame lights a covering on its own cell. Cover is
+        /// a substance on that walk or wall — it does not jump onto
+        /// a neighboring plant floor, timber, oil, or another cover.
+        /// A spell that hits those cells can still light them.
         /// </summary>
         void CatchRestFuel(WorldTile tile)
         {
@@ -330,21 +329,6 @@ namespace RuneMagic
             else if (!tile.IsFireFloor && tile.HasCatchableFuel && !tile.LiveFire)
             {
                 tile.Ignite(0.55f);
-            }
-
-            var neighbors = _grid.Neighbors(tile.Coord);
-            for (var n = 0; n < neighbors.Count; n++)
-            {
-                var other = neighbors[n];
-                if (other.HasWalkFuel
-                    || !AcceptsFireSpread(other)
-                    || !other.HasRestCatchFuel)
-                {
-                    continue;
-                }
-
-                var fuel = other.Flammability > 0f ? other.Flammability : 0.85f;
-                other.Ignite(fuel, live: true, coverOnly: true);
             }
         }
 

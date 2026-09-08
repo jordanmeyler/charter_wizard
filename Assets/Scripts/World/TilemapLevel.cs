@@ -9,7 +9,9 @@ namespace RuneMagic
     /// A cell is walkable floor only when a Floor brush or Kind = Floor
     /// stamp says so. Looks on any layer are not floor. Extra Floor /
     /// Tiles children merge — each Floor stamp still counts. Walls you
-    /// never stamp stay walls on a Walls layer. Cover is overlay.
+    /// never stamp stay walls on a Walls layer. Cover is overlay
+    /// only: it never rewrites walk or wall collision. Floor stamps
+    /// do not punch holes in masonry.
     /// Environment Details is a detail on that cell. A Floor stamp
     /// there may raise a walk on an empty drop; it must not rewrite a
     /// wall or an already-baked floor. Environment Details lvl 2 is
@@ -334,6 +336,11 @@ namespace RuneMagic
                         continue;
                     }
 
+                    if (kind.HasValue)
+                    {
+                        kind = KeepMasonryKind(kind.Value, defaultKind, tile != null ? tile.Kind : (TileKind?)null);
+                    }
+
                     if (kind == null)
                     {
                         if (tile != null && look != null)
@@ -578,7 +585,7 @@ namespace RuneMagic
                         var tile = grid.Get(x, y);
                         if (!DetailMayRewriteWalk(tile != null ? tile.Kind : (TileKind?)null, kind.Value))
                         {
-                            ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks);
+                            ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks, kind);
                             continue;
                         }
 
@@ -592,7 +599,7 @@ namespace RuneMagic
                         continue;
                     }
 
-                    ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks);
+                    ApplyLookOnly(grid, x, y, look, paint, raw, guessBlocks, kind);
                 }
             }
 
@@ -614,6 +621,32 @@ namespace RuneMagic
             }
 
             return existing == null || existing == TileKind.Pit;
+        }
+
+        /// <summary>
+        /// Floor-Fire on a wall is still a wall. Cover never owns
+        /// collision; Tiles / Walls stamps keep masonry. A Walls
+        /// layer Floor stamp is rest fire or plant in the brick,
+        /// not a hole.
+        /// </summary>
+        public static TileKind KeepMasonryKind(TileKind stamp, TileKind? layerDefault, TileKind? existing)
+        {
+            if (stamp == TileKind.None)
+            {
+                return stamp;
+            }
+
+            if (layerDefault == TileKind.Wall && stamp == TileKind.Floor)
+            {
+                return TileKind.Wall;
+            }
+
+            if ((existing == TileKind.Wall || existing == TileKind.Door) && stamp == TileKind.Floor)
+            {
+                return existing.Value;
+            }
+
+            return stamp;
         }
 
         /// <summary>
@@ -644,13 +677,19 @@ namespace RuneMagic
             Sprite look,
             WorldPaintTile paint,
             TileBase raw,
-            bool guessBlocks)
+            bool guessBlocks,
+            TileKind? kind = null)
         {
             var tile = grid.Get(x, y) ?? grid.EnsureOpenPit(x, y);
             var material = paint != null ? paint.material : GuessDetailMaterial(raw);
             var blocks = paint != null
                 ? paint.blocks
                 : guessBlocks && GuessDetailBlocks(raw);
+            if (kind == TileKind.Wall || kind == TileKind.Door)
+            {
+                blocks = true;
+            }
+
             if (tile.Kind == TileKind.Pit && tile.AuthoredLook == null && look != null && !blocks)
             {
                 tile.AuthorLook(look);
@@ -788,68 +827,49 @@ namespace RuneMagic
                 return TileCover.None;
             }
 
-            return GuessCover(raw);
+            return GuessCoverName(raw != null ? raw.name : string.Empty);
+        }
+
+        /// <summary>
+        /// Only explicit Cover-* / Aura-* names become covers. A
+        /// tileset torch, Floor-Fire stamp, or plant floor on Cover
+        /// is not live fire or vine.
+        /// </summary>
+        public static TileCover GuessCoverName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return TileCover.None;
+            }
+
+            var n = name.Trim();
+            string rest = null;
+            if (n.StartsWith("Cover-", System.StringComparison.OrdinalIgnoreCase))
+            {
+                rest = n.Substring(6);
+            }
+            else if (n.StartsWith("Aura-", System.StringComparison.OrdinalIgnoreCase))
+            {
+                rest = n.Substring(5);
+            }
+
+            if (string.IsNullOrEmpty(rest))
+            {
+                return TileCover.None;
+            }
+
+            var cut = rest.IndexOf('_');
+            if (cut >= 0)
+            {
+                rest = rest.Substring(0, cut);
+            }
+
+            return System.Enum.TryParse(rest, true, out TileCover cover) ? cover : TileCover.None;
         }
 
         static TileCover GuessCover(TileBase tile)
         {
-            var name = tile != null ? tile.name : string.Empty;
-            if (NameHas(name, "miasma", "gas"))
-            {
-                return TileCover.Miasma;
-            }
-
-            if (NameHas(name, "poison", "acid", "slick"))
-            {
-                return TileCover.Poison;
-            }
-
-            if (NameHas(name, "fog", "mist", "smoke", "haze"))
-            {
-                return TileCover.Fog;
-            }
-
-            if (NameHas(name, "ice", "frost", "glacier"))
-            {
-                return TileCover.Ice;
-            }
-
-            if (NameHas(name, "water", "wet"))
-            {
-                return TileCover.Water;
-            }
-
-            if (NameHas(name, "ember", "coal"))
-            {
-                return TileCover.Ember;
-            }
-
-            if (NameHas(name, "fire", "flame", "burn"))
-            {
-                return TileCover.Fire;
-            }
-
-            if (NameHas(name, "vine", "plant"))
-            {
-                return TileCover.Vine;
-            }
-
-            if (NameHas(name, "lightning", "spark"))
-            {
-                return TileCover.Lightning;
-            }
-
-            if (NameHas(name, "mud", "mire", "silt"))
-            {
-                return TileCover.Mud;
-            }
-
-            if (NameHas(name, "ash", "cinder"))
-            {
-                return TileCover.Ash;
-            }
-
-            return TileCover.None;
+            return GuessCoverName(tile != null ? tile.name : string.Empty);
         }
 
         static float VeilOpacity(TileBase tile)
@@ -975,6 +995,27 @@ namespace RuneMagic
                 || !DetailMayRewriteWalk(null, TileKind.Floor))
             {
                 broken.Add("Environment Details must sit on walls and floors; a Floor stamp there must not rewrite masonry or an already-baked walk");
+            }
+
+            if (KeepMasonryKind(TileKind.Floor, TileKind.Wall, null) != TileKind.Wall
+                || KeepMasonryKind(TileKind.Floor, null, TileKind.Wall) != TileKind.Wall
+                || KeepMasonryKind(TileKind.Floor, null, TileKind.Door) != TileKind.Door
+                || KeepMasonryKind(TileKind.Wall, TileKind.Wall, TileKind.Wall) != TileKind.Wall
+                || KeepMasonryKind(TileKind.Pit, TileKind.Wall, TileKind.Wall) != TileKind.Pit
+                || KeepMasonryKind(TileKind.Floor, null, TileKind.Floor) != TileKind.Floor)
+            {
+                broken.Add("Floor-Fire and other Floor stamps must not punch a hole in a wall; Walls-layer Floor stamps stay masonry");
+            }
+
+            if (GuessCoverName("Cover-Fire") != TileCover.Fire
+                || GuessCoverName("Cover-Vine") != TileCover.Vine
+                || GuessCoverName("r8_dungeon_torches") != TileCover.None
+                || GuessCoverName("Floor_Fire_None") != TileCover.None
+                || GuessCoverName("Floor-Plant") != TileCover.None
+                || GuessCoverName("Wall-Fire") != TileCover.None
+                || GuessCoverName("None_Fire_Fire") != TileCover.None)
+            {
+                broken.Add("Only Cover-* / Aura-* names bake as covers; torch and Floor-Fire tiles on Cover are not live fire");
             }
 
             var dirt = TileAtlas.Get("floor-dirt");
