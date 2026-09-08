@@ -218,7 +218,7 @@ namespace RuneMagic
             for (var i = 0; i < burning.Count; i++)
             {
                 var tile = burning[i];
-                if (tile.IsFireFloor || tile.HasEmber || tile.HasFireCover)
+                if (tile.HasRestFire || tile.HasEmber || tile.HasFireCover)
                 {
                     StepRestFire(tile);
                     continue;
@@ -265,14 +265,12 @@ namespace RuneMagic
             }
         }
 
-        // Rest fire (Floor-Fire, Wall-Fire, lava, a hearth), ember,
-        // and fire cover stay without a spell. A covering on that
-        // cell lights, and so does a covering beside it — sprout or
-        // Cover-Vine next to a flame wall, even after Grow turns the
-        // bed into a plant floor. They never light a neighboring plant
-        // floor with no covering. Grow never paints plant onto a wall.
-        // Ember and fire cover stay. When the overlay is gone rest fire
-        // goes dark again — unless the hall is kindled.
+        // Rest fire (Floor-Fire, Wall-Fire, a fire pot on Environment
+        // Details, lava, a hearth), ember, and fire cover stay without
+        // a spell. A covering on that cell lights, and so does a
+        // covering beside it — Grow (Plant · Life · Mercury) next to a
+        // flame wall. They never light a neighboring plant floor with no
+        // covering. Grow never paints plant onto a wall or a fire pot.
         void StepRestFire(WorldTile tile)
         {
             var pressure = QuenchPressure(tile);
@@ -451,7 +449,7 @@ namespace RuneMagic
             }
 
             var coverWick = tile.HasPlantCover || tile.CoverOnlyBurn;
-            var restFlame = (tile.IsFireFloor || tile.HasFireCover) && !tile.Kindled;
+            var restFlame = (tile.HasRestFire || tile.HasFireCover) && !tile.Kindled;
             _grid.ForEachInChebyshev(tile.Coord, VitalLaw.CatchReach(potency), (other, dist) =>
             {
                 if (!AcceptsFireSpread(other))

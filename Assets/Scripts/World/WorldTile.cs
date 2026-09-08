@@ -262,6 +262,21 @@ namespace RuneMagic
         public bool IsFireFloor => VitalLaw.IsRestFire(Material);
 
         /// <summary>
+        /// Wall-Fire / Floor-Fire stamped on Environment Details. The
+        /// walk stays whatever Tiles / Walls already baked. The pot
+        /// or brazier is still rest fire.
+        /// </summary>
+        public bool HasRestFireDetail =>
+            VitalLaw.IsRestFire(_detailMaterial) || VitalLaw.IsRestFire(_detail2Material);
+
+        /// <summary>
+        /// Rest fire in the walk or on a fire pot / brazier detail.
+        /// </summary>
+        public bool HasRestFire => IsFireFloor || HasRestFireDetail;
+
+        bool HasBlockingDetail => _detailBlocks || _detail2Blocks;
+
+        /// <summary>
         /// Fuel sitting on the walk — vine, oil, a plant or timber
         /// detail. The floor underneath is not this. Fire cover is
         /// the flame, not the fuel it lights.
@@ -310,12 +325,12 @@ namespace RuneMagic
                 }
 
                 if (HasRestCatchFuel
-                    || (VitalLaw.CanBurn(Material) && !IsFireFloor))
+                    || (VitalLaw.CanBurn(Material) && !HasRestFire))
                 {
                     return true;
                 }
 
-                if (IsFireFloor || HasFireCover)
+                if (HasRestFire || HasFireCover)
                 {
                     return false;
                 }
@@ -329,7 +344,7 @@ namespace RuneMagic
         /// rest fire in the walk, ember, or a kindled hall.
         /// </summary>
         public bool ProvidesRestFlame =>
-            !HasAshCover && (HasFireCover || IsFireFloor || HasEmber || Kindled);
+            !HasAshCover && (HasFireCover || HasRestFire || HasEmber || Kindled);
 
         /// <summary>
         /// A stood Fire · Salt column. Hunger without rest. It
@@ -347,7 +362,7 @@ namespace RuneMagic
         {
             get
             {
-                if (Kindled || IsGeyser || HasOil || HasOverlayFuel || HasEmber || HasFireCover)
+                if (Kindled || IsGeyser || HasOil || HasOverlayFuel || HasEmber || HasFireCover || HasRestFire)
                 {
                     return true;
                 }
@@ -883,7 +898,7 @@ namespace RuneMagic
                     return VitalLaw.HungerOil;
                 }
 
-                if (IsFireFloor)
+                if (HasRestFire)
                 {
                     return Hunger;
                 }
@@ -990,7 +1005,8 @@ namespace RuneMagic
         public bool CanTakePlant =>
             (Kind == TileKind.Floor || Kind == TileKind.Bridge) &&
             Material != MaterialId.Water && Material != MaterialId.Lava &&
-            Material != MaterialId.Void && !IsFireFloor && !IsPlantish;
+            Material != MaterialId.Void && !HasRestFire && !IsPlantish &&
+            !HasBlockingDetail;
 
         /// <summary>
         /// Yield holding a vessel with no floor under it. It drowns.
@@ -1249,12 +1265,13 @@ namespace RuneMagic
         /// Plant cover on this cell only — ice's law, not a walk
         /// across the pool. Water takes a walkable vine; a hollow
         /// takes the same cover; dry walk takes a climbing body.
-        /// Walls stay masonry. A covering beside a fire wall can
-        /// still catch; the plant does not eat the brick.
+        /// Walls stay masonry. Fire pots stamped on Environment Details
+        /// stay visible — plant lands beside them, then that covering
+        /// catches. The plant does not eat the brick or the pot.
         /// </summary>
         public bool PlacePlantCover(MaterialId material = MaterialId.Plant)
         {
-            if (Kind == TileKind.Wall || Kind == TileKind.Door)
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || HasRestFireDetail || HasBlockingDetail)
             {
                 return false;
             }
@@ -1546,12 +1563,14 @@ namespace RuneMagic
         /// <summary>
         /// A climbing body on the walk. Hunger runs it like a wick.
         /// Floor and wall stamps stay at rest. A covering on or beside
-        /// rest fire lights the plant, not the masonry. Walls never
-        /// take this covering — the brick stays visible.
+        /// rest fire lights the plant, not the masonry. Walls and fire
+        /// pots never take this covering — the brick and the vessel stay
+        /// visible.
         /// </summary>
         public bool LayVine()
         {
-            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void)
+            if (Kind == TileKind.Wall || Kind == TileKind.Door || Material == MaterialId.Void
+                || HasRestFireDetail || HasBlockingDetail)
             {
                 return false;
             }
@@ -1579,7 +1598,7 @@ namespace RuneMagic
         /// covering lights. The stamp stays rest.
         /// </summary>
         bool ShouldLightNewPlant =>
-            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover || TouchesRestFlame();
+            IsBurning || LiveFire || Kindled || HasRestFire || HasFireCover || TouchesRestFlame();
 
         bool TouchesRestFlame()
         {
@@ -2224,7 +2243,7 @@ namespace RuneMagic
                 return;
             }
 
-            if (IsFireFloor || HasEmber || HasFireCover)
+            if (HasRestFire || HasEmber || HasFireCover)
             {
                 Fire = 0f;
                 RefreshFx();
@@ -2276,7 +2295,7 @@ namespace RuneMagic
         /// </summary>
         void LeftoverFuelWalk()
         {
-            if (IsFireFloor || HasEmber)
+            if (HasRestFire || HasEmber)
             {
                 return;
             }
@@ -2326,10 +2345,10 @@ namespace RuneMagic
                 return;
             }
 
-            if (IsFireFloor || HasEmber || HasFireCover)
+            if (HasRestFire || HasEmber || HasFireCover)
             {
                 SpendOverlayFuel();
-                if (HasFireCover && !IsFireFloor && !HasEmber)
+                if (HasFireCover && !HasRestFire && !HasEmber)
                 {
                     LeftoverFuelWalk();
                 }

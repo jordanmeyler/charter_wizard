@@ -696,6 +696,9 @@ namespace RuneMagic
             }
             else
             {
+                // Wall-Fire / Floor-Fire on Environment Details stay a
+                // detail. The walk underneath does not change. The pot
+                // is still rest fire — WorldTile.HasRestFireDetail.
                 tile.AuthorDetail(look, material, blocks);
             }
 
@@ -882,7 +885,7 @@ namespace RuneMagic
             var name = tile != null ? tile.name : string.Empty;
             return NameHas(name, "table", "statue", "crate", "barrel", "chest", "pillar",
                 "shelf", "book", "desk", "cabinet", "bed", "stool", "urn", "fountain",
-                "altar", "chair", "bench");
+                "altar", "chair", "bench", "pot", "vase", "brazier", "torch");
         }
 
         static MaterialId GuessDetailMaterial(TileBase tile)
