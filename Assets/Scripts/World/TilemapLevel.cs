@@ -8,14 +8,16 @@ namespace RuneMagic
     /// Turns scene Tilemaps you painted in the editor into a live WorldGrid.
     /// A cell is walkable floor only when a Floor brush or Kind = Floor
     /// stamp says so. Looks on any layer are not floor. Extra Floor /
-    /// Tiles children merge — each Floor stamp still counts. Walls you
-    /// never stamp stay walls on a Walls layer. Cover is overlay
+    /// Tiles children merge — each Floor stamp still counts. Painted
+    /// cells on a Walls layer are walls. A Wall stamp on Tiles or
+    /// Environment Details is still masonry. Cover is overlay
     /// only: it never rewrites walk or wall collision. Floor stamps
     /// do not punch holes in masonry.
     /// Environment Details is a detail on that cell. A Floor stamp
     /// there may raise a walk on an empty drop; it must not rewrite a
-    /// wall or an already-baked floor. Environment Details lvl 2 is
-    /// another detail layer — Play stacks it on top.
+    /// wall or an already-baked floor. A Wall stamp there blocks.
+    /// Environment Details lvl 2 is another detail layer — Play stacks
+    /// it on top.
     /// </summary>
     public static class TilemapLevel
     {
@@ -608,10 +610,11 @@ namespace RuneMagic
 
         /// <summary>
         /// Environment Details may raise a walk on an empty drop.
-        /// It must not rewrite masonry or a floor Tiles / Walls already
-        /// baked — a Floor stamp there is a rug or a metal plate, not
-        /// a new walk family. Wood on metal still breaks the spark;
-        /// metal on stone still runs it.
+        /// A Floor stamp there is a rug or a metal plate — it must not
+        /// rewrite masonry or a floor Tiles / Walls already baked.
+        /// A Wall or Door stamp is masonry: a fire pot blocks, and it
+        /// does not take floor covering. That stamp may stand on a
+        /// floor or sit in an existing wall (Fire in the brick).
         /// </summary>
         public static bool DetailMayRewriteWalk(TileKind? existing, TileKind stamp)
         {
@@ -620,25 +623,37 @@ namespace RuneMagic
                 return false;
             }
 
+            if (stamp == TileKind.Wall || stamp == TileKind.Door)
+            {
+                return existing != TileKind.Door || stamp == TileKind.Door;
+            }
+
             return existing == null || existing == TileKind.Pit;
         }
 
         /// <summary>
         /// Floor-Fire on a wall is still a wall. Cover never owns
         /// collision; Tiles / Walls stamps keep masonry. A Walls
-        /// layer Floor stamp is rest fire or plant in the brick,
-        /// not a hole.
+        /// layer treats every painted cell as a wall unless you
+        /// stamped pit, door, or bridge. Floor stamps there stay
+        /// masonry, not a hole. Other layers still accept a Wall
+        /// stamp — a fire pot on Environment Details is a wall.
         /// </summary>
         public static TileKind KeepMasonryKind(TileKind stamp, TileKind? layerDefault, TileKind? existing)
         {
+            if (layerDefault == TileKind.Wall)
+            {
+                if (stamp == TileKind.Pit || stamp == TileKind.Door || stamp == TileKind.Bridge)
+                {
+                    return stamp;
+                }
+
+                return TileKind.Wall;
+            }
+
             if (stamp == TileKind.None)
             {
                 return stamp;
-            }
-
-            if (layerDefault == TileKind.Wall && stamp == TileKind.Floor)
-            {
-                return TileKind.Wall;
             }
 
             if ((existing == TileKind.Wall || existing == TileKind.Door) && stamp == TileKind.Floor)
@@ -652,13 +667,19 @@ namespace RuneMagic
         /// <summary>
         /// Floor only when a Floor brush or Kind = Floor stamp says so.
         /// Name guesses may still mark wall / door / pit / bridge.
-        /// A Walls layer still defaults unstamped cells to wall.
+        /// A Walls layer treats painted cells as walls even when the
+        /// brush is Kind = None. Overlay covers never stamp walk.
         /// </summary>
         static TileKind? ResolveWalkKind(WorldPaintTile paint, TileBase raw, TileKind? defaultKind)
         {
-            if (paint != null)
+            if (paint != null && paint.IsOverlayBrush)
             {
-                return paint.StampsWalk ? paint.kind : (TileKind?)null;
+                return null;
+            }
+
+            if (paint != null && paint.StampsWalk)
+            {
+                return paint.kind;
             }
 
             var named = GuessNamedKind(raw);
@@ -696,6 +717,9 @@ namespace RuneMagic
             }
             else
             {
+                // Wall-Fire on Environment Details becomes masonry via
+                // DetailMayRewriteWalk. Floor stamps that stay look-only
+                // still sit as a detail; Fire there is rest flame.
                 tile.AuthorDetail(look, material, blocks);
             }
 
@@ -882,7 +906,7 @@ namespace RuneMagic
             var name = tile != null ? tile.name : string.Empty;
             return NameHas(name, "table", "statue", "crate", "barrel", "chest", "pillar",
                 "shelf", "book", "desk", "cabinet", "bed", "stool", "urn", "fountain",
-                "altar", "chair", "bench");
+                "altar", "chair", "bench", "pot", "vase", "brazier", "torch");
         }
 
         static MaterialId GuessDetailMaterial(TileBase tile)
@@ -990,21 +1014,28 @@ namespace RuneMagic
             if (DetailMayRewriteWalk(TileKind.Wall, TileKind.Floor)
                 || DetailMayRewriteWalk(TileKind.Door, TileKind.Floor)
                 || DetailMayRewriteWalk(TileKind.Floor, TileKind.Floor)
-                || DetailMayRewriteWalk(TileKind.Floor, TileKind.Wall)
+                || DetailMayRewriteWalk(TileKind.Door, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Floor, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Wall, TileKind.Wall)
+                || !DetailMayRewriteWalk(TileKind.Pit, TileKind.Wall)
+                || !DetailMayRewriteWalk(null, TileKind.Wall)
                 || !DetailMayRewriteWalk(TileKind.Pit, TileKind.Floor)
                 || !DetailMayRewriteWalk(null, TileKind.Floor))
             {
-                broken.Add("Environment Details must sit on walls and floors; a Floor stamp there must not rewrite masonry or an already-baked walk");
+                broken.Add("Environment Details Floor stamps sit on the walk; a Wall stamp there is masonry and must block");
             }
 
             if (KeepMasonryKind(TileKind.Floor, TileKind.Wall, null) != TileKind.Wall
+                || KeepMasonryKind(TileKind.None, TileKind.Wall, null) != TileKind.Wall
+                || KeepMasonryKind(TileKind.Wall, TileKind.Wall, TileKind.Floor) != TileKind.Wall
                 || KeepMasonryKind(TileKind.Floor, null, TileKind.Wall) != TileKind.Wall
                 || KeepMasonryKind(TileKind.Floor, null, TileKind.Door) != TileKind.Door
                 || KeepMasonryKind(TileKind.Wall, TileKind.Wall, TileKind.Wall) != TileKind.Wall
                 || KeepMasonryKind(TileKind.Pit, TileKind.Wall, TileKind.Wall) != TileKind.Pit
+                || KeepMasonryKind(TileKind.Wall, null, TileKind.Floor) != TileKind.Wall
                 || KeepMasonryKind(TileKind.Floor, null, TileKind.Floor) != TileKind.Floor)
             {
-                broken.Add("Floor-Fire and other Floor stamps must not punch a hole in a wall; Walls-layer Floor stamps stay masonry");
+                broken.Add("The Walls layer treats painted tiles as walls; a Wall stamp on Tiles or Environment Details is still masonry; Floor stamps must not punch a hole in a wall");
             }
 
             if (GuessCoverName("Cover-Fire") != TileCover.Fire

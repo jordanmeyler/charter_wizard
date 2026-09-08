@@ -52,9 +52,11 @@ we ask for it and work it out together.
    do not stamp a new floor.
    **Floor-Fire** and **Wall-Fire** go on Tiles / Walls — rest
    materials, like stone. They keep wall collision. They are not
-   covers. They light a covering on them or beside them. They never
-   light a neighboring Floor-Plant. Grow never paints plant onto a
-   wall. Paint **Cover-Fire** on Cover if you want live hunger on
+   covers. A **Wall-Fire** stamp on **Environment Details** is still a
+   wall: you cannot walk through it, and Grow does not cover it.
+   A **Floor-Fire** stamp is a floor. They light a covering on them or
+   beside them. They never light a neighboring Floor-Plant. Grow never
+   paints plant onto a wall. Paint **Cover-Fire** on Cover if you want live hunger on
    that cell. A torch tile or Wall-Fire next to Floor-Plant stays
    dark on the plant until a cover or a spell covering is on that
    plant cell.
@@ -111,9 +113,9 @@ on the cells you can walk.
 | Child name | What to paint | Play |
 |---|---|---|
 | **Tiles** / **Floor** / **Floor 2** | Looks, then Floor / pit / door stamps | Floor only where stamped. Empty cells become pits. Hidden, then baked. |
-| **Walls** | Solid walls | Unstamped cells on this layer stay walls. Hidden, then baked. |
+| **Walls** | Solid walls | Painted cells on this layer are walls. Floor stamps here stay masonry. You can still stamp Wall on Tiles or Environment Details. Hidden, then baked. |
 | **Cover** / **Coverings** | Ice, fire, vine, miasma, fog | Overlay only: look, work, and weave on that cell. Never rewrites walk or wall collision. Hidden, then baked. |
-| **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here makes an empty or pit cell walkable. It does not rewrite a wall or floor already baked from Tiles / Walls — a metal plate or rug sits on that walk. Hidden, then baked. |
+| **Environment Details** / Decor | Plants, rugs, chairs, statues | Look + optional Blocks. A Floor stamp here makes an empty or pit cell walkable. It does not rewrite a wall or floor already baked from Tiles / Walls — a metal plate or rug sits on that walk. A **Wall** stamp here is masonry: it blocks, and Grow does not cover it. Hidden, then baked. |
 | **Environment Details lvl 2** | Same, drawn on top of Environment Details | Same bake. Overlapping cells keep both looks. Hidden, then baked. Cover still sits above. Details never delete the wall or floor underneath. |
 
 Hide a layer while you work on the ones under it. Uncheck it in
