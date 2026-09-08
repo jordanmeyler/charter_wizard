@@ -292,7 +292,8 @@ do not walk a field on their own, and they keep wall collision.
 The room is at rest. A cover that lands on that same cell can
 still light (Cover-Vine on Floor-Fire, Cover-Fire on Floor-Plant).
 They do not light the floor or wall beside them — not Floor-Plant,
-timber, moss, a bush, or a table. A plant spell on that fire walk
+timber, moss, a bush, or a table. A plant **spell** beside a flame
+wall or Floor-Fire still lights that covering. A plant spell on that fire walk
 lights the covering, not the masonry. A spell that starts a fire
 can then run into those plant walks. Vine cover speaks Plant — Vine
 is a climbing shot (`Plant · Mercury`), not a rune, and hunger

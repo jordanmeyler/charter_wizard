@@ -284,11 +284,11 @@ namespace RuneMagic
                 || (HasOil && !IsGeyser));
 
         /// <summary>
-        /// Fuel a rest flame lights on its own cell at rest: a plant /
-        /// vine covering on walk that is not itself fuel. Neighbors
-        /// stay dark until a spell hits them, including vine on stone
-        /// beside a torch or Wall-Fire. Vine on the same rest-fire
-        /// cell still catches.
+        /// Fuel a rest flame lights at rest: a plant / vine covering
+        /// on walk that is not itself fuel, including the cell beside
+        /// a flame wall. Plant, timber, and oil floors stay dark until
+        /// a spell hits those cells. Vine on rest fire or stone may
+        /// catch. A spell that lays plant beside hunger lights it.
         /// </summary>
         public bool HasRestCatchFuel =>
             !HasAshCover && HasPlantCover && !HasWalkFuel;
@@ -1580,11 +1580,33 @@ namespace RuneMagic
 
         /// <summary>
         /// A spell laid plant on hunger — rest fire, a hall, live
-        /// flame, or fire cover. The covering lights. The walk does
-        /// not become a source by itself.
+        /// flame, fire cover, or a flame wall beside this cell. The
+        /// covering lights. The walk does not become a source by
+        /// itself.
         /// </summary>
         bool ShouldLightNewPlant =>
-            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover;
+            IsBurning || LiveFire || Kindled || IsFireFloor || HasFireCover || TouchesRestFlame();
+
+        bool TouchesRestFlame()
+        {
+            var grid = GetComponentInParent<WorldGrid>();
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var neighbors = grid.Neighbors(Coord);
+            for (var i = 0; i < neighbors.Count; i++)
+            {
+                var other = neighbors[i];
+                if (other != null && other.ProvidesRestFlame)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         void LightNewPlant(float amount = 0.55f)
         {
@@ -2154,6 +2176,7 @@ namespace RuneMagic
 
             _growth = 0;
             Reshape(new TileDef(TileKind.Floor, MaterialId.Plant));
+            LightNewPlant();
             RefreshFx();
         }
 

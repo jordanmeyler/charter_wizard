@@ -387,11 +387,10 @@ namespace RuneMagic
 
         /// <summary>
         /// Fuel a rest flame lights at rest: a covering (vine / plant)
-        /// on that same walk, when the walk is not itself fuel. Plant,
-        /// timber, and oil floors and walls stay dark, including the
-        /// cell beside a torch or Wall-Fire. A spell that hits those
-        /// cells can still light them. Vine on the rest-fire cell
-        /// itself may catch.
+        /// on a walk that is not itself fuel, including the cell beside
+        /// a flame wall. Plant, timber, and oil floors stay dark. A
+        /// spell that lays plant beside hunger still lights it. Vine
+        /// on rest fire or stone may catch.
         /// </summary>
         public static bool IsRestCatchFuel(
             MaterialId walk,
@@ -770,7 +769,7 @@ namespace RuneMagic
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.None, true, false)
                 || !IsRestCatchFuel(MaterialId.Stone, MaterialId.Timber, true, false))
             {
-                broken.Add("Rest fire lights a cover on its own cell only — plant, timber, and oil floors stay at rest");
+                broken.Add("Rest fire lights covers on rest walk — plant, timber, and oil floors stay at rest");
             }
 
             if (WorldWork.MiasmaWalkScale >= 1f
